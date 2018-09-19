@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 '''
-SPARTA - Network Infrastructure Penetration Testing Tool (http://sparta.secforce.com)
-Copyright (c) 2018 SECFORCE (Antonio Quina and Leonidas Stavliotis)
+LEGION 0.1.0 (https://govanguard.io)
+Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -88,9 +88,9 @@ if __name__ == "__main__":
 	ui.setupUi(MainWindow)
 
 	try:	
-		qss_file = open('./ui/sparta.qss').read()
+		qss_file = open('./ui/legion.qss').read()
 	except IOError as e:
-		print("[-] The sparta.qss file is missing. Your installation seems to be corrupted. Try downloading the latest version.")
+		print("[-] The legion.qss file is missing. Your installation seems to be corrupted. Try downloading the latest version.")
 		exit(0)
 
 	MainWindow.setStyleSheet(qss_file)
