@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 '''
-SPARTA - Network Infrastructure Penetration Testing Tool (http://sparta.secforce.com)
-Copyright (c) 2014 SECFORCE (Antonio Quina and Leonidas Stavliotis)
+LEGION 0.1.0 (https://govanguard.io)
+Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -11,9 +11,6 @@ Copyright (c) 2014 SECFORCE (Antonio Quina and Leonidas Stavliotis)
     You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-#from elixir import metadata, Entity, Field
-#from elixir import create_all, setup_all, session
-#from elixir import Unicode, UnicodeText
 from PyQt4.QtCore import QSemaphore
 import time
 

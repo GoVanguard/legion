@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 '''
-SPARTA - Network Infrastructure Penetration Testing Tool (http://sparta.secforce.com)
-Copyright (c) 2015 SECFORCE (Antonio Quina and Leonidas Stavliotis)
+LEGION 0.1.0 (https://govanguard.io)
+Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -351,7 +351,7 @@ class Filters():
 ### VALIDATION FUNCTIONS ###
 # TODO: should probably be moved to a new file called validation.py
 
-def sanitise(string):                                                   # this function makes a string safe for use in sql query. the main point is to prevent sparta from breaking, not so much SQLi as such.
+def sanitise(string):                                                   # this function makes a string safe for use in sql query. the main point is to prevent us from breaking, not so much SQLi as such.
     s = string.replace('\'', '\'\'')
     return s
     
