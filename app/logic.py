@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 '''
-SPARTA - Network Infrastructure Penetration Testing Tool (http://sparta.secforce.com)
-Copyright (c) 2015 SECFORCE (Antonio Quina and Leonidas Stavliotis)
+LEGION 0.1.0 (https://govanguard.io)
+Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -30,14 +30,14 @@ class Logic():
             
             self.istemp = False                                          # indicates that file is temporary and can be deleted if user exits without saving
             print(self.cwd)
-            tf = tempfile.NamedTemporaryFile(suffix=".sprt",prefix="sparta-", delete=False, dir="./tmp/")         # to store the database file
-            self.outputfolder = tempfile.mkdtemp(suffix="-tool-output",prefix="sparta-", dir="./tmp/")            # to store tool output of finished processes
-            self.runningfolder = tempfile.mkdtemp(suffix="-running",prefix="sparta-", dir="./tmp/")               # to store tool output of running processes
+            tf = tempfile.NamedTemporaryFile(suffix=".ldb",prefix="legion-", delete=False, dir="./tmp/")         # to store the database file
+            self.outputfolder = tempfile.mkdtemp(suffix="-tool-output",prefix="legion-", dir="./tmp/")            # to store tool output of finished processes
+            self.runningfolder = tempfile.mkdtemp(suffix="-running",prefix="legion-", dir="./tmp/")               # to store tool output of running processes
             os.makedirs(self.outputfolder+'/screenshots')                                           # to store screenshots
             os.makedirs(self.runningfolder+'/nmap')                                                 # to store nmap output
             os.makedirs(self.runningfolder+'/hydra')                                                # to store hydra output         
-            self.usernamesWordlist = Wordlist(self.outputfolder + '/sparta-usernames.txt')          # to store found usernames
-            self.passwordsWordlist = Wordlist(self.outputfolder + '/sparta-passwords.txt')          # to store found passwords
+            self.usernamesWordlist = Wordlist(self.outputfolder + '/legion-usernames.txt')          # to store found usernames
+            self.passwordsWordlist = Wordlist(self.outputfolder + '/legion-passwords.txt')          # to store found passwords
             self.projectname = tf.name
             print(tf.name)
             self.db = Database(self.projectname)
@@ -125,15 +125,15 @@ class Logic():
             self.istemp = False                                         # indicate the file is NOT temporary and should NOT be deleted later
             
             self.projectname = str(filename)                            # set the new projectname and outputfolder vars
-            if not str(filename).endswith('.sprt'):         
+            if not str(filename).endswith('.ldb'):         
                 self.outputfolder = str(filename)+'-tool-output'        # use the same name as the file for the folder (without the extension)
             else:
                 self.outputfolder = str(filename)[:-5]+'-tool-output'
 
-            self.usernamesWordlist = Wordlist(self.outputfolder + '/sparta-usernames.txt')          # to store found usernames
-            self.passwordsWordlist = Wordlist(self.outputfolder + '/sparta-passwords.txt')          # to store found passwords          
+            self.usernamesWordlist = Wordlist(self.outputfolder + '/legion-usernames.txt')          # to store found usernames
+            self.passwordsWordlist = Wordlist(self.outputfolder + '/legion-passwords.txt')          # to store found passwords          
             
-            self.runningfolder = tempfile.mkdtemp(suffix="-running",prefix="sparta-")               # to store tool output of running processes
+            self.runningfolder = tempfile.mkdtemp(suffix="-running",prefix="legion-")               # to store tool output of running processes
             self.db = Database(self.projectname)                        # use the new db
             self.cwd = ntpath.dirname(str(self.projectname))+'/'        # update cwd so it appears nicely in the window title
         
@@ -145,10 +145,10 @@ class Logic():
     # if the replace flag is set to 1, it overwrites the destination file and folder
     def saveProjectAs(self, filename, replace=0):
         try:
-            # the folder name must be : filename-tool-output (without the .sprt extension)
-            if not str(filename).endswith('.sprt'):
+            # the folder name must be : filename-tool-output (without the .ldb extension)
+            if not str(filename).endswith('.ldb'):
                 foldername = str(filename)+'-tool-output'
-                filename = str(filename) + '.sprt'
+                filename = str(filename) + '.ldb'
             else:
                 foldername = filename[:-5]+'-tool-output'
 
@@ -169,8 +169,8 @@ class Logic():
             self.projectname = str(filename)
             self.outputfolder = str(foldername)
 
-            self.usernamesWordlist = Wordlist(self.outputfolder + '/sparta-usernames.txt')          # to store found usernames
-            self.passwordsWordlist = Wordlist(self.outputfolder + '/sparta-passwords.txt')          # to store found passwords  
+            self.usernamesWordlist = Wordlist(self.outputfolder + '/legion-usernames.txt')          # to store found usernames
+            self.passwordsWordlist = Wordlist(self.outputfolder + '/legion-passwords.txt')          # to store found passwords  
             
             self.istemp = False                                         # indicate that file is NOT temporary anymore and should NOT be deleted later
             return True

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 '''
-SPARTA - Network Infrastructure Penetration Testing Tool (http://sparta.secforce.com)
-Copyright (c) 2015 SECFORCE (Antonio Quina and Leonidas Stavliotis)
+LEGION 0.1.0 (https://govanguard.io)
+Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
@@ -65,12 +65,12 @@ class View(QtCore.QObject):
         self.adddialog = AddHostsDialog(self.ui.centralwidget)      
         self.settingsWidget = AddSettingsDialog(self.ui.centralwidget)
         self.helpWidget = QtWebKit.QWebView()
-        self.helpWidget.setWindowTitle('SPARTA Help')
+        self.helpWidget.setWindowTitle('LEGION Help')
 
         # kali moves the help file so let's find it
         url = './doc/help.html'
         if not os.path.exists(url):
-            url = '/usr/share/doc/sparta/help.html'
+            url = '/usr/share/doc/legion/help.html'
 
         if usePySide:
             self.helpWidget.load(url)
