@@ -1,4 +1,4 @@
-LEGION 0.1.0 (http://gvit.io)
+LEGION 0.1.0 (https://govanguard.io)
 ==
 
 Authors:
