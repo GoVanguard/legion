@@ -36,6 +36,10 @@ then
             echo "Detected Ubuntu"
             ./deps/ubuntu.sh
             touch .initialized
+        elif [[ $releaseOutput == *"Parrot"* ]]
+        then
+            ./deps/ubuntu.sh
+            touch .initialized
         else
             echo "Not Ubuntu. Install deps manually for now"
             touch .initialized
