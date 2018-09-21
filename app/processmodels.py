@@ -12,7 +12,7 @@ Copyright (c) 2018 GoVanguard
 '''
 
 import re
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtWidgets, QtGui, QtCore
 from app.auxiliary import *                                                 # for bubble sort
 
 class ProcessesTableModel(QtCore.QAbstractTableModel):

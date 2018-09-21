@@ -12,7 +12,7 @@ Copyright (c) 2018 GoVanguard
 '''
 
 import sys, os
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtWidgets, QtGui, QtCore
 from app.auxiliary import *                                             # for timestamp
 
 # this class reads and writes application settings

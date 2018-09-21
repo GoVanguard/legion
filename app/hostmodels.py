@@ -12,9 +12,12 @@ Copyright (c) 2018 GoVanguard
 '''
 
 import re
-from PyQt4 import QtGui, QtCore
-from PyQt4.QtGui import *                                               # for QFont
+from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5.QtCore import pyqtSignal, QObject
 from app.auxiliary import *                                                 # for bubble sort
+
+class Communicate(QObject):
+    data_changed = pyqtSignal(str)
 
 class HostsTableModel(QtCore.QAbstractTableModel):
     
@@ -22,6 +25,11 @@ class HostsTableModel(QtCore.QAbstractTableModel):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.__headers = headers
         self.__hosts = hosts
+        self.c = Communicate()
+
+    @QtCore.pyqtSlot()
+    def emit(self, signal):
+        self.c.data_changed.emit(signal)
         
     def setHosts(self, hosts):
         self.__hosts = hosts
@@ -116,7 +124,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
 
     def sort(self, Ncol, order):                                        # sort function called when the user clicks on a header
         
-        self.emit(SIGNAL("layoutAboutToBeChanged()"))
+        self.layoutAboutToBeChanged.emit()
         array = []
         
         if Ncol == 0 or Ncol == 3:                                      # if sorting by IP address (and by default)
@@ -156,7 +164,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
         if order == Qt.AscendingOrder:                                  # reverse if needed
             self.__hosts.reverse()
 
-        self.emit(SIGNAL("layoutChanged()"))                            # update the UI (built-in signal)
+        self.layoutChanged.emit()                            # update the UI (built-in signal)
 
     ### getter functions ###
 

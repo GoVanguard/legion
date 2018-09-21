@@ -12,8 +12,9 @@ Copyright (c) 2018 GoVanguard
 '''
 
 import os, sys, urllib, socket, time, datetime, locale, webbrowser, re  # for webrequests, screenshot timeouts, timestamps, browser stuff and regex
-from PyQt4 import QtGui, QtCore
-from PyQt4.QtCore import *                                              # for QProcess
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import *                                              # for QProcess
+from PyQt5.QtWidgets import *
 import errno                                                            # temporary for isHttpd
 import subprocess                                                       # for screenshots with cutycapt
 import string                                                           # for input validation
@@ -105,7 +106,7 @@ def setTableProperties(table, headersLen, hiddenColumnIndexes = []):
 
     table.verticalHeader().setVisible(False)                            # hide the row headers
     table.setShowGrid(False)                                            # hide the table grid
-    table.setSelectionBehavior(QtGui.QTableView.SelectRows)             # select entire row instead of single cell
+    table.setSelectionBehavior(QtWidgets.QTableView.SelectRows)             # select entire row instead of single cell
     table.setSortingEnabled(True)                                       # enable column sorting
     table.horizontalHeader().setStretchLastSection(True)                # header behaviour
     table.horizontalHeader().setSortIndicatorShown(False)               # hide sort arrow from column header
