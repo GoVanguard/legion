@@ -1,4 +1,4 @@
-LEGION 0.1.0 (https://govanguard.io)
+LEGION 0.2.0 (https://govanguard.io)
 ==
 
 Authors:
@@ -15,6 +15,8 @@ Runs on Ubuntu, and Windows Subsystem for Linux
 
 Ported from Python2.7 to Python 3.5+
 
+Ported from PyQt4 to PyQt5
+
 Removed all Elixir crustiness
 
 
@@ -23,7 +25,7 @@ Requirements
 
 Ubuntu or variant or WSL (Windows Subsystem for Linux)
 Python 3.5+
-PyQT4
+PyQT5
 SQLAlchemy
 six
 hydra
