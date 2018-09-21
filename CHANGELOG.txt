@@ -4,3 +4,9 @@ LEGION 0.1.1
 * Removed Elixir
 * Converted to Python3.5+
 * Process handeling ensures dead processes are shown as crashed or finished
+
+LEGION 0.2.0
+
+* Port to PyQt5
+* Handle process output encoding issues
+* Added dependancy installer
