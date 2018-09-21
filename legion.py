@@ -16,13 +16,13 @@ try:
 	from sqlalchemy.orm.scoping import ScopedSession as scoped_session
 	#import elixir
 except ImportError as e:
-	print("[-] Import failed. SQL Alchemy library not found")
+	print("[-] Import failed. SQL Alchemy library not found. If on Ubuntu or similar try: apt-get install python3-sqlalchemy*")
 	exit(1)
 	
 try:
 	from PyQt4 import QtGui, QtCore
 except ImportError as e:
-	print("[-] Import failed. PyQt4 library not found")
+	print("[-] Import failed. PyQt4 library not found. If on Ubuntu or similar try: agt-get install python3-pyqt4")
 	print(e)
 	exit(1)
 
@@ -32,7 +32,7 @@ except ImportError as e:
 	try:
 		from PySide import QtWebKit
 	except ImportError:
-		print("[-] Import failed. QtWebKit library not found")
+		print("[-] Import failed. QtWebKit library not found. If on Ubuntu or similar try: agt-get install python3-pyside.qtwebkit")
 		exit(1)
 	
 from app.logic import *
@@ -81,14 +81,14 @@ if __name__ == "__main__":
 	app = QtGui.QApplication(sys.argv)
 	myFilter = MyEventFilter()						# to capture events
 	app.installEventFilter(myFilter)
-	app.setWindowIcon(QIcon('./images/icons/logo.png'))
+	app.setWindowIcon(QIcon('./images/icons/legion_medium.svg'))
 	
 	MainWindow = QtGui.QMainWindow()
 	ui = Ui_MainWindow()
 	ui.setupUi(MainWindow)
 
 	try:	
-		qss_file = open('./ui/legion.qss').read()
+		qss_file = open('./ui/darkstyle/darkstyle.qss').read()
 	except IOError as e:
 		print("[-] The legion.qss file is missing. Your installation seems to be corrupted. Try downloading the latest version.")
 		exit(0)
