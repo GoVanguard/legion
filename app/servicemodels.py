@@ -11,8 +11,12 @@ Copyright (c) 2018 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5.QtCore import pyqtSignal, QObject 
 from app.auxiliary import *                                                 # for bubble sort
+
+class Communicate(QObject):
+    data_changed = pyqtSignal(str)
 
 class ServicesTableModel(QtCore.QAbstractTableModel):                   # needs to inherit from QAbstractTableModel
 
@@ -20,6 +24,11 @@ class ServicesTableModel(QtCore.QAbstractTableModel):                   # needs 
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.__headers = headers
         self.__services = services
+        self.c = Communicate()
+
+    @QtCore.pyqtSlot()
+    def emit(self, signal):
+        self.c.data_changed.emit(signal)
         
     def setServices(self, services):
         self.__services = services
@@ -97,8 +106,8 @@ class ServicesTableModel(QtCore.QAbstractTableModel):                   # needs 
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
     def sort(self, Ncol, order):                                        # sort function called when the user clicks on a header
-        
-        self.emit(SIGNAL("layoutAboutToBeChanged()"))
+        #self.emit(SIGNAL("layoutAboutToBeChanged()"))
+        self.layoutAboutToBeChanged.emit()
         array = []
         
         if Ncol == 0:                                                   # if sorting by ip (and by default)
@@ -143,7 +152,7 @@ class ServicesTableModel(QtCore.QAbstractTableModel):                   # needs 
         if order == Qt.AscendingOrder:                                  # reverse if needed
             self.__services.reverse()   
             
-        self.emit(SIGNAL("layoutChanged()"))                            # update the UI (built-in signal)
+        self.emit("layoutChanged()")                            # update the UI (built-in signal)
 
     ### getter functions ###
     
@@ -201,7 +210,7 @@ class ServiceNamesTableModel(QtCore.QAbstractTableModel):
 
     def sort(self, Ncol, order):                                        # sort function called when the user clicks on a header
         
-        self.emit(SIGNAL("layoutAboutToBeChanged()"))
+        self.layoutAboutToBeChanged.emit()
         array = []
         
         if Ncol == 0:                                                   # if sorting by service name (and by default)
@@ -213,7 +222,7 @@ class ServiceNamesTableModel(QtCore.QAbstractTableModel):
         if order == Qt.AscendingOrder:                                  # reverse if needed
             self.__serviceNames.reverse()   
             
-        self.emit(SIGNAL("layoutChanged()"))                            # update the UI (built-in signal)
+        self.emit("layoutChanged()")                            # update the UI (built-in signal)
 
     ### getter functions ###
 

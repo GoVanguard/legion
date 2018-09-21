@@ -16,7 +16,7 @@ try:
     import queue
 except:
     import Queue as queue
-from PyQt4.QtGui import *                                               # for filters dialog
+from PyQt5.QtGui import *                                               # for filters dialog
 from app.logic import *
 from app.auxiliary import *
 from app.settings import *
@@ -277,7 +277,7 @@ class Controller():
             if serviceName is None or serviceName == '*' or serviceName in a[3].split(",") or a[3] == '':   # if the service name exists in the portActions list show the command in the context menu
                 actions.append([self.settings.portActions.index(a), menu.addAction(a[0])])  # in actions list write the service and line number that corresponds to it in portActions
 
-        modifiers = QtGui.QApplication.keyboardModifiers()              # if the user pressed SHIFT+Right-click show full menu
+        modifiers = QtWidgets.QApplication.keyboardModifiers()              # if the user pressed SHIFT+Right-click show full menu
         if modifiers == QtCore.Qt.ShiftModifier:
             shiftPressed = True
         else:
@@ -325,7 +325,7 @@ class Controller():
 
         menu = QMenu()
 
-        modifiers = QtGui.QApplication.keyboardModifiers()              # if the user pressed SHIFT+Right-click show full menu
+        modifiers = QtWidgets.QApplication.keyboardModifiers()              # if the user pressed SHIFT+Right-click show full menu
         if modifiers == QtCore.Qt.ShiftModifier:
             serviceName='*'
         
@@ -505,21 +505,22 @@ class Controller():
     def runCommand(self, name, tabtitle, hostip, port, protocol, command, starttime, outputfile, textbox, discovery=True, stage=0, stop=False):
         self.logic.createFolderForTool(name)                            # create folder for tool if necessary
         qProcess = MyQProcess(name, tabtitle, hostip, port, protocol, command, starttime, outputfile, textbox)
-        #textbox.setProperty('dbId', QVariant(str(self.logic.addProcessToDB(qProcess)))) # database id for the process is stored so that we can retrieve the widget later (in the tools tab)
-        #.toString()
+
         textbox.setProperty('dbId', str(self.logic.addProcessToDB(qProcess)))
-        #print '[+] Queuing: ' + str(command)
+        
+        print('[+] Queuing: ' + str(command))
         self.fastProcessQueue.put(qProcess)
-        qProcess.display.appendPlainText('The process is queued and will start as soon as possible.')
-        qProcess.display.appendPlainText('If you want to increase the number of simultaneous processes, change this setting in the configuration file.')
-        #qProcess.display.appendPlainText('If you want to increase the number of simultaneous processes, change this setting in the Settings menu.')
+
         self.checkProcessQueue()
         
         self.updateUITimer.stop()                                       # update the processes table
-        self.updateUITimer.start(900)
-                                                                        # while the process is running, when there's output to read, display it in the GUI
-        QObject.connect(qProcess,SIGNAL("readyReadStandardOutput()"),qProcess,SLOT("readStdOutput()"))
-        QObject.connect(qProcess,SIGNAL("readyReadStandardError()"),qProcess,SLOT("readStdOutput()"))
+        self.updateUITimer.start(900)                                   # while the process is running, when there's output to read, display it in the GUI
+
+        qProcess.setProcessChannelMode(QtCore.QProcess.MergedChannels)
+        qProcess.readyReadStandardOutput.connect(lambda: qProcess.display.appendPlainText(str(qProcess.readAllStandardOutput().data().decode('ISO-8859-1'))))
+
+        #QObject.connect(qProcess,SIGNAL("readyReadStandardOutput()"),qProcess,SLOT("readStdOutput()"))
+        #QObject.connect(qProcess,SIGNAL("readyReadStandardError()"),qProcess,SLOT("readStdOutput()"))
                                                                         # when the process is finished do this
         qProcess.sigHydra.connect(self.handleHydraFindings)
         qProcess.finished.connect(lambda: self.processFinished(qProcess))

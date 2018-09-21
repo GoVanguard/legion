@@ -14,20 +14,18 @@ Copyright (c) 2018 GoVanguard
 import sys, os, ntpath, signal, re                                      # for file operations, to kill processes and for regex
 
 try:
-    from PyQt4.QtCore import *                                              # for filters dialog
+    from PyQt5.QtCore import *                                              # for filters dialog
+    from PyQt5 import QtCore
+    from PyQt5 import QtWidgets, QtGui, QtCore
 except ImportError:
     print("[-] Import failed. PyQt4 library not found. \nTry installing it with: apt install python-qt4")
 
-try:
-    usePySide = False
-    from PyQt4 import QtWebKit
-except ImportError as e:
-    try:
-        from PySide import QtWebKit
-        usePySide = True
-    except ImportErro as e:
-        print("[-] Import failed. QtWebKit library not found. \nTry installing it with: apt install python-pyside.qtwebkit")
-        exit(1)
+#try:
+#    from PySide import QtWebKit
+#    usePySide = True
+#except ImportErro as e:
+#    print("[-] Import failed. QtWebKit library not found. \nTry installing it with: apt install python-pyside.qtwebkit")
+#    exit(1)
 
 from ui.gui import *
 from ui.dialogs import *
@@ -64,18 +62,18 @@ class View(QtCore.QObject):
         self.importProgressWidget = ProgressWidget('Importing nmap..', self.ui.centralwidget)
         self.adddialog = AddHostsDialog(self.ui.centralwidget)      
         self.settingsWidget = AddSettingsDialog(self.ui.centralwidget)
-        self.helpWidget = QtWebKit.QWebView()
-        self.helpWidget.setWindowTitle('LEGION Help')
+        #self.helpWidget = QtWebKit.QWebView()
+        #self.helpWidget.setWindowTitle('LEGION Help')
 
         # kali moves the help file so let's find it
         url = './doc/help.html'
         if not os.path.exists(url):
             url = '/usr/share/doc/legion/help.html'
 
-        if usePySide:
-            self.helpWidget.load(url)
-        else:
-            self.helpWidget.load(QUrl(url))
+        #if usePySide:
+        #    self.helpWidget.load(url)
+        #else:
+        #self.helpWidget.load(QUrl(url))
         
         self.ui.HostsTableView.setSelectionMode(1)                      # disable multiple selection
         self.ui.ServiceNamesTableView.setSelectionMode(1)
@@ -108,7 +106,7 @@ class View(QtCore.QObject):
         
         self.setMainWindowTitle(title)
         self.ui.statusbar.showMessage('Starting up..', msecs=1000)
-        
+
         self.initTables()                                               # initialise all tables
 
         self.updateInterface()
@@ -180,7 +178,6 @@ class View(QtCore.QObject):
         # hosts table (left)
         headers = ["Id", "OS","Accuracy","Host","IPv4","IPv6","Mac","Status","Hostname","Vendor","Uptime","Lastboot","Distance","CheckedHost","State","Count"]
         setTableProperties(self.ui.HostsTableView, len(headers), [0,2,4,5,6,7,8,9,10,11,12,13,14,15])
-        self.ui.HostsTableView.horizontalHeader().setResizeMode(1,2)
         self.ui.HostsTableView.horizontalHeader().resizeSection(1,30)
 
         # service names table (left)
@@ -194,12 +191,10 @@ class View(QtCore.QObject):
         # service table (right)
         headers = ["Host","Port","Port","Protocol","State","HostId","ServiceId","Name","Product","Version","Extrainfo","Fingerprint"]
         setTableProperties(self.ui.ServicesTableView, len(headers), [0,1,5,6,8,10,11])      
-        self.ui.ServicesTableView.horizontalHeader().setResizeMode(0)
 
         # ports by service (right)
         headers = ["Host","Port","Port","Protocol","State","HostId","ServiceId","Name","Product","Version","Extrainfo","Fingerprint"]
         setTableProperties(self.ui.ServicesTableView, len(headers), [2,5,6,8,10,11])
-        self.ui.ServicesTableView.horizontalHeader().setResizeMode(0)
         self.ui.ServicesTableView.horizontalHeader().resizeSection(0,130)       # resize IP 
 
         # scripts table (right)
@@ -213,10 +208,8 @@ class View(QtCore.QObject):
     
         # process table
         headers = ["Progress","Display","Pid","Name","Tool","Host","Port","Protocol","Command","Start time","OutputFile","Output","Status"]
-        #setTableProperties(self.ui.ProcessesTableView, len(headers), [1,2,3,6,7,8,10,11])
         setTableProperties(self.ui.ProcessesTableView, len(headers), [1,2,3,6,7,8,11,12,14])
         self.ui.ProcessesTableView.horizontalHeader().resizeSection(0,125)
-        #self.ui.ProcessesTableView.horizontalHeader().resizeSection(4,125)
         self.ui.ProcessesTableView.horizontalHeader().resizeSection(4,250)
     
     def setMainWindowTitle(self, title):
@@ -240,9 +233,9 @@ class View(QtCore.QObject):
     def dealWithRunningProcesses(self, exiting=False):
         if len(self.controller.getRunningProcesses()) > 0:
             message = "There are still processes running. If you continue, every process will be terminated. Are you sure you want to continue?"
-            reply = QtGui.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+            reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
                     
-            if not reply == QtGui.QMessageBox.Yes:
+            if not reply == QtWidgets.QMessageBox.Yes:
                 return False
             self.controller.killRunningProcesses()
         
@@ -259,13 +252,13 @@ class View(QtCore.QObject):
         return self.dealWithRunningProcesses(exiting)                   # deal with running processes
 
     def confirmExit(self):          
-        reply = QtGui.QMessageBox.question(self.ui.centralwidget, 'Confirm', "Are you sure to exit the program?", QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-        return (reply == QtGui.QMessageBox.Yes)
+        reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', "Are you sure to exit the program?", QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+        return (reply == QtWidgets.QMessageBox.Yes)
 
     def killProcessConfirmation(self):
         message = "Are you sure you want to kill the selected processes?"
-        reply = QtGui.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-        if reply == QtGui.QMessageBox.Yes:
+        reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+        if reply == QtWidgets.QMessageBox.Yes:
             return True
         return False
 
@@ -286,12 +279,12 @@ class View(QtCore.QObject):
 
     def openExistingProject(self):      
         if self.dealWithCurrentProject():
-            filename = QtGui.QFileDialog.getOpenFileName(self.ui.centralwidget, 'Open project', self.controller.getCWD(), filter='SPARTA project (*.sprt)')
+            filename = QtWidgets.QFileDialog.getOpenFileName(self.ui.centralwidget, 'Open project', self.controller.getCWD(), filter='SPARTA project (*.sprt)')
         
             if not filename == '':                                      # check for permissions
                 if not os.access(filename, os.R_OK) or not os.access(filename, os.W_OK):
                     print('[-] Insufficient permissions to open this file.')
-                    reply = QtGui.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions on this file.","Ok")
+                    reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions on this file.","Ok")
                     return
                                 
                 self.controller.openExistingProject(filename)
@@ -329,13 +322,13 @@ class View(QtCore.QObject):
 
         self.controller.saveProject(self.lastHostIdClicked, self.ui.NotesTextEdit.toPlainText())        
 
-        filename = QtGui.QFileDialog.getSaveFileName(self.ui.centralwidget, 'Save project as', self.controller.getCWD(), filter='SPARTA project (*.sprt)', options=QtGui.QFileDialog.DontConfirmOverwrite)
+        filename = QtWidgets.QFileDialog.getSaveFileName(self.ui.centralwidget, 'Save project as', self.controller.getCWD(), filter='SPARTA project (*.sprt)', options=QtWidgets.QFileDialog.DontConfirmOverwrite)
             
         while not filename =='':
 
             if not os.access(ntpath.dirname(str(filename)), os.R_OK) or not os.access(ntpath.dirname(str(filename)), os.W_OK):
                 print('[-] Insufficient permissions on this folder.')
-                reply = QtGui.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions on this folder.","Ok")
+                reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions on this folder.","Ok")
                 
             else:
                 if self.controller.saveProjectAs(filename):
@@ -343,14 +336,14 @@ class View(QtCore.QObject):
                     
                 if not str(filename).endswith('.sprt'):
                     filename = str(filename) + '.sprt'
-                msgBox = QtGui.QMessageBox()
+                msgBox = QtWidgets.QMessageBox()
                 reply = msgBox.question(self.ui.centralwidget, 'Confirm', "A file named \""+ntpath.basename(str(filename))+"\" already exists.  Do you want to replace it?", "Abort", "Replace", "", 0)
             
                 if reply == 1:
                     self.controller.saveProjectAs(filename, 1)          # replace
                     break
 
-            filename = QtGui.QFileDialog.getSaveFileName(self.ui.centralwidget, 'Save project as', '.', filter='SPARTA project (*.sprt)', options=QtGui.QFileDialog.DontConfirmOverwrite)           
+            filename = QtWidgets.QFileDialog.getSaveFileName(self.ui.centralwidget, 'Save project as', '.', filter='SPARTA project (*.sprt)', options=QtWidgets.QFileDialog.DontConfirmOverwrite)           
 
         if not filename == '':          
             self.setDirty(False)
@@ -364,12 +357,12 @@ class View(QtCore.QObject):
     ###
     
     def saveOrDiscard(self):
-        reply = QtGui.QMessageBox.question(self.ui.centralwidget, 'Confirm', "The project has been modified. Do you want to save your changes?", QtGui.QMessageBox.Save | QtGui.QMessageBox.Discard | QtGui.QMessageBox.Cancel, QtGui.QMessageBox.Save)
+        reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', "The project has been modified. Do you want to save your changes?", QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Save)
         
-        if reply == QtGui.QMessageBox.Save:
+        if reply == QtWidgets.QMessageBox.Save:
             self.saveProject()
             return True
-        elif reply == QtGui.QMessageBox.Discard:
+        elif reply == QtWidgets.QMessageBox.Discard:
             return True
         else:
             return False                                                # the user cancelled
@@ -413,13 +406,13 @@ class View(QtCore.QObject):
 
     def importNmap(self):
         self.ui.statusbar.showMessage('Importing nmap xml..', msecs=1000)
-        filename = QtGui.QFileDialog.getOpenFileName(self.ui.centralwidget, 'Choose nmap file', self.controller.getCWD(), filter='XML file (*.xml)')
+        filename = QtWidgets.QFileDialog.getOpenFileName(self.ui.centralwidget, 'Choose nmap file', self.controller.getCWD(), filter='XML file (*.xml)')
         
         if not filename == '':
 
             if not os.access(filename, os.R_OK):                        # check for read permissions on the xml file
                 print('[-] Insufficient permissions to read this file.')
-                reply = QtGui.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions to read this file.","Ok")
+                reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions to read this file.","Ok")
                 return
 
             self.importProgressWidget.reset('Importing nmap..') 
@@ -451,7 +444,8 @@ class View(QtCore.QObject):
         self.controller.cancelSettings()
         
     def connectHelp(self):
-        self.ui.menuHelp.triggered.connect(self.helpWidget.show)
+        #self.ui.menuHelp.triggered.connect(self.helpWidget.show)
+        pass
 
     ###
     
@@ -546,16 +540,16 @@ class View(QtCore.QObject):
             else:
                 self.restoreToolTabWidget()                             # restore the tool output textview now showing in the tools display panel to its original host tool tab
                 
-                if self.ui.DisplayWidget.findChild(QtGui.QPlainTextEdit):   # remove the tool output currently in the tools display panel (if any)
-                    self.ui.DisplayWidget.findChild(QtGui.QPlainTextEdit).setParent(None)
+                if self.ui.DisplayWidget.findChild(QtWidgets.QPlainTextEdit):   # remove the tool output currently in the tools display panel (if any)
+                    self.ui.DisplayWidget.findChild(QtWidgets.QPlainTextEdit).setParent(None)
 
                 tabs = []                                               # fetch tab list for this host (if any)
                 if str(ip) in self.hostTabs:
                     tabs = self.hostTabs[str(ip)]
                 
                 for tab in tabs:                                        # place the tool output textview in the tools display panel
-                    if tab.findChild(QtGui.QPlainTextEdit) and str(tab.findChild(QtGui.QPlainTextEdit).property('dbId')) == str(self.tool_host_clicked):
-                        self.ui.DisplayWidgetLayout.addWidget(tab.findChild(QtGui.QPlainTextEdit))
+                    if tab.findChild(QtWidgets.QPlainTextEdit) and str(tab.findChild(QtWidgets.QPlainTextEdit).property('dbId')) == str(self.tool_host_clicked):
+                        self.ui.DisplayWidgetLayout.addWidget(tab.findChild(QtWidgets.QPlainTextEdit))
                         break
 
     ###
@@ -873,7 +867,6 @@ class View(QtCore.QObject):
         for i in [0,2,4,5,6,7,8,9,10,11,12,13,14,15]:                   # hide some columns
             self.ui.HostsTableView.setColumnHidden(i, True)
 
-        self.ui.HostsTableView.horizontalHeader().setResizeMode(1,2)
         self.ui.HostsTableView.horizontalHeader().resizeSection(1,30)
         self.HostsTableModel.sort(3, Qt.DescendingOrder)
 
@@ -947,7 +940,6 @@ class View(QtCore.QObject):
         for i in [0,1,5,6,8,10,11]:                                     # hide some columns
             self.ui.ServicesTableView.setColumnHidden(i, True)      
         
-        self.ui.ServicesTableView.horizontalHeader().setResizeMode(0)
         self.ServicesTableModel.sort(2, Qt.DescendingOrder)             # sort by port by default (override default)
 
     def updatePortsByServiceTableView(self, serviceName):
@@ -961,7 +953,6 @@ class View(QtCore.QObject):
         for i in [2,5,6,7,8,10,11]:                                     # hide some columns
             self.ui.ServicesTableView.setColumnHidden(i, True)              
         
-        self.ui.ServicesTableView.horizontalHeader().setResizeMode(0)
         self.ui.ServicesTableView.horizontalHeader().resizeSection(0,165)   # resize IP
         self.ui.ServicesTableView.horizontalHeader().resizeSection(1,65)    # resize port
         self.ui.ServicesTableView.horizontalHeader().resizeSection(3,100)   # resize protocol
@@ -1178,9 +1169,9 @@ class View(QtCore.QObject):
             tempTextView = tempWidget.scrollArea
             tempTextView.setObjectName(str(tabtitle))
         else:
-            tempWidget = QtGui.QWidget()
+            tempWidget = QtWidgets.QWidget()
             tempWidget.setObjectName(str(tabtitle))
-            tempTextView = QtGui.QPlainTextEdit(tempWidget)
+            tempTextView = QtWidgets.QPlainTextEdit(tempWidget)
             tempTextView.setReadOnly(True)
             if self.controller.getSettings().general_tool_output_black_background == 'True':
                 p = tempTextView.palette()
@@ -1188,7 +1179,7 @@ class View(QtCore.QObject):
                 p.setColor(QtGui.QPalette.Text, Qt.white)               # white font
                 tempTextView.setPalette(p)
                 tempTextView.setStyleSheet("QMenu { color:black;}")     #font-size:18px; width: 150px; color:red; left: 20px;}"); # set the menu font color: black
-            tempLayout = QtGui.QHBoxLayout(tempWidget)
+            tempLayout = QtWidgets.QHBoxLayout(tempWidget)
             tempLayout.addWidget(tempTextView)
         
             if not content == '':                                       # if there is any content to display
@@ -1218,14 +1209,14 @@ class View(QtCore.QObject):
         if 'screenshot' in str(self.ui.ServicesTabWidget.currentWidget().objectName()):
             dbId = int(currentWidget.property('dbId'))
         else:       
-            dbId = int(currentWidget.findChild(QtGui.QPlainTextEdit).property('dbId'))
+            dbId = int(currentWidget.findChild(QtWidgets.QPlainTextEdit).property('dbId'))
         
         pid = int(self.controller.getPidForProcess(dbId))               # the process ID (=os)
 
         if str(self.controller.getProcessStatusForDBId(dbId)) == 'Running':
             message = "This process is still running. Are you sure you want to kill it?"
-            reply = QtGui.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-            if reply == QtGui.QMessageBox.Yes:
+            reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+            if reply == QtWidgets.QMessageBox.Yes:
                 self.controller.killProcess(pid, dbId)
             else:
                 return
@@ -1233,8 +1224,8 @@ class View(QtCore.QObject):
         # TODO: duplicate code      
         if str(self.controller.getProcessStatusForDBId(dbId)) == 'Waiting':
             message = "This process is waiting to start. Are you sure you want to cancel it?"
-            reply = QtGui.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-            if reply == QtGui.QMessageBox.Yes:
+            reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+            if reply == QtWidgets.QMessageBox.Yes:
                 self.controller.cancelProcess(dbId)
             else:
                 return
@@ -1297,19 +1288,19 @@ class View(QtCore.QObject):
 
     # this function restores the textview widget (now in the tools display widget) to its original tool tab (under the correct host)
     def restoreToolTabWidget(self, clear=False):
-        if self.ui.DisplayWidget.findChild(QtGui.QPlainTextEdit) == self.ui.toolOutputTextView:
+        if self.ui.DisplayWidget.findChild(QtWidgets.QPlainTextEdit) == self.ui.toolOutputTextView:
             return
         
         for host in self.hostTabs.keys():
             hosttabs = self.hostTabs[host]
             for tab in hosttabs:
-                if not 'screenshot' in str(tab.objectName()) and not tab.findChild(QtGui.QPlainTextEdit):
-                    tab.layout().addWidget(self.ui.DisplayWidget.findChild(QtGui.QPlainTextEdit))
+                if not 'screenshot' in str(tab.objectName()) and not tab.findChild(QtWidgets.QPlainTextEdit):
+                    tab.layout().addWidget(self.ui.DisplayWidget.findChild(QtWidgets.QPlainTextEdit))
                     break
 
         if clear:
-            if self.ui.DisplayWidget.findChild(QtGui.QPlainTextEdit):   # remove the tool output currently in the tools display panel
-                self.ui.DisplayWidget.findChild(QtGui.QPlainTextEdit).setParent(None)
+            if self.ui.DisplayWidget.findChild(QtWidgets.QPlainTextEdit):   # remove the tool output currently in the tools display panel
+                self.ui.DisplayWidget.findChild(QtWidgets.QPlainTextEdit).setParent(None)
                 
             self.ui.DisplayWidgetLayout.addWidget(self.ui.toolOutputTextView)
 
@@ -1330,8 +1321,8 @@ class View(QtCore.QObject):
         if not self.ui.BruteTabWidget.currentWidget().pid == -1:        # if process is running
             if self.ProcessesTableModel.getProcessStatusForPid(self.ui.BruteTabWidget.currentWidget().pid)=="Running":
                 message = "This process is still running. Are you sure you want to kill it?"
-                reply = QtGui.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-                if reply == QtGui.QMessageBox.Yes:
+                reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+                if reply == QtWidgets.QMessageBox.Yes:
                     self.killBruteProcess(self.ui.BruteTabWidget.currentWidget())
                 else:
                     return
@@ -1363,8 +1354,8 @@ class View(QtCore.QObject):
                                                                         # check if host is already in scope
             if not self.controller.isHostInDB(bWidget.ipTextinput.text()):
                 message = "This host is not in scope. Add it to scope and continue?"
-                reply = QtGui.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
-                if reply == QtGui.QMessageBox.No:
+                reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.Yes)
+                if reply == QtWidgets.QMessageBox.No:
                     return
                 else:
                     print('Adding host to scope here!!')

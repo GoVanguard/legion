@@ -11,7 +11,7 @@ Copyright (c) 2018 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-from PyQt4.QtCore import QSemaphore
+from PyQt5.QtCore import QSemaphore
 import time
 
 from sqlalchemy import Column, DateTime, String, Integer, ForeignKey, func, create_engine
