@@ -28,7 +28,7 @@ class Logic():
         try:
             print('[+] Creating temporary files..')
             
-            self.istemp = False                                          # indicates that file is temporary and can be deleted if user exits without saving
+            self.istemp = True                                          # indicates that file is temporary and can be deleted if user exits without saving
             print(self.cwd)
             tf = tempfile.NamedTemporaryFile(suffix=".ldb",prefix="legion-", delete=False, dir="./tmp/")         # to store the database file
             self.outputfolder = tempfile.mkdtemp(suffix="-tool-output",prefix="legion-", dir="./tmp/")            # to store tool output of finished processes

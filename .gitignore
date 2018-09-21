@@ -105,3 +105,6 @@ venv.bak/
 
 # temps
 tmp/
+
+# init
+.initialized
