@@ -6,6 +6,7 @@ then
     unameOutput=`uname -a`
     releaseOutput=`cat /etc/*release*` # | grep -i 'ubuntu' | wc -l
     echo "First run here. Let's try to automatically install all the dependancies..."
+    mkdir tmp
     if [[ $unameOutput == *"Microsoft"* ]]
     then
         echo "Detected WSL (Windows Subsystem for Linux)"
