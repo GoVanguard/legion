@@ -1,12 +1,21 @@
 #!/bin/bash
-export DISPLAY=localhost:0.0
+
+unameOutput=`uname -a`
+
+# Detect WSL and enable XForwaridng to Xming
+if [[ $unameOutput == *"Microsoft"* ]]
+then
+    export DISPLAY=localhost:0.0
+fi
 
 if [ ! -f ".initialized" ]
 then
-    unameOutput=`uname -a`
     releaseOutput=`cat /etc/*release*` # | grep -i 'ubuntu' | wc -l
     echo "First run here. Let's try to automatically install all the dependancies..."
-    mkdir tmp
+    if [ ! -d "tmp" ]
+    then
+        mkdir tmp
+    fi
     if [[ $unameOutput == *"Microsoft"* ]]
     then
         echo "Detected WSL (Windows Subsystem for Linux)"
