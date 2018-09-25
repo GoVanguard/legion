@@ -34,8 +34,13 @@ nmap
 Installation
 ----
 
-Todo
+Install dependencies listed above, e.g.:
+apt-get install python-pyqt5
+apt-get install python-sqlalchemy
+apt-get install nmap
+apt-get install hydra
 
+Run startLegion.sh
 
 Credits
 ----
