@@ -2,7 +2,6 @@ LEGION 0.2.1 (https://govanguard.io)
 ==
 
 ## Authors:
-----
 Shane Scott
 
 ## About legion
