@@ -11,6 +11,8 @@ legion is written in Python 3, has been ported from PyQt4 to PyQt5, and no longe
 
 Tested on Ubuntu, Parrot Security OS, and Windows Subsystem for Linux.
 
+[[https://raw.githubusercontent.com/GoVanguard/legion/master/legion.png|alt=legion]]
+
 ## Installation
 ```
 git clone https://github.com/GoVanguard/legion.git
