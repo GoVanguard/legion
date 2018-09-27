@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-LEGION 0.1.0 (https://govanguard.io)
+LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -94,27 +94,6 @@ if __name__ == "__main__":
         print("[-] The legion.qss file is missing. Your installation seems to be corrupted. Try downloading the latest version.")
         exit(0)
 
-
-    #darkPalette.setColor(QPalette.Window,QColor(53,53,53));
-    #darkPalette.setColor(QPalette.WindowText,Qt.white);
-    #darkPalette.setColor(QPalette.Disabled,QPalette.WindowText,QColor(127,127,127));
-    #darkPalette.setColor(QPalette.Base,QColor(42,42,42));
-    #darkPalette.setColor(QPalette.AlternateBase,QColor(66,66,66));
-    #darkPalette.setColor(QPalette.ToolTipBase,Qt.white);
-    #darkPalette.setColor(QPalette.ToolTipText,QColor(53,53,53));
-    #darkPalette.setColor(QPalette.Text,Qt.white);
-    #darkPalette.setColor(QPalette.Disabled,QPalette.Text,QColor(127,127,127));
-    #darkPalette.setColor(QPalette.Dark,QColor(35,35,35));
-    #darkPalette.setColor(QPalette.Shadow,QColor(20,20,20));
-    #darkPalette.setColor(QPalette.Button,QColor(53,53,53));
-    #darkPalette.setColor(QPalette.ButtonText,Qt.white);
-    #darkPalette.setColor(QPalette.Disabled,QPalette.ButtonText,QColor(127,127,127));
-    #darkPalette.setColor(QPalette.BrightText,Qt.red);
-    #darkPalette.setColor(QPalette.Link,QColor(42,130,218));
-    #darkPalette.setColor(QPalette.Highlight,QColor(42,130,218));
-    #darkPalette.setColor(QPalette.Disabled,QPalette.Highlight,QColor(80,80,80));
-    #darkPalette.setColor(QPalette.HighlightedText,Qt.white);
-    #darkPalette.setColor(QPalette.Disabled,QPalette.HighlightedText,QColor(127,127,127));
 
     MainWindow.setStyleSheet(qss_file)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-LEGION 0.1.0 (https://govanguard.io)
+LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -12,6 +12,7 @@ Copyright (c) 2018 GoVanguard
 '''
 
 import os, sys, urllib, socket, time, datetime, locale, webbrowser, re  # for webrequests, screenshot timeouts, timestamps, browser stuff and regex
+from urllib import request
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import *                                              # for QProcess
 from PyQt5.QtWidgets import *
@@ -19,6 +20,7 @@ import errno                                                            # tempor
 import subprocess                                                       # for screenshots with cutycapt
 import string                                                           # for input validation
 from six import u as unicode
+import ssl
 
 # bubble sort algorithm that sorts an array (in place) based on the values in another array
 # the values in the array must be comparable and in the corresponding positions
@@ -44,42 +46,38 @@ def IP2Int(ip):
 # old function, replaced by isHttps (checking for https first is better)
 def isHttp(url):
     try:
-        req = urllib2.Request(url)
-        req.add_header('User-Agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0 Iceweasel/22.0')
-        r = urllib2.urlopen(req, timeout=10)
+        headers = {}
+        headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0 Iceweasel/22.0'
+        req = request.Request(url, headers = headers)
+        r = request.urlopen(req, timeout=10).read()
         #print 'response code: ' + str(r.code)
         #print 'response content: ' + str(r.read())
         return True
-        
-    except urllib2.HTTPError as e:
-        reason = str(sys.exc_info()[1].reason)
-        # print reason
-        if reason == 'Unauthorized' or reason == 'Forbidden':
+
+    except urllib.error.URLError as e:
+        reason= str(e.reason)
+
+        if 'Unauthorized' in reason or 'Forbidden' in reason:
             return True
         return False
         
-    except:
-        return False
-
 def isHttps(ip, port):
     try:
-        req = urllib2.Request('https://'+ip+':'+port)
-        req.add_header('User-Agent', 'Mozilla/5.0 (X11; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0 Iceweasel/22.0')
-        r = urllib2.urlopen(req, timeout=5)
-#       print '\nresponse code: ' + str(r.code)
-#       print '\nresponse content: ' + str(r.read())
+        headers = {}
+        headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64; rv:22.0) Gecko/20100101 Firefox/22.0 Iceweasel/22.0'
+        req = request.Request('https://'+ip+':'+str(port), headers = headers)
+        r = request.urlopen(req, timeout=5).read()
+        #print '\nresponse code: ' + str(r.code)
+        #print '\nresponse content: ' + str(r.read())
         return True
 
-    except: 
-        reason = str(sys.exc_info()[1].reason)
-#       print reason
-#       if 'Interrupted system call' in reason:
-#           print 'caught exception. retry?'
-            
-        if reason == 'Forbidden':
+    except urllib.error.URLError as e: 
+        reason = str(e.reason)
+        if 'Forbidden' in reason or 'certificate verify failed' in reason:
             return True 
         return False
-
+    except ssl.CertificateError as e:
+        return True
         
 def getTimestamp(human=False):
     t = time.time()
@@ -165,7 +163,7 @@ class Wordlist():
     def add(self, word):
         with open(self.filename, 'a') as f:
             if not word+'\n' in self.wordlist:
-                #print('[+] Adding '+word+' to the wordlist..')
+                print('[+] Adding '+word+' to the wordlist..')
                 self.wordlist.append(word+'\n')
                 f.write(word+'\n')
 
@@ -189,8 +187,6 @@ class MyQProcess(QProcess):
     @pyqtSlot()                                                         # this slot allows the process to append its output to the display widget
     def readStdOutput(self):
         output = str(self.readAllStandardOutput())
-        #output = QString(self.readAllStandardOutput())
-        #self.display.appendPlainText(unicode(output, 'utf-8').strip())
         self.display.appendPlainText(unicode(output).strip())
 
         if self.name == 'hydra':                                        # check if any usernames/passwords were found (if so emit a signal so that the gui can tell the user about it)
@@ -199,10 +195,8 @@ class MyQProcess(QProcess):
                 self.sigHydra.emit(self.display.parentWidget(), userlist, passlist)
 
         stderror = str(self.readAllStandardError())    
-        #stderror = QString(self.readAllStandardError())
 
         if len(stderror) > 0:
-            #self.display.appendPlainText(unicode(stderror, 'utf-8').strip())   # append standard error too
             self.display.appendPlainText(unicode(stderror).strip())             # append standard error too
 
 # browser opener class with queue and semaphores
@@ -282,8 +276,9 @@ class Screenshooter(QtCore.QThread):
                 else:
                     self.save("http://"+url, ip, port, outputfile)
 
-            except:
+            except Exception as e:
                 print('\t[-] Unable to take the screenshot. Moving on..')
+                print(e)
                 continue                
                 
         self.processing = False
@@ -295,8 +290,8 @@ class Screenshooter(QtCore.QThread):
 
     def save(self, url, ip, port, outputfile):
         print('[+] Saving screenshot as: '+str(outputfile))
-        command = "cutycapt --max-wait="+str(self.timeout)+" --url="+str(url)+"/ --out=\""+str(self.outputfolder)+"/"+str(outputfile)+"\""
-#       print command
+        command = 'xvfb-run --server-args="-screen 0:0, 1024x768x24" /usr/bin/cutycapt --url="{url}/" --max-wait=5000 --out="{outputfolder}/{outputfile}"'.format(url=url, outputfolder=self.outputfolder, outputfile=outputfile)
+        print(command)
         p = subprocess.Popen(command, shell=True)
         p.wait()                                                        # wait for command to finish
         self.done.emit(ip,port,outputfile)                              # send a signal to add the 'process' to the DB
