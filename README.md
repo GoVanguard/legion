@@ -35,10 +35,10 @@ Installation
 ----
 ```
 git clone https://github.com/GoVanguard/legion.git
+./startLegion.sh
 ```
-Run startLegion.sh
-
 Note: Deps will be installed automatically
+
 Credits
 ----
 
