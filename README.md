@@ -36,9 +36,9 @@ Run startLegion start script to launch legion. You may first have to grant yours
 chmod +x startLegion.sh
 ```
 
-Then run startLegion:
+Then run startLegion as root:
 ```
-./startLegion.sh
+sudo ./startLegion.sh
 ```
 Note: Deps will be installed automatically.
 
