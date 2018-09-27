@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-LEGION 0.1.0 (https://govanguard.io)
+LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -14,7 +14,7 @@ Copyright (c) 2018 GoVanguard
 from PyQt5.QtCore import QSemaphore
 import time
 
-from sqlalchemy import Column, DateTime, String, Integer, ForeignKey, func, create_engine
+from sqlalchemy import Column, DateTime, String, Integer, ForeignKey, func, create_engine, Table
 from sqlalchemy.orm import relationship, backref, sessionmaker
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.ext.declarative import declarative_base
@@ -82,13 +82,14 @@ class nmap_session(Base):
 
 class nmap_os(Base):
     __tablename__ = 'nmap_os'
-    name=Column(String, primary_key=True)
+    id=Column(Integer, primary_key=True)
+    name=Column(String)
     family=Column(String)
     generation=Column(String)
     os_type=Column(String)
     vendor=Column(String)
     accuracy=Column(String)
-    host=Column(String, ForeignKey('nmap_host.hostname'))
+    host_id=Column(String, ForeignKey('nmap_host.id'))
 
     def __init__(self, name, family, generation, os_type, vendor, accuracy, hostId):
         self.name=name
@@ -97,7 +98,7 @@ class nmap_os(Base):
         self.os_type=os_type
         self.vendor=vendor
         self.accuracy=accuracy
-        self.host=hostId
+        self.host_id=hostId
 
 class nmap_port(Base):
     __tablename__ = 'nmap_port'
@@ -105,30 +106,30 @@ class nmap_port(Base):
     id=Column(Integer, primary_key=True)
     protocol=Column(String)
     state=Column(String)
-    host_id=Column(String, ForeignKey('nmap_host.hostname'))
-    service_id=Column(String, ForeignKey('nmap_service.name'))
-    script_id=Column(String, ForeignKey('nmap_script.script_id'))
+    host_id=Column(String, ForeignKey('nmap_host.id'))
+    service_id=Column(String, ForeignKey('nmap_service.id'))
+    script_id=Column(String, ForeignKey('nmap_script.id'))
 
     def __init__(self, port_id, protocol, state, host, service=''):
         self.port_id=port_id
         self.protocol=protocol
         self.state=state
+        self.service_id=service
         self.host_id=host
-        self.service=service
+
 
 class nmap_service(Base):
     __tablename__ = 'nmap_service'
     name=Column(String)
-    id=Column(String, primary_key=True)
+    id=Column(Integer, primary_key=True)
     product=Column(String)
     version=Column(String)
     extrainfo=Column(String)
     fingerprint=Column(String)
-    port=Column(String, ForeignKey('nmap_port.port_id'))
+    port=relationship(nmap_port)
 
     def __init__(self, name='', product='', version='', extrainfo='', fingerprint=''):
         self.name=name
-        self.id=name
         self.product=product
         self.version=version
         self.extrainfo=extrainfo
@@ -137,14 +138,13 @@ class nmap_service(Base):
 class nmap_script(Base):
     __tablename__ = 'nmap_script'
     script_id=Column(String)
-    id=Column(String, primary_key=True)
+    id = Column(Integer, primary_key=True)
     output=Column(String)
-    port_id=Column(String, ForeignKey('nmap_port.port_id'))
-    host_id=Column(String, ForeignKey('nmap_host.hostname'))
+    port_id=Column(String, ForeignKey('nmap_port.id'))
+    host_id=Column(String, ForeignKey('nmap_host.id'))
 
     def __init__(self, script_id, output, portId, hostId):
         self.script_id=script_id
-        self.id=script_id
         self.output=unicode(output)
         self.port_id=portId
         self.host_id=hostId
@@ -160,6 +160,7 @@ class nmap_host(Base):
     macaddr=Column(String)
     status=Column(String)
     hostname=Column(String)
+    host_id=Column(String)
     id = Column(Integer, primary_key=True)
     vendor=Column(String)
     uptime=Column(String)
@@ -169,8 +170,8 @@ class nmap_host(Base):
     count=Column(String)
 
     # host relationships
-    os=Column(String, ForeignKey('nmap_os.name'))
-    ports=Column(String, ForeignKey('nmap_port.port_id'))
+    os=relationship(nmap_os)
+    ports=relationship(nmap_port)
 
     def __init__(self, os_match='', os_accuracy='', ip='', ipv4='', ipv6='', macaddr='', status='', hostname='', vendor='', uptime='', lastboot='', distance='', state='', count=''):
         self.checked='False'
@@ -182,7 +183,7 @@ class nmap_host(Base):
         self.macaddr=macaddr
         self.status=status
         self.hostname=hostname
-        #self.id=hostname
+        self.host_id=hostname
         self.vendor=vendor
         self.uptime=uptime
         self.lastboot=lastboot
@@ -193,8 +194,9 @@ class nmap_host(Base):
 
 class note(Base):
     __tablename__ = 'note'
-    host_id=Column(String)
-    text=Column(String, primary_key=True)
+    host_id=Column(Integer, ForeignKey('nmap_host.id'))
+    id = Column(Integer, primary_key=True)
+    text=Column(String)
 
     def __init__(self, hostId, text):
         self.text=unicode(text)

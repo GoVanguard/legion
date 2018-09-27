@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Sparta v0.0001</string>
+   <string>LEGION</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -184,11 +184,21 @@
         <attribute name="title">
          <string>Terminal</string>
         </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_51">
+         <item>
+          <widget class="QTableView" name="ProcessesTableView"/>
+         </item>
+        </layout>
        </widget>
        <widget class="QWidget" name="PythonTab">
         <attribute name="title">
          <string>Python</string>
         </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_52">
+         <item>
+          <widget class="QTableView" name="ProcessesTableView"/>
+         </item>
+        </layout>
        </widget>
       </widget>
      </widget>

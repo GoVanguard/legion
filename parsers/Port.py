@@ -5,7 +5,7 @@ __version__=  '0.1'
 
 import sys
 import xml.dom.minidom
-#import parsers.Script as Service <- Not exist?
+import parsers.Service as Service
 import parsers.Script as Script
 
 class Port:
@@ -22,10 +22,10 @@ class Port:
 
     def get_service(self):
 
-        #service_node = self.port_node.getElementsByTagName('service')
+        service_node = self.port_node.getElementsByTagName('service')
         
-        #if len(service_node) > 0:
-        #   return Service.Service(service_node[0])
+        if len(service_node) > 0:
+           return Service.Service(service_node[0])
 
         return None
 

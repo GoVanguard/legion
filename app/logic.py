@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-LEGION 0.1.0 (https://govanguard.io)
+LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -523,7 +523,7 @@ class Logic():
     def storeNotesInDB(self, hostId, notes):
         if len(notes) == 0:
             notes = unicode("Notes for {hostId}".format(hostId=hostId))
-        print("Storing notes for {hostId}, Notes {notes}".format(hostId=hostId, notes=notes))
+        #print("Storing notes for {hostId}, Notes {notes}".format(hostId=hostId, notes=notes))
         t_note = self.getNoteFromDB(hostId)
         if t_note:
             t_note.text = unicode(notes)
@@ -598,31 +598,43 @@ class NmapImporter(QtCore.QThread):
                 
                 if not db_host:                                         # if host doesn't exist in DB, create it first
                     hid = nmap_host('', '', h.ip, h.ipv4, h.ipv6, h.macaddr, h.status, h.hostname, h.vendor, h.uptime, h.lastboot, h.distance, h.state, h.count)
+                    print("Adding db_host")
                     session.add(hid)
                     t_note = note(h.ip, 'Added by nmap')
                     session.add(t_note)
+                else:
+                    print("Found db_host already in db")
 
             session.commit()
             
             for h in parser.all_hosts():                                # create all OS, service and port objects that need to be created
+                print("Processing h {ip}".format(ip=h.ip))
+
                 db_host = session.query(nmap_host).filter_by(ip=h.ip).first()
-                #db_host = nmap_host.query.filter_by(ip=h.ip).first()    # fetch the host
+                if db_host:
+                    print("Found db_host during os/ports/service processing")
+                else:
+                    print("Did not find db_host during os/ports/service processing")
                 
                 os_nodes = h.get_OS()                                   # parse and store all the OS nodes
+                print("    'os_nodes' to process: {os_nodes}".format(os_nodes=str(len(os_nodes))))
                 for os in os_nodes:
+                    print("    Processing os obj {os}".format(os=str(os.name)))
                     db_os = session.query(nmap_os).filter_by(host_id=db_host.id).filter_by(name=os.name).filter_by(family=os.family).filter_by(generation=os.generation).filter_by(os_type=os.os_type).filter_by(vendor=os.vendor).first()
-                    #db_os = nmap_os.query.filter_by(host_id=db_host.id).filter_by(name=os.name).filter_by(family=os.family).filter_by(generation=os.generation).filter_by(os_type=os.os_type).filter_by(vendor=os.vendor).first()
                     
                     if not db_os:
-                        t_nmap_os = nmap_os(os.name, os.family, os.generation, os.os_type, os.vendor, os.accuracy, db_host)
+                        t_nmap_os = nmap_os(os.name, os.family, os.generation, os.os_type, os.vendor, os.accuracy, db_host.id)
                         session.add(t_nmap_os)
 
-                for p in h.all_ports():                                 # parse the ports
+                all_ports = h.all_ports()
+                print("    'ports' to process: {all_ports}".format(all_ports=str(len(all_ports))))
+                for p in all_ports:                                 # parse the ports
+                    print("        Processing port obj {port}".format(port=str(p.portId)))
                     s = p.get_service()
 
                     if not (s is None):                                 # check if service already exists to avoid adding duplicates
+                        print("            Found service {service} for port {port}".format(service=str(s.name),port=str(p.portId)))
                         db_service = session.query(nmap_service).filter_by(name=s.name).filter_by(product=s.product).filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).filter_by(fingerprint=s.fingerprint).first()
-                        #db_service = nmap_service.query.filter_by(name=s.name).filter_by(product=s.product).filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).filter_by(fingerprint=s.fingerprint).first()
                         
                         if not db_service:
                             db_service = nmap_service(s.name, s.product, s.version, s.extrainfo, s.fingerprint)
@@ -632,10 +644,9 @@ class NmapImporter(QtCore.QThread):
                         db_service = None                   
                                                                         # fetch the port
                     db_port = session.query(nmap_port).filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
-                    #db_port = nmap_port.query.filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
                     
                     if not db_port:     
-                        db_port = nmap_port(p.portId, p.protocol, p.state, db_host.id, db_service)
+                        db_port = nmap_port(p.portId, p.protocol, p.state, db_host.id, db_service.id)
                         session.add(db_port)
 
             session.commit()
@@ -645,15 +656,12 @@ class NmapImporter(QtCore.QThread):
 
             for h in parser.all_hosts():                                # create all script objects that need to be created
                 
-                #db_host = nmap_host.query.filter_by(ip=h.ip).first()
                 db_host = session.query(nmap_host).filter_by(ip=h.ip).first()
                 
                 for p in h.all_ports():
                     for scr in p.get_scripts():
                                                 
-                        #db_port = nmap_port.query.filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
                         db_port = session.query(nmap_port).filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
-                        #db_script = nmap_script.query.filter_by(script_id=scr.scriptId).filter_by(port_id=db_port.id).first()
                         db_script = session.query(nmap_script).filter_by(script_id=scr.scriptId).filter_by(port_id=db_port.id).first()
 
                         if not db_script:                               # if this script object doesn't exist, create it
@@ -661,7 +669,6 @@ class NmapImporter(QtCore.QThread):
                             session.add(t_nmap_script)
                     
                 for hs in h.get_hostscripts():
-                    #db_script = nmap_script.query.filter_by(script_id=hs.scriptId).filter_by(host_id=db_host.id).first()
                     db_script = session.query(nmap_script).query.filter_by(script_id=hs.scriptId).filter_by(host_id=db_host.id).first()
                     if not db_script:
                         t_nmap_script = nmap_script(hs.scriptId, hs.output, None, db_host)                  
@@ -672,7 +679,6 @@ class NmapImporter(QtCore.QThread):
             for h in parser.all_hosts():                                # update everything
 
                 db_host = session.query(nmap_host).filter_by(ip=h.ip).first()
-                #db_host = nmap_host.query.filter_by(ip=h.ip).first()    # get host from DB (if any with the same IP address)
                 
                 if db_host.ipv4 == '' and not h.ipv4 == '':
                     db_host.ipv4 = h.ipv4
@@ -704,7 +710,6 @@ class NmapImporter(QtCore.QThread):
                 
                 os_nodes = h.get_OS()
                 for os in os_nodes:
-                    #db_os = nmap_os.query.filter_by(host_id=db_host.id).filter_by(name=os.name).filter_by(family=os.family).filter_by(generation=os.generation).filter_by(os_type=os.os_type).filter_by(vendor=os.vendor).first()
                     db_os = session.query(nmap_os).filter_by(host_id=db_host.id).filter_by(name=os.name).filter_by(family=os.family).filter_by(generation=os.generation).filter_by(os_type=os.os_type).filter_by(vendor=os.vendor).first()
                     
                     db_os.os_accuracy = os.accuracy                     # update the accuracy
@@ -725,20 +730,18 @@ class NmapImporter(QtCore.QThread):
                 for p in h.all_ports():     
                     s = p.get_service()
                     if not (s is None):
-                                                                        # fetch the service for this port
-                        #db_service = nmap_service.query.filter_by(name=s.name).filter_by(product=s.product).filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).filter_by(fingerprint=s.fingerprint).first()
-                         db_service = session.query(nmap_service).query.filter_by(name=s.name).filter_by(product=s.product).filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).filter_by(fingerprint=s.fingerprint).first()
+                        db_service = session.query(nmap_service).filter_by(name=s.name).filter_by(product=s.product).filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).filter_by(fingerprint=s.fingerprint).first()
                     else:
                         db_service = None                       
                                                                         # fetch the port
-                    #db_port = nmap_port.query.filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()                  
                     db_port = session.query(nmap_port).filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
-                    db_port.state = p.state
+                    if db_port:
+                        db_port.state = p.state
                     
-                    if not (db_service is None):                        # if there is some new service information, update it
-                        db_port.service_id = db_service.id
+                        if not (db_service is None):                        # if there is some new service information, update it
+                            db_port.service_id = db_service.id
 
-                    session.add(db_port)
+                        session.add(db_port)
                 
                     for scr in p.get_scripts():                         # store the script results (note that existing script outputs are also kept)    
                         #db_script = nmap_script.query.filter_by(script_id=scr.scriptId).filter_by(port_id=db_port.id).first()

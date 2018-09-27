@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-LEGION 0.1.0 (https://govanguard.io)
+LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -25,7 +25,7 @@ class Controller():
 
     # initialisations that will happen once - when the program is launched
     def __init__(self, view, logic):
-        self.version = 'LEGION 0.2.0'                            # update this everytime you commit!
+        self.version = 'LEGION 0.2.1'                            # update this everytime you commit!
         self.logic = logic
         self.view = view
         self.view.setController(self)
@@ -519,9 +519,6 @@ class Controller():
         qProcess.setProcessChannelMode(QtCore.QProcess.MergedChannels)
         qProcess.readyReadStandardOutput.connect(lambda: qProcess.display.appendPlainText(str(qProcess.readAllStandardOutput().data().decode('ISO-8859-1'))))
 
-        #QObject.connect(qProcess,SIGNAL("readyReadStandardOutput()"),qProcess,SLOT("readStdOutput()"))
-        #QObject.connect(qProcess,SIGNAL("readyReadStandardError()"),qProcess,SLOT("readStdOutput()"))
-                                                                        # when the process is finished do this
         qProcess.sigHydra.connect(self.handleHydraFindings)
         qProcess.finished.connect(lambda: self.processFinished(qProcess))
         qProcess.error.connect(lambda: self.processCrashed(qProcess))
@@ -530,6 +527,40 @@ class Controller():
             qProcess.finished.connect(lambda: self.runStagedNmap(str(hostip), discovery, stage+1, self.logic.isKilledProcess(str(qProcess.id))))
 
         return qProcess.pid()                                           # return the pid so that we can kill the process if needed
+
+    def runPython(self):
+        #self.logic.createFolderForTool(name)                            # create folder for tool if necessary
+        textbox = self.view.createNewConsole("python")
+        name = 'python'
+        tabtitle = name
+        hostip = '127.0.0.1'
+        port = '22'
+        protocol = 'tcp'
+        command = 'python3 /mnt/c/Users/hackm/OneDrive/Documents/Customers/GVIT/GIT/legion/test.py'
+        starttime = getTimestamp(True)
+        outputfile = '/tmp/a'
+        qProcess = MyQProcess(name, tabtitle, hostip, port, protocol, command, starttime, outputfile, textbox)
+
+        textbox.setProperty('dbId', str(self.logic.addProcessToDB(qProcess)))
+
+        print('[+] Queuing: ' + str(command))
+        self.fastProcessQueue.put(qProcess)
+
+        self.checkProcessQueue()
+
+        self.updateUI2Timer.stop()                                       # update the processes table
+        self.updateUI2Timer.start(900)                                   # while the process is running, when there's output to read, display it in the GUI
+        self.updateUITimer.stop()                                       # update the processes table
+        self.updateUITimer.start(900)
+
+        qProcess.setProcessChannelMode(QtCore.QProcess.MergedChannels)
+        qProcess.readyReadStandardOutput.connect(lambda: qProcess.display.appendPlainText(str(qProcess.readAllStandardOutput().data().decode('ISO-8859-1'))))
+
+        qProcess.sigHydra.connect(self.handleHydraFindings)
+        qProcess.finished.connect(lambda: self.processFinished(qProcess))
+        qProcess.error.connect(lambda: self.processCrashed(qProcess))
+
+        return qProcess.pid()
 
     # recursive function used to run nmap in different stages for quick results
     def runStagedNmap(self, iprange, discovery=True, stage=1, stop=False):

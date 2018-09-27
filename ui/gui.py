@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-LEGION 0.1.0 (https://govanguard.io)
+LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -33,10 +33,6 @@ class Ui_MainWindow(object):
         self.splitter_2.setOrientation(QtCore.Qt.Vertical)
         self.splitter_2.setObjectName(_fromUtf8("splitter_2"))
 
-        p = self.centralwidget.palette()
-        p.setColor(self.centralwidget.backgroundRole(), QColor(253,53,53))
-        self.centralwidget.setPalette(p)
-        
         self.MainTabWidget = QtWidgets.QTabWidget(self.splitter_2)
         self.MainTabWidget.setObjectName(_fromUtf8("MainTabWidget"))
         self.ScanTab = QtWidgets.QWidget()
@@ -250,12 +246,24 @@ class Ui_MainWindow(object):
         self.ProcessesTableView.setObjectName(_fromUtf8("ProcessesTableView"))
         self.horizontalLayout_5.addWidget(self.ProcessesTableView)
         self.BottomTabWidget.addTab(self.LogTab, _fromUtf8(""))
-#       self.TerminalTab = QtWidgets.QWidget()
-#       self.TerminalTab.setObjectName(_fromUtf8("TerminalTab"))
-#       self.BottomTabWidget.addTab(self.TerminalTab, _fromUtf8(""))
-#       self.PythonTab = QtWidgets.QWidget()
-#       self.PythonTab.setObjectName(_fromUtf8("PythonTab"))
-#       self.BottomTabWidget.addTab(self.PythonTab, _fromUtf8(""))      
+
+        # Terminal Tab
+        self.TerminalTab = QtWidgets.QWidget()
+        self.TerminalTab.setObjectName(_fromUtf8("TerminalTab"))
+        self.TerminalOutputTextView = QtWidgets.QPlainTextEdit(self.TerminalTab)
+        self.TerminalOutputTextView.setReadOnly(False)
+        self.TerminalTabLayout = QtWidgets.QHBoxLayout(self.TerminalTab)
+        self.TerminalTabLayout.addWidget(self.TerminalOutputTextView)
+        self.BottomTabWidget.addTab(self.TerminalTab, _fromUtf8(""))
+
+        # Python Tab
+        self.PythonTab = QtWidgets.QWidget()
+        self.PythonTab.setObjectName(_fromUtf8("PythonTab"))
+        #self.PythonOutputTextView = QtWidgets.QPlainTextEdit(self.PythonTab)
+        #self.PythonOutputTextView.setReadOnly(False)
+        self.PythonTabLayout = QtWidgets.QHBoxLayout(self.PythonTab)
+        #self.PythonTabLayout.addWidget(self.PythonOutputTextView)
+        self.BottomTabWidget.addTab(self.PythonTab, _fromUtf8(""))      
 
     def setupMenuBar(self, MainWindow):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -317,7 +325,7 @@ class Ui_MainWindow(object):
         self.BottomTabWidget.setCurrentIndex(0)     
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "Sparta v0.0001", None))
+        MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "LEGION", None))
         self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.HostsTab), QtWidgets.QApplication.translate("MainWindow", "Hosts", None))
         self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.ServicesLeftTab), QtWidgets.QApplication.translate("MainWindow", "Services", None))
         self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.ToolsTab), QtWidgets.QApplication.translate("MainWindow", "Tools", None))
@@ -331,8 +339,8 @@ class Ui_MainWindow(object):
         #self.BruteTabWidget.setTabText(self.BruteTabWidget.indexOf(self.tab_2), QtWidgets.QApplication.translate("MainWindow", "Tab 2", None))
         self.MainTabWidget.setTabText(self.MainTabWidget.indexOf(self.BruteTab), QtWidgets.QApplication.translate("MainWindow", "Brute", None))
         self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.LogTab), QtWidgets.QApplication.translate("MainWindow", "Log", None))
-#       self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.TerminalTab), QtWidgets.QApplication.translate("MainWindow", "Terminal", None))
-#       self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.PythonTab), QtWidgets.QApplication.translate("MainWindow", "Python", None))
+        self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.TerminalTab), QtWidgets.QApplication.translate("MainWindow", "Terminal", None))
+        self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.PythonTab), QtWidgets.QApplication.translate("MainWindow", "Python", None))
         self.menuFile.setTitle(QtWidgets.QApplication.translate("MainWindow", "File", None))
 #       self.menuEdit.setTitle(QtWidgets.QApplication.translate("MainWindow", "Edit", None))
 #       self.menuSettings.setTitle(QtWidgets.QApplication.translate("MainWindow", "Settings", None))

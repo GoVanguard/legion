@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-LEGION 0.1.0 (https://govanguard.io)
+LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -176,8 +176,8 @@ class View(QtCore.QObject):
 
     def initTables(self):                                               # this function prepares the default settings for each table
         # hosts table (left)
-        headers = ["Id", "OS","Accuracy","Host","IPv4","IPv6","Mac","Status","Hostname","Vendor","Uptime","Lastboot","Distance","CheckedHost","State","Count"]
-        setTableProperties(self.ui.HostsTableView, len(headers), [0,2,4,5,6,7,8,9,10,11,12,13,14,15])
+        headers = ["Id","OS","Accuracy","Host","IPv4","IPv6","Mac","Status","Hostname","Vendor","Uptime","Lastboot","Distance","CheckedHost","State","Count","Padding"]
+        setTableProperties(self.ui.HostsTableView, len(headers), [0,2,4,5,6,7,8,9,10,11,12,13,14,15,16])
         self.ui.HostsTableView.horizontalHeader().resizeSection(1,30)
 
         # service names table (left)
@@ -582,10 +582,12 @@ class View(QtCore.QObject):
 
         if tab == 'Services':
             row = self.ui.ServicesTableView.selectionModel().selectedRows()[len(self.ui.ServicesTableView.selectionModel().selectedRows())-1].row()
-            ip = self.PortsByServiceTableModel.getIpForRow(row)
+            ## Missing
+            #ip = self.PortsByServiceTableModel.getIpForRow(row)
         elif tab == 'Tools':
             row = self.ui.ToolHostsTableView.selectionModel().selectedRows()[len(self.ui.ToolHostsTableView.selectionModel().selectedRows())-1].row()
-            ip = self.ToolHostsTableModel.getIpForRow(row)
+            ## Missing
+            #ip = self.ToolHostsTableModel.getIpForRow(row)
         else:
             return
 
@@ -858,13 +860,14 @@ class View(QtCore.QObject):
     #################### LEFT PANEL INTERFACE UPDATE FUNCTIONS ####################
 
     def updateHostsTableView(self): 
-        headers = ["Id", "OS","Accuracy","Host","IPv4","IPv6","Mac","Status","Hostname","Vendor","Uptime","Lastboot","Distance","CheckedHost","State","Count"]
+        # TACOS
+        headers = ["Id","OS","Accuracy","Host","IPv4","IPv6","Mac","Status","Hostname","Vendor","Uptime","Lastboot","Distance","CheckedHost","State","Count","Padding"]
         self.HostsTableModel = HostsTableModel(self.controller.getHostsFromDB(self.filters), headers)
         self.ui.HostsTableView.setModel(self.HostsTableModel)
 
         self.lazy_update_hosts = False                                  # to indicate that it doesn't need to be updated anymore
 
-        for i in [0,2,4,5,6,7,8,9,10,11,12,13,14,15]:                   # hide some columns
+        for i in [0,2,4,5,6,7,8,9,10,11,12,13,14,15,16]:                   # hide some columns
             self.ui.HostsTableView.setColumnHidden(i, True)
 
         self.ui.HostsTableView.horizontalHeader().resizeSection(1,30)
@@ -1198,6 +1201,29 @@ class View(QtCore.QObject):
             hosttabs.append(tempWidget)                                 # add the new tab to the list
         
         self.hostTabs.update({str(ip):hosttabs})
+
+        return tempTextView
+
+
+    def createNewConsole(self, tabtitle, content='Hello\n', filename=''):
+
+        tempWidget = QtWidgets.QWidget()
+        tempWidget.setObjectName(str(tabtitle))
+        tempTextView = QtWidgets.QPlainTextEdit(tempWidget)
+        tempTextView.setReadOnly(True)
+        if self.controller.getSettings().general_tool_output_black_background == 'True':
+            p = tempTextView.palette()
+            p.setColor(QtGui.QPalette.Base, Qt.black)               # black background
+            p.setColor(QtGui.QPalette.Text, Qt.white)               # white font
+            tempTextView.setPalette(p)
+            tempTextView.setStyleSheet("QMenu { color:black;}")     #font-size:18px; width: 150px; color:red; left: 20px;}"); # set the menu font color: black
+        tempLayout = QtWidgets.QHBoxLayout(tempWidget)
+        tempLayout.addWidget(tempTextView)
+        self.ui.PythonTabLayout.addWidget(tempWidget)
+
+        if not content == '':                                       # if there is any content to display
+            tempTextView.appendPlainText(content)
+
 
         return tempTextView
 
