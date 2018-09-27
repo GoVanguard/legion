@@ -36,14 +36,9 @@ Installation
 ```
 git clone https://github.com/GoVanguard/legion.git
 ```
-Install dependencies listed above, e.g.:
-apt-get install python-pyqt5
-apt-get install python-sqlalchemy
-apt-get install nmap
-apt-get install hydra
-
 Run startLegion.sh
 
+Note: Deps will be installed automatically
 Credits
 ----
 
