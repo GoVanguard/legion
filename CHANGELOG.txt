@@ -10,3 +10,13 @@ LEGION 0.2.0
 * Port to PyQt5
 * Handle process output encoding issues
 * Added dependancy installer
+
+LEGION 0.2.1
+
+* Fixed DB relationships
+* Removed X requirement for screen captures
+* Revised HTTP/HTTPS detection
+* Fixed Host panel columns
+* Fixed process lanuches for discovered services
+* Fixed context menus so they show applicable actions for context
+* Fixed note unique keys

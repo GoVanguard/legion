@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-LEGION 0.1.0 (https://govanguard.io)
+LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -67,7 +67,7 @@ class ScriptsTableModel(QtCore.QAbstractTableModel):
                     
 
     def sort(self, Ncol, order):
-        self.emit(SIGNAL("layoutAboutToBeChanged()"))
+        self.layoutAboutToBeChanged.emit()
         array=[]
         
         if Ncol == 1:            
@@ -82,7 +82,7 @@ class ScriptsTableModel(QtCore.QAbstractTableModel):
         if order == Qt.AscendingOrder:                                  # reverse if needed
             self.__scripts.reverse()
             
-        self.emit(SIGNAL("layoutChanged()"))
+        self.layoutChanged.emit()
 
     def flags(self, index):                                             # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable

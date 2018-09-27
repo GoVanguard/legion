@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-LEGION 0.1.0 (https://govanguard.io)
+LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -16,20 +16,12 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import pyqtSignal, QObject
 from app.auxiliary import *                                                 # for bubble sort
 
-class Communicate(QObject):
-    data_changed = pyqtSignal(str)
-
 class HostsTableModel(QtCore.QAbstractTableModel):
     
     def __init__(self, hosts = [[]], headers = [], parent = None):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.__headers = headers
         self.__hosts = hosts
-        self.c = Communicate()
-
-    @QtCore.pyqtSlot()
-    def emit(self, signal):
-        self.c.data_changed.emit(signal)
         
     def setHosts(self, hosts):
         self.__hosts = hosts
@@ -48,7 +40,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
                 if section < len(self.__headers):
                     return self.__headers[section]
                 else:
-                    return "not implemented"
+                    return "!not implemented"
 
     def data(self, index, role):                                        # this method takes care of how the information is displayed
         if role == QtCore.Qt.DecorationRole:                            # to show the operating system icon instead of text                 
@@ -109,6 +101,12 @@ class HostsTableModel(QtCore.QAbstractTableModel):
                 value = self.__hosts[row]['lastboot']
             elif column == 12:
                 value = self.__hosts[row]['distance']
+            elif column == 13:
+                value = self.__hosts[row]['checked']
+            elif column == 14:
+                value = self.__hosts[row]['state']
+            elif column == 15:
+                value = self.__hosts[row]['count']
             return value
             
         if role == QtCore.Qt.FontRole:
