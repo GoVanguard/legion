@@ -23,13 +23,13 @@ Removed all Elixir crustiness
 Requirements
 ----
 
-Ubuntu or variant or WSL (Windows Subsystem for Linux)
-Python 3.5+
-PyQT5
-SQLAlchemy
-six
-hydra
-nmap
+* Ubuntu or variant or WSL (Windows Subsystem for Linux)
+* Python 3.5+
+* PyQT5
+* SQLAlchemy
+* six
+* hydra
+* nmap
 
 Installation
 ----
