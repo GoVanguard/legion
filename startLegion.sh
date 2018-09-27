@@ -48,4 +48,4 @@ then
     fi
 fi
 
-python3 legion.py
+gksu python3 legion.py
