@@ -583,11 +583,11 @@ class View(QtCore.QObject):
         if tab == 'Services':
             row = self.ui.ServicesTableView.selectionModel().selectedRows()[len(self.ui.ServicesTableView.selectionModel().selectedRows())-1].row()
             ## Missing
-            #ip = self.PortsByServiceTableModel.getIpForRow(row)
+            ip = self.PortsByServiceTableModel.getIpForRow(row)
         elif tab == 'Tools':
             row = self.ui.ToolHostsTableView.selectionModel().selectedRows()[len(self.ui.ToolHostsTableView.selectionModel().selectedRows())-1].row()
             ## Missing
-            #ip = self.ToolHostsTableModel.getIpForRow(row)
+            ip = self.ToolHostsTableModel.getIpForRow(row)
         else:
             return
 
