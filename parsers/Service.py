@@ -33,8 +33,8 @@ if __name__ == '__main__':
     node = dom.getElementsByTagName('service')[0]
 
     s = Service( node )
-    print(s.name)
-    print(s.product)
-    print(s.version)
-    print(s.extrainfo)
-    print(s.fingerprint)
+    log.info(s.name)
+    log.info(s.product)
+    log.info(s.version)
+    log.info(s.extrainfo)
+    log.info(s.fingerprint)

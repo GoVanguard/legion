@@ -26,10 +26,10 @@ class Logic():
 
     def createTemporaryFiles(self):
         try:
-            print('[+] Creating temporary files..')
+            log.info('[+] Creating temporary files..')
             
             self.istemp = True                                          # indicates that file is temporary and can be deleted if user exits without saving
-            print(self.cwd)
+            log.info(self.cwd)
             tf = tempfile.NamedTemporaryFile(suffix=".ldb",prefix="legion-", delete=False, dir="./tmp/")         # to store the database file
             self.outputfolder = tempfile.mkdtemp(suffix="-tool-output",prefix="legion-", dir="./tmp/")            # to store tool output of finished processes
             self.runningfolder = tempfile.mkdtemp(suffix="-running",prefix="legion-", dir="./tmp/")               # to store tool output of running processes
@@ -39,19 +39,19 @@ class Logic():
             self.usernamesWordlist = Wordlist(self.outputfolder + '/legion-usernames.txt')          # to store found usernames
             self.passwordsWordlist = Wordlist(self.outputfolder + '/legion-passwords.txt')          # to store found passwords
             self.projectname = tf.name
-            print(tf.name)
+            log.info(tf.name)
             self.db = Database(self.projectname)
             
         except:
-            print('\t[-] Something went wrong creating the temporary files..')
-            print("[-] Unexpected error:", sys.exc_info())
+            log.info('\t[-] Something went wrong creating the temporary files..')
+            log.info("[-] Unexpected error:", sys.exc_info())
 
     def removeTemporaryFiles(self):
-        print('[+] Removing temporary files and folders..')
+        log.info('[+] Removing temporary files and folders..')
         try:
             if not self.istemp:                                         # if current project is not temporary
                 if not self.storeWordlists:                             # delete wordlists if necessary
-                    print('[+] Removing wordlist files.')
+                    log.info('[+] Removing wordlist files.')
                     os.remove(self.usernamesWordlist.filename)
                     os.remove(self.passwordsWordlist.filename)
                 
@@ -62,8 +62,8 @@ class Logic():
             shutil.rmtree(self.runningfolder)
 
         except:
-            print('\t[-] Something went wrong removing temporary files and folders..')
-            print("[-] Unexpected error:", sys.exc_info()[0])
+            log.info('\t[-] Something went wrong removing temporary files and folders..')
+            log.info("[-] Unexpected error:", sys.exc_info()[0])
 
     def createFolderForTool(self, tool):
         if 'nmap' in tool:
@@ -104,8 +104,8 @@ class Logic():
             elif os.path.exists(str(outputFilename)+'.txt') and os.path.isfile(str(outputFilename)+'.txt'):
                 shutil.move(str(outputFilename)+'.txt', str(path))                          
         except:
-            print('[-] Something went wrong moving the tool output file..')
-            print("[-] Unexpected error:", sys.exc_info()[0])
+            log.info('[-] Something went wrong moving the tool output file..')
+            log.info("[-] Unexpected error:", sys.exc_info()[0])
 
     def copyNmapXMLToOutputFolder(self, file):
         try:
@@ -116,12 +116,12 @@ class Logic():
 
             shutil.copy(str(file), str(path))   # will overwrite if file already exists
         except:
-            print('[-] Something went wrong copying the imported XML to the project folder.')
-            print("[-] Unexpected error:", sys.exc_info()[0])
+            log.info('[-] Something went wrong copying the imported XML to the project folder.')
+            log.info("[-] Unexpected error:", sys.exc_info()[0])
 
     def openExistingProject(self, filename):
         try:
-            print('[+] Opening project..')
+            log.info('[+] Opening project..')
             self.istemp = False                                         # indicate the file is NOT temporary and should NOT be deleted later
             
             self.projectname = str(filename)                            # set the new projectname and outputfolder vars
@@ -138,8 +138,8 @@ class Logic():
             self.cwd = ntpath.dirname(str(self.projectname))+'/'        # update cwd so it appears nicely in the window title
         
         except:
-            print('\t[-] Something went wrong while opening the project..')
-            print("[-] Unexpected error:", sys.exc_info()[0])
+            log.info('\t[-] Something went wrong while opening the project..')
+            log.info("[-] Unexpected error:", sys.exc_info()[0])
         
     # this function copies the current project files and folder to a new location
     # if the replace flag is set to 1, it overwrites the destination file and folder
@@ -160,7 +160,7 @@ class Logic():
             os.system('cp -r "'+self.outputfolder+'/." "'+str(foldername)+'"')
             
             if self.istemp:                                             # we can remove the temp file/folder if it was temporary
-                print('[+] Removing temporary files and folders..')
+                log.info('[+] Removing temporary files and folders..')
                 os.remove(self.projectname)
                 shutil.rmtree(self.outputfolder)
 
@@ -176,8 +176,8 @@ class Logic():
             return True
 
         except:
-            print('\t[-] Something went wrong while saving the project..')
-            print("\t[-] Unexpected error:", sys.exc_info()[0])
+            log.info('\t[-] Something went wrong while saving the project..')
+            log.info("\t[-] Unexpected error:", sys.exc_info()[0])
             return False
 
     def isHostInDB(self, host):                                         # used we don't run tools on hosts out of scope
@@ -290,7 +290,8 @@ class Logic():
     # used to delete all port/script data related to a host - to overwrite portscan info with the latest scan   
     def deleteAllPortsAndScriptsForHostFromDB(self, hostID, protocol):
         session = self.db.session()
-        ports_for_host = session.query(nmap_port).filter_by(nmap_port.host_id == hostID, nmap_port.protocol == str(protocol)).all()
+        # TACOS
+        ports_for_host = session.query(nmap_port).filter_by(nmap_port.host_id == hostID).filter_by(nmap_port.protocol == str(protocol)).all()
         #ports_for_host = nmap_port.query.filter(nmap_port.host_id == hostID, nmap_port.protocol == str(protocol)).all()
                 
         for p in ports_for_host:
@@ -401,10 +402,10 @@ class Logic():
 
     # this function adds a new process to the DB
     def addProcessToDB(self, proc):
-        print('Add process')
+        log.info('Add process')
         p_output = process_output()                                     # add row to process_output table (separate table for performance reasons)
         p = process(str(proc.pid()), str(proc.name), str(proc.tabtitle), str(proc.hostip), str(proc.port), str(proc.protocol), unicode(proc.command), proc.starttime, "", str(proc.outputfile), 'Waiting', p_output)
-        print(p)
+        log.info(p)
         session = self.db.session()
         session.add(p)
         #session.commit()
@@ -523,7 +524,7 @@ class Logic():
     def storeNotesInDB(self, hostId, notes):
         if len(notes) == 0:
             notes = unicode("Notes for {hostId}".format(hostId=hostId))
-        #print("Storing notes for {hostId}, Notes {notes}".format(hostId=hostId, notes=notes))
+        #log.info("Storing notes for {hostId}, Notes {notes}".format(hostId=hostId, notes=notes))
         t_note = self.getNoteFromDB(hostId)
         if t_note:
             t_note.text = unicode(notes)
@@ -569,14 +570,14 @@ class NmapImporter(QtCore.QThread):
     def run(self):                                                      # it is necessary to get the qprocess because we need to send it back to the scheduler when we're done importing
         try:
             session = self.db.session()
-            print("[+] Parsing nmap xml file: " + self.filename)
-            starttime = time.time()
+            log.info("[+] Parsing nmap xml file: " + self.filename)
+            starttime = time()
             
             try:
                 parser = Parser(self.filename)
             except:
-                print('\t[-] Giving up on import due to previous errors.')
-                print("\t[-] Unexpected error:", sys.exc_info()[0])
+                log.info('\t[-] Giving up on import due to previous errors.')
+                log.info("\t[-] Unexpected error:", sys.exc_info()[0])
                 self.done.emit()
                 return
                 
@@ -594,32 +595,31 @@ class NmapImporter(QtCore.QThread):
     
             for h in parser.all_hosts():                                # create all the hosts that need to be created
                 db_host = session.query(nmap_host).filter_by(ip=h.ip).first()
-                #db_host = nmap_host.query.filter_by(ip=h.ip).first()
                 
                 if not db_host:                                         # if host doesn't exist in DB, create it first
                     hid = nmap_host('', '', h.ip, h.ipv4, h.ipv6, h.macaddr, h.status, h.hostname, h.vendor, h.uptime, h.lastboot, h.distance, h.state, h.count)
-                    print("Adding db_host")
+                    log.info("Adding db_host")
                     session.add(hid)
                     t_note = note(h.ip, 'Added by nmap')
                     session.add(t_note)
                 else:
-                    print("Found db_host already in db")
+                    log.info("Found db_host already in db")
 
             session.commit()
             
             for h in parser.all_hosts():                                # create all OS, service and port objects that need to be created
-                print("Processing h {ip}".format(ip=h.ip))
+                log.info("Processing h {ip}".format(ip=h.ip))
 
                 db_host = session.query(nmap_host).filter_by(ip=h.ip).first()
                 if db_host:
-                    print("Found db_host during os/ports/service processing")
+                    log.info("Found db_host during os/ports/service processing")
                 else:
-                    print("Did not find db_host during os/ports/service processing")
+                    log.info("Did not find db_host during os/ports/service processing")
                 
                 os_nodes = h.get_OS()                                   # parse and store all the OS nodes
-                print("    'os_nodes' to process: {os_nodes}".format(os_nodes=str(len(os_nodes))))
+                log.info("    'os_nodes' to process: {os_nodes}".format(os_nodes=str(len(os_nodes))))
                 for os in os_nodes:
-                    print("    Processing os obj {os}".format(os=str(os.name)))
+                    log.info("    Processing os obj {os}".format(os=str(os.name)))
                     db_os = session.query(nmap_os).filter_by(host_id=db_host.id).filter_by(name=os.name).filter_by(family=os.family).filter_by(generation=os.generation).filter_by(os_type=os.os_type).filter_by(vendor=os.vendor).first()
                     
                     if not db_os:
@@ -627,13 +627,13 @@ class NmapImporter(QtCore.QThread):
                         session.add(t_nmap_os)
 
                 all_ports = h.all_ports()
-                print("    'ports' to process: {all_ports}".format(all_ports=str(len(all_ports))))
+                log.info("    'ports' to process: {all_ports}".format(all_ports=str(len(all_ports))))
                 for p in all_ports:                                 # parse the ports
-                    print("        Processing port obj {port}".format(port=str(p.portId)))
+                    log.info("        Processing port obj {port}".format(port=str(p.portId)))
                     s = p.get_service()
 
                     if not (s is None):                                 # check if service already exists to avoid adding duplicates
-                        print("            Found service {service} for port {port}".format(service=str(s.name),port=str(p.portId)))
+                        log.info("            Found service {service} for port {port}".format(service=str(s.name),port=str(p.portId)))
                         db_service = session.query(nmap_service).filter_by(name=s.name).filter_by(product=s.product).filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).filter_by(fingerprint=s.fingerprint).first()
                         
                         if not db_service:
@@ -660,18 +660,19 @@ class NmapImporter(QtCore.QThread):
                 
                 for p in h.all_ports():
                     for scr in p.get_scripts():
-                                                
+                        log.info("        Processing script obj {scr}".format(scr=str(scr)))                             
                         db_port = session.query(nmap_port).filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
                         db_script = session.query(nmap_script).filter_by(script_id=scr.scriptId).filter_by(port_id=db_port.id).first()
 
                         if not db_script:                               # if this script object doesn't exist, create it
-                            t_nmap_script = nmap_script(scr.scriptId, scr.output, db_port, db_host)
+                            t_nmap_script = nmap_script(scr.scriptId, scr.output, db_port.id, db_host.id)
+                            log.info("        Adding nmap_script obj {script}".format(script=scr.scriptId))
                             session.add(t_nmap_script)
                     
                 for hs in h.get_hostscripts():
-                    db_script = session.query(nmap_script).query.filter_by(script_id=hs.scriptId).filter_by(host_id=db_host.id).first()
+                    db_script = session.query(nmap_script).filter_by(script_id=hs.scriptId).filter_by(host_id=db_host.id).first()
                     if not db_script:
-                        t_nmap_script = nmap_script(hs.scriptId, hs.output, None, db_host)                  
+                        t_nmap_script = nmap_script(hs.scriptId, hs.output, None, db_host.id)                  
                         session.add(t_nmap_script)
                     
             session.commit()
@@ -744,8 +745,7 @@ class NmapImporter(QtCore.QThread):
                         session.add(db_port)
                 
                     for scr in p.get_scripts():                         # store the script results (note that existing script outputs are also kept)    
-                        #db_script = nmap_script.query.filter_by(script_id=scr.scriptId).filter_by(port_id=db_port.id).first()
-                        db_script = session.query(nmap_script).query.filter_by(script_id=scr.scriptId).filter_by(port_id=db_port.id).first()
+                        db_script = session.query(nmap_script).filter_by(script_id=scr.scriptId).filter_by(port_id=db_port.id).first()
 
                         if not scr.output == '':
                             db_script.output = scr.output
@@ -757,13 +757,13 @@ class NmapImporter(QtCore.QThread):
 
             session.commit()
             self.db.dbsemaphore.release()                               # we are done with the DB
-            print('\t[+] Finished in '+ str(time.time()-starttime) + ' seconds.')
+            log.info('\t[+] Finished in '+ str(time()-starttime) + ' seconds.')
             self.done.emit()
             self.schedule.emit(parser, self.output == '')               # call the scheduler (if there is no terminal output it means we imported nmap)
             
         except Exception as e:
-            print('\t[-] Something went wrong when parsing the nmap file..')
-            print("\t[-] Unexpected error:", sys.exc_info()[0])
-            print(e)
+            log.info('\t[-] Something went wrong when parsing the nmap file..')
+            log.info("\t[-] Unexpected error:", sys.exc_info()[0])
+            log.info(e)
             raise
             self.done.emit()

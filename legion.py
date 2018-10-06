@@ -16,14 +16,14 @@ try:
     from sqlalchemy.orm.scoping import ScopedSession as scoped_session
     #import elixir
 except ImportError as e:
-    print("[-] Import failed. SQL Alchemy library not found. If on Ubuntu or similar try: apt-get install python3-sqlalchemy*")
+    log.info("[-] Import failed. SQL Alchemy library not found. If on Ubuntu or similar try: apt-get install python3-sqlalchemy*")
     exit(1)
     
 try:
     from PyQt5 import QtWidgets, QtGui, QtCore
 except ImportError as e:
-    print("[-] Import failed. PyQt4 library not found. If on Ubuntu or similar try: agt-get install python3-pyqt4")
-    print(e)
+    log.info("[-] Import failed. PyQt4 library not found. If on Ubuntu or similar try: agt-get install python3-pyqt4")
+    log.info(e)
     exit(1)
 
 try:
@@ -33,13 +33,14 @@ except ImportError as e:
         #from PySide import QtWebKit
         pass
     except ImportError:
-        print("[-] Import failed. QtWebKit library not found. If on Ubuntu or similar try: agt-get install python3-pyside.qtwebkit")
+        log.info("[-] Import failed. QtWebKit library not found. If on Ubuntu or similar try: agt-get install python3-pyside.qtwebkit")
         exit(1)
     
 from app.logic import *
 from ui.gui import *
 from ui.view import *
 from controller.controller import *
+from stenoLogging import *
 
 # this class is used to catch events such as arrow key presses or close window (X)
 class MyEventFilter(QObject):
@@ -91,7 +92,7 @@ if __name__ == "__main__":
     try:    
         qss_file = open('./ui/legion.qss').read()
     except IOError as e:
-        print("[-] The legion.qss file is missing. Your installation seems to be corrupted. Try downloading the latest version.")
+        log.info("[-] The legion.qss file is missing. Your installation seems to be corrupted. Try downloading the latest version.")
         exit(0)
 
 
