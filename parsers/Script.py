@@ -23,5 +23,5 @@ if __name__ == '__main__':
 
     for scriptNode in dom.getElementsByTagName('script'):
         script = Script(scriptNode)
-        print(script.scriptId)
-        print(script.output)
+        log.info(script.scriptId)
+        log.info(script.output)

@@ -125,26 +125,26 @@ if __name__ == '__main__':
     host_node = dom.getElementsByTagName('host')[0]
 
     h = Host( host_node )
-    print('host status: ' + h.status)
-    print('host ip: ' + h.ip)
+    log.info('host status: ' + h.status)
+    log.info('host ip: ' + h.ip)
 
     for port in h.get_ports( 'tcp', 'open' ):
-        print(port + " is open")
+        log.info(port + " is open")
 
-    print("script output:")
+    log.info("script output:")
     for scr in h.get_scripts():
-        print("script id:" + scr.scriptId)
-        print("Output:")
-        print(scr.output)
+        log.info("script id:" + scr.scriptId)
+        log.info("Output:")
+        log.info(scr.output)
 
-    print("service of tcp port 80:")
+    log.info("service of tcp port 80:")
     s = h.get_service( 'tcp', '80' )
     if s == None:
-        print("\tno service")
+        log.info("\tno service")
 
     else:
-        print("\t" + s.name)
-        print("\t" + s.product)
-        print("\t" + s.version)
-        print("\t" + s.extrainfo)
-        print("\t" + s.fingerprint)
+        log.info("\t" + s.name)
+        log.info("\t" + s.product)
+        log.info("\t" + s.version)
+        log.info("\t" + s.extrainfo)
+        log.info("\t" + s.fingerprint)

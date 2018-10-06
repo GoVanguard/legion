@@ -20,10 +20,10 @@ class AppSettings():
     def __init__(self):
         # check if settings file exists and creates it if it doesn't
         if not os.path.exists('./legion.conf'):
-            print('[+] Creating settings file..')
+            log.info('[+] Creating settings file..')
             self.createDefaultSettings()
         else:
-            print('[+] Loading settings file..')
+            log.info('[+] Loading settings file..')
             self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
 
     # This function creates the default settings file. Note that, in general, everything is case sensitive.
@@ -75,7 +75,7 @@ class AppSettings():
         self.actions.endGroup()
 
         self.actions.beginGroup('HostActions')
-        self.actions.setValue("nmap-fast-tcp", ["Run nmap (fast TCP)", "nmap -Pn -F -T4 -vvvv [IP] -oA \"[OUTPUT]\""])
+        self.actions.setValue("nmap-fast-tcp", ["Run nmap (fast TCP)", "nmap -Pn -sV -sC -F -T4 -vvvv [IP] -oA \"[OUTPUT]\""])
         self.actions.setValue("nmap-full-tcp", ["Run nmap (full TCP)", "nmap -Pn -sV -sC -O -p- -T4 -vvvvv [IP] -oA \"[OUTPUT]\""])
         self.actions.setValue("nmap-fast-udp", ["Run nmap (fast UDP)", "nmap -n -Pn -sU -F --min-rate=1000 -vvvvv [IP] -oA \"[OUTPUT]\""])
         self.actions.setValue("nmap-udp-1000", ["Run nmap (top 1000 quick UDP)", "nmap -n -Pn -sU --min-rate=1000 -vvvvv [IP] -oA \"[OUTPUT]\""])
@@ -84,12 +84,12 @@ class AppSettings():
         self.actions.endGroup()
 
         self.actions.beginGroup('PortActions')
-        self.actions.setValue("banner", ["Grab banner", "bash -c \"echo \"\" | nc -v -n -w1 [IP] [PORT]\"", ""])
+        self.actions.setValue("banner", ["Grab banner", "bash -c \"echo \"\" | nc -v -n -w1 [IP] [PORT]\"", "telnet,ssh"])
         self.actions.setValue("nmap", ["Run nmap (scripts) on port", "nmap -Pn -sV -sC -vvvvv -p[PORT] [IP] -oA [OUTPUT]", ""])
+        self.actions.setValue("whatweb", ["Run whatweb", "whatweb [IP]:[PORT] --color=never --log-brief=\"[OUTPUT].txt\"", "http,https,ssl,soap,http-proxy,http-alt"])
         self.actions.setValue("nikto", ["Run nikto", "nikto -o \"[OUTPUT].txt\" -p [PORT] -h [IP]", "http,https,ssl,soap,http-proxy,http-alt"])     
         self.actions.setValue("dirbuster", ["Launch dirbuster", "java -Xmx256M -jar /usr/share/dirbuster/DirBuster-1.0-RC1.jar -u http://[IP]:[PORT]/", "http,https,ssl,soap,http-proxy,http-alt"])
         self.actions.setValue("webslayer", ["Launch webslayer", "webslayer", "http,https,ssl,soap,http-proxy,http-alt"])
-        self.actions.setValue("whatweb", ["Run whatweb", "whatweb [IP]:[PORT] --color=never --log-brief=\"[OUTPUT].txt\"", "http,https,ssl,soap,http-proxy,http-alt"])      
         
         ### SMB
         self.actions.setValue("samrdump", ["Run samrdump", "python /usr/share/doc/python-impacket/examples/samrdump.py [IP] [PORT]/SMB", "netbios-ssn,microsoft-ds"])
@@ -155,21 +155,24 @@ class AppSettings():
         self.actions.endGroup()
 
         self.actions.beginGroup('SchedulerSettings')
-        self.actions.setValue("nikto",["http,https,ssl,soap,http-proxy,http-alt,https-alt","tcp"])
+        #self.actions.setValue("whatweb", ["http,https,ssl,soap,http-proxy,http-alt,https-alt","tcp"])
+        #self.actions.setValue("banner", ["telnet,ssh,http,https,dns","tcp"])
+        self.actions.setValue("nikto", ["http,https,ssl,soap,http-proxy,http-alt,https-alt","tcp"])
+        self.actions.setValue("sslscan", ["https,ssl","tcp"])
         self.actions.setValue("screenshooter",["http,https,ssl,http-proxy,http-alt,https-alt","tcp"])
-        self.actions.setValue("smbenum",["microsoft-ds","tcp"])
-#       self.actions.setValue("enum4linux","netbios-ssn,microsoft-ds")
-#       self.actions.setValue("smb-null-sessions","netbios-ssn,microsoft-ds")
-#       self.actions.setValue("nbtscan","netbios-ns")
-        self.actions.setValue("snmpcheck",["snmp","udp"])
-        self.actions.setValue("x11screen",["X11","tcp"])
-        self.actions.setValue("snmp-default",["snmp","udp"])
-        self.actions.setValue("smtp-enum-vrfy",["smtp","tcp"])
-        self.actions.setValue("mysql-default",["mysql","tcp"])
-        self.actions.setValue("mssql-default",["ms-sql-s","tcp"])
-        self.actions.setValue("ftp-default",["ftp","tcp"])
-        self.actions.setValue("postgres-default",["postgresql","tcp"])
-        self.actions.setValue("oracle-default",["oracle-tns","tcp"])
+        self.actions.setValue("smbenum", ["microsoft-ds","tcp"])
+        self.actions.setValue("enum4linux", "netbios-ssn,microsoft-ds")
+        self.actions.setValue("smb-null-sessions", "netbios-ssn,microsoft-ds")
+        self.actions.setValue("nbtscan", "netbios-ns")
+        self.actions.setValue("snmpcheck", ["snmp","udp"])
+        self.actions.setValue("x11screen", ["X11","tcp"])
+        self.actions.setValue("snmp-default", ["snmp","udp"])
+        self.actions.setValue("smtp-enum-vrfy", ["smtp","tcp"])
+        self.actions.setValue("mysql-default", ["mysql","tcp"])
+        self.actions.setValue("mssql-default", ["ms-sql-s","tcp"])
+        self.actions.setValue("ftp-default", ["ftp","tcp"])
+        self.actions.setValue("postgres-default", ["postgresql","tcp"])
+        self.actions.setValue("oracle-default", ["oracle-tns","tcp"])
 
         self.actions.endGroup()
         
@@ -272,7 +275,7 @@ class AppSettings():
         
     def backupAndSave(self, newSettings):
         # Backup and save
-        print('[+] Backing up old settings and saving new settings..')
+        log.info('[+] Backing up old settings and saving new settings..')
         os.rename('./legion.conf', './'+getTimestamp()+'-legion.conf')  
         self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
 
@@ -414,8 +417,8 @@ class Settings():
                 self.tools_path_texteditor = self.toolSettings['texteditor-path']
                 
             except KeyError:
-                print('\t[-] Something went wrong while loading the configuration file. Falling back to default settings for some settings.')
-                print('\t[-] Go to the settings menu to fix the issues!')
+                log.info('\t[-] Something went wrong while loading the configuration file. Falling back to default settings for some settings.')
+                log.info('\t[-] Go to the settings menu to fix the issues!')
                 # TODO: send signal to automatically open settings dialog here
 
     def __eq__(self, other):                                            # returns false if settings objects are different
@@ -427,6 +430,6 @@ if __name__ == "__main__":
     settings = AppSettings()
     s = Settings(settings)
     s2 = Settings(settings)
-    print(s == s2)
+    log.info(s == s2)
     s2.general_default_terminal = 'whatever'
-    print(s == s2)
+    log.info(s == s2)
