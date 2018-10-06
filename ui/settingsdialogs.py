@@ -321,13 +321,13 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
         if self.settingsTabWidget.tabText(self.settingsTabWidget.currentIndex()) == 'Tools':
             self.previousToolTab = self.ToolSettingsTab.tabText(self.ToolSettingsTab.currentIndex())
 
-        print('previous tab is: ' + str(self.previousTab))
+        log.info('previous tab is: ' + str(self.previousTab))
         if self.validateCurrentTab(self.previousTab):                   # LEO: we don't care about the return value in this case. it's just for debug.
-            print('validation succeeded! switching tab! yay!')
+            log.info('validation succeeded! switching tab! yay!')
                                                                         # save the previous tab for the next time we switch tabs. TODO: not sure this should be inside the IF but makes sense to me. no point in saving the previous if there is no change..
             self.previousTab = self.settingsTabWidget.tabText(self.settingsTabWidget.currentIndex())            
         else:
-            print('nope! cannot let you switch tab! you fucked up!')
+            log.info('nope! cannot let you switch tab! you fucked up!')
 
     def switchToolTabClick(self):                                       # TODO: check for duplicate code.
         if self.ToolSettingsTab.tabText(self.ToolSettingsTab.currentIndex()) == 'Host Commands':
@@ -501,18 +501,18 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
                     validationPassed = False
             
             else:
-                print('>>>> we should never be here. potential bug. 1')  # LEO: added this just to help when testing. we'll remove it later.
+                log.info('>>>> we should never be here. potential bug. 1')  # LEO: added this just to help when testing. we'll remove it later.
         
         elif tab == 'Wordlists':
-            print('Coming back from wordlists.')
+            log.info('Coming back from wordlists.')
 
         elif tab == 'Automated Attacks':
-            print('Coming back from automated attacks.')
+            log.info('Coming back from automated attacks.')
         
         else:
-            print('>>>> we should never be here. potential bug. 2')      # LEO: added this just to help when testing. we'll remove it later.
+            log.info('>>>> we should never be here. potential bug. 2')      # LEO: added this just to help when testing. we'll remove it later.
         
-        print('DEBUG: current tab is valid: ' + str(validationPassed))
+        log.info('DEBUG: current tab is valid: ' + str(validationPassed))
         return validationPassed
 
     #def generalTabValidate(self):
@@ -609,15 +609,15 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
                     tmplineEdit.setStyleSheet("border: 1px solid red;")
                     tmpWidget.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
                     self.validationPassed = False
-                    print('the validation is: ' + str(self.validationPassed))
+                    log.info('the validation is: ' + str(self.validationPassed))
                     return self.validationPassed
                 else:
                     tmplineEdit.setStyleSheet("border: 1px solid grey;")
                     tmpWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
                     self.validationPassed = True
-                    print('the validation is: ' + str(self.validationPassed))
+                    log.info('the validation is: ' + str(self.validationPassed))
                     if tmpWidget.item(row,0).text() != str(actions[row][1]):
-                        print('difference found')
+                        log.info('difference found')
                         actions[row][1] = tmpWidget.item(row,0).text()
                     return self.validationPassed                
 
@@ -747,10 +747,10 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
         if self.validateCommandTabs(self.portActionNameText, self.portLabelText, self.portCommandText):
             # the first time do not update anything
             if self.portTableRow == -1 or update == False:
-                print('no update')
+                log.info('no update')
                 pass
             else:
-                print('update done')
+                log.info('update done')
                 self.updatePortActions()
 #           self.portLabelText.setStyleSheet("border: 1px solid grey;")
 #           self.portCommandText.setStyleSheet("border: 1px solid grey;")

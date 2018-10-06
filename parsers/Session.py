@@ -25,10 +25,10 @@ if __name__ == '__main__':
 
     s = Session( MySession )
 
-    print('start_time:' + s.start_time)
-    print('finish_time:' + s.finish_time)
-    print('nmap_version:' + s.nmap_version)
-    print('nmap_args:' + s.scan_args)
-    print('total hosts:' + s.total_hosts)
-    print('up hosts:' + s.up_hosts)
-    print('down hosts:' + s.down_hosts)
+    log.info('start_time:' + s.start_time)
+    log.info('finish_time:' + s.finish_time)
+    log.info('nmap_version:' + s.nmap_version)
+    log.info('nmap_args:' + s.scan_args)
+    log.info('total hosts:' + s.total_hosts)
+    log.info('up hosts:' + s.up_hosts)
+    log.info('down hosts:' + s.down_hosts)
