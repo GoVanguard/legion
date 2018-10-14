@@ -191,7 +191,7 @@ class Controller():
 
         elif runHostDiscovery:
             outputfile = self.logic.runningfolder+"/nmap/"+getTimestamp()+'-host-discover'
-            command = "nmap -n -sn -T4 "+iprange+" -oA "+outputfile
+            command = "nmap -n -sV -O --version-light -T4 "+iprange+" -oA "+outputfile
             log.info("Running {command}".format(command=command))
             self.runCommand('nmap', 'nmap (discovery)', iprange, '','', command, getTimestamp(True), outputfile, self.view.createNewTabForHost(str(iprange), 'nmap (discovery)', True))
                     
@@ -355,7 +355,11 @@ class Controller():
         return menu, actions, terminalActions
 
     @timing
-    def handlePortAction(self, targets, actions, terminalActions, action, restoring):
+    def handlePortAction(self, targets, *args):
+        actions = args[0]
+        terminalActions = args[1]
+        action = args[2]
+        restoring = args[3]
 
         if action.text() == 'Send to Brute':
             for ip in targets:
@@ -463,29 +467,25 @@ class Controller():
     #################### PROCESSES ####################
 
     def checkProcessQueue(self):
-#       print '# MAX PROCESSES: ' + str(self.settings.general_max_fast_processes)
-#       print '# fast processes running: ' + str(self.fastProcessesRunning)
-#       print '# fast processes queued: ' + str(self.fastProcessQueue.qsize())
+        log.debug('# MAX PROCESSES: ' + str(self.settings.general_max_fast_processes))
+        log.debug('# Fast processes running: ' + str(self.fastProcessesRunning))
+        log.debug('# Fast processes queued: ' + str(self.fastProcessQueue.qsize()))
         
         if not self.fastProcessQueue.empty():
             if (self.fastProcessesRunning < int(self.settings.general_max_fast_processes)):
                 next_proc = self.fastProcessQueue.get()
                 if not self.logic.isCanceledProcess(str(next_proc.id)):
-                    #print '[+] Running: '+ str(next_proc.command)
+                    log.debug('[+] Running: '+ str(next_proc.command))
                     next_proc.display.clear()
                     self.processes.append(next_proc)
                     self.fastProcessesRunning += 1
-                    # Add Timeout # Cheetos
+                    # Add Timeout 
                     next_proc.waitForFinished(10)
                     next_proc.start(next_proc.command)
                     self.logic.storeProcessRunningStatusInDB(next_proc.id, next_proc.pid())
                 elif not self.fastProcessQueue.empty():
-#                   print '> next process was canceled, checking queue again..'
+                    log.debug('> next process was canceled, checking queue again..')
                     self.checkProcessQueue()
-#           else:
-#               print '> cannot run processes in the queue'
-#       else:
-#           print '> queue is empty'
             
     def cancelProcess(self, dbId):
         log.info('[+] Canceling process: ' + str(dbId))
@@ -511,8 +511,17 @@ class Controller():
 
     # this function creates a new process, runs the command and takes care of displaying the ouput. returns the PID
     # the last 3 parameters are only used when the command is a staged nmap
-    def runCommand(self, name, tabtitle, hostip, port, protocol, command, starttime, outputfile, textbox, discovery=True, stage=0, stop=False):
-        self.logic.createFolderForTool(name)                            # create folder for tool if necessary
+    def runCommand(self, *args, discovery=True, stage=0, stop=False):
+        name = args[0]
+        tabtitle = args[1]
+        hostip = args[2]
+        port = args[3]
+        protocol = args[4]
+        command = args[5]
+        starttime = args[6]
+        outputfile = args[7]
+        textbox = args[8]
+        self.logic.createFolderForTool(name)
         qProcess = MyQProcess(name, tabtitle, hostip, port, protocol, command, starttime, outputfile, textbox)
 
         textbox.setProperty('dbId', str(self.logic.addProcessToDB(qProcess)))
@@ -538,7 +547,6 @@ class Controller():
         return qProcess.pid()                                           # return the pid so that we can kill the process if needed
 
     def runPython(self):
-        #self.logic.createFolderForTool(name)                            # create folder for tool if necessary
         textbox = self.view.createNewConsole("python")
         name = 'python'
         tabtitle = name
