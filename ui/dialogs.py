@@ -181,27 +181,6 @@ class AddHostsDialog(QtWidgets.QDialog):
 
 class BruteWidget(QtWidgets.QWidget):
     
-    def __initold__(self, ip, port, service, hydraServices, hydraNoUsernameServices, hydraNoPasswordServices, bruteSettings, generalSettings, parent=None):
-        QtWidgets.QWidget.__init__(self, parent)
-        self.ip = ip
-        self.port = port
-        self.service = service
-        self.hydraServices = hydraServices
-        self.hydraNoUsernameServices = hydraNoUsernameServices
-        self.hydraNoPasswordServices = hydraNoPasswordServices
-        self.bruteSettings = bruteSettings
-        self.generalSettings = generalSettings
-        self.pid = -1                                                   # will store hydra's pid so we can kill it
-        self.setupLayout()
-        
-        self.browseUsersButton.clicked.connect(lambda: self.wordlistDialog())
-        self.browsePasswordsButton.clicked.connect(lambda: self.wordlistDialog('Choose password list'))
-        self.usersTextinput.textEdited.connect(self.singleUserRadio.toggle)
-        self.passwordsTextinput.textEdited.connect(self.singlePassRadio.toggle)
-        self.userlistTextinput.textEdited.connect(self.userListRadio.toggle)
-        self.passlistTextinput.textEdited.connect(self.passListRadio.toggle)
-        self.checkAddMoreOptions.stateChanged.connect(self.showMoreOptions)
-        
     def __init__(self, ip, port, service, settings, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         self.ip = ip
@@ -228,7 +207,7 @@ class BruteWidget(QtWidgets.QWidget):
         self.passlistTextinput.textEdited.connect(self.passListRadio.toggle)
         self.checkAddMoreOptions.stateChanged.connect(self.showMoreOptions)     
         
-    def setupLayout(self):
+    def setupLayoutHlayout(self):
         hydraServiceConversion = {'login':'rlogin', 'ms-sql-s':'mssql', 'ms-wbt-server':'rdp', 'netbios-ssn':'smb', 'netbios-ns':'smb', 'microsoft-ds':'smb', 'postgresql':'postgres', 'vmware-auth':'vmauthd"'}
         # sometimes nmap service name is different from hydra service name
         if self.service is None:
@@ -294,6 +273,9 @@ class BruteWidget(QtWidgets.QWidget):
         ###
         self.hlayout.addStretch()
 
+        return self.hlayout
+
+    def setupLayoutHlayout2(self):
         self.singleUserRadio = QtWidgets.QRadioButton()
         self.label4 = QtWidgets.QLabel()
         self.label4.setText('Username')
@@ -332,7 +314,10 @@ class BruteWidget(QtWidgets.QWidget):
         self.hlayout2.addWidget(self.foundUsersRadio)
         self.hlayout2.addWidget(self.label9)
         self.hlayout2.addStretch()
-        
+
+        return self.hlayout2
+
+    def setupLayoutHlayout3(self):        
         #add usernames wordlist
         self.singlePassRadio = QtWidgets.QRadioButton()
         self.label6 = QtWidgets.QLabel()
@@ -389,6 +374,9 @@ class BruteWidget(QtWidgets.QWidget):
         self.hlayout3.addWidget(self.threadsComboBox)
         #self.hlayout3.addStretch()
 
+        return self.hlayout3
+
+    def setupLayoutHlayout4(self):
         #label6.setText('Try blank password')
         self.checkBlankPass = QtWidgets.QCheckBox()
         self.checkBlankPass.setText('Try blank password')
@@ -415,12 +403,6 @@ class BruteWidget(QtWidgets.QWidget):
         self.checkAddMoreOptions = QtWidgets.QCheckBox()
         self.checkAddMoreOptions.setText('Additional Options')
         
-        ###
-        self.labelPath = QtWidgets.QLineEdit()                              # this is the extra input field to insert the path to brute force
-        self.labelPath.setFixedWidth(800)
-        self.labelPath.setText('/')
-        ###
-        
         self.hlayout4 = QtWidgets.QHBoxLayout()
         self.hlayout4.addWidget(self.checkBlankPass)
         self.hlayout4.addWidget(self.checkLoginAsPass)
@@ -429,6 +411,15 @@ class BruteWidget(QtWidgets.QWidget):
         self.hlayout4.addWidget(self.checkVerbose)
         self.hlayout4.addWidget(self.checkAddMoreOptions)
         self.hlayout4.addStretch()
+
+        return self.hlayout4
+
+    def setupLayout(self):
+        ###
+        self.labelPath = QtWidgets.QLineEdit()                              # this is the extra input field to insert the path to brute force
+        self.labelPath.setFixedWidth(800)
+        self.labelPath.setText('/')
+        ###
 
         self.layoutAddOptions = QtWidgets.QHBoxLayout()
         self.layoutAddOptions.addWidget(self.labelPath)
@@ -447,11 +438,11 @@ class BruteWidget(QtWidgets.QWidget):
             self.display.setStyleSheet("QMenu { color:black;}") #font-size:18px; width: 150px; color:red; left: 20px;}"); # set the menu font color: black
         
         self.vlayout = QtWidgets.QVBoxLayout()
-        self.vlayout.addLayout(self.hlayout)
-        self.vlayout.addLayout(self.hlayout4)
+        self.vlayout.addLayout(self.setupLayoutHlayout())
+        self.vlayout.addLayout(self.setupLayoutHlayout4())
         self.vlayout.addLayout(self.layoutAddOptions)
-        self.vlayout.addLayout(self.hlayout2)
-        self.vlayout.addLayout(self.hlayout3)
+        self.vlayout.addLayout(self.setupLayoutHlayout2())
+        self.vlayout.addLayout(self.setupLayoutHlayout3())
         self.vlayout.addWidget(self.display)
         self.setLayout(self.vlayout)
 
