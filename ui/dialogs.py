@@ -810,13 +810,13 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.hlayout_4.insertStretch(-1,1)
         self.hlayout_4.addStretch()
                 
-    def updateFields(self, status='', openPorts='', closedPorts='', filteredPorts='', ipv4='', ipv6='', macaddr='', osMatch='', osAccuracy=''):
-        self.HostStateText.setText(str(status))
-        self.OpenPortsText.setText(str(openPorts))
-        self.ClosedPortsText.setText(str(closedPorts))
-        self.FilteredPortsText.setText(str(filteredPorts))
-        self.IP4Text.setText(str(ipv4))
-        self.IP6Text.setText(str(ipv6))
-        self.MacText.setText(str(macaddr))
-        self.OSNameText.setText(str(osMatch))
-        self.OSAccuracyText.setText(str(osAccuracy))
+    def updateFields(self, **kwargs):
+        self.HostStateText.setText(kwargs.get('status') or 'unknown')
+        self.OpenPortsText.setText(kwargs.`get('openPorts') or 'unknown')
+        self.ClosedPortsText.setText(kwargs.get('closedPorts') or 'unknown')
+        self.FilteredPortsText.setText(kwargs.get('filteredPorts') or 'unknown')
+        self.IP4Text.setText(kwargs.get('ipv4') or 'unknown')
+        self.IP6Text.setText(kwargs.get('ipv6') or 'unknown')
+        self.MacText.setText(kwargs.get('macaddr') or 'unknown')
+        self.OSNameText.setText(kwargs.get('osMatch') or 'unknown')
+        self.OSAccuracyText.setText(kwargs.get('osAccuracy') or 'unknown')
