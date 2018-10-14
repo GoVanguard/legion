@@ -47,14 +47,12 @@ class ServicesTableModel(QtCore.QAbstractTableModel):                   # needs 
             if index.column() == 0 or index.column() == 2:
                 tmp_state = self.__services[index.row()]['state']
 
-                if tmp_state == 'open':
-                    return QtGui.QIcon("./images/open.gif")
-                
-                elif tmp_state == 'closed':
-                    return QtGui.QIcon("./images/closed.gif")
-                
-                else:
-                    return QtGui.QIcon("./images/filtered.gif")
+                stateMap = {'open':'open', 'closed':'closed', 'filtered':'filtered'}
+                defaultState = 'filtered'
+
+                stateIconName = stateMap.get(str(tmp_state)) or defaultState
+                stateIcon = "./images/{stateIconName}.gif".format(stateIconName=stateIconName)
+                return QtGui.QIcon(stateIcon)
 
         if role == QtCore.Qt.DisplayRole:                               # how to display each cell
             value = ''

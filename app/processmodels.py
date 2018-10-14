@@ -48,25 +48,29 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
                     return "not implemented"
 
     def data(self, index, role):                                        # this method takes care of how the information is displayed
-        if role == QtCore.Qt.DisplayRole:                               # how to display each cell      
-            value = ''
-            row = index.row()
-            column = index.column()
-            processColumns = {1:'display', 2:'pid', 3:'name', 5:'hostip', 7:'protocol', 8:'command', 9:'starttime', 10:'endtime', 11:'outputfile', 12:'output', 13:'status', 14:'closed'}
+        if role != QtCore.Qt.DisplayRole:                               # how to display each cell      
+            return
 
-            if column == 4:
-                if not self.__processes[row]['tabtitle'] == '':
-                    value = self.__processes[row]['tabtitle']
-                else:
-                    value = self.__processes[row]['name']
-            elif column == 6:
-                if not self.__processes[row]['port'] == '' and not self.__processes[row]['protocol'] == '':
-                    value = self.__processes[row]['port'] + '/' + self.__processes[row]['protocol']
-                else:
-                    value = self.__processes[row]['port']
+        value = ''
+        row = index.row()
+        column = index.column()
+        processColumns = {1:'display', 2:'pid', 3:'name', 5:'hostip', 7:'protocol', 8:'command', 9:'starttime', 10:'endtime', 11:'outputfile', 12:'output', 13:'status', 14:'closed'}
+
+        if column == 0:
+            value = ''
+        elif column == 4:
+            if not self.__processes[row]['tabtitle'] == '':
+                value = self.__processes[row]['tabtitle']
             else:
-                value = processColumns.get(int(column))
-            return value            
+                value = self.__processes[row]['name']
+        elif column == 6:
+            if not self.__processes[row]['port'] == '' and not self.__processes[row]['protocol'] == '':
+                value = self.__processes[row]['port'] + '/' + self.__processes[row]['protocol']
+            else:
+                value = self.__processes[row]['port']
+        else:
+            value = self.__processes[row][processColumns.get(int(column))]
+        return value            
 
     def sort(self, Ncol, order):
         self.layoutAboutToBeChanged.emit()
@@ -77,7 +81,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
         if Ncol == 5:
             for i in range(len(self.__processes)):
                 array.append(IP2Int(self.__processes[i]['hostip']))
-                
+
         elif Ncol == 6:
             for i in range(len(self.__processes)):
                 if self.__processes[i]['port'] == '':
@@ -87,7 +91,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
         else:
             field = sortColumns.get(int(Ncol)) or 'status'
             for i in range(len(self.__processes)):
-                array.append(self.__processes[i]['status'])
+                array.append(self.__processes[i][field])
         
         sortArrayWithArray(array, self.__processes)                     # sort the services based on the values in the array
 
@@ -127,11 +131,6 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
     def getProcessIdForRow(self, row):
         return self.__processes[row]['id']
         
-    def getProcessIdForPid(self, pid):
-        for i in range(len(self.__processes)):
-            if str(self.__processes[i]['pid']) == str(pid):
-                return self.__processes[i]['id']
-                
     def getToolNameForRow(self, row):
         return self.__processes[row]['name']
         
@@ -154,11 +153,5 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
     def getProtocolForRow(self, row):
         return self.__processes[row]['protocol']
         
-    def getOutputForRow(self, row):
-        return self.__processes[row]['output']
-        
     def getOutputfileForRow(self, row):
         return self.__processes[row]['outputfile']      
-    
-    def getDisplayForRow(self, row):
-        return self.__processes[row]['display']
