@@ -73,11 +73,11 @@ class nmap_session(Base):
         self.filename=filename
         self.start_time=args[0]
         self.finish_time=args[1]
-        self.nmap_version=kwargs.get('nmap_version')
-        self.scan_args=kwargs.get('scan_args')
-        self.total_hosts=kwargs.get('total_host')
-        self.up_hosts=kwargs.get('up_hosts')
-        self.down_hosts=kwargs.get('down_hosts')
+        self.nmap_version=kwargs.get('nmap_version') or 'unknown'
+        self.scan_args=kwargs.get('scan_args') or ''
+        self.total_hosts=kwargs.get('total_host') or '0'
+        self.up_hosts=kwargs.get('up_hosts') or '0'
+        self.down_hosts=kwargs.get('down_hosts') or '0'
 
 
 class nmap_os(Base):
@@ -173,23 +173,23 @@ class nmap_host(Base):
     os=relationship(nmap_os)
     ports=relationship(nmap_port)
 
-    def __init__(self, os_match='', os_accuracy='', ip='', ipv4='', ipv6='', macaddr='', status='', hostname='', vendor='', uptime='', lastboot='', distance='', state='', count=''):
-        self.checked='False'
-        self.os_match=os_match
-        self.os_accuracy=os_accuracy
-        self.ip=ip
-        self.ipv4=ipv4
-        self.ipv6=ipv6
-        self.macaddr=macaddr
-        self.status=status
-        self.hostname=hostname
-        self.host_id=hostname
-        self.vendor=vendor
-        self.uptime=uptime
-        self.lastboot=lastboot
-        self.distance=distance
-        self.state=state
-        self.count=count
+    def __init__(self, **kwargs):
+        self.checked=kwargs.get('checked') or 'False'
+        self.os_match=kwargs.get('os_match') or 'unknown'
+        self.os_accuracy=kwargs.get('os_accuracy') or 'NaN'
+        self.ip=kwargs.get('ip') or 'unknown'
+        self.ipv4=kwargs.get('ipv4') or 'unknown'
+        self.ipv6=kwargs.get('ipv6') or 'unknown'
+        self.macaddr=kwargs.get('macaddr') or 'unknown'
+        self.status=kwargs.get('status') or 'unknown'
+        self.hostname=kwargs.get('hostname') or 'unknown'
+        self.host_id=kwargs.get('hostname') or 'unknown'
+        self.vendor=kwargs.get('vendor') or 'unknown'
+        self.uptime=kwargs.get('uptime') or 'unknown'
+        self.lastboot=kwargs.get('lastboot') or 'unknown'
+        self.distance=kwargs.get('distance') or 'unknown'
+        self.state=kwargs.get('state') or 'unknown'
+        self.count=kwargs.get('count') or 'unknown'
 
 
 class note(Base):
