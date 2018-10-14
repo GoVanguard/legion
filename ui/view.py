@@ -216,7 +216,8 @@ class View(QtCore.QObject):
         self.ui_mainwindow.setWindowTitle(str(title))
 
     def yesNoDialog(self, message, title):
-        QtWidgets.QMessageBox.question(self.ui.centralwidget, title, message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+        dialog = QtWidgets.QMessageBox.question(self.ui.centralwidget, title, message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+        return dialog
         
     def setDirty(self, status=True):                                    # this function is called for example when the user edits notes
         self.dirty = status     
