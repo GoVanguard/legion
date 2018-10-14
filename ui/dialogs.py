@@ -208,11 +208,14 @@ class BruteWidget(QtWidgets.QWidget):
         self.port = port
         self.service = service
 
-#       self.hydraServices = hydraServices
-#       self.hydraNoUsernameServices = hydraNoUsernameServices
-#       self.hydraNoPasswordServices = hydraNoPasswordServices
-#       self.bruteSettings = bruteSettings
-#       self.generalSettings = generalSettings
+        ##
+        #self.hydraServices = hydraServices
+        #self.hydraNoUsernameServices = hydraNoUsernameServices
+        #self.hydraNoPasswordServices = hydraNoPasswordServices
+        #self.bruteSettings = bruteSettings
+        #self.generalSettings = generalSettings
+        ##
+
         self.settings = settings
         self.pid = -1                                                   # will store hydra's pid so we can kill it
         self.setupLayout()
@@ -226,43 +229,33 @@ class BruteWidget(QtWidgets.QWidget):
         self.checkAddMoreOptions.stateChanged.connect(self.showMoreOptions)     
         
     def setupLayout(self):
-        
+        hydraServiceConversion = {'login':'rlogin', 'ms-sql-s':'mssql', 'ms-wbt-server':'rdp', 'netbios-ssn':'smb', 'netbios-ns':'smb', 'microsoft-ds':'smb', 'postgresql':'postgres', 'vmware-auth':'vmauthd"'}
         # sometimes nmap service name is different from hydra service name
         if self.service is None:
             self.service = ''
-        elif self.service == "login":
-            self.service = "rlogin"
-        elif self.service == "ms-sql-s":
-            self.service = "mssql"
-        elif self.service == "ms-wbt-server":
-            self.service = "rdp"
-        elif self.service == "netbios-ssn" or self.service == "netbios-ns" or self.service == "microsoft-ds":
-            self.service = "smb"
-        elif self.service == "postgresql":
-            self.service = "postgres"
-        elif self.service == "vmware-auth":
-            self.service = "vmauthd"
+        elif str(self.service) in hydraServiceConversion:
+            self.service = hydraServiceConversion.get(str(self.service))
 
         self.label1 = QtWidgets.QLabel()
         self.label1.setText('IP')
-        #self.label1.setFixedWidth(10)          # experimental
-        #self.label1.setAlignment(Qt.AlignLeft)
+        self.label1.setFixedWidth(10)          # experimental
+        self.label1.setAlignment(Qt.AlignLeft)
         self.ipTextinput = QtWidgets.QLineEdit()
         self.ipTextinput.setText(str(self.ip))
         self.ipTextinput.setFixedWidth(125)
         
         self.label2 = QtWidgets.QLabel()
         self.label2.setText('Port')
-        #self.label2.setFixedWidth(10)          # experimental
-        #self.label2.setAlignment(Qt.AlignLeft)
+        self.label2.setFixedWidth(10)          # experimental
+        self.label2.setAlignment(Qt.AlignLeft)
         self.portTextinput = QtWidgets.QLineEdit()
         self.portTextinput.setText(str(self.port))
         self.portTextinput.setFixedWidth(60)
         
         self.label3 = QtWidgets.QLabel()
         self.label3.setText('Service')
-        #self.label3.setFixedWidth(10)          # experimental
-        #self.label3.setAlignment(Qt.AlignLeft)
+        self.label3.setFixedWidth(10)          # experimental
+        self.label3.setAlignment(Qt.AlignLeft)
         self.serviceComboBox = QtWidgets.QComboBox()
         self.serviceComboBox.insertItems(0, self.settings.brute_services.split(","))
         self.serviceComboBox.setStyleSheet("QComboBox { combobox-popup: 0; }");
