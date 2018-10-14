@@ -75,6 +75,8 @@ class AppSettings():
         self.actions.endGroup()
 
         self.actions.beginGroup('HostActions')
+        self.actions.setValue("nmap-discover", ["Run nmap-discover", "nmap -n -sV -O --version-light -T4 [IP] -oA \"[OUTPUT]\""])
+        self.actions.setValue("nmap script - Vulners", ["Run nmap script - Vulners", "nmap -sV --script=./scripts/nmap/vulners.nse -vvvv [IP] -oA \"[OUTPUT]\""])
         self.actions.setValue("nmap-fast-tcp", ["Run nmap (fast TCP)", "nmap -Pn -sV -sC -F -T4 -vvvv [IP] -oA \"[OUTPUT]\""])
         self.actions.setValue("nmap-full-tcp", ["Run nmap (full TCP)", "nmap -Pn -sV -sC -O -p- -T4 -vvvvv [IP] -oA \"[OUTPUT]\""])
         self.actions.setValue("nmap-fast-udp", ["Run nmap (fast UDP)", "nmap -n -Pn -sU -F --min-rate=1000 -vvvvv [IP] -oA \"[OUTPUT]\""])
@@ -155,8 +157,7 @@ class AppSettings():
         self.actions.endGroup()
 
         self.actions.beginGroup('SchedulerSettings')
-        #self.actions.setValue("whatweb", ["http,https,ssl,soap,http-proxy,http-alt,https-alt","tcp"])
-        #self.actions.setValue("banner", ["telnet,ssh,http,https,dns","tcp"])
+        self.actions.setValue("whatweb", ["http,https,ssl,soap,http-proxy,http-alt,https-alt","tcp"])
         self.actions.setValue("nikto", ["http,https,ssl,soap,http-proxy,http-alt,https-alt","tcp"])
         self.actions.setValue("sslscan", ["https,ssl","tcp"])
         self.actions.setValue("screenshooter",["http,https,ssl,http-proxy,http-alt,https-alt","tcp"])

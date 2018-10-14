@@ -41,20 +41,20 @@ class process(Base):
     status=Column(String)
     closed=Column(String)
 
-    def __init__(self, pid, name, tabtitle, hostip, port, protocol, command, starttime, endtime, outputfile, status, processOutputId):
+    def __init__(self, pid, *args):
         self.display='True'
         self.pid=pid
-        self.name=name
-        self.tabtitle=tabtitle
-        self.hostip=hostip
-        self.port=port
-        self.protocol=protocol
-        self.command=command
-        self.starttime=starttime
-        self.endtime=endtime
-        self.outputfile=outputfile
-        self.output=processOutputId
-        self.status=status
+        self.name=args[0]
+        self.tabtitle=args[1]
+        self.hostip=args[2]
+        self.port=args[3]
+        self.protocol=args[4]
+        self.command=args[5]
+        self.starttime=args[6]
+        self.endtime=args[7]
+        self.outputfile=args[8]
+        self.output=args[10]
+        self.status=args[9]
         self.closed='False'
 
 # This class holds various info about an nmap scan
@@ -69,15 +69,15 @@ class nmap_session(Base):
     up_hosts=Column(String)
     down_hosts=Column(String)
 
-    def __init__(self, filename, start_time, finish_time, nmap_version='', scan_args='', total_hosts='0', up_hosts='0', down_hosts='0'):
+    def __init__(self, filename, *args, **kwargs):
         self.filename=filename
-        self.start_time=start_time
-        self.finish_time=finish_time
-        self.nmap_version=nmap_version
-        self.scan_args=scan_args
-        self.total_hosts=total_hosts
-        self.up_hosts=up_hosts
-        self.down_hosts=down_hosts
+        self.start_time=args[0]
+        self.finish_time=args[1]
+        self.nmap_version=kwargs.get('nmap_version')
+        self.scan_args=kwargs.get('scan_args')
+        self.total_hosts=kwargs.get('total_host')
+        self.up_hosts=kwargs.get('up_hosts')
+        self.down_hosts=kwargs.get('down_hosts')
 
 
 class nmap_os(Base):
@@ -91,14 +91,14 @@ class nmap_os(Base):
     accuracy=Column(String)
     host_id=Column(String, ForeignKey('nmap_host.id'))
 
-    def __init__(self, name, family, generation, os_type, vendor, accuracy, hostId):
+    def __init__(self, name, *args):
         self.name=name
-        self.family=family
-        self.generation=generation
-        self.os_type=os_type
-        self.vendor=vendor
-        self.accuracy=accuracy
-        self.host_id=hostId
+        self.family=args[0]
+        self.generation=args[1]
+        self.os_type=args[2]
+        self.vendor=args[3]
+        self.accuracy=args[4]
+        self.host_id=args[5]
 
 class nmap_port(Base):
     __tablename__ = 'nmap_port'
