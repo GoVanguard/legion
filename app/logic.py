@@ -291,7 +291,7 @@ class Logic():
     def deleteAllPortsAndScriptsForHostFromDB(self, hostID, protocol):
         session = self.db.session()
         # TACOS
-        ports_for_host = session.query(nmap_port).filter_by(nmap_port.host_id == hostID).filter_by(nmap_port.protocol == str(protocol)).all()
+        ports_for_host = session.query(nmap_port).filter(nmap_port.host_id == hostID).filter(nmap_port.protocol == str(protocol)).all()
         #ports_for_host = nmap_port.query.filter(nmap_port.host_id == hostID, nmap_port.protocol == str(protocol)).all()
                 
         for p in ports_for_host:
@@ -299,19 +299,15 @@ class Logic():
             #scripts_for_ports = nmap_script.query.filter(nmap_script.port_id == p.id).all()
             for s in scripts_for_ports:
                 session.delete(s)
-                #s.delete()              
         
         for p in ports_for_host:
             session.delete(p)
-            #p.delete()
                     
-        #self.db.commit()
         session.commit()
 
     def getHostInformation(self, hostIP):
         session = self.db.session()
         return session.query(nmap_host).filter_by(ip=str(hostIP)).first()
-        #return nmap_host.query.filter_by(ip=str(hostIP)).first()
 
     def getPortStatesForHost(self,hostID):
         tmp_query = ('SELECT port.state FROM nmap_port as port WHERE port.host_id=?')
@@ -646,7 +642,10 @@ class NmapImporter(QtCore.QThread):
                     db_port = session.query(nmap_port).filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
                     
                     if not db_port:     
-                        db_port = nmap_port(p.portId, p.protocol, p.state, db_host.id, db_service.id)
+                        if db_service:
+                            db_port = nmap_port(p.portId, p.protocol, p.state, db_host.id, db_service.id)
+                        else:
+                            db_port = nmap_port(p.portId, p.protocol, p.state, db_host.id, '')
                         session.add(db_port)
 
             session.commit()

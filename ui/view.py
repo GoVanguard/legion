@@ -214,6 +214,9 @@ class View(QtCore.QObject):
     
     def setMainWindowTitle(self, title):
         self.ui_mainwindow.setWindowTitle(str(title))
+
+    def yesNoDialog(self, message, title):
+        QtWidgets.QMessageBox.question(self.ui.centralwidget, title, message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
         
     def setDirty(self, status=True):                                    # this function is called for example when the user edits notes
         self.dirty = status     
@@ -233,7 +236,7 @@ class View(QtCore.QObject):
     def dealWithRunningProcesses(self, exiting=False):
         if len(self.controller.getRunningProcesses()) > 0:
             message = "There are still processes running. If you continue, every process will be terminated. Are you sure you want to continue?"
-            reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+            reply = self.yesNoDialog(message, 'Confirm')
                     
             if not reply == QtWidgets.QMessageBox.Yes:
                 return False
@@ -252,12 +255,13 @@ class View(QtCore.QObject):
         return self.dealWithRunningProcesses(exiting)                   # deal with running processes
 
     def confirmExit(self):          
-        reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', "Are you sure to exit the program?", QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+        message = "Are you sure to exit the program?"
+        reply = self.yesNoDialog(message, 'Confirm')
         return (reply == QtWidgets.QMessageBox.Yes)
 
     def killProcessConfirmation(self):
         message = "Are you sure you want to kill the selected processes?"
-        reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+        reply = self.yesNoDialog(message, 'Confirm')
         if reply == QtWidgets.QMessageBox.Yes:
             return True
         return False
@@ -1241,7 +1245,7 @@ class View(QtCore.QObject):
 
         if str(self.controller.getProcessStatusForDBId(dbId)) == 'Running':
             message = "This process is still running. Are you sure you want to kill it?"
-            reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+            reply = self.yesNoDialog(message, 'Confirm')
             if reply == QtWidgets.QMessageBox.Yes:
                 self.controller.killProcess(pid, dbId)
             else:
@@ -1250,7 +1254,7 @@ class View(QtCore.QObject):
         # TODO: duplicate code      
         if str(self.controller.getProcessStatusForDBId(dbId)) == 'Waiting':
             message = "This process is waiting to start. Are you sure you want to cancel it?"
-            reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+            reply = self.yesNoDialog(message, 'Confirm')
             if reply == QtWidgets.QMessageBox.Yes:
                 self.controller.cancelProcess(dbId)
             else:
@@ -1347,7 +1351,7 @@ class View(QtCore.QObject):
         if not self.ui.BruteTabWidget.currentWidget().pid == -1:        # if process is running
             if self.ProcessesTableModel.getProcessStatusForPid(self.ui.BruteTabWidget.currentWidget().pid)=="Running":
                 message = "This process is still running. Are you sure you want to kill it?"
-                reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+                reply = self.yesNoDialog(message, 'Confirm')
                 if reply == QtWidgets.QMessageBox.Yes:
                     self.killBruteProcess(self.ui.BruteTabWidget.currentWidget())
                 else:
@@ -1380,7 +1384,7 @@ class View(QtCore.QObject):
                                                                         # check if host is already in scope
             if not self.controller.isHostInDB(bWidget.ipTextinput.text()):
                 message = "This host is not in scope. Add it to scope and continue?"
-                reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.Yes)
+                reply = self.yesNoDialog(message, 'Confirm')
                 if reply == QtWidgets.QMessageBox.No:
                     return
                 else:
