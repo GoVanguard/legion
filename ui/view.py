@@ -1129,17 +1129,13 @@ class View(QtCore.QObject):
             for row in range(len(self.ProcessesTableModel.getProcesses())):
                 status = self.ProcessesTableModel.getProcesses()[row].status
                 
-                if status == 'Waiting':
-                    self.runningWidget = ImagePlayer("./images/waiting.gif")
-                elif status == 'Running':
-                    self.runningWidget = ImagePlayer("./images/running.gif")
-                elif status == 'Finished':
-                    self.runningWidget = ImagePlayer("./images/finished.gif")
-                elif status == 'Crashed': # TODO: replace gif?
-                    self.runningWidget = ImagePlayer("./images/killed.gif")
-                else:
-                    self.runningWidget = ImagePlayer("./images/killed.gif")
-                    
+                directStatus = {'Waiting':'waiting', 'Running':'running', 'Finished':'finished', 'Crashed':'killed'}
+                defaultStatus = 'killed'
+
+                processIconName = directStatus.get(status) or defaultStatus
+                processIcon = './images/{processIconName}.gif'.format(processIconName=processIconName)
+
+                self.runningWidget = ImagePlayer(processIcon)
                 self.ui.ProcessesTableView.setIndexWidget(self.ui.ProcessesTableView.model().index(row,0), self.runningWidget)
 
     #################### GLOBAL INTERFACE UPDATE FUNCTION ####################
