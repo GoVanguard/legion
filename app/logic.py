@@ -593,7 +593,7 @@ class NmapImporter(QtCore.QThread):
                 db_host = session.query(nmap_host).filter_by(ip=h.ip).first()
                 
                 if not db_host:                                         # if host doesn't exist in DB, create it first
-                    hid = nmap_host('', '', h.ip, h.ipv4, h.ipv6, h.macaddr, h.status, h.hostname, h.vendor, h.uptime, h.lastboot, h.distance, h.state, h.count)
+                    hid = nmap_host(os_match='', os_accuracy='', ip=h.ip, ipv4=h.ipv4, ipv6=h.ipv6, macaddr=h.macaddr, status=h.status, hostname=h.hostname, vendor=h.vendor, uptime=h.uptime, lastboot=h.lastboot, distance=h.distance, state=h.state, count=h.count)
                     log.info("Adding db_host")
                     session.add(hid)
                     t_note = note(h.ip, 'Added by nmap')
