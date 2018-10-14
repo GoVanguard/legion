@@ -52,56 +52,29 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
             value = ''
             row = index.row()
             column = index.column()
+            processColumns = {1:'display', 2:'pid', 3:'name', 5:'hostip', 7:'protocol', 8:'command', 9:'starttime', 10:'endtime', 11:'outputfile', 12:'output', 13:'status', 14:'closed'}
 
-            if column == 1:
-                value = self.__processes[row]['display']        
-            elif column == 2:
-                value = self.__processes[row]['pid']
-            elif column == 3:
-                value = self.__processes[row]['name']
-            elif column == 4:
+            if column == 4:
                 if not self.__processes[row]['tabtitle'] == '':
                     value = self.__processes[row]['tabtitle']
                 else:
                     value = self.__processes[row]['name']
-            elif column == 5:
-                value = self.__processes[row]['hostip']
             elif column == 6:
                 if not self.__processes[row]['port'] == '' and not self.__processes[row]['protocol'] == '':
                     value = self.__processes[row]['port'] + '/' + self.__processes[row]['protocol']
                 else:
                     value = self.__processes[row]['port']
-            elif column == 7:
-                value = self.__processes[row]['protocol']
-            elif column == 8:
-                value = self.__processes[row]['command']
-            elif column == 9:
-                value = self.__processes[row]['starttime']
-            elif column == 10:
-                value = self.__processes[row]['endtime']
-            elif column == 11:
-                value = self.__processes[row]['outputfile'] 
-            elif column == 12:  
-                value = self.__processes[row]['output']
-            elif column == 13:
-                value = self.__processes[row]['status']
-            elif column == 14:
-                value = self.__processes[row]['closed']             
+            else:
+                value = processColumns.get(int(column))
             return value            
 
     def sort(self, Ncol, order):
         self.layoutAboutToBeChanged.emit()
         array=[]
 
-        if Ncol == 3:            
-            for i in range(len(self.__processes)):
-                array.append(self.__processes[i]['name'])
-        
-        elif Ncol == 4:            
-            for i in range(len(self.__processes)):
-                array.append(self.__processes[i]['tabtitle'])
-                
-        elif Ncol == 5:
+        sortColumns = {3:'name', 4:'tabtitle', 9:'starttime', 10:'endtime'}
+
+        if Ncol == 5:
             for i in range(len(self.__processes)):
                 array.append(IP2Int(self.__processes[i]['hostip']))
                 
@@ -111,16 +84,8 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
                     return
                 else:
                     array.append(int(self.__processes[i]['port']))
-                
-        elif Ncol == 9:
-            for i in range(len(self.__processes)):
-                array.append(self.__processes[i]['starttime'])
-        
-        elif Ncol == 10:
-            for i in range(len(self.__processes)):
-                array.append(self.__processes[i]['endtime'])
-
         else:
+            field = sortColumns.get(int(Ncol)) or 'status'
             for i in range(len(self.__processes)):
                 array.append(self.__processes[i]['status'])
         
