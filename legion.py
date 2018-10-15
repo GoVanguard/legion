@@ -41,6 +41,8 @@ from ui.gui import *
 from ui.view import *
 from controller.controller import *
 from stenoLogging import *
+import quamash
+import asyncio
 
 # this class is used to catch events such as arrow key presses or close window (X)
 class MyEventFilter(QObject):
@@ -78,18 +80,16 @@ class MyEventFilter(QObject):
         else:      
             return super(MyEventFilter,self).eventFilter(receiver, event)   # normal event processing
 
-if __name__ == "__main__":
-
-    app = QApplication(sys.argv)
+def master():
     myFilter = MyEventFilter()                      # to capture events
     app.installEventFilter(myFilter)
     MainWindow = QtWidgets.QMainWindow()
     app.setWindowIcon(QIcon('./images/icons/legion_medium.svg'))
-    
+
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
 
-    try:    
+    try:
         qss_file = open('./ui/legion.qss').read()
     except IOError as e:
         log.info("[-] The legion.qss file is missing. Your installation seems to be corrupted. Try downloading the latest version.")
@@ -105,3 +105,35 @@ if __name__ == "__main__":
     MainWindow.show()
 
     sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+
+    app = QApplication(sys.argv)
+    loop = quamash.QEventLoop(app)
+    asyncio.set_event_loop(loop)
+
+    with loop:
+        myFilter = MyEventFilter()                      # to capture events
+        app.installEventFilter(myFilter)
+        MainWindow = QtWidgets.QMainWindow()
+        app.setWindowIcon(QIcon('./images/icons/legion_medium.svg'))
+
+        ui = Ui_MainWindow()
+        ui.setupUi(MainWindow)
+
+        try:
+            qss_file = open('./ui/legion.qss').read()
+        except IOError as e:
+            log.info("[-] The legion.qss file is missing. Your installation seems to be corrupted. Try downloading the latest version.")
+            exit(0)
+
+        MainWindow.setStyleSheet(qss_file)
+
+        logic = Logic()                                 # Model prep (logic, db and models)
+        view = View(ui, MainWindow)                     # View prep (gui)
+        controller = Controller(view, logic)            # Controller prep (communication between model and view)
+
+        MainWindow.show()
+
+        loop.run_forever()

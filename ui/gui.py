@@ -14,6 +14,8 @@ Copyright (c) 2018 GoVanguard
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtGui import QColor
 from ui.dialogs import *                                                # for the screenshots (image viewer)
+from qtLogging import *
+import logging
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -250,10 +252,11 @@ class Ui_MainWindow(object):
         # Terminal Tab
         self.TerminalTab = QtWidgets.QWidget()
         self.TerminalTab.setObjectName(_fromUtf8("TerminalTab"))
-        self.TerminalOutputTextView = QtWidgets.QPlainTextEdit(self.TerminalTab)
-        self.TerminalOutputTextView.setReadOnly(False)
+        #self.TerminalOutputTextView = QtWidgets.QPlainTextEdit(self.TerminalTab)
+        self.TerminalOutputTextView = QPlainTextEditLogger(self.TerminalTab)
+        log.addHandler(self.TerminalOutputTextView)
         self.TerminalTabLayout = QtWidgets.QHBoxLayout(self.TerminalTab)
-        self.TerminalTabLayout.addWidget(self.TerminalOutputTextView)
+        #self.TerminalTabLayout.addWidget(self.TerminalOutputTextView)
         self.BottomTabWidget.addTab(self.TerminalTab, _fromUtf8(""))
 
         # Python Tab

@@ -812,9 +812,9 @@ class HostInformationWidget(QtWidgets.QWidget):
                 
     def updateFields(self, **kwargs):
         self.HostStateText.setText(kwargs.get('status') or 'unknown')
-        self.OpenPortsText.setText(kwargs.`get('openPorts') or 'unknown')
-        self.ClosedPortsText.setText(kwargs.get('closedPorts') or 'unknown')
-        self.FilteredPortsText.setText(kwargs.get('filteredPorts') or 'unknown')
+        self.OpenPortsText.setText(str(kwargs.get('openPorts') or 0))
+        self.ClosedPortsText.setText(str(kwargs.get('closedPorts') or 0))
+        self.FilteredPortsText.setText(str(kwargs.get('filteredPorts') or 0))
         self.IP4Text.setText(kwargs.get('ipv4') or 'unknown')
         self.IP6Text.setText(kwargs.get('ipv6') or 'unknown')
         self.MacText.setText(kwargs.get('macaddr') or 'unknown')
