@@ -25,8 +25,7 @@ import asyncio, aioredis, aiohttp, aiomonitor
 from datetime import datetime
 import hashlib, json
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from stenoLogging import *
-from qtLogging import *
+from utilities.stenoLogging import *
 from functools import wraps
 from time import time
 import io
