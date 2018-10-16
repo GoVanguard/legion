@@ -3,7 +3,7 @@ from six.moves.urllib.parse import quote
 from datetime import datetime
 import hashlib, json
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from stenoLogging import *
+from utilities.stenoLogging import *
 import configparser
 from utilities import DictToObject, DictObject
 from sanic import Sanic, response

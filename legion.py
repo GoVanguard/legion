@@ -40,7 +40,6 @@ from app.logic import *
 from ui.gui import *
 from ui.view import *
 from controller.controller import *
-from stenoLogging import *
 import quamash
 import asyncio
 

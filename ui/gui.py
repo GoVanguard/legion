@@ -14,7 +14,7 @@ Copyright (c) 2018 GoVanguard
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtGui import QColor
 from ui.dialogs import *                                                # for the screenshots (image viewer)
-from qtLogging import *
+from utilities.qtLogging import *
 import logging
 
 try:
@@ -158,7 +158,8 @@ class Ui_MainWindow(object):
         self.DisplayWidget = QtWidgets.QWidget()
         self.DisplayWidget.setObjectName('ToolOutput')
         self.DisplayWidget.setSizePolicy(self.sizePolicy2)
-        #self.toolOutputTextView = QtWidgets.QTextEdit(self.DisplayWidget)
+        ### ?
+        self.toolOutputTextView = QtWidgets.QTextEdit(self.DisplayWidget)
         self.toolOutputTextView = QtWidgets.QPlainTextEdit(self.DisplayWidget)
         self.toolOutputTextView.setReadOnly(True)
         self.DisplayWidgetLayout = QtWidgets.QHBoxLayout(self.DisplayWidget)
@@ -212,7 +213,6 @@ class Ui_MainWindow(object):
         self.NotesTab.setObjectName(_fromUtf8("NotesTab"))
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.NotesTab)
         self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
-        #self.NotesTextEdit = QtWidgets.QTextEdit(self.NotesTab)
         self.NotesTextEdit = QtWidgets.QPlainTextEdit(self.NotesTab)
         self.NotesTextEdit.setObjectName(_fromUtf8("NotesTextEdit"))
         self.horizontalLayout_4.addWidget(self.NotesTextEdit)
@@ -240,24 +240,25 @@ class Ui_MainWindow(object):
         self.BottomTabWidget.setBaseSize(QtCore.QSize(0, 0))
         self.BottomTabWidget.setObjectName(_fromUtf8("BottomTabWidget"))
         
-        self.LogTab = QtWidgets.QWidget()
-        self.LogTab.setObjectName(_fromUtf8("LogTab"))
-        self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.LogTab)
+        self.ProcessTab = QtWidgets.QWidget()
+        self.ProcessTab.setObjectName(_fromUtf8("ProcessesTab"))
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.ProcessTab)
         self.horizontalLayout_5.setObjectName(_fromUtf8("horizontalLayout_5"))
-        self.ProcessesTableView = QtWidgets.QTableView(self.LogTab)
+        self.ProcessesTableView = QtWidgets.QTableView(self.ProcessTab)
         self.ProcessesTableView.setObjectName(_fromUtf8("ProcessesTableView"))
         self.horizontalLayout_5.addWidget(self.ProcessesTableView)
-        self.BottomTabWidget.addTab(self.LogTab, _fromUtf8(""))
+        self.BottomTabWidget.addTab(self.ProcessTab, _fromUtf8(""))
 
         # Terminal Tab
         self.TerminalTab = QtWidgets.QWidget()
         self.TerminalTab.setObjectName(_fromUtf8("TerminalTab"))
-        #self.TerminalOutputTextView = QtWidgets.QPlainTextEdit(self.TerminalTab)
-        self.TerminalOutputTextView = QPlainTextEditLogger(self.TerminalTab)
-        log.addHandler(self.TerminalOutputTextView)
         self.TerminalTabLayout = QtWidgets.QHBoxLayout(self.TerminalTab)
-        #self.TerminalTabLayout.addWidget(self.TerminalOutputTextView)
+        self.TerminalTabLayout.setObjectName(_fromUtf8("TerminalTabLayout"))
+        self.TerminalOutputTextView = QPlainTextEditLogger(self.TerminalTab)
+        self.TerminalOutputTextView.widget.setObjectName(_fromUtf8("TerminalOutputTextView"))
+        self.TerminalTabLayout.addWidget(self.TerminalOutputTextView.widget)
         self.BottomTabWidget.addTab(self.TerminalTab, _fromUtf8(""))
+        log.addHandler(self.TerminalOutputTextView)
 
         # Python Tab
         self.PythonTab = QtWidgets.QWidget()
@@ -274,8 +275,6 @@ class Ui_MainWindow(object):
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
-#       self.menuEdit = QtWidgets.QMenu(self.menubar)
-#       self.menuEdit.setObjectName(_fromUtf8("menuEdit"))
         self.menuSettings = QtWidgets.QMenu(self.menubar)
         self.menuSettings.setObjectName(_fromUtf8("menuSettings"))
         self.menuHelp = QtWidgets.QMenu(self.menubar)
@@ -308,8 +307,7 @@ class Ui_MainWindow(object):
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionExit)
         self.menubar.addAction(self.menuFile.menuAction())
-#       self.menubar.addAction(self.menuEdit.menuAction())
-#       self.menubar.addAction(self.menuSettings.menuAction())
+        self.menubar.addAction(self.menuSettings.menuAction())
         self.menubar.addAction(self.menuSettings.menuAction())
         self.actionSettings = QtWidgets.QAction(MainWindow)
         self.actionSettings.setObjectName(_fromUtf8("getSettingsMenu"))
@@ -336,17 +334,13 @@ class Ui_MainWindow(object):
         self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.ScriptsTab), QtWidgets.QApplication.translate("MainWindow", "Scripts", None))
         self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.InformationTab), QtWidgets.QApplication.translate("MainWindow", "Information", None))
         self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.NotesTab), QtWidgets.QApplication.translate("MainWindow", "Notes", None))
-#       self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.ScreenshotsTab), QtWidgets.QApplication.translate("MainWindow", "Screenshots", None))
         self.MainTabWidget.setTabText(self.MainTabWidget.indexOf(self.ScanTab), QtWidgets.QApplication.translate("MainWindow", "Scan", None))
-        #self.BruteTabWidget.setTabText(self.BruteTabWidget.indexOf(self.tab), QtWidgets.QApplication.translate("MainWindow", "Tab 1", None))
-        #self.BruteTabWidget.setTabText(self.BruteTabWidget.indexOf(self.tab_2), QtWidgets.QApplication.translate("MainWindow", "Tab 2", None))
         self.MainTabWidget.setTabText(self.MainTabWidget.indexOf(self.BruteTab), QtWidgets.QApplication.translate("MainWindow", "Brute", None))
-        self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.LogTab), QtWidgets.QApplication.translate("MainWindow", "Log", None))
+        self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.ProcessTab), QtWidgets.QApplication.translate("MainWindow", "Processes", None))
         self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.TerminalTab), QtWidgets.QApplication.translate("MainWindow", "Terminal", None))
         self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.PythonTab), QtWidgets.QApplication.translate("MainWindow", "Python", None))
         self.menuFile.setTitle(QtWidgets.QApplication.translate("MainWindow", "File", None))
-#       self.menuEdit.setTitle(QtWidgets.QApplication.translate("MainWindow", "Edit", None))
-#       self.menuSettings.setTitle(QtWidgets.QApplication.translate("MainWindow", "Settings", None))
+        self.menuSettings.setTitle(QtWidgets.QApplication.translate("MainWindow", "Settings", None))
         self.menuHelp.setTitle(QtWidgets.QApplication.translate("MainWindow", "Help", None))
         self.actionExit.setText(QtWidgets.QApplication.translate("MainWindow", "Exit", None))
         self.actionExit.setToolTip(QtWidgets.QApplication.translate("MainWindow", "Exit the application", None))
