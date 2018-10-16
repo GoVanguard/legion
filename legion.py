@@ -16,13 +16,13 @@ try:
     from sqlalchemy.orm.scoping import ScopedSession as scoped_session
     #import elixir
 except ImportError as e:
-    log.info("[-] Import failed. SQL Alchemy library not found. If on Ubuntu or similar try: apt-get install python3-sqlalchemy*")
+    log.info("Import failed. SQL Alchemy library not found. If on Ubuntu or similar try: apt-get install python3-sqlalchemy*")
     exit(1)
     
 try:
     from PyQt5 import QtWidgets, QtGui, QtCore
 except ImportError as e:
-    log.info("[-] Import failed. PyQt4 library not found. If on Ubuntu or similar try: agt-get install python3-pyqt4")
+    log.info("Import failed. PyQt4 library not found. If on Ubuntu or similar try: agt-get install python3-pyqt4")
     log.info(e)
     exit(1)
 
@@ -33,7 +33,7 @@ except ImportError as e:
         #from PySide import QtWebKit
         pass
     except ImportError:
-        log.info("[-] Import failed. QtWebKit library not found. If on Ubuntu or similar try: agt-get install python3-pyside.qtwebkit")
+        log.info("Import failed. QtWebKit library not found. If on Ubuntu or similar try: agt-get install python3-pyside.qtwebkit")
         exit(1)
     
 from app.logic import *
@@ -79,7 +79,14 @@ class MyEventFilter(QObject):
         else:      
             return super(MyEventFilter,self).eventFilter(receiver, event)   # normal event processing
 
-def master():
+
+if __name__ == "__main__":
+
+    app = QApplication(sys.argv)
+    #loop = quamash.QEventLoop(app)
+    #asyncio.set_event_loop(loop)
+
+    #with loop:
     myFilter = MyEventFilter()                      # to capture events
     app.installEventFilter(myFilter)
     MainWindow = QtWidgets.QMainWindow()
@@ -91,9 +98,8 @@ def master():
     try:
         qss_file = open('./ui/legion.qss').read()
     except IOError as e:
-        log.info("[-] The legion.qss file is missing. Your installation seems to be corrupted. Try downloading the latest version.")
+        log.info("The legion.qss file is missing. Your installation seems to be corrupted. Try downloading the latest version.")
         exit(0)
-
 
     MainWindow.setStyleSheet(qss_file)
 
@@ -102,37 +108,7 @@ def master():
     controller = Controller(view, logic)            # Controller prep (communication between model and view)
 
     MainWindow.show()
+        #log.addHandler(ui.LogOutputTextView)
 
+        #loop.run_forever()
     sys.exit(app.exec_())
-
-
-if __name__ == "__main__":
-
-    app = QApplication(sys.argv)
-    loop = quamash.QEventLoop(app)
-    asyncio.set_event_loop(loop)
-
-    with loop:
-        myFilter = MyEventFilter()                      # to capture events
-        app.installEventFilter(myFilter)
-        MainWindow = QtWidgets.QMainWindow()
-        app.setWindowIcon(QIcon('./images/icons/legion_medium.svg'))
-
-        ui = Ui_MainWindow()
-        ui.setupUi(MainWindow)
-
-        try:
-            qss_file = open('./ui/legion.qss').read()
-        except IOError as e:
-            log.info("[-] The legion.qss file is missing. Your installation seems to be corrupted. Try downloading the latest version.")
-            exit(0)
-
-        MainWindow.setStyleSheet(qss_file)
-
-        logic = Logic()                                 # Model prep (logic, db and models)
-        view = View(ui, MainWindow)                     # View prep (gui)
-        controller = Controller(view, logic)            # Controller prep (communication between model and view)
-
-        MainWindow.show()
-
-        loop.run_forever()
