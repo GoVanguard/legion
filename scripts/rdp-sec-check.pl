@@ -194,7 +194,7 @@ $| = 1;
 
 my $global_starttime = time;
 printf "Starting rdp-sec-check v%s ( http://labs.portcullis.co.uk/application/rdp-sec-check/ ) at %s\n", $VERSION, scalar(localtime);
-printf "\n[+] Scanning %s hosts\n", scalar @targets;
+printf "\nScanning %s hosts\n", scalar @targets;
 print Dumper \@targets if $debug > 0;
 
 foreach my $target_addr (@targets) {
@@ -212,12 +212,12 @@ sub scan_host {
 	print "IP:        $ip\n";
 	print "Port:      $port\n";
 	print "\n";
-	print "[+] Connecting to $ip:$port\n" if $debug > 1;
+	print "Connecting to $ip:$port\n" if $debug > 1;
 	my $socket;
 	my @response;
 
-	print "[+] Checking supported protocols\n\n";
-	print "[-] Checking if RDP Security (PROTOCOL_RDP) is supported...";
+	print "Checking supported protocols\n\n";
+	print "Checking if RDP Security (PROTOCOL_RDP) is supported...";
 	$socket = get_socket($ip, $port);
 	@response = test_std_rdp_security($socket);
 	if (scalar @response == 19) {
@@ -241,7 +241,7 @@ sub scan_host {
 		$config{"protocols"}{"PROTOCOL_RDP"} = 1;
 	}
 
-	print "[-] Checking if TLS Security (PROTOCOL_SSL) is supported...";
+	print "Checking if TLS Security (PROTOCOL_SSL) is supported...";
 	$socket = get_socket($ip, $port);
 	@response = test_tls_security($socket);
 	if (scalar @response == 19) {
@@ -265,7 +265,7 @@ sub scan_host {
 		$config{"protocols"}{"PROTOCOL_SSL"} = 0;
 	}
 
-	print "[-] Checking if CredSSP Security (PROTOCOL_HYBRID) is supported [uses NLA]...";
+	print "Checking if CredSSP Security (PROTOCOL_HYBRID) is supported [uses NLA]...";
 	$socket = get_socket($ip, $port);
 	@response = test_credssp_security($socket);
 	if (scalar @response == 19) {
@@ -289,9 +289,9 @@ sub scan_host {
 		$config{"protocols"}{"PROTOCOL_HYBRID"} = 0;
 	} 
 	print "\n";
-	print "[+] Checking RDP Security Layer\n\n";
+	print "Checking RDP Security Layer\n\n";
 	foreach my $enc_hex (qw(00 01 02 08 10)) {
-		printf "[-] Checking RDP Security Layer with encryption %s...", $encryption_method{"000000" . $enc_hex};
+		printf "Checking RDP Security Layer with encryption %s...", $encryption_method{"000000" . $enc_hex};
 		$socket = get_socket($ip, $port);
 		@response = test_classic_rdp_security($socket);
 	
@@ -358,24 +358,24 @@ sub scan_host {
 	}
 
 	print "\n";
-	print "[+] Summary of protocol support\n\n";
+	print "Summary of protocol support\n\n";
 	foreach my $protocol (keys(%{$config{"protocols"}})) {
-		printf "[-] $ip:$port supports %-15s: %s\n", $protocol, $config{"protocols"}{$protocol} ? "TRUE" : "FALSE";
+		printf "$ip:$port supports %-15s: %s\n", $protocol, $config{"protocols"}{$protocol} ? "TRUE" : "FALSE";
 	}
 
 	print "\n";
-	print "[+] Summary of RDP encryption support\n\n";
+	print "Summary of RDP encryption support\n\n";
 	foreach my $encryption_level (sort keys(%{$config{"encryption_level"}})) {
-		printf "[-] $ip:$port has encryption level: %s\n", $encryption_level;
+		printf "$ip:$port has encryption level: %s\n", $encryption_level;
 	}
 	foreach my $encryption_method (sort keys(%encryption_method)) {
-		printf "[-] $ip:$port supports %-25s: %s\n", $encryption_method{$encryption_method}, (defined($config{"encryption_method"}{$encryption_method{$encryption_method}}) and $config{"encryption_method"}{$encryption_method{$encryption_method}}) ? "TRUE" : "FALSE";
+		printf "$ip:$port supports %-25s: %s\n", $encryption_method{$encryption_method}, (defined($config{"encryption_method"}{$encryption_method{$encryption_method}}) and $config{"encryption_method"}{$encryption_method{$encryption_method}}) ? "TRUE" : "FALSE";
 	}
 
 	print "\n";
-	print "[+] Summary of security issues\n\n";
+	print "Summary of security issues\n\n";
 	foreach my $issue (keys(%{$config{"issues"}})) {
-		print "[-] $ip:$port has issue $issue\n";
+		print "$ip:$port has issue $issue\n";
 	}
 
 	print Dumper \%config if $debug;
@@ -413,7 +413,7 @@ sub test_mcs_initial_connect {
 
 sub do_handshake {
 	my ($socket, $string) = @_;
-	print "[+] Sending:\n" if $debug > 1;
+	print "Sending:\n" if $debug > 1;
 	hdump($string) if $debug > 1;
 	
 	print $socket $string;
@@ -431,11 +431,11 @@ sub do_handshake {
         }
 
 	if (length($data) == 4) {
-		print "[+] Received from Server :\n" if $debug > 1;
+		print "Received from Server :\n" if $debug > 1;
 		hdump($data) if $debug > 1;
 		my @data = split("", $data);
 		my $length = (ord($data[2]) << 8) + ord($data[3]);
-		printf "[+] Initial length: %d\n", $length if $debug > 1;
+		printf "Initial length: %d\n", $length if $debug > 1;
 		my $data2 = "";
 		while (length($data) < $length) {
                         local $SIG{ALRM} = sub { die "alarm\n" };
@@ -447,7 +447,7 @@ sub do_handshake {
                         if ($@) {
                             print "[W] Timeout on recv.  Results may be unreliable.\n";
                         }
-			print "[+] Received " . length($data2) . " bytes from Server :\n" if $debug > 1;
+			print "Received " . length($data2) . " bytes from Server :\n" if $debug > 1;
 			hdump($data2) if $debug > 1;
 			$data .= $data2;
 		}
