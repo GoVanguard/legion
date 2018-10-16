@@ -28,7 +28,7 @@ class Parser:
 				__host =  Host.Host(host_node)
 				self.__hosts[__host.ip] = __host
 		except Exception as ex:
-			log.info("\t[-] Parser error! Invalid nmap file!")
+			log.info("Parser error! Invalid nmap file!")
 			#logging.error(ex)
 			raise
 

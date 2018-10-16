@@ -20,7 +20,7 @@ class AppSettings():
     def __init__(self):
         # check if settings file exists and creates it if it doesn't
         if not os.path.exists('./legion.conf'):
-            log.info('[+] Creating settings file..')
+            log('info','Creating settings file..')
             self.createDefaultSettings()
             self.createDefaultBruteSettings()
             self.createDefaultNmapSettings()
@@ -30,7 +30,7 @@ class AppSettings():
             self.createDefaultPortTerminalActions()
             self.createDefaultSchedulerSettings()
         else:
-            log.info('[+] Loading settings file..')
+            log('info','Loading settings file..')
             self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
 
     # This function creates the default settings file. Note that, in general, everything is case sensitive.
@@ -300,7 +300,7 @@ class AppSettings():
         
     def backupAndSave(self, newSettings):
         # Backup and save
-        log.info('[+] Backing up old settings and saving new settings..')
+        log('info','Backing up old settings and saving new settings..')
         os.rename('./legion.conf', './'+getTimestamp()+'-legion.conf')  
         self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
 
@@ -442,8 +442,8 @@ class Settings():
                 self.tools_path_texteditor = self.toolSettings['texteditor-path']
                 
             except KeyError:
-                log.info('\t[-] Something went wrong while loading the configuration file. Falling back to default settings for some settings.')
-                log.info('\t[-] Go to the settings menu to fix the issues!')
+                log('info','Something went wrong while loading the configuration file. Falling back to default settings for some settings.')
+                log('info','Go to the settings menu to fix the issues!')
                 # TODO: send signal to automatically open settings dialog here
 
     def __eq__(self, other):                                            # returns false if settings objects are different
@@ -455,6 +455,6 @@ if __name__ == "__main__":
     settings = AppSettings()
     s = Settings(settings)
     s2 = Settings(settings)
-    log.info(s == s2)
+    log('info',s == s2)
     s2.general_default_terminal = 'whatever'
-    log.info(s == s2)
+    log('info',s == s2)
