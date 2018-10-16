@@ -226,8 +226,8 @@ class Database:
             self.metadata.echo = True
             self.metadata.bind = self.engine
         except Exception as e:
-            log('info','Could not create database. Please try again.')
-            log('info',e)
+            log.info('Could not create database. Please try again.')
+            log.info(e)
 
     def openDB(self, dbfilename):
         try:
@@ -241,7 +241,7 @@ class Database:
             self.metadata.echo = True
             self.metadata.bind = self.engine
         except:
-            log('info','Could not open database file. Is the file corrupted?')
+            log.info('Could not open database file. Is the file corrupted?')
 
     def commit(self):
         self.dbsemaphore.acquire()

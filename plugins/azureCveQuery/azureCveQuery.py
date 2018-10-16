@@ -72,7 +72,7 @@ def timing(f):
         result = await f(*args, **kw)
         te = time()
         tr = te-ts
-        log('debug','Function:%r args:[%r, %r] took: %2.4f sec' % (f.__name__, args, kw, tr))
+        log.debug('Function:%r args:[%r, %r] took: %2.4f sec' % (f.__name__, args, kw, tr))
         try:
              testGet = metrics[f.__name__]
         except:
@@ -94,7 +94,7 @@ def timing(f):
 @timing
 async def heartbeat(pub):
     timeNow = str(datetime.now())
-    log('info','Tick tock! The time is: {timeNow}'.format(timeNow=timeNow))
+    log.info('Tick tock! The time is: {timeNow}'.format(timeNow=timeNow))
     await publishToRedis(pub, 'heartbeats', {'azureMlsRestService':timeNow})
 
 # Enque aquisition of PagerDuty Incidents and publiush them
@@ -106,7 +106,7 @@ async def checkPagerDutyIncidents(pub):
         if 'incidents' in data:
             incidentDictionaries = DictToObject(data['incidents'])
             for incidentDictionary in incidentDictionaries.outputStructure:
-                log('info',"Incident: {id}".format(id=str(incidentDictionary.id)))
+                log.info("Incident: {id}".format(id=str(incidentDictionary.id)))
                 fields = {}
                 fields['id'] = incidentDictionary.id
                 fields['description'] = incidentDictionary.description
@@ -131,7 +131,7 @@ async def postNoteToPagerDutyNote(incId, Note):
 async def redisMessageReceived(channelObj, pub):
     while (await channelObj.wait_message()):
         channelName = channelObj.name.decode()
-        log('info',"Message recieved on {channelName}".format(channelName=channelName))
+        log.info("Message recieved on {channelName}".format(channelName=channelName))
         if channelName == 'outgoing-incidents':
             messageJson = await channelObj.get_json()
             try:
@@ -140,14 +140,14 @@ async def redisMessageReceived(channelObj, pub):
                 messageDict = messageJson
             incId = messageDict['inc_id']
             incMessage = messageDict['catagorical_noise']
-            log('info',"INC {0} recieved on outgoing-incidents.".format(incId))
+            log.info("INC {0} recieved on outgoing-incidents.".format(incId))
             ## postBackToPagerDuty(incId, incMessage)
             await deleteFromRedis(pub, messageJson)
 
 # Execute post to create note on PagerDuty Incident
 @timing
 async def postToPagerDuty(url: str, headers: dict, data: dict, session):
-    log('debug','Post {url}'.format(url=url))
+    log.debug('Post {url}'.format(url=url))
     data = quote(str(data))
     async with session.request('POST', url, headers=headers, data=data) as resp:
         data = await resp.json()
@@ -156,7 +156,7 @@ async def postToPagerDuty(url: str, headers: dict, data: dict, session):
 # Execute aquisition of PagerDuty Incidents
 @timing
 async def fetchFromPagerDuty(url: str, headers: dict, params: dict, session) -> dict:
-    log('debug','Query {url}'.format(url=url))
+    log.debug('Query {url}'.format(url=url))
     params = quote(str(params))
     async with session.request('GET', url, headers=headers, params=params) as resp:
         data = await resp.json()
@@ -177,10 +177,10 @@ async def publishToRedis(pub, channel: str, message):
     try:
         cache = await setOrUpdateRedisCache(pub, message)
         if not cache:
-            log('info',"Published to {channel}.".format(channel=channel))
+            log.info("Published to {channel}.".format(channel=channel))
             await pub.publish_json(channel, message)
         else:
-            log('info',"Already exists, Not published to {channel}.".format(channel=channel))
+            log.info("Already exists, Not published to {channel}.".format(channel=channel))
     except:
         raise "Publish failure to {channel}.".format(channel=channel)
 

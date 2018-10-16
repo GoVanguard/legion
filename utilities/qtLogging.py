@@ -19,3 +19,6 @@ class QPlainTextEditLogger(logging.Handler):
     def emit(self, record):
         msg = self.format(record)
         self.widget.appendPlainText(msg)    
+
+    def append(self, msg):
+        self.widget.appendPlainText(msg)
