@@ -20,3 +20,13 @@ LEGION 0.2.1
 * Fixed process lanuches for discovered services
 * Fixed context menus so they show applicable actions for context
 * Fixed note unique keys
+
+LEGION 0.2.2
+
+* Bug fixes for edge cases
+* In UI Logging panel
+* Thread safe logging
+* Add AzureCveQuery Plugin
+* Setup to use AsyncIO
+* Dep installer fixes
+* Addition of .justcloned to re-initalize on cloning / pull to update

@@ -13,6 +13,7 @@ Copyright (c) 2018 GoVanguard
 
 import re
 from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt5.QtGui import QFont
 from PyQt5.QtCore import pyqtSignal, QObject
 from app.auxiliary import *                                                 # for bubble sort
 
