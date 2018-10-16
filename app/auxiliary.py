@@ -30,11 +30,8 @@ from functools import wraps
 from time import time
 import io
 
-logObj = get_logger('legion', path="legion.log")
-logObj.setLevel(logging.INFO)
-
-def log(level, text, logger=logObj):
-    logger.info(text)
+log = get_logger('legion', path="legion.log")
+log.setLevel(logging.INFO)
 
 def timing(f):
     @wraps(f)
@@ -43,7 +40,7 @@ def timing(f):
         result = f(*args, **kw)
         te = time()
         tr = te-ts
-        log('debug','Function:%r args:[%r, %r] took: %2.4f sec' % (f.__name__, args, kw, tr))
+        log.debug('Function:%r args:[%r, %r] took: %2.4f sec' % (f.__name__, args, kw, tr))
         return result
     return wrap
 
@@ -156,7 +153,7 @@ def checkHydraResults(output):
         for line in results:
             login = re.search('(login:[\s]*)([^\s]+)', line)
             if login:
-                log('info','Found username: ' + login.group(2))
+                log.info('Found username: ' + login.group(2))
                 usernames.append(login.group(2))
             password = re.search('(password:[\s]*)([^\s]+)', line)
             if password:
@@ -174,7 +171,7 @@ def exportNmapToHTML(filename):
         p.wait()
     
     except:
-        log('info','Could not convert nmap XML to HTML. Try: apt-get install xsltproc')
+        log.info('Could not convert nmap XML to HTML. Try: apt-get install xsltproc')
 
 # this class is used for example to store found usernames/passwords 
 class Wordlist():
@@ -183,7 +180,7 @@ class Wordlist():
         self.wordlist = []
         with open(filename, 'a+') as f:                                 # open for appending + reading
             self.wordlist = f.readlines()
-            log('info','Wordlist was created/opened: ' + str(filename))
+            log.info('Wordlist was created/opened: ' + str(filename))
 
     def setFilename(self, filename):
         self.filename = filename
@@ -192,7 +189,7 @@ class Wordlist():
     def add(self, word):
         with open(self.filename, 'a') as f:
             if not word+'\n' in self.wordlist:
-                log('info','Adding '+word+' to the wordlist..')
+                log.info('Adding '+word+' to the wordlist..')
                 self.wordlist.append(word+'\n')
                 f.write(word+'\n')
 
@@ -231,11 +228,15 @@ class MyQProcess(QProcess):
 # browser opener class with queue and semaphores
 class BrowserOpener(QtCore.QThread):
     done = QtCore.pyqtSignal(name="done")                               # signals that we are done opening urls in browser
+    log = QtCore.pyqtSignal(str, name="log")
     
     def __init__(self):
         QtCore.QThread.__init__(self, parent=None)
         self.urls = []
         self.processing = False
+
+    def tsLog(self, msg):
+        self.log.emit(str(msg))
 
     def addToQueue(self, url):
         self.urls.append(url)
@@ -248,7 +249,7 @@ class BrowserOpener(QtCore.QThread):
         for i in range(0, len(self.urls)):
             try:
                 url = self.urls.pop(0)
-                printr('Opening url in browser: ' + url)
+                self.tsLog('Opening url in browser: ' + url)
                 if isHttps(url.split(':')[0],url.split(':')[1]):
                     webbrowser.open_new_tab('https://' + url)
                 else:
@@ -259,7 +260,7 @@ class BrowserOpener(QtCore.QThread):
                     self.sleep(1)                                       # fixes bug when several calls to urllib occur too fast (interrupted system call)
             
             except:
-                log('info','Problem while opening url in browser. Moving on..')
+                self.tsLog('Problem while opening url in browser. Moving on..')
                 continue
                 
         self.processing = False
@@ -270,12 +271,16 @@ class BrowserOpener(QtCore.QThread):
 
 class Screenshooter(QtCore.QThread):
     done = QtCore.pyqtSignal(str, str, str, name="done")                # signal sent after each individual screenshot is taken
-    
+    log = QtCore.pyqtSignal(str, name="log")
+
     def __init__(self, timeout):
         QtCore.QThread.__init__(self, parent=None)
         self.urls = []
         self.processing = False
         self.timeout = timeout                                          # screenshooter timeout (ms)
+
+    def tsLog(self, msg):
+        self.log.emit(str(msg))
 
     def addToQueue(self, url):
         self.urls.append(url)
@@ -297,8 +302,6 @@ class Screenshooter(QtCore.QThread):
                 outputfile = getTimestamp()+'-screenshot-'+url.replace(':', '-')+'.png'
                 ip = url.split(':')[0]
                 port = url.split(':')[1]
-#               print 'Taking screenshot of '+url
-                # add to db
                 
                 if isHttps(ip,port):
                     self.save("https://"+url, ip, port, outputfile)
@@ -306,8 +309,8 @@ class Screenshooter(QtCore.QThread):
                     self.save("http://"+url, ip, port, outputfile)
 
             except Exception as e:
-                log('info','Unable to take the screenshot. Moving on..')
-                log('info',e)
+                self.tsLog('Unable to take the screenshot. Moving on..')
+                self.tsLog(e)
                 continue                
                 
         self.processing = False
@@ -315,12 +318,11 @@ class Screenshooter(QtCore.QThread):
         if not len(self.urls) == 0:                                     # if meanwhile urls were added to the queue, start over unless we are in pause mode
             self.run()
 
-        #log('info','Finished.')
+        self.tsLog('Finished.')
 
     def save(self, url, ip, port, outputfile):
-        #log('info','Saving screenshot as: '+str(outputfile))
+        self.tsLog('Saving screenshot as: '+str(outputfile))
         command = 'xvfb-run --server-args="-screen 0:0, 1024x768x24" /usr/bin/cutycapt --url="{url}/" --max-wait=5000 --out="{outputfolder}/{outputfile}"'.format(url=url, outputfolder=self.outputfolder, outputfile=outputfile)
-        #log('info',command)
         p = subprocess.Popen(command, shell=True)
         p.wait()                                                        # wait for command to finish
         self.done.emit(ip,port,outputfile)                              # send a signal to add the 'process' to the DB
@@ -354,7 +356,7 @@ class Filters():
 
     @timing
     def setKeywords(self, keywords):
-        log('info',str(keywords))
+        log.info(str(keywords))
         self.keywords = keywords
 
     @timing
@@ -363,18 +365,18 @@ class Filters():
 
     @timing
     def display(self):
-        log('info','Filters are:')
-        log('info','Show checked hosts: ' + str(self.checked))
-        log('info','Show up hosts: ' + str(self.up))
-        log('info','Show down hosts: ' + str(self.down))
-        log('info','Show tcp: ' + str(self.tcp))
-        log('info','Show udp: ' + str(self.udp))
-        log('info','Show open ports: ' + str(self.portopen))
-        log('info','Show closed ports: ' + str(self.portclosed))
-        log('info','Show filtered ports: ' + str(self.portfiltered))
-        log('info','Keyword search:')
+        log.info('Filters are:')
+        log.info('Show checked hosts: ' + str(self.checked))
+        log.info('Show up hosts: ' + str(self.up))
+        log.info('Show down hosts: ' + str(self.down))
+        log.info('Show tcp: ' + str(self.tcp))
+        log.info('Show udp: ' + str(self.udp))
+        log.info('Show open ports: ' + str(self.portopen))
+        log.info('Show closed ports: ' + str(self.portclosed))
+        log.info('Show filtered ports: ' + str(self.portfiltered))
+        log.info('Keyword search:')
         for w in self.keywords:
-            log('info',w)
+            log.info(w)
 
 
 ### VALIDATION FUNCTIONS ###
