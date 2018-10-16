@@ -140,7 +140,7 @@ class AddHostsDialog(QtWidgets.QDialog):
         
         self.label2 = QtWidgets.QLabel(self)
         self.label2.setText('eg: 192.168.1.0/24 10.10.10.10-20 1.2.3.4 ')
-        self.font = QtGui.QFont('Arial', 10)
+        self.font = QtGui.QFont('Calibri', 10)
         self.label2.setFont(self.font)
         self.label2.setAlignment(Qt.AlignRight)
         self.spacer = QSpacerItem(15,15)
@@ -756,7 +756,7 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.OSAccuracyLayout.addWidget(self.OSAccuracyText)
         self.OSAccuracyLayout.addStretch()
         
-        font = QtGui.QFont()        # in each different section
+        font = QtGui.QFont('Calibri', 12)        # in each different section
         font.setBold(True)
         self.HostStatusLabel.setText('Host Status')
         self.HostStatusLabel.setFont(font)

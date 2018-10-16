@@ -34,6 +34,9 @@ class Ui_MainWindow(object):
         self.splitter_2 = QtWidgets.QSplitter(self.centralwidget)
         self.splitter_2.setOrientation(QtCore.Qt.Vertical)
         self.splitter_2.setObjectName(_fromUtf8("splitter_2"))
+        self.splitter_5 = QtWidgets.QSplitter(self.splitter_2)
+        self.splitter_5.setOrientation(QtCore.Qt.Vertical)
+        self.splitter_5.setObjectName(_fromUtf8("splitter_5"))
 
         self.MainTabWidget = QtWidgets.QTabWidget(self.splitter_2)
         self.MainTabWidget.setObjectName(_fromUtf8("MainTabWidget"))
@@ -58,8 +61,11 @@ class Ui_MainWindow(object):
         self.setupRightPanel()
         self.setupMainTabs()
         self.setupBottomPanel()
+        self.setupBottom2Panel()
         
         self.gridLayout.addWidget(self.splitter_2, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.splitter_5, 1, 0, 1, 1)
+
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.setupMenuBar(MainWindow)
@@ -99,7 +105,7 @@ class Ui_MainWindow(object):
         self.addHostsOverlay.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
 
         ###
-        self.addHostsOverlay.setFont(QtGui.QFont('', 12))
+        self.addHostsOverlay.setFont(QtGui.QFont('Calibri', 12))
         self.addHostsOverlay.setAlignment(Qt.AlignHCenter|Qt.AlignVCenter)
         ###
         
@@ -250,6 +256,12 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.addWidget(self.ProcessesTableView)
         self.BottomTabWidget.addTab(self.ProcessTab, _fromUtf8(""))
 
+    def setupBottom2Panel(self):
+        self.Bottom2TabWidget = QtWidgets.QTabWidget(self.splitter_5)
+        self.Bottom2TabWidget.setSizeIncrement(QtCore.QSize(0, 0))
+        self.Bottom2TabWidget.setBaseSize(QtCore.QSize(0, 0))
+        self.Bottom2TabWidget.setObjectName(_fromUtf8("Bottom2TabWidget"))
+
         # Log Tab
         self.LogTab = QtWidgets.QWidget()
         self.LogTab.setObjectName(_fromUtf8("LogTab"))
@@ -259,17 +271,17 @@ class Ui_MainWindow(object):
         self.LogOutputTextView.widget.setObjectName(_fromUtf8("LogOutputTextView"))
         self.LogOutputTextView.widget.setReadOnly(True)
         self.LogTabLayout.addWidget(self.LogOutputTextView.widget)
-        self.BottomTabWidget.addTab(self.LogTab, _fromUtf8(""))
+        self.Bottom2TabWidget.addTab(self.LogTab, _fromUtf8(""))
         log.addHandler(self.LogOutputTextView)
 
         # Python Tab
         self.PythonTab = QtWidgets.QWidget()
         self.PythonTab.setObjectName(_fromUtf8("PythonTab"))
-        #self.PythonOutputTextView = QtWidgets.QPlainTextEdit(self.PythonTab)
-        #self.PythonOutputTextView.setReadOnly(False)
+        self.PythonOutputTextView = QtWidgets.QPlainTextEdit(self.PythonTab)
+        self.PythonOutputTextView.setReadOnly(False)
         self.PythonTabLayout = QtWidgets.QHBoxLayout(self.PythonTab)
-        #self.PythonTabLayout.addWidget(self.PythonOutputTextView)
-        self.BottomTabWidget.addTab(self.PythonTab, _fromUtf8(""))      
+        self.PythonTabLayout.addWidget(self.PythonOutputTextView)
+        self.Bottom2TabWidget.addTab(self.PythonTab, _fromUtf8(""))      
 
     def setupMenuBar(self, MainWindow):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -339,8 +351,8 @@ class Ui_MainWindow(object):
         self.MainTabWidget.setTabText(self.MainTabWidget.indexOf(self.ScanTab), QtWidgets.QApplication.translate("MainWindow", "Scan", None))
         self.MainTabWidget.setTabText(self.MainTabWidget.indexOf(self.BruteTab), QtWidgets.QApplication.translate("MainWindow", "Brute", None))
         self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.ProcessTab), QtWidgets.QApplication.translate("MainWindow", "Processes", None))
-        self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.LogTab), QtWidgets.QApplication.translate("MainWindow", "Log", None))
-        self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.PythonTab), QtWidgets.QApplication.translate("MainWindow", "Python", None))
+        self.Bottom2TabWidget.setTabText(self.Bottom2TabWidget.indexOf(self.LogTab), QtWidgets.QApplication.translate("MainWindow", "Log", None))
+        self.Bottom2TabWidget.setTabText(self.Bottom2TabWidget.indexOf(self.PythonTab), QtWidgets.QApplication.translate("MainWindow", "Python", None))
         self.menuFile.setTitle(QtWidgets.QApplication.translate("MainWindow", "File", None))
         self.menuSettings.setTitle(QtWidgets.QApplication.translate("MainWindow", "Settings", None))
         self.menuHelp.setTitle(QtWidgets.QApplication.translate("MainWindow", "Help", None))
