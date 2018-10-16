@@ -28,7 +28,7 @@ class Parser:
 				__host =  Host.Host(host_node)
 				self.__hosts[__host.ip] = __host
 		except Exception as ex:
-			log.info("Parser error! Invalid nmap file!")
+			log('info',"Parser error! Invalid nmap file!")
 			#logging.error(ex)
 			raise
 
@@ -104,45 +104,45 @@ if __name__ == '__main__':
 
 	parser = Parser( 'a-full.xml' )
 
-	log.info('\nscan session:')
+	log('info','\nscan session:')
 	session = parser.get_session()
-	log.info("\tstart time:\t" + session.start_time)
-	log.info("\tstop time:\t" + session.finish_time)
-	log.info("\tnmap version:\t" + session.nmap_version)
-	log.info("\tnmap args:\t" + session.scan_args)
-	log.info("\ttotal hosts:\t" + session.total_hosts)
-	log.info("\tup hosts:\t" + session.up_hosts)
-	log.info("\tdown hosts:\t" + session.down_hosts)
+	log('info',"\tstart time:\t" + session.start_time)
+	log('info',"\tstop time:\t" + session.finish_time)
+	log('info',"\tnmap version:\t" + session.nmap_version)
+	log('info',"\tnmap args:\t" + session.scan_args)
+	log('info',"\ttotal hosts:\t" + session.total_hosts)
+	log('info',"\tup hosts:\t" + session.up_hosts)
+	log('info',"\tdown hosts:\t" + session.down_hosts)
 
 	for h in parser.all_hosts():
 
-		log.info('host ' +h.ip + ' is ' + h.status)
+		log('info','host ' +h.ip + ' is ' + h.status)
 
 		for port in h.get_ports( 'tcp', 'open' ):
-			log.info("\t---------------------------------------------------")
-			log.info("\tservice of tcp port " + port + ":")
+			log('info',"\t---------------------------------------------------")
+			log('info',"\tservice of tcp port " + port + ":")
 			s = h.get_service( 'tcp', port )
 
 			if s == None:
-				log.info("\t\tno service")
+				log('info',"\t\tno service")
 
 			else:
-				log.info("\t\t" + s.name)
-				log.info("\t\t" + s.product)
-				log.info("\t\t" + s.version)
-				log.info("\t\t" + s.extrainfo)
-				log.info("\t\t" + s.fingerprint)
+				log('info',"\t\t" + s.name)
+				log('info',"\t\t" + s.product)
+				log('info',"\t\t" + s.version)
+				log('info',"\t\t" + s.extrainfo)
+				log('info',"\t\t" + s.fingerprint)
 
-			log.info("\tscript output:")
+			log('info',"\tscript output:")
 			sc = port.get_scripts()
 			
 			if sc == None:
-				log.info("\t\tno scripts")
+				log('info',"\t\tno scripts")
 			
 			else:
 				for scr in sc:
-					log.info("Script ID: " + scr.scriptId)
-					log.info("Output: ")
-					log.info(scr.output)
+					log('info',"Script ID: " + scr.scriptId)
+					log('info',"Output: ")
+					log('info',scr.output)
 
-			log.info("\t---------------------------------------------------")
+			log('info',"\t---------------------------------------------------")

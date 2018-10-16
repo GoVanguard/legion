@@ -410,7 +410,7 @@ def enumerateSNMPWalk(result,options):
 		print '\tDestination\t\tNext Hop\tMask\t\t\tMetric\tInterface\tType\tProtocol\tAge'
 		print '\t-----------\t\t--------\t----\t\t\t------\t---------\t----\t--------\t---'
 		for j in range(lines):
-			log.info( '\t'+entry['Destination'][j].strip().ljust(12,' ') +
+			log('info', '\t'+entry['Destination'][j].strip().ljust(12,' ') +
 					'\t\t'+entry['Next Hop'][j].strip().ljust(12,' ') +
 					'\t'+entry['Mask'][j].strip().ljust(12,' ')  +
 					'\t\t'+entry['Metric'][j].strip().center(6,' ') +
@@ -440,7 +440,7 @@ def enumerateSNMPWalk(result,options):
 			print '\tIP\t\tMAC\t\t\tV'
 			print '\t--\t\t---\t\t\t--'
 			for j in range(lines):
-				log.info(	'\t'+entry['IP'][j].strip().ljust(12,' ') +
+				log('info',	'\t'+entry['IP'][j].strip().ljust(12,' ') +
 						'\t'+entry['MAC'][j].strip().ljust(18,' ') +
 						'\t'+entry['V'][j].strip().ljust(2,' ')
 				)
