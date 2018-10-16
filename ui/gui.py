@@ -260,7 +260,7 @@ class Ui_MainWindow(object):
         self.LogOutputTextView.widget.setReadOnly(True)
         self.LogTabLayout.addWidget(self.LogOutputTextView.widget)
         self.BottomTabWidget.addTab(self.LogTab, _fromUtf8(""))
-        logObj.addHandler(self.LogOutputTextView)
+        log.addHandler(self.LogOutputTextView)
 
         # Python Tab
         self.PythonTab = QtWidgets.QWidget()
