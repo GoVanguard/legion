@@ -165,7 +165,7 @@ class Ui_MainWindow(object):
         self.DisplayWidget.setObjectName('ToolOutput')
         self.DisplayWidget.setSizePolicy(self.sizePolicy2)
         ### ?
-        self.toolOutputTextView = QtWidgets.QTextEdit(self.DisplayWidget)
+        #self.toolOutputTextView = QtWidgets.QTextEdit(self.DisplayWidget)
         self.toolOutputTextView = QtWidgets.QPlainTextEdit(self.DisplayWidget)
         self.toolOutputTextView.setReadOnly(True)
         self.DisplayWidgetLayout = QtWidgets.QHBoxLayout(self.DisplayWidget)

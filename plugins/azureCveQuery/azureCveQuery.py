@@ -16,7 +16,7 @@ app.blueprint(openapi_blueprint)
 app.blueprint(swagger_blueprint)
 
 config = configparser.ConfigParser()
-config.read('./mlie.conf')
+config.read('./azureCveQuery.conf')
 
 redisHost = str(config.get('redis', 'host'))
 redisPort = int(config.get('redis', 'port'))
@@ -26,14 +26,14 @@ cliPort = int(config.get('cli', 'port'))
 apiServerPort = int(config.get('api', 'port'))
 azureMlsWebServiceUrl = str(config.get('azure', 'webServiceUrl'))
 azureMlsWebServiceKey = str(config.get('azure', 'webServiceKey'))
-serviceCycleTime = int(config.get('azureMlsRestService', 'serviceCycleTime'))
+serviceCycleTime = int(config.get('azureCveQuery', 'serviceCycleTime'))
 metricLimit = int(config.get('metrics', 'metricLimit'))
 metricAverageLimit = int(config.get('metrics', 'averageLimit'))
 logFile = str(config.get('logging', 'logFilename'))
 debug = bool(config.get('general', 'debug'))
 heartbeatInterval = int(config.get('general', 'heartbeatInterval'))
 
-log = get_logger('azureMlsRestServiceLogger', path=logFile)
+log = get_logger('azureCveQueryLogger', path=logFile)
 log.setLevel(logging.INFO)
 
 azureMlsQuery = {
@@ -95,7 +95,7 @@ def timing(f):
 async def heartbeat(pub):
     timeNow = str(datetime.now())
     log.info('Tick tock! The time is: {timeNow}'.format(timeNow=timeNow))
-    await publishToRedis(pub, 'heartbeats', {'azureMlsRestService':timeNow})
+    await publishToRedis(pub, 'heartbeats', {'azureCveQuery':timeNow})
 
 # Enque aquisition of PagerDuty Incidents and publiush them
 @timing
