@@ -1,7 +1,0 @@
-test=`python3.6 --version`
-
-if [[ $test != "Python 3.6.6" ]]
-then
-    echo "Not 3.6.6"
-fi
-
