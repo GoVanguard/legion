@@ -53,4 +53,4 @@ then
     fi
 fi
 
-gksu python3 legion.py
+gksu python3.6 legion.py
