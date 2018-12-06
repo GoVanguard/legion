@@ -44,7 +44,7 @@ class Logic():
             
         except:
             log.info('Something went wrong creating the temporary files..')
-            log.info("Unexpected error:", sys.exc_info())
+            log.info("Unexpected error: {0}".format(sys.exc_info()))
 
     def removeTemporaryFiles(self):
         log.info('Removing temporary files and folders..')
@@ -63,7 +63,7 @@ class Logic():
 
         except:
             log.info('Something went wrong removing temporary files and folders..')
-            log.info("Unexpected error:", sys.exc_info()[0])
+            log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
 
     def createFolderForTool(self, tool):
         if 'nmap' in tool:
@@ -411,7 +411,7 @@ class Logic():
     
     def addScreenshotToDB(self, ip, port, filename):
         p_output = process_output()                                     # add row to process_output table (separate table for performance reasons)
-        p = process("-2", "screenshooter", "screenshot ("+str(port)+"/tcp)", str(ip), str(port), "tcp", "", getTimestamp(True), getTimestamp(True), str(filename), "Finished", p_output, 2, 0)
+        p = process("-", "screenshooter", "screenshot ("+str(port)+"/tcp)", str(ip), str(port), "tcp", "", getTimestamp(True), getTimestamp(True), str(filename), "Finished", p_output, 2, 0)
         session = self.db.session()
         session.add(p)
         session.commit()
