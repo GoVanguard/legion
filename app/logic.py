@@ -386,32 +386,29 @@ class Logic():
     def toggleHostCheckStatus(self, ipaddr):
         session = self.db.session()
         h = session.query(nmap_host).filter_by(ip=ipaddr).first()
-        # h = nmap_host.query.filter_by(ip=ipaddr).first()
         if h:
             if h.checked == 'False':
                 h.checked = 'True'
             else:
                 h.checked = 'False'
             session.add(h)
-            #session.commit()
             self.db.commit()
 
     # this function adds a new process to the DB
     def addProcessToDB(self, proc):
         log.info('Add process')
         p_output = process_output()                                     # add row to process_output table (separate table for performance reasons)
-        p = process(str(proc.pid()), str(proc.name), str(proc.tabtitle), str(proc.hostip), str(proc.port), str(proc.protocol), unicode(proc.command), proc.starttime, "", str(proc.outputfile), 'Waiting', p_output)
+        p = process(str(proc.pid()), str(proc.name), str(proc.tabtitle), str(proc.hostip), str(proc.port), str(proc.protocol), unicode(proc.command), proc.starttime, "", str(proc.outputfile), 'Waiting', p_output, 100, 0)
         log.info(p)
         session = self.db.session()
         session.add(p)
-        #session.commit()
         self.db.commit()
         proc.id = p.id
         return p.id
     
     def addScreenshotToDB(self, ip, port, filename):
         p_output = process_output()                                     # add row to process_output table (separate table for performance reasons)
-        p = process("-2", "screenshooter", "screenshot ("+str(port)+"/tcp)", str(ip), str(port), "tcp", "", getTimestamp(True), getTimestamp(True), str(filename), "Finished", p_output)
+        p = process("-2", "screenshooter", "screenshot ("+str(port)+"/tcp)", str(ip), str(port), "tcp", "", getTimestamp(True), getTimestamp(True), str(filename), "Finished", p_output, 2, 0)
         session = self.db.session()
         session.add(p)
         session.commit()
@@ -422,7 +419,6 @@ class Logic():
     def toggleProcessDisplayStatus(self, resetAll=False):
         session = self.db.session()
         proc = session.query(process).filter_by(display='True').all()
-        #proc = process.query.filter_by(display='True').all()
         if resetAll == True:
             for p in proc:
                 if p.status != 'Running':
@@ -433,7 +429,6 @@ class Logic():
                 if p.status != 'Running' and p.status != 'Waiting':
                     p.display = 'False'
                     session.add(p)
-        #session.commit()
         self.db.commit()
         
     # this function updates the status of a process if it is killed
@@ -491,6 +486,15 @@ class Logic():
             proc.closed = 'True'
             session.add(proc)
             #session.commit()
+            self.db.commit()
+
+    # change the status in the db as closed
+    def storeProcessRunningElapsedInDB(self, procId, elapsed):
+        session = self.db.session()
+        proc = session.query(process).filter_by(id=procId).first()
+        if proc:
+            proc.elapsed = elapsed
+            session.add(proc)
             self.db.commit()
     
     # this function stores a finished process' output to the DB and updates it status
