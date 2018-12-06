@@ -77,6 +77,7 @@ class View(QtCore.QObject):
         
         self.ui.HostsTableView.setSelectionMode(1)                      # disable multiple selection
         self.ui.ServiceNamesTableView.setSelectionMode(1)
+        self.ui.CvesTableView.setSelectionMode(1)
         self.ui.ToolsTableView.setSelectionMode(1)
         self.ui.ScriptsTableView.setSelectionMode(1)        
         self.ui.ToolHostsTableView.setSelectionMode(1)
@@ -125,6 +126,7 @@ class View(QtCore.QObject):
         self.ui.ServicesTabWidget.tabBar().setTabButton(1, QTabBar.RightSide, None)
         self.ui.ServicesTabWidget.tabBar().setTabButton(2, QTabBar.RightSide, None)
         self.ui.ServicesTabWidget.tabBar().setTabButton(3, QTabBar.RightSide, None)
+        self.ui.ServicesTabWidget.tabBar().setTabButton(4, QTabBar.RightSide, None)
 
         self.resetBruteTabs()                                           # clear brute tabs (if any) and create default brute tab
         self.displayToolPanel(False)
@@ -183,6 +185,10 @@ class View(QtCore.QObject):
         # service names table (left)
         headers = ["Name"]
         setTableProperties(self.ui.ServiceNamesTableView, len(headers))
+
+        # cves table (left)
+        headers = ["Name", "URL", "Fingerprint"]
+        setTableProperties(self.ui.CvesTableView, len(headers))
 
         # tools table (left)
         headers = ["Progress", "Display", "Pid", "Tool", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "OutputFile", "Output", "Status"]
@@ -614,11 +620,13 @@ class View(QtCore.QObject):
             if selectedTab == 'Hosts':
                 self.ui.ServicesTabWidget.insertTab(1,self.ui.ScriptsTab,("Scripts"))
                 self.ui.ServicesTabWidget.insertTab(2,self.ui.InformationTab,("Information"))
-                self.ui.ServicesTabWidget.insertTab(3,self.ui.NotesTab,("Notes"))
+                self.ui.ServicesTabWidget.insertTab(3,self.ui.CvesRightTab,("CVEs"))
+                self.ui.ServicesTabWidget.insertTab(4,self.ui.NotesTab,("Notes"))
                 self.ui.ServicesTabWidget.tabBar().setTabButton(0, QTabBar.RightSide, None)
                 self.ui.ServicesTabWidget.tabBar().setTabButton(1, QTabBar.RightSide, None)
                 self.ui.ServicesTabWidget.tabBar().setTabButton(2, QTabBar.RightSide, None)
                 self.ui.ServicesTabWidget.tabBar().setTabButton(3, QTabBar.RightSide, None)
+                self.ui.ServicesTabWidget.tabBar().setTabButton(4, QTabBar.RightSide, None)
 
                 self.restoreToolTabWidget()
                 ###
@@ -629,6 +637,14 @@ class View(QtCore.QObject):
                     
             elif selectedTab == 'Services':
                 self.ui.ServicesTabWidget.setCurrentIndex(0)                
+                self.removeToolTabs(0)                                  # remove the tool tabs
+                self.controller.saveProject(self.lastHostIdClicked, self.ui.NotesTextEdit.toPlainText())
+                if self.lazy_update_services == True:
+                    self.updateServiceNamesTableView()
+                self.serviceNamesTableClick()
+
+            elif  selectedTab == 'CVEs':
+                self.ui.ServicesTabWidget.setCurrentIndex(0)
                 self.removeToolTabs(0)                                  # remove the tool tabs
                 self.controller.saveProject(self.lastHostIdClicked, self.ui.NotesTextEdit.toPlainText())
                 if self.lazy_update_services == True:

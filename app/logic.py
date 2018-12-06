@@ -504,10 +504,8 @@ class Logic():
     def storeProcessOutputInDB(self, procId, output):
         session = self.db.session()
         proc = session.query(process).filter_by(id=procId).first()
-        #proc = process.query.filter_by(id=procId).first()
         if proc:
             proc_output = session.query(process_output).filter_by(process_id=procId).first()
-            #proc_output = process_output.query.filter_by(process_id=procId).first()
             if proc_output:
                 proc_output.output=unicode(output)
                 session.add(proc_output)
@@ -515,19 +513,17 @@ class Logic():
             proc.endtime = getTimestamp(True)   # store end time
 
             if proc.status == "Killed" or proc.status == "Cancelled" or proc.status == "Crashed":   # if the process has been killed don't change the status to "Finished"
-                #session.commit()
                 self.db.commit()                                        # new: this was missing but maybe this is important here to ensure that we save the process output no matter what
                 return True                         
             else:
                 proc.status = 'Finished'
                 session.add(proc)
-                #session.commit()
                 self.db.commit()
 
     def storeNotesInDB(self, hostId, notes):
         if len(notes) == 0:
-            notes = unicode("Notes for {hostId}".format(hostId=hostId))
-        log.info("Storing notes for {hostId}, Notes {notes}".format(hostId=hostId, notes=notes))
+            notes = unicode("".format(hostId=hostId))
+        log.debug("Storing notes for {hostId}, Notes {notes}".format(hostId=hostId, notes=notes))
         t_note = self.getNoteFromDB(hostId)
         if t_note:
             t_note.text = unicode(notes)
@@ -535,7 +531,6 @@ class Logic():
             t_note = note(hostId, unicode(notes))
         session = self.db.session()
         session.add(t_note)
-        #session.commit()
         self.db.commit()
         
     def isKilledProcess(self, procId):

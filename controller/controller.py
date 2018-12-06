@@ -79,7 +79,7 @@ class Controller():
 
         self.processTableUiUpdateTimer = QTimer()
         self.processTableUiUpdateTimer.timeout.connect(self.view.updateProcessesTableView)
-        self.processTableUiUpdateTimer.start(1000)
+        self.processTableUiUpdateTimer.start(1000) # Faster than this doesn't make anything smoother
 
     # this function fetches all the settings from the conf file. Among other things it populates the actions lists that will be used in the context menus.
     def loadSettings(self):
