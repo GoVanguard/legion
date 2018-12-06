@@ -35,4 +35,7 @@ LEGION 0.2.3
 
 * Bug fixes for edge cases
 * Elapsed and estimated remaining time for processes
+* Host 1-M CVE UI element added
+* Service 1-M CVE UI element added
+* CVE object model revised
 * Improved UI performance

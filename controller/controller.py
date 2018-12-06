@@ -548,7 +548,6 @@ class Controller():
 
     # this function creates a new process, runs the command and takes care of displaying the ouput. returns the PID
     # the last 3 parameters are only used when the command is a staged nmap
-
     def runCommand(self, *args, discovery=True, stage=0, stop=False):
         def handleProcStop(*vargs):
             updateElapsed.stop()
@@ -598,9 +597,12 @@ class Controller():
         qProcess.sigHydra.connect(self.handleHydraFindings)
         qProcess.finished.connect(lambda: self.processFinished(qProcess))
         qProcess.error.connect(lambda: self.processCrashed(qProcess))
+        print("runCommand called for stage {0}".format(str(stage)))
 
         if stage > 0 and stage < 5:                                     # if this is a staged nmap, launch the next stage
-            qProcess.finished.connect(lambda: self.runStagedNmap(str(hostip), discovery, stage+1, self.logic.isKilledProcess(str(qProcess.id))))
+            print("runCommand connected for stage {0}".format(str(stage)))
+            nextStage = stage + 1
+            qProcess.finished.connect(lambda: self.runStagedNmap(str(hostip), discovery = discovery, stage = nextStage, stop = self.logic.isKilledProcess(str(qProcess.id))))
 
         return qProcess.pid()                                           # return the pid so that we can kill the process if needed
 
@@ -638,7 +640,8 @@ class Controller():
         return qProcess.pid()
 
     # recursive function used to run nmap in different stages for quick results
-    def runStagedNmap(self, iprange, discovery=True, stage=1, stop=False):
+    def runStagedNmap(self, iprange, discovery = True, stage = 1, stop = False):
+        print("runStagedNmap called for stage {0}".format(str(stage)))
         if not stop:
             textbox = self.view.createNewTabForHost(str(iprange), 'nmap (stage '+str(stage)+')', True)
             outputfile = self.logic.runningfolder+"/nmap/"+getTimestamp()+'-nmapstage'+str(stage)       
@@ -667,7 +670,7 @@ class Controller():
                 command += "-sT "
             command += "-p "+ports+' '+iprange+" -oA "+outputfile
                             
-            self.runCommand('nmap','nmap (stage '+str(stage)+')', str(iprange), '', '', command, getTimestamp(True), outputfile, textbox, discovery, stage, stop)
+            self.runCommand('nmap','nmap (stage '+str(stage)+')', str(iprange), '', '', command, getTimestamp(True), outputfile, textbox, discovery = discovery, stage = stage, stop = stop)
 
     def nmapImportFinished(self):
         self.updateUI2Timer.stop()
