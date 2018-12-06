@@ -37,6 +37,7 @@ class Controller():
         self.initBrowserOpener()
         self.start()                                                    # initialisations (globals, etc)
         self.initTimers()
+        self.processTimers = {}
         
     # initialisations that will happen everytime we create/open a project - can happen several times in the program's lifetime
     def start(self, title='*untitled'):
@@ -514,7 +515,19 @@ class Controller():
 
     # this function creates a new process, runs the command and takes care of displaying the ouput. returns the PID
     # the last 3 parameters are only used when the command is a staged nmap
+
     def runCommand(self, *args, discovery=True, stage=0, stop=False):
+        def handleProcStop(*vargs):
+            updateElapsed.stop()
+            self.processTimers[qProcess.id] = None
+
+        def handleProcUpdate(*vargs):
+            procTime = timer.elapsed() / 1000
+            qProcess.elapsed = procTime
+            self.logic.storeProcessRunningElapsedInDB(qProcess.id, procTime)
+            #self.updateUITimer.start(1000)
+            self.view.updateProcessesTableView()
+
         name = args[0]
         tabtitle = args[1]
         hostip = args[2]
@@ -524,10 +537,18 @@ class Controller():
         starttime = args[6]
         outputfile = args[7]
         textbox = args[8]
+        timer = QtCore.QTime()
+        updateElapsed = QTimer()
+
         self.logic.createFolderForTool(name)
         qProcess = MyQProcess(name, tabtitle, hostip, port, protocol, command, starttime, outputfile, textbox)
+        qProcess.started.connect(timer.start)
+        qProcess.finished.connect(handleProcStop)
+        updateElapsed.timeout.connect(handleProcUpdate)
 
         textbox.setProperty('dbId', str(self.logic.addProcessToDB(qProcess)))
+        updateElapsed.start(1000)
+        self.processTimers[qProcess.id] = updateElapsed
         
         log.info('Queuing: ' + str(command))
         self.fastProcessQueue.put(qProcess)
