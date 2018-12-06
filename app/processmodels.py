@@ -6,9 +6,11 @@ Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
+B
     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
+B
 '''
 
 import re
@@ -59,13 +61,17 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
             if column == 0:
                 value = ''
             elif column == 2:
-                value = "{0}{1}".format(str(self.__processes[row]['elapsed']), "s")
+                pid = int(self.__processes[row]['pid'])
+                elapsed = round(self.__controller.controller.processMeasurements.get(pid), 1)
+                value = "{0}{1}".format(str(elapsed), "s")
             elif column == 3:
                 status = str(self.__processes[row]['status'])
                 if status == "Finished" or status == "Crashed" or status == "Killed":
                     estimatedRemaining = 0
                 else:
-                    estimatedRemaining = int(self.__processes[row]['estimatedremaining']) - int(self.__processes[row]['elapsed'])
+                    pid = int(self.__processes[row]['pid'])
+                    elapsed = round(self.__controller.controller.processMeasurements.get(pid), 1)
+                    estimatedRemaining = int(self.__processes[row]['estimatedremaining']) - float(elapsed)
                 value = "{0}{1}".format(str(estimatedRemaining), "s")
             elif column == 5 or column == 6:
                 if not self.__processes[row]['tabtitle'] == '':

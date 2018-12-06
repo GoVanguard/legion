@@ -30,3 +30,9 @@ LEGION 0.2.2
 * Setup to use AsyncIO
 * Dep installer fixes
 * Addition of .justcloned to re-initalize on cloning / pull to update
+
+LEGION 0.2.3
+
+* Bug fixes for edge cases
+* Elapsed and estimated remaining time for processes
+* Improved UI performance
