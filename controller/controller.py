@@ -26,7 +26,7 @@ class Controller():
     # initialisations that will happen once - when the program is launched
     @timing
     def __init__(self, view, logic):
-        self.version = 'LEGION 0.2.2'                            # update this everytime you commit!
+        self.version = 'LEGION 0.2.3'                            # update this everytime you commit!
         self.logic = logic
         self.view = view
         self.view.setController(self)
@@ -38,6 +38,7 @@ class Controller():
         self.start()                                                    # initialisations (globals, etc)
         self.initTimers()
         self.processTimers = {}
+        self.processMeasurements = {}
         
     # initialisations that will happen everytime we create/open a project - can happen several times in the program's lifetime
     def start(self, title='*untitled'):
@@ -75,6 +76,10 @@ class Controller():
         self.updateUI2Timer = QTimer()
         self.updateUI2Timer.setSingleShot(True)
         self.updateUI2Timer.timeout.connect(self.view.updateInterface)
+
+        self.processTableUiUpdateTimer = QTimer()
+        self.processTableUiUpdateTimer.timeout.connect(self.view.updateProcessesTableView)
+        self.processTableUiUpdateTimer.start(1000)
 
     # this function fetches all the settings from the conf file. Among other things it populates the actions lists that will be used in the context menus.
     def loadSettings(self):
@@ -548,13 +553,13 @@ class Controller():
         def handleProcStop(*vargs):
             updateElapsed.stop()
             self.processTimers[qProcess.id] = None
-
-        def handleProcUpdate(*vargs):
             procTime = timer.elapsed() / 1000
             qProcess.elapsed = procTime
             self.logic.storeProcessRunningElapsedInDB(qProcess.id, procTime)
-            #self.updateUITimer.start(1000)
-            self.view.updateProcessesTableView()
+
+        def handleProcUpdate(*vargs):
+            procTime = timer.elapsed() / 1000
+            self.processMeasurements[qProcess.pid()] = procTime
 
         name = args[0]
         tabtitle = args[1]
@@ -577,6 +582,7 @@ class Controller():
         textbox.setProperty('dbId', str(self.logic.addProcessToDB(qProcess)))
         updateElapsed.start(1000)
         self.processTimers[qProcess.id] = updateElapsed
+        self.processMeasurements[qProcess.pid()] = 0
         
         log.info('Queuing: ' + str(command))
         self.fastProcessQueue.put(qProcess)
