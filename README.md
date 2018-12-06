@@ -1,4 +1,4 @@
-LEGION 0.2.1 (https://govanguard.io)
+LEGION 0.2.3 (https://govanguard.io)
 ==
 
 ## Authors:
@@ -19,11 +19,11 @@ git clone https://github.com/GoVanguard/legion.git
 ```
 
 ## Recommended Python Version
-legion supports Python 3.5+.
+legion supports Python 3.6+.
 
 ## Dependencies
 * Ubuntu or variant or WSL (Windows Subsystem for Linux)
-* Python 3.5+
+* Python 3.6+
 * PyQT5
 * SQLAlchemy
 * six
