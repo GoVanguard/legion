@@ -54,20 +54,31 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
         value = ''
         row = index.row()
         column = index.column()
-        processColumns = {1:'display', 2:'pid', 3:'name', 5:'hostip', 7:'protocol', 8:'command', 9:'starttime', 10:'endtime', 11:'outputfile', 12:'output', 13:'status', 14:'closed'}
+        processColumns = {0:'progress', 1:'display',  2:'elapsed', 3:'estimatedremaining', 4:'pid', 5:'name', 6:'tabtitle', 7:'hostip', 8:'port', 9:'protocol', 10:'command', 11:'starttime', 12:'endtime', 13:'outputfile', 14:'output', 15:'status', 16:'closed'}
 
         if column == 0:
             value = ''
-        elif column == 4:
+        elif column == 2:
+            value = "{0}{1}".format(str(self.__processes[row]['elapsed']), "s")
+        elif column == 3:
+            status = str(self.__processes[row]['status'])
+            if status == "Finished" or status == "Crashed" or status == "Killed":
+                estimatedRemaining = 0
+            else:
+                estimatedRemaining = int(self.__processes[row]['estimatedremaining']) - int(self.__processes[row]['elapsed'])
+            value = "{0}{1}".format(str(estimatedRemaining), "s")
+        elif column == 6:
             if not self.__processes[row]['tabtitle'] == '':
                 value = self.__processes[row]['tabtitle']
             else:
                 value = self.__processes[row]['name']
-        elif column == 6:
+        elif column == 8:
             if not self.__processes[row]['port'] == '' and not self.__processes[row]['protocol'] == '':
                 value = self.__processes[row]['port'] + '/' + self.__processes[row]['protocol']
             else:
                 value = self.__processes[row]['port']
+        elif column == 16:
+            value = ""
         else:
             value = self.__processes[row][processColumns.get(int(column))]
         return value            
@@ -76,13 +87,13 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
         self.layoutAboutToBeChanged.emit()
         array=[]
 
-        sortColumns = {3:'name', 4:'tabtitle', 9:'starttime', 10:'endtime'}
+        sortColumns = {5:'name', 6:'tabtitle', 11:'starttime', 12:'endtime'}
 
-        if Ncol == 5:
+        if Ncol == 7:
             for i in range(len(self.__processes)):
                 array.append(IP2Int(self.__processes[i]['hostip']))
 
-        elif Ncol == 6:
+        elif Ncol == 8:
             for i in range(len(self.__processes)):
                 if self.__processes[i]['port'] == '':
                     return

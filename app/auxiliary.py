@@ -209,6 +209,7 @@ class MyQProcess(QProcess):
         self.starttime = starttime      
         self.outputfile = outputfile
         self.display = textbox                                          # has its own display widget to be able to display its output in the GUI
+        self.elapsed = -1
 
     @pyqtSlot()                                                         # this slot allows the process to append its output to the display widget
     def readStdOutput(self):

@@ -176,7 +176,7 @@ class View(QtCore.QObject):
 
     def initTables(self):                                               # this function prepares the default settings for each table
         # hosts table (left)
-        headers = ["Id","OS","Accuracy","Host","IPv4","IPv6","Mac","Status","Hostname","Vendor","Uptime","Lastboot","Distance","CheckedHost","State","Count","Padding"]
+        headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime", "Lastboot", "Distance", "CheckedHost", "State", "Count", "Padding"]
         setTableProperties(self.ui.HostsTableView, len(headers), [0,2,4,5,6,7,8,9,10,11,12,13,14,15,16])
         self.ui.HostsTableView.horizontalHeader().resizeSection(1,30)
 
@@ -185,32 +185,32 @@ class View(QtCore.QObject):
         setTableProperties(self.ui.ServiceNamesTableView, len(headers))
 
         # tools table (left)
-        headers = ["Progress","Display","Pid","Tool","Tool","Host","Port","Protocol","Command","Start time","OutputFile","Output","Status"]
+        headers = ["Progress", "Display", "Pid", "Tool", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "OutputFile", "Output", "Status"]
         setTableProperties(self.ui.ToolsTableView, len(headers), [0,1,2,4,5,6,7,8,9,10,11,12,13])
 
         # service table (right)
-        headers = ["Host","Port","Port","Protocol","State","HostId","ServiceId","Name","Product","Version","Extrainfo","Fingerprint"]
+        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version", "Extrainfo", "Fingerprint"]
         setTableProperties(self.ui.ServicesTableView, len(headers), [0,1,5,6,8,10,11])      
 
         # ports by service (right)
-        headers = ["Host","Port","Port","Protocol","State","HostId","ServiceId","Name","Product","Version","Extrainfo","Fingerprint"]
+        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version", "Extrainfo", "Fingerprint"]
         setTableProperties(self.ui.ServicesTableView, len(headers), [2,5,6,8,10,11])
         self.ui.ServicesTableView.horizontalHeader().resizeSection(0,130)       # resize IP 
 
         # scripts table (right)
         headers = ["Id", "Script", "Port", "Protocol"]
-        setTableProperties(self.ui.ScriptsTableView, len(headers), [0,3])
+        setTableProperties(self.ui.ScriptsTableView, len(headers), [0, 3])
 
         # tool hosts table (right)
-        headers = ["Progress","Display","Pid","Name","Action","Target","Port","Protocol","Command","Start time","OutputFile","Output","Status"]
-        setTableProperties(self.ui.ToolHostsTableView, len(headers), [0,1,2,3,4,7,8,9,10,11,12])
+        headers = ["Progress", "Display", "Pid", "Name", "Action", "Target", "Port", "Protocol", "Command", "Start time", "OutputFile", "Output", "Status"]
+        setTableProperties(self.ui.ToolHostsTableView, len(headers), [0, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12])
         self.ui.ToolHostsTableView.horizontalHeader().resizeSection(5,150)      # default width for Host column
     
         # process table
-        headers = ["Progress","Display","Pid","Name","Tool","Host","Port","Protocol","Command","Start time","OutputFile","Output","Status"]
-        setTableProperties(self.ui.ProcessesTableView, len(headers), [1,2,3,6,7,8,11,12,14])
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(0,125)
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(4,250)
+        headers = ["Progress", "Elapsed", "Estimated Remaining", "Display", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "OutputFile", "Output", "Status"]
+        setTableProperties(self.ui.ProcessesTableView, len(headers), [1, 2, 3, 4, 5, 8, 9, 10, 13, 14, 16])
+        self.ui.ProcessesTableView.horizontalHeader().resizeSection(0, 125)
+        self.ui.ProcessesTableView.horizontalHeader().resizeSection(4, 250)
     
     def setMainWindowTitle(self, title):
         self.ui_mainwindow.setWindowTitle(str(title))
@@ -289,7 +289,7 @@ class View(QtCore.QObject):
             if not filename == '':                                      # check for permissions
                 if not os.access(filename, os.R_OK) or not os.access(filename, os.W_OK):
                     log.info('Insufficient permissions to open this file.')
-                    reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions on this file.","Ok")
+                    reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions on this file.", "Ok")
                     return
                                 
                 self.controller.openExistingProject(filename)
@@ -333,7 +333,7 @@ class View(QtCore.QObject):
 
             if not os.access(ntpath.dirname(str(filename)), os.R_OK) or not os.access(ntpath.dirname(str(filename)), os.W_OK):
                 log.info('Insufficient permissions on this folder.')
-                reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions on this folder.","Ok")
+                reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions on this folder.", "Ok")
                 
             else:
                 if self.controller.saveProjectAs(filename):
@@ -417,7 +417,7 @@ class View(QtCore.QObject):
 
             if not os.access(filename, os.R_OK):                        # check for read permissions on the xml file
                 log.info('Insufficient permissions to read this file.')
-                reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions to read this file.","Ok")
+                reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions to read this file.", "Ok")
                 return
 
             self.importProgressWidget.reset('Importing nmap..') 
@@ -866,7 +866,7 @@ class View(QtCore.QObject):
 
     def updateHostsTableView(self): 
         # TACOS
-        headers = ["Id","OS","Accuracy","Host","IPv4","IPv6","Mac","Status","Hostname","Vendor","Uptime","Lastboot","Distance","CheckedHost","State","Count","Padding"]
+        headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime", "Lastboot", "Distance", "CheckedHost", "State", "Count", "Padding"]
         self.HostsTableModel = HostsTableModel(self.controller.getHostsFromDB(self.filters), headers)
         self.ui.HostsTableView.setModel(self.HostsTableModel)
 
@@ -913,7 +913,7 @@ class View(QtCore.QObject):
         
     def updateToolsTableView(self):
         if self.ui.MainTabWidget.tabText(self.ui.MainTabWidget.currentIndex()) == 'Scan' and self.ui.HostsTabWidget.tabText(self.ui.HostsTabWidget.currentIndex()) == 'Tools':
-            headers = ["Progress","Display","Pid","Tool","Tool","Host","Port","Protocol","Command","Start time","End time","OutputFile","Output","Status","Closed"]
+            headers = ["Progress", "Display", "Pid", "Tool", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
             self.ToolsTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.filters), headers)
             self.ui.ToolsTableView.setModel(self.ToolsTableModel)
 
@@ -938,7 +938,7 @@ class View(QtCore.QObject):
     #################### RIGHT PANEL INTERFACE UPDATE FUNCTIONS ####################
     
     def updateServiceTableView(self, hostIP):
-        headers = ["Host","Port","Port","Protocol","State","HostId","ServiceId","Name","Product","Version","Extrainfo","Fingerprint"]
+        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version", "Extrainfo", "Fingerprint"]
         self.ServicesTableModel = ServicesTableModel(self.controller.getPortsAndServicesForHostFromDB(hostIP, self.filters), headers)
         self.ui.ServicesTableView.setModel(self.ServicesTableModel)
 
@@ -951,7 +951,7 @@ class View(QtCore.QObject):
         self.ServicesTableModel.sort(2, Qt.DescendingOrder)             # sort by port by default (override default)
 
     def updatePortsByServiceTableView(self, serviceName):
-        headers = ["Host","Port","Port","Protocol","State","HostId","ServiceId","Name","Product","Version","Extrainfo","Fingerprint"]
+        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version", "Extrainfo", "Fingerprint"]
         self.PortsByServiceTableModel = ServicesTableModel(self.controller.getHostsAndPortsForServiceFromDB(serviceName, self.filters), headers)
         self.ui.ServicesTableView.setModel(self.PortsByServiceTableModel)
 
@@ -1033,7 +1033,7 @@ class View(QtCore.QObject):
             self.setDirty(False)
 
     def updateToolHostsTableView(self, toolname):
-        headers = ["Progress","Display","Pid","Name","Action","Target","Port","Protocol","Command","Start time","OutputFile","Output","Status","Closed"]
+        headers = ["Progress", "Display", "Pid", "Name", "Action", "Target", "Port", "Protocol", "Command", "Start time", "OutputFile", "Output", "Status", "Closed"]
         self.ToolHostsTableModel = ProcessesTableModel(self,self.controller.getHostsForTool(toolname), headers)
         self.ui.ToolHostsTableView.setModel(self.ToolHostsTableModel)
 
@@ -1110,18 +1110,19 @@ class View(QtCore.QObject):
     #################### BOTTOM PANEL INTERFACE UPDATE FUNCTIONS ####################       
         
     def updateProcessesTableView(self):
-        headers = ["Progress","Display","Pid","Name","Tool","Host","Port","Protocol","Command","Start time","End time","OutputFile","Output","Status","Closed"]
+        headers = ["Progress", "Display", "Elapsed", "Estimated Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
         self.ProcessesTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.filters, True), headers)
         self.ui.ProcessesTableView.setModel(self.ProcessesTableModel)
         
-        for i in [1,2,3,6,7,8,11,12,14]:                                # hide some columns
+        for i in [1, 5, 8, 9, 10, 13, 14, 16]:
             self.ui.ProcessesTableView.setColumnHidden(i, True)
             
         self.ui.ProcessesTableView.horizontalHeader().resizeSection(0,125)
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(4,210)
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(5,135)
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(9,165)
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(10,165)
+        self.ui.ProcessesTableView.horizontalHeader().resizeSection(3,165)
+        self.ui.ProcessesTableView.horizontalHeader().resizeSection(6,210)
+        self.ui.ProcessesTableView.horizontalHeader().resizeSection(7,135)
+        self.ui.ProcessesTableView.horizontalHeader().resizeSection(11,165)
+        self.ui.ProcessesTableView.horizontalHeader().resizeSection(12,165)
         self.updateProcessesIcon()
 
     def updateProcessesIcon(self):
