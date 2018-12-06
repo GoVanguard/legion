@@ -272,74 +272,77 @@ class Logic():
 
     # used to check if there are any ports of a specific protocol for a given host
     def getPortsForHostFromDB(self, hostIP, protocol):
-        tmp_query = ('SELECT ports.port_id FROM nmap_port AS ports ' +
+        query = ('SELECT ports.port_id FROM nmap_port AS ports ' +
             'INNER JOIN nmap_host AS hosts ON hosts.id = ports.host_id ' +
             'WHERE hosts.ip=? and ports.protocol=?')
-            
-        return self.db.metadata.bind.execute(tmp_query, str(hostIP), str(protocol)).first()
+        results = self.db.metadata.bind.execute(tmp_query, str(hostIP), str(protocol)).first()
+        return results
 
     # used to get the service name given a host ip and a port when we are in tools tab (left) and right click on a host
     def getServiceNameForHostAndPort(self, hostIP, port):
-        tmp_query = ('SELECT services.name FROM nmap_service AS services ' +
+        query = ('SELECT services.name FROM nmap_service AS services ' +
             'INNER JOIN nmap_host AS hosts ON hosts.id = ports.host_id ' +
             'INNER JOIN nmap_port AS ports ON services.id=ports.service_id ' +
             'WHERE hosts.ip=? and ports.port_id=?')
-            
-        return self.db.metadata.bind.execute(tmp_query, str(hostIP), str(port)).first()
-    
+        results = self.db.metadata.bind.execute(tmp_query, str(hostIP), str(port)).first()
+        return results
+
     # used to delete all port/script data related to a host - to overwrite portscan info with the latest scan   
     def deleteAllPortsAndScriptsForHostFromDB(self, hostID, protocol):
         session = self.db.session()
-        # TACOS
         ports_for_host = session.query(nmap_port).filter(nmap_port.host_id == hostID).filter(nmap_port.protocol == str(protocol)).all()
-        #ports_for_host = nmap_port.query.filter(nmap_port.host_id == hostID, nmap_port.protocol == str(protocol)).all()
-                
         for p in ports_for_host:
             scripts_for_ports = session.query(nmap_script).filter(nmap_script.port_id == p.id).all()
-            #scripts_for_ports = nmap_script.query.filter(nmap_script.port_id == p.id).all()
             for s in scripts_for_ports:
                 session.delete(s)
-        
         for p in ports_for_host:
             session.delete(p)
-                    
         session.commit()
+        return
 
     def getHostInformation(self, hostIP):
         session = self.db.session()
-        return session.query(nmap_host).filter_by(ip=str(hostIP)).first()
+        results = session.query(nmap_host).filter_by(ip=str(hostIP)).first()
+        return results
 
-    def getPortStatesForHost(self,hostID):
-        tmp_query = ('SELECT port.state FROM nmap_port as port WHERE port.host_id=?')
-        return self.db.metadata.bind.execute(tmp_query, str(hostID)).fetchall()
+    def deleteHost(self, hostIP):
+        session = self.db.session()
+        h = session.query(nmap_host).filter_by(ip=str(hostIP)).first()
+        session.delete(h)
+        session.commit()
+        return
+
+    def getPortStatesForHost(self, hostID):
+        query = ('SELECT port.state FROM nmap_port as port WHERE port.host_id=?')
+        results = self.db.metadata.bind.execute(query, str(hostID)).fetchall()
+        return results
 
     def getHostsAndPortsForServiceFromDB(self, serviceName, filters):
-        
-        tmp_query = ('SELECT hosts.ip,ports.port_id,ports.protocol,ports.state,ports.host_id,ports.service_id,services.name,services.product,services.version,services.extrainfo,services.fingerprint FROM nmap_port AS ports ' +
+        query = ('SELECT hosts.ip,ports.port_id,ports.protocol,ports.state,ports.host_id,ports.service_id,services.name,services.product,services.version,services.extrainfo,services.fingerprint FROM nmap_port AS ports ' +
             'INNER JOIN nmap_host AS hosts ON hosts.id = ports.host_id ' +
             'LEFT OUTER JOIN nmap_service AS services ON services.id=ports.service_id ' +
             'WHERE services.name=?')
 
         if filters.down == False:
-            tmp_query += ' AND hosts.status!=\'down\''
+            query += ' AND hosts.status!=\'down\''
         if filters.up == False:
-            tmp_query += ' AND hosts.status!=\'up\''
+            query += ' AND hosts.status!=\'up\''
         if filters.checked == False:
-            tmp_query += ' AND hosts.checked!=\'True\''
+            query += ' AND hosts.checked!=\'True\''
         if filters.portopen == False:
-            tmp_query += ' AND ports.state!=\'open\' AND ports.state!=\'open|filtered\''
+            query += ' AND ports.state!=\'open\' AND ports.state!=\'open|filtered\''
         if filters.portclosed == False:
-            tmp_query += ' AND ports.state!=\'closed\''
+            query += ' AND ports.state!=\'closed\''
         if filters.portfiltered == False:
-            tmp_query += ' AND ports.state!=\'filtered\' AND ports.state!=\'open|filtered\''
+            query += ' AND ports.state!=\'filtered\' AND ports.state!=\'open|filtered\''
         if filters.tcp == False:
-            tmp_query += ' AND ports.protocol!=\'tcp\''
+            query += ' AND ports.protocol!=\'tcp\''
         if filters.udp == False:
-            tmp_query += ' AND ports.protocol!=\'udp\'' 
+            query += ' AND ports.protocol!=\'udp\'' 
         for word in filters.keywords:
-            tmp_query += ' AND (hosts.ip LIKE \'%'+sanitise(word)+'%\' OR hosts.os_match LIKE \'%'+sanitise(word)+'%\' OR hosts.hostname LIKE \'%'+sanitise(word)+'%\')'
+            query += ' AND (hosts.ip LIKE \'%'+sanitise(word)+'%\' OR hosts.os_match LIKE \'%'+sanitise(word)+'%\' OR hosts.hostname LIKE \'%'+sanitise(word)+'%\')'
 
-        return self.db.metadata.bind.execute(tmp_query, str(serviceName)).fetchall()
+        return self.db.metadata.bind.execute(query, str(serviceName)).fetchall()
 
     # this function returns all the processes from the DB
     # the showProcesses flag is used to ensure we don't display processes in the process table after we have cleared them or when an existing project is opened.
@@ -365,7 +368,7 @@ class Logic():
         if closed == 'FetchAll':
             tmp_query = ('SELECT "0", "0", "0", "0", "0", process.hostip, process.port, process.protocol, "0", "0", process.outputfile, "0", "0", "0" FROM process AS process WHERE process.name=?')
         else:
-            tmp_query = ('SELECT process.id, "0", "0", "0", "0", process.hostip, process.port, process.protocol, "0", "0", process.outputfile, "0", "0", "0" FROM process AS process WHERE process.name=? and process.closed="False"')
+            tmp_query = ('SELECT process.id, "0", "0", "0", "0", "0", "0", process.hostip, process.port, process.protocol, "0", "0", process.outputfile, "0", "0", "0" FROM process AS process WHERE process.name=? and process.closed="False"')
             
         return self.db.metadata.bind.execute(tmp_query, str(toolname)).fetchall()
 
