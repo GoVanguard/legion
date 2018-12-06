@@ -135,6 +135,15 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addWidget(self.ToolsTableView)
         self.HostsTabWidget.addTab(self.ToolsTab, _fromUtf8(""))        
 
+        self.CvesLeftTab = QtWidgets.QWidget()
+        self.CvesLeftTab.setObjectName(_fromUtf8("CvesLeftTab"))
+        self.horizontalLayout_8 = QtWidgets.QHBoxLayout(self.CvesLeftTab)
+        self.horizontalLayout_8.setObjectName(_fromUtf8("horizontalLayout_8"))
+        self.CvesTableView = QtWidgets.QTableView(self.CvesLeftTab)
+        self.CvesTableView.setObjectName(_fromUtf8("CvesTableView"))
+        self.horizontalLayout_8.addWidget(self.CvesTableView)
+        self.HostsTabWidget.addTab(self.CvesLeftTab, _fromUtf8(""))
+
     def setupRightPanel(self):
         self.ServicesTabWidget = QtWidgets.QTabWidget()
         self.ServicesTabWidget.setEnabled(True)
@@ -190,6 +199,15 @@ class Ui_MainWindow(object):
         self.ServicesTableView.setObjectName(_fromUtf8("ServicesTableView"))
         self.verticalLayout.addWidget(self.ServicesTableView)
         self.ServicesTabWidget.addTab(self.ServicesRightTab, _fromUtf8(""))
+
+        self.CvesRightTab = QtWidgets.QWidget()
+        self.CvesRightTab.setObjectName(_fromUtf8("CvesRightTab"))
+        self.verticalLayout_1 = QtWidgets.QVBoxLayout(self.CvesRightTab)
+        self.verticalLayout_1.setObjectName(_fromUtf8("verticalLayout_1"))
+        self.CvesTableView = QtWidgets.QTableView(self.CvesRightTab)
+        self.CvesTableView.setObjectName(_fromUtf8("CvesTableView"))
+        self.verticalLayout_1.addWidget(self.CvesTableView)
+        self.ServicesTabWidget.addTab(self.CvesRightTab, _fromUtf8(""))
         
         self.ScriptsTab = QtWidgets.QWidget()
         self.ScriptsTab.setObjectName(_fromUtf8("ScriptsTab"))
@@ -343,8 +361,10 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "LEGION", None))
         self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.HostsTab), QtWidgets.QApplication.translate("MainWindow", "Hosts", None))
         self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.ServicesLeftTab), QtWidgets.QApplication.translate("MainWindow", "Services", None))
+        self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.CvesLeftTab), QtWidgets.QApplication.translate("MainWindow", "CVEs", None))
         self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.ToolsTab), QtWidgets.QApplication.translate("MainWindow", "Tools", None))
         self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.ServicesRightTab), QtWidgets.QApplication.translate("MainWindow", "Services", None))
+        self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.CvesRightTab), QtWidgets.QApplication.translate("MainWindow", "CVEs", None))
         self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.ScriptsTab), QtWidgets.QApplication.translate("MainWindow", "Scripts", None))
         self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.InformationTab), QtWidgets.QApplication.translate("MainWindow", "Information", None))
         self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.NotesTab), QtWidgets.QApplication.translate("MainWindow", "Notes", None))
