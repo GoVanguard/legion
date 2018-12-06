@@ -229,6 +229,9 @@ class Controller():
                 menu.addAction('Mark as unchecked')
             else:
                 menu.addAction('Mark as checked')
+            menu.addAction('Rescan')
+            menu.addAction('Purge Results')
+            menu.addAction('Delete')
             
         return menu, actions
 
@@ -246,7 +249,32 @@ class Controller():
                 self.logic.deleteAllPortsAndScriptsForHostFromDB(hostid, 'tcp')
             if self.logic.getPortsForHostFromDB(ip, 'udp'):
                 self.logic.deleteAllPortsAndScriptsForHostFromDB(hostid, 'udp')
+            self.view.updateInterface()
             self.runStagedNmap(ip, False)
+            return
+
+        if action.text() == 'Rescan':
+            log.info('Rescanning host {0}'.format(str(ip)))
+            self.runStagedNmap(ip, False)
+            return
+
+        if action.text() == 'Purge Results':
+            log.info('Purging previous portscan data for host {0}'.format(str(ip)))
+            if self.logic.getPortsForHostFromDB(ip, 'tcp'):
+                self.logic.deleteAllPortsAndScriptsForHostFromDB(hostid, 'tcp')
+            if self.logic.getPortsForHostFromDB(ip, 'udp'):
+                self.logic.deleteAllPortsAndScriptsForHostFromDB(hostid, 'udp')
+            self.view.updateInterface()
+            return
+
+        if action.text() == 'Delete':
+            log.info('Purging previous portscan data for host {0}'.format(str(ip)))
+            if self.logic.getPortsForHostFromDB(ip, 'tcp'):
+                self.logic.deleteAllPortsAndScriptsForHostFromDB(hostid, 'tcp')
+            if self.logic.getPortsForHostFromDB(ip, 'udp'):
+                self.logic.deleteAllPortsAndScriptsForHostFromDB(hostid, 'udp')
+            self.logic.deleteHost(ip)
+            self.view.updateInterface()
             return
             
         for i in range(0,len(actions)):

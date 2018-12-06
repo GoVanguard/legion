@@ -121,6 +121,22 @@ class nmap_port(Base):
         self.service_id = service
         self.host_id = host
 
+class cve(Base):
+    __tablename__ = 'cve'
+    name = Column(String)
+    id = Column(Integer, primary_key = True)
+    url = Column(String)
+    name = Column(String)
+    criteria = Column(String)
+    fingerprint = Column(String)
+    service_id = Column(String, ForeignKey('nmap_service.id'))
+    host_id = Column(String, ForeignKey('nmap_host.id'))
+
+    def __init__(self, url = '', name = '', criteria = '', fingerprint = ''):
+        self.url = url
+        self.name = name
+        self.criteria = criteria
+        self.fingerprint = fingerprint
 
 class nmap_service(Base):
     __tablename__ = 'nmap_service'
@@ -131,6 +147,7 @@ class nmap_service(Base):
     extrainfo = Column(String)
     fingerprint = Column(String)
     port = relationship(nmap_port)
+    cves = relationship(cve)
 
     def __init__(self, name = '', product = '', version = '', extrainfo = '', fingerprint = ''):
         self.name = name
@@ -176,6 +193,7 @@ class nmap_host(Base):
     # host relationships
     os = relationship(nmap_os)
     ports = relationship(nmap_port)
+    cves = relationship(cve)
 
     def __init__(self, **kwargs):
         self.checked = kwargs.get('checked') or 'False'
