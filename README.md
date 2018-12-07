@@ -1,5 +1,6 @@
 LEGION 0.2.3 (https://govanguard.io)
 ==
+[![Maintainability](https://api.codeclimate.com/v1/badges/4e33e52aab8f49cdcd02/maintainability)](https://codeclimate.com/github/GoVanguard/legion/maintainability)
 
 ## Authors:
 Shane Scott
