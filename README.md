@@ -1,5 +1,6 @@
-LEGION 0.2.1 (https://govanguard.io)
+LEGION 0.2.3 (https://govanguard.io)
 ==
+[![Maintainability](https://api.codeclimate.com/v1/badges/4e33e52aab8f49cdcd02/maintainability)](https://codeclimate.com/github/GoVanguard/legion/maintainability)
 
 ## Authors:
 Shane Scott
@@ -19,11 +20,11 @@ git clone https://github.com/GoVanguard/legion.git
 ```
 
 ## Recommended Python Version
-legion supports Python 3.5+.
+legion supports Python 3.6+.
 
 ## Dependencies
 * Ubuntu or variant or WSL (Windows Subsystem for Linux)
-* Python 3.5+
+* Python 3.6+
 * PyQT5
 * SQLAlchemy
 * six
