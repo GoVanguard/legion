@@ -7,7 +7,9 @@ python:
 - 3.6
 
 install:
-  - sh ./deps/install.sh
+  - sh ./deps/installDeps.sh
+  - sh ./deps/installPyQt4.sh
+  - sh ./deps/installPythonLibs.sh
   - pip install -r requirements.txt
 
 script: test.py
