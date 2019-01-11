@@ -11,4 +11,4 @@ install:
   - bash  ./deps/installPythonLibs.sh
 
 script:
-  - test
+  - ./test.py
