@@ -9,6 +9,6 @@ else
     pipBin='pip3.6'
 fi
 
-$pipBin -r requirements.txt
+$pipBin install -r requirements.txt
 $pipBin install sqlalchemy pyqt5 asyncio aiohttp aioredis aiomonitor apscheduler Quamash
 $pipBin install service_identity --upgrade
