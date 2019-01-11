@@ -339,7 +339,7 @@ class View(QtCore.QObject):
 
             if not os.access(ntpath.dirname(str(filename)), os.R_OK) or not os.access(ntpath.dirname(str(filename)), os.W_OK):
                 log.info('Insufficient permissions on this folder.')
-                reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions on this folder.", "Ok")
+                reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions on this folder.")
                 
             else:
                 if self.controller.saveProjectAs(filename):
@@ -418,7 +418,7 @@ class View(QtCore.QObject):
     def importNmap(self):
         self.ui.statusbar.showMessage('Importing nmap xml..', msecs=1000)
         filename = QtWidgets.QFileDialog.getOpenFileName(self.ui.centralwidget, 'Choose nmap file', self.controller.getCWD(), filter='XML file (*.xml)')
-        
+        print(str(filename)) 
         if not filename == '':
 
             if not os.access(filename, os.R_OK):                        # check for read permissions on the xml file
