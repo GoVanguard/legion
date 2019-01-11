@@ -7,8 +7,7 @@ python:
 - 3.6
 
 install:
-  - sh ./deps/installDeps.sh
-  - sh ./deps/installPythonLibs.sh
-  - pip install -r requirements.txt
+  - bash ./deps/installDeps.sh
+  - bash  ./deps/installPythonLibs.sh
 
 script: test.py
