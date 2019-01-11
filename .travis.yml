@@ -8,7 +8,6 @@ python:
 
 install:
   - sh ./deps/installDeps.sh
-  - sh ./deps/installPyQt4.sh
   - sh ./deps/installPythonLibs.sh
   - pip install -r requirements.txt
 
