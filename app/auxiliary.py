@@ -21,7 +21,7 @@ import subprocess                                                       # for sc
 import string                                                           # for input validation
 from six import u as unicode
 import ssl
-import asyncio, aioredis, aiohttp, aiomonitor
+import asyncio, aioredis, aiohttp
 from datetime import datetime
 import hashlib, json
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
