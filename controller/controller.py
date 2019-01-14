@@ -161,11 +161,11 @@ class Controller():
         self.logic.createTemporaryFiles()                               # creates new temp files and folders
         self.start()                                                    # initialisations (globals, etc)
 
-    def openExistingProject(self, filename):
+    def openExistingProject(self, filename, projectType='legion'):
         self.view.closeProject()
         self.view.importProgressWidget.reset('Opening project..')
         self.view.importProgressWidget.show()                           # show the progress widget      
-        self.logic.openExistingProject(filename)
+        self.logic.openExistingProject(filename, projectType)
         self.start(ntpath.basename(str(self.logic.projectname)))        # initialisations (globals, signals, etc)
         self.view.restoreToolTabs()                                     # restores the tool tabs for each host
         self.view.hostTableClick()                                      # click on first host to restore his host tool tabs

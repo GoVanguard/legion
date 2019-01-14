@@ -30,7 +30,7 @@ class Logic():
             
             self.istemp = True                                          # indicates that file is temporary and can be deleted if user exits without saving
             log.info(self.cwd)
-            tf = tempfile.NamedTemporaryFile(suffix=".ldb",prefix="legion-", delete=False, dir="./tmp/")         # to store the database file
+            tf = tempfile.NamedTemporaryFile(suffix=".legion",prefix="legion-", delete=False, dir="./tmp/")         # to store the database file
             self.outputfolder = tempfile.mkdtemp(suffix="-tool-output",prefix="legion-", dir="./tmp/")            # to store tool output of finished processes
             self.runningfolder = tempfile.mkdtemp(suffix="-running",prefix="legion-", dir="./tmp/")               # to store tool output of running processes
             os.makedirs(self.outputfolder+'/screenshots')                                           # to store screenshots
@@ -119,21 +119,22 @@ class Logic():
             log.info('Something went wrong copying the imported XML to the project folder.')
             log.info("Unexpected error:", sys.exc_info()[0])
 
-    def openExistingProject(self, filename):
+    def openExistingProject(self, filename, projectType="legion"):
         try:
             log.info('Opening project..')
             self.istemp = False                                         # indicate the file is NOT temporary and should NOT be deleted later
             
             self.projectname = str(filename)                            # set the new projectname and outputfolder vars
-            if not str(filename).endswith('.ldb'):         
+            nameOffset = len(projectType) + 1
+            if not str(filename).endswith(projectType):         
                 self.outputfolder = str(filename)+'-tool-output'        # use the same name as the file for the folder (without the extension)
             else:
-                self.outputfolder = str(filename)[:-5]+'-tool-output'
+                self.outputfolder = str(filename)[:-nameOffset]+'-tool-output'
 
-            self.usernamesWordlist = Wordlist(self.outputfolder + '/legion-usernames.txt')          # to store found usernames
-            self.passwordsWordlist = Wordlist(self.outputfolder + '/legion-passwords.txt')          # to store found passwords          
+            self.usernamesWordlist = Wordlist(self.outputfolder + '/' + projectType + '-usernames.txt')          # to store found usernames
+            self.passwordsWordlist = Wordlist(self.outputfolder + '/' + projectType + '-passwords.txt')          # to store found passwords          
             
-            self.runningfolder = tempfile.mkdtemp(suffix="-running",prefix="legion-")               # to store tool output of running processes
+            self.runningfolder = tempfile.mkdtemp(suffix = "-running", prefix = projectType + '-')               # to store tool output of running processes
             self.db = Database(self.projectname)                        # use the new db
             self.cwd = ntpath.dirname(str(self.projectname))+'/'        # update cwd so it appears nicely in the window title
         
@@ -143,14 +144,15 @@ class Logic():
         
     # this function copies the current project files and folder to a new location
     # if the replace flag is set to 1, it overwrites the destination file and folder
-    def saveProjectAs(self, filename, replace=0):
+    def saveProjectAs(self, filename, replace=0, projectType = 'legion'):
         try:
-            # the folder name must be : filename-tool-output (without the .ldb extension)
-            if not str(filename).endswith('.ldb'):
+            # the folder name must be : filename-tool-output (without the .legion extension)
+            nameOffset = len(projectType) + 1
+            if not str(filename).endswith(projectType):
                 foldername = str(filename)+'-tool-output'
-                filename = str(filename) + '.ldb'
+                filename = str(filename) + '.legion'
             else:
-                foldername = filename[:-5]+'-tool-output'
+                foldername = filename[:-nameOffset]+'-tool-output'
 
             # check if filename already exists (skip the check if we want to replace the file)
             if replace == 0 and os.path.exists(str(filename)) and os.path.isfile(str(filename)):
