@@ -26,7 +26,7 @@ class Controller():
     # initialisations that will happen once - when the program is launched
     @timing
     def __init__(self, view, logic):
-        self.version = 'LEGION 0.2.3'                            # update this everytime you commit!
+        self.version = 'LEGION 0.2.4'                            # update this everytime you commit!
         self.logic = logic
         self.view = view
         self.view.setController(self)

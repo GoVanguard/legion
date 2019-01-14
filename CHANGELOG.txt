@@ -39,3 +39,9 @@ LEGION 0.2.3
 * Service 1-M CVE UI element added
 * CVE object model revised
 * Improved UI performance
+
+LEGION 0.2.4
+
+* Open SPRT and Legion files
+* Resolve file open/save access issue
+* Consolidate lower panel
