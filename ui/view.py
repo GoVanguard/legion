@@ -290,18 +290,22 @@ class View(QtCore.QObject):
 
     def openExistingProject(self):      
         if self.dealWithCurrentProject():
-            filename = QtWidgets.QFileDialog.getOpenFileName(self.ui.centralwidget, 'Open project', self.controller.getCWD(), filter='SPARTA project (*.sprt)')
+            filename = QtWidgets.QFileDialog.getOpenFileName(self.ui.centralwidget, 'Open project', self.controller.getCWD(), filter='Legion session (*.legion);; Sparta session (*.sprt)')[0]
         
             if not filename == '':                                      # check for permissions
                 if not os.access(filename, os.R_OK) or not os.access(filename, os.W_OK):
                     log.info('Insufficient permissions to open this file.')
                     reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions on this file.", "Ok")
                     return
+
+                if '.legion' in str(filename):
+                    projectType = 'legion'
+                elif '.sprt' in str(filename):
+                    projectType = 'sparta'
                                 
-                self.controller.openExistingProject(filename)
+                self.controller.openExistingProject(filename, projectType)
                 self.firstSave = False                                  # overwrite this variable because we are opening an existing file
                 self.displayAddHostsOverlay(False)                      # do not show the overlay because the hosttableview is already populated
-
             else:
                 log.info('No file chosen..')
 
@@ -333,10 +337,9 @@ class View(QtCore.QObject):
 
         self.controller.saveProject(self.lastHostIdClicked, self.ui.NotesTextEdit.toPlainText())        
 
-        filename = QtWidgets.QFileDialog.getSaveFileName(self.ui.centralwidget, 'Save project as', self.controller.getCWD(), filter='SPARTA project (*.sprt)', options=QtWidgets.QFileDialog.DontConfirmOverwrite)
+        filename = QtWidgets.QFileDialog.getSaveFileName(self.ui.centralwidget, 'Save project as', self.controller.getCWD(), filter='Legion session (*.legion)', options=QtWidgets.QFileDialog.DontConfirmOverwrite)[0]
             
         while not filename =='':
-
             if not os.access(ntpath.dirname(str(filename)), os.R_OK) or not os.access(ntpath.dirname(str(filename)), os.W_OK):
                 log.info('Insufficient permissions on this folder.')
                 reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions on this folder.")
@@ -345,8 +348,8 @@ class View(QtCore.QObject):
                 if self.controller.saveProjectAs(filename):
                     break
                     
-                if not str(filename).endswith('.sprt'):
-                    filename = str(filename) + '.sprt'
+                if not str(filename).endswith('.legion'):
+                    filename = str(filename) + '.legion'
                 msgBox = QtWidgets.QMessageBox()
                 reply = msgBox.question(self.ui.centralwidget, 'Confirm', "A file named \""+ntpath.basename(str(filename))+"\" already exists.  Do you want to replace it?", "Abort", "Replace", "", 0)
             
@@ -354,7 +357,7 @@ class View(QtCore.QObject):
                     self.controller.saveProjectAs(filename, 1)          # replace
                     break
 
-            filename = QtWidgets.QFileDialog.getSaveFileName(self.ui.centralwidget, 'Save project as', '.', filter='SPARTA project (*.sprt)', options=QtWidgets.QFileDialog.DontConfirmOverwrite)           
+            filename = QtWidgets.QFileDialog.getSaveFileName(self.ui.centralwidget, 'Save project as', '.', filter='Legion session (*.legion)', options=QtWidgets.QFileDialog.DontConfirmOverwrite)[0]
 
         if not filename == '':          
             self.setDirty(False)
