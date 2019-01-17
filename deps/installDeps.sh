@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./deps/apt.sh
+source ./apt.sh
 
 # Install deps
 echo "Checking Apt..."
