@@ -1,9 +1,9 @@
 #!/bin/bash
 
-source ./detectPython.sh
+source ./deps/detectPython.sh
 
-cp *.sh /tmp
-cp ../requirements.txt /tmp -f
+cp ./deps/*.sh /tmp
+cp ./requirements.txt /tmp -f
 cd /tmp
 chmod a+x *.sh
 
