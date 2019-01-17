@@ -2,9 +2,12 @@
 # Setup Python deps
 
 testForPip=`pip --version`
+testForPip2=`pip3 --version`
 
 if [[ $testForPip == *"3.6"* ]]; then
     pipBin='pip'
+elif [[ $testForPip2 == *"3.6"* ]]; then
+    pipBin='pip3'
 else
     pipBin='pip3.6'
 fi
