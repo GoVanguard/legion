@@ -1,8 +1,6 @@
 #!/bin/bash
-./deps/ubuntu.sh
 
 # Setup linked Windows NMAP
-
 if [ ! -f "/sbin/nmap" ]
 then
     echo "Installing Link to Windows NMAP..."
