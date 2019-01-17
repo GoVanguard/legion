@@ -1,9 +1,37 @@
 #!/bin/bash
-cd /tmp
 
-# Setup Python3.6
-wget https://www.python.org/ftp/python/3.6.6/Python-3.6.6.tgz
-tar xzf Python-3.6.6.tgz
-cd Python-3.6.6/
-./configure --enable-optimizations --enable-ipv6 --with-ensurepip=install
-sudo make altinstall
+source ./detectPython.sh
+
+if [[ ${PYTHON3BIN} == "Missing" ]]
+then
+    echo "Installing python3.6 from APT..."
+    echo "Updating Apt database..."
+    sudo apt-get update -yqq 2>&1 > /dev/null
+    echo "Install Python3.6 and Pip3.6 from APT..."
+    sudo apt-get install -yqq python3 python3-pip python-netlib 2>&1 > /dev/null
+else
+    echo "Python3.6 found!"
+    exit 0
+fi
+
+source ./detectPython.sh
+
+if [[ ${PYTHON3BIN} == "Missing" ]]
+then
+    echo "Installing python3.6 from source..."
+    sudo ./buildPython36.sh
+else
+    echo "Python3.6 found!"
+    exit 0
+fi
+
+source ./detectPython.sh
+
+if [[ ${PYTHON3BIN} == "Missing" ]]
+then
+    echo "Everything went wrong trying to get python3.6 setup. Please do this manually."
+    exit 1
+else
+    echo "Python3.6 found!"
+    exit 0
+fi

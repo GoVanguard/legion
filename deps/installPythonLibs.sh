@@ -1,17 +1,8 @@
 #!/bin/bash
+
+source ./detectPython.sh
+
 # Setup Python deps
-
-testForPip=`pip --version`
-testForPip2=`pip3 --version`
-
-if [[ $testForPip == *"3.6"* ]]; then
-    pipBin='pip'
-elif [[ $testForPip2 == *"3.6"* ]]; then
-    pipBin='pip3'
-else
-    pipBin='pip3.6'
-fi
-
-$pipBin install -r requirements.txt
-$pipBin install sqlalchemy pyqt5 asyncio aiohttp aioredis aiomonitor apscheduler Quamash
-$pipBin install service_identity --upgrade
+${PIP3BIN} install -r requirements.txt
+${PIP3BIN} install sqlalchemy pyqt5 asyncio aiohttp aioredis aiomonitor apscheduler Quamash
+${PIP3BIN} install service_identity --upgrade
