@@ -2,7 +2,7 @@
 
 source ./detectPython.sh
 
-if [[ ${PYTHON3BIN} == "Missing" | ${PIP3BIN} == "Missing" ]]
+if [[ ${PYTHON3BIN} == "Missing" ]] | [[ ${PIP3BIN} == "Missing" ]]
 then
     echo "Installing python3.6 from APT..."
     echo "Updating Apt database..."
@@ -18,7 +18,7 @@ fi
 
 source ./detectPython.sh
 
-if [[ ${PYTHON3BIN} == "Missing" | ${PIP3BIN} == "Missing" ]]
+if [[ ${PYTHON3BIN} == "Missing" ]] | [[ ${PIP3BIN} == "Missing" ]]
 then
     echo "Installing python3.6 from source..."
     sudo ./buildPython36.sh
@@ -31,7 +31,7 @@ fi
 
 source ./detectPython.sh
 
-if [[ ${PYTHON3BIN} == "Missing" | ${PIP3BIN} == "Missing" ]]
+if [[ ${PYTHON3BIN} == "Missing" ]] | [[ ${PIP3BIN} == "Missing" ]]
 then
     echo "Everything went wrong trying to get python3.6 setup. Please do this manually."
     echo "Python 3.6: ${PYTHON3BIN}"
