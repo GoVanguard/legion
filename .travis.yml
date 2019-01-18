@@ -7,7 +7,7 @@ python:
 - 3.6
 
 install:
-  - bash cp ./requirements.txt ./deps/
+  - cp ./requirements.txt ./deps/
   - bash ./deps/installPythonLibs.sh
 
 script:
