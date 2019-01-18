@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./detectPython.sh
+source ./deps/detectPython.sh
 
 if [[ ${PYTHON3BIN} == "Missing" ]] | [[ ${PIP3BIN} == "Missing" ]]
 then
@@ -16,12 +16,12 @@ else
     exit 0
 fi
 
-source ./detectPython.sh
+source ./deps/detectPython.sh
 
 if [[ ${PYTHON3BIN} == "Missing" ]] | [[ ${PIP3BIN} == "Missing" ]]
 then
     echo "Installing python3.6 from source..."
-    sudo ./buildPython36.sh
+    sudo ./deps/buildPython36.sh
 else
     echo "Python3.6 found!"
     echo "Python 3.6: ${PYTHON3BIN}"
@@ -29,7 +29,7 @@ else
     exit 0
 fi
 
-source ./detectPython.sh
+source ./deps/detectPython.sh
 
 if [[ ${PYTHON3BIN} == "Missing" ]] | [[ ${PIP3BIN} == "Missing" ]]
 then
