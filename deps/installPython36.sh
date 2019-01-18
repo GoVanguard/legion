@@ -1,14 +1,15 @@
 #!/bin/bash
 
+source ./deps/apt.sh
 source ./deps/detectPython.sh
 
-if [[ ${PYTHON3BIN} == "Missing" ]] | [[ ${PIP3BIN} == "Missing" ]]
+if [[ ${PYTHON3BIN} == "Missing" ]] | [[ ${PIP3BIN} == "Missing" ]] | [[ -z "${PYTHON3BIN}" ]] | [[ -z "${PIP3BIN}" ]]
 then
     echo "Installing python3.6 from APT..."
-    echo "Updating Apt database..."
-    sudo apt-get update -yqq 2>&1 > /dev/null
+    echo "Checking Apt..."
+    runAptGetUpdate
     echo "Install Python3.6 and Pip3.6 from APT..."
-    sudo apt-get install -yqq python3 python3-pip python-netlib 2>&1 > /dev/null
+    apt-get install -yqqqq python3 python3-pip
 else
     echo "Python3.6 found!"
     echo "Python 3.6: ${PYTHON3BIN}"
@@ -18,7 +19,7 @@ fi
 
 source ./deps/detectPython.sh
 
-if [[ ${PYTHON3BIN} == "Missing" ]] | [[ ${PIP3BIN} == "Missing" ]]
+if [[ ${PYTHON3BIN} == "Missing" ]] | [[ ${PIP3BIN} == "Missing" ]] | [[ -z "${PYTHON3BIN}" ]] | [[ -z "${PIP3BIN}" ]]
 then
     echo "Installing python3.6 from source..."
     sudo ./deps/buildPython36.sh
@@ -31,7 +32,7 @@ fi
 
 source ./deps/detectPython.sh
 
-if [[ ${PYTHON3BIN} == "Missing" ]] | [[ ${PIP3BIN} == "Missing" ]]
+if [[ ${PYTHON3BIN} == "Missing" ]] | [[ ${PIP3BIN} == "Missing" ]] | [[ -z "${PYTHON3BIN}" ]] | [[ -z "${PIP3BIN}" ]]
 then
     echo "Everything went wrong trying to get python3.6 setup. Please do this manually."
     echo "Python 3.6: ${PYTHON3BIN}"

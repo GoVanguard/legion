@@ -8,7 +8,7 @@ if [[ $testForPython == *"3.6"* ]]; then
     pythonBin='python'
 elif [[ $testForPython2 == *"3.6"* ]]; then
     pythonBin='python3'
-elif [[ $testForPython3 == *"3.6"* ]]; then
+elif [[ $testForPython3 == *"3.6"* ]] && [[ $testForPython3 != *"not found"* ]]; then
     pythonBin='python3.6'
 else
     pythonBin='Missing'
@@ -24,7 +24,7 @@ if [[ $testForPip == *"3.6"* ]]; then
     pipBin='pip'
 elif [[ $testForPip2 == *"3.6"* ]]; then
     pipBin='pip3'
-elif [[ $testForPip3 == *"3.6"* ]]; then
+elif [[ $testForPip3 == *"3.6"* ]] && [[ $testForPip3 != *"not found"* ]]; then
     pipBin='pip3.6'
 else
     pipBin='Missing'
