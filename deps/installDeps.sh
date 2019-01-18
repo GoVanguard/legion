@@ -7,4 +7,4 @@ echo "Checking Apt..."
 runAptGetUpdate
 
 echo "Installing deps..."
-sudo apt-get install -yqq python-netlib 2>&1 > /dev/null
+apt-get -yqqq install nmap finger hydra nikto whatweb nbtscan nfs-common rpcbind smbclient sra-toolkit ldap-utils sslscan rwho medusa x11-apps cutycapt leafpad xvfb -y
