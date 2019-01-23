@@ -405,7 +405,7 @@ class View(QtCore.QObject):
     def callAddHosts(self):
         if validateNmapInput(self.adddialog.textinput.text()):
             self.adddialog.close()
-            self.controller.addHosts(self.adddialog.textinput.text(), self.adddialog.discovery.isChecked(), self.adddialog.nmap.isChecked())
+            self.controller.addHosts(str(self.adddialog.textinput.text()).replace(';',' '), self.adddialog.discovery.isChecked(), self.adddialog.nmap.isChecked())
             self.adddialog.addButton.clicked.disconnect()                   # disconnect all the signals from that button
         else:       
             self.adddialog.spacer.changeSize(0,0)
@@ -1407,7 +1407,7 @@ class View(QtCore.QObject):
                     return
                 else:
                     log.info('Adding host to scope here!!')
-                    self.controller.addHosts(str(bWidget.ipTextinput.text()), False, False)
+                    self.controller.addHosts(str(bWidget.ipTextinput.text()).replace(';',' '), False, False)
             
             bWidget.validationLabel.hide()
             bWidget.toggleRunButton()
