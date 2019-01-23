@@ -141,7 +141,7 @@ class View(QtCore.QObject):
         self.connectSaveProjectAs()
         self.connectAddHosts()
         self.connectImportNmap()
-        self.connectSettings()
+        #self.connectSettings()
         self.connectHelp()      
         self.connectAppExit()
         ### TABLE ACTIONS ###
@@ -169,8 +169,8 @@ class View(QtCore.QObject):
         self.ui.BruteTabWidget.tabCloseRequested.connect(self.closeBruteTab)
         self.ui.keywordTextInput.returnPressed.connect(self.ui.FilterApplyButton.click)
         self.filterdialog.applyButton.clicked.connect(self.updateFilter)
-        self.settingsWidget.applyButton.clicked.connect(self.applySettings)
-        self.settingsWidget.cancelButton.clicked.connect(self.cancelSettings)
+        #self.settingsWidget.applyButton.clicked.connect(self.applySettings)
+        #self.settingsWidget.cancelButton.clicked.connect(self.cancelSettings)
         #self.settingsWidget.applyButton.clicked.connect(self.controller.applySettings(self.settingsWidget.settings))
         self.tick.connect(self.importProgressWidget.setProgress)        # slot used to update the progress bar
 
@@ -440,8 +440,8 @@ class View(QtCore.QObject):
 
     ###
 
-    def connectSettings(self):
-        self.ui.actionSettings.triggered.connect(self.showSettingsWidget)
+    #def connectSettings(self):
+    #    self.ui.actionSettings.triggered.connect(self.showSettingsWidget)
 
     def showSettingsWidget(self):
         self.settingsWidget.resetTabIndexes()
@@ -1136,12 +1136,13 @@ class View(QtCore.QObject):
         for i in [1, 5, 8, 9, 10, 13, 14, 16]:
             self.ui.ProcessesTableView.setColumnHidden(i, True)
             
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(0,125)
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(3,165)
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(6,210)
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(7,135)
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(11,165)
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(12,165)
+        ## Force resize
+        #self.ui.ProcessesTableView.horizontalHeader().resizeSection(0,125)
+        #self.ui.ProcessesTableView.horizontalHeader().resizeSection(3,165)
+        #self.ui.ProcessesTableView.horizontalHeader().resizeSection(6,210)
+        #self.ui.ProcessesTableView.horizontalHeader().resizeSection(7,135)
+        #self.ui.ProcessesTableView.horizontalHeader().resizeSection(11,165)
+        #self.ui.ProcessesTableView.horizontalHeader().resizeSection(12,165)
         self.updateProcessesIcon()
 
     def updateProcessesIcon(self):
