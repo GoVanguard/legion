@@ -44,7 +44,7 @@ class Logic():
             
         except:
             log.info('Something went wrong creating the temporary files..')
-            log.info("Unexpected error: {0}".format(sys.exc_info()))
+            log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
 
     def removeTemporaryFiles(self):
         log.info('Removing temporary files and folders..')
@@ -105,7 +105,7 @@ class Logic():
                 shutil.move(str(outputFilename)+'.txt', str(path))                          
         except:
             log.info('Something went wrong moving the tool output file..')
-            log.info("Unexpected error:", sys.exc_info()[0])
+            log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
 
     def copyNmapXMLToOutputFolder(self, file):
         try:
@@ -117,7 +117,7 @@ class Logic():
             shutil.copy(str(file), str(path))   # will overwrite if file already exists
         except:
             log.info('Something went wrong copying the imported XML to the project folder.')
-            log.info("Unexpected error:", sys.exc_info()[0])
+            log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
 
     def openExistingProject(self, filename, projectType="legion"):
         try:
@@ -140,7 +140,7 @@ class Logic():
         
         except:
             log.info('Something went wrong while opening the project..')
-            log.info("Unexpected error:", sys.exc_info()[0])
+            log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
         
     # this function copies the current project files and folder to a new location
     # if the replace flag is set to 1, it overwrites the destination file and folder
@@ -179,7 +179,7 @@ class Logic():
 
         except:
             log.info('Something went wrong while saving the project..')
-            log.info("Unexpected error:", sys.exc_info()[0])
+            log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
             return False
 
     def isHostInDB(self, host):                                         # used we don't run tools on hosts out of scope
@@ -631,7 +631,7 @@ class NmapImporter(QtCore.QThread):
                 parser = Parser(self.filename)
             except:
                 self.tsLog('Giving up on import due to previous errors.')
-                self.tsLog("Unexpected error:", sys.exc_info()[0])
+                self.tsLog("Unexpected error: {0}".format(sys.exc_info()[0]))
                 self.done.emit()
                 return
                 
@@ -831,7 +831,7 @@ class NmapImporter(QtCore.QThread):
             
         except Exception as e:
             self.tsLog('Something went wrong when parsing the nmap file..')
-            self.tsLog("Unexpected error:" + str(sys.exc_info()[0]))
+            self.tsLog("Unexpected error: {0}".format(sys.exc_info()[0]))
             self.tsLog(e)
             raise
             self.done.emit()
