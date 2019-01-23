@@ -242,7 +242,7 @@ class Database:
             self.dbsemaphore = QSemaphore(1)                            # to control concurrent write access to db
             self.engine = create_engine('sqlite:///{dbFileName}'.format(dbFileName = dbfilename))
             self.session = scoped_session(sessionmaker())
-            self.session.configure(bind = self.engine)
+            self.session.configure(bind = self.engine, autoflush=False)
             self.metadata = Base.metadata
             self.metadata.create_all(self.engine)
             self.metadata.echo = True
@@ -257,7 +257,7 @@ class Database:
             self.dbsemaphore = QSemaphore(1)                            # to control concurrent write access to db
             self.engine = create_engine('sqlite:///{dbFileName}'.format(dbFileName = dbfilename))
             self.session = scoped_session(sessionmaker())
-            self.session.configure(bind = self.engine)
+            self.session.configure(bind = self.engine, autoflush=False)
             self.metadata = Base.metadata
             self.metadata.create_all(self.engine)
             self.metadata.echo = True

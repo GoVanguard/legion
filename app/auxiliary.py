@@ -103,13 +103,15 @@ def isHttps(ip, port):
     except ssl.CertificateError as e:
         return True
         
-def getTimestamp(human=False):
+def getTimestamp(human=False, local=False):
     t = time()
     if human:
-        #timestamp = datetime.datetime.fromtimestamp(t).strftime("%d %b %Y %H:%M:%S").decode(locale.getlocale()[1])
-        timestamp = datetime.fromtimestamp(t).strftime("%d %b %Y %H:%M:%S")
+        if local:
+            timestamp = datetime.datetime.fromtimestamp(t).strftime("%d %b %Y %H:%M:%S.%f").decode(locale.getlocale()[1])
+        else:
+            timestamp = datetime.fromtimestamp(t).strftime("%d %b %Y %H:%M:%S.%f")
     else:
-        timestamp = datetime.fromtimestamp(t).strftime('%Y%m%d%H%M%S')
+        timestamp = datetime.fromtimestamp(t).strftime('%Y%m%d%H%M%S%f')
     return timestamp
 
 # used by the settings dialog when a user cancels and the GUI needs to be reset
