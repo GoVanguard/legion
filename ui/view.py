@@ -403,9 +403,12 @@ class View(QtCore.QObject):
         self.adddialog.cancelButton.clicked.connect(self.adddialog.close)
         
     def callAddHosts(self):
-        if validateNmapInput(self.adddialog.textinput.text()):
+        hostListStr = str(self.adddialog.textinput.text()).replace(';',' ')
+        if validateNmapInput(hostListStr):
             self.adddialog.close()
-            self.controller.addHosts(str(self.adddialog.textinput.text()).replace(';',' '), self.adddialog.discovery.isChecked(), self.adddialog.nmap.isChecked())
+            hostList = hostListStr.split(' ')
+            for hostListEntry in hostList:
+                self.controller.addHosts(hostListEntry, self.adddialog.discovery.isChecked(), self.adddialog.nmap.isChecked())
             self.adddialog.addButton.clicked.disconnect()                   # disconnect all the signals from that button
         else:       
             self.adddialog.spacer.changeSize(0,0)
