@@ -126,20 +126,20 @@ class AddHostsDialog(QtWidgets.QDialog):
         
     def setupLayout(self):
         self.setModal(True)
-        self.setWindowTitle('Add host(s) to scope')
+        self.setWindowTitle('Add host(s) to scope seperated by semicolons')
         self.setFixedSize(340, 210)
 
         self.flayout = QtWidgets.QVBoxLayout()
         
         self.label1 = QtWidgets.QLabel(self)
-        self.label1.setText('IP Range')
+        self.label1.setText('IP(s), Range(s), and Host(s)')
         self.textinput = QtWidgets.QLineEdit(self)
         self.hlayout = QtWidgets.QHBoxLayout()
         self.hlayout.addWidget(self.label1)
         self.hlayout.addWidget(self.textinput)        
         
         self.label2 = QtWidgets.QLabel(self)
-        self.label2.setText('eg: 192.168.1.0/24 10.10.10.10-20 1.2.3.4 ')
+        self.label2.setText('Ex: 192.168.1.0/24; 10.10.10.10-20; 1.2.3.4; bing.com')
         self.font = QtGui.QFont('Calibri', 10)
         self.label2.setFont(self.font)
         self.label2.setAlignment(Qt.AlignRight)
