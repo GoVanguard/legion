@@ -76,7 +76,7 @@ class Ui_MainWindow(object):
     def setupLeftPanel(self):
         self.HostsTabWidget = QtWidgets.QTabWidget(self.splitter)
         self.sizePolicy.setHeightForWidth(self.HostsTabWidget.sizePolicy().hasHeightForWidth())
-        self.HostsTabWidget.setSizePolicy(self.sizePolicy)
+        self.HostsTabWidget.setSizePolicy(self.sizePolicy2)
         self.HostsTabWidget.setObjectName(_fromUtf8("HostsTabWidget"))
 
         self.HostsTab = QtWidgets.QWidget()
