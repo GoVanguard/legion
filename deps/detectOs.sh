@@ -34,6 +34,13 @@ then
     then
         releaseVersion="2016"
     fi
+elif [[ ${releaseOutput} == *"Parrot"* ]]
+then
+    releaseName="Parrot"
+    if [[ ${releaseOutput} == *"4.5"* ]]
+    then
+        releaseVersion="4.5"
+    fi
 else
     releaseName="something unsupported"
 fi
