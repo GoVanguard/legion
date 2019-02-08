@@ -72,7 +72,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
                     pid = int(self.__processes[row]['pid'])
                     elapsed = round(self.__controller.controller.processMeasurements.get(pid, 0), 2)
                     estimatedRemaining = int(self.__processes[row]['estimatedremaining']) - float(elapsed)
-                value = "{0:.2f}{1}".format(float(estimatedRemaining), "s")
+                value = "{0:.2f}{1}".format(float(estimatedRemaining), "s") if estimatedRemaining >= 0 else 'Unknown'
             elif column == 5 or column == 6:
                 if not self.__processes[row]['tabtitle'] == '':
                     value = self.__processes[row]['tabtitle']
