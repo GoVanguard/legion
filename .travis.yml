@@ -22,7 +22,7 @@ script:
 after_success:
   - cd ./docker/
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
-  - export REPO=govanguard/legion
+  - export REPO=gvit/legion
   - docker build -f Dockerfile -t $REPO:$COMMIT .
   - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
-  - docker push govanguard/legion
+  - docker push gvit/legion
