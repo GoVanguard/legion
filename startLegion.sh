@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Strap yourself in, we're starting Legion..."
+
 # Determine and set the Python and Pip paths
 source ./deps/detectPython.sh
 

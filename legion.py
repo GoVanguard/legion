@@ -29,12 +29,20 @@ except ImportError as e:
 try:
     from PyQt5 import QtWidgets, QtGui, QtCore
 except ImportError as e:
-    try:
-        #from PySide import QtWebKit
-        pass
-    except ImportError:
-        log.info("Import failed. QtWebKit library not found. If on Ubuntu or similar try: agt-get install python3-pyside.qtwebkit")
-        exit(1)
+    log.info("Import failed. QtWebKit library not found. If on Ubuntu or similar try: agt-get install python3-pyside.qtwebkit")
+    log.info(e)
+    exit(1)
+
+try:
+    import sys
+    from colorama import init
+    init(strip=not sys.stdout.isatty())
+    from termcolor import cprint
+    from pyfiglet import figlet_format
+except ImportError as e:
+    log.info("Import failed. One or moreof the terminal drawing libraries not found.")
+    log.info(e)
+    exit(1)
     
 from app.logic import *
 from ui.gui import *
@@ -80,17 +88,19 @@ class MyEventFilter(QObject):
             return super(MyEventFilter,self).eventFilter(receiver, event)   # normal event processing
 
 
+# Main application declaration and loop
 if __name__ == "__main__":
+    
+    cprint(figlet_format('LEGION', font='starwars'), 'yellow', 'on_red', attrs=['bold'])
 
     app = QApplication(sys.argv)
-    #loop = quamash.QEventLoop(app)
-    #asyncio.set_event_loop(loop)
+    loop = quamash.QEventLoop(app)
+    asyncio.set_event_loop(loop)
 
-    #with loop:
     myFilter = MyEventFilter()                      # to capture events
     app.installEventFilter(myFilter)
     MainWindow = QtWidgets.QMainWindow()
-    app.setWindowIcon(QIcon('./images/icons/legion_medium.svg'))
+    app.setWindowIcon(QIcon('./images/icons/Legion-N_128x128.svg'))
 
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
@@ -108,7 +118,14 @@ if __name__ == "__main__":
     controller = Controller(view, logic)            # Controller prep (communication between model and view)
 
     MainWindow.show()
-        #log.addHandler(ui.LogOutputTextView)
+    #log.addHandler(ui.LogOutputTextView)
+    #sys.exit(app.exec_())
 
-        #loop.run_forever()
-    sys.exit(app.exec_())
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        pass
+
+    app.deleteLater()
+    loop.close()
+    sys.exit()

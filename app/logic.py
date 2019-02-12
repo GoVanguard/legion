@@ -47,6 +47,7 @@ class Logic():
             log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
 
     def removeTemporaryFiles(self):
+        return
         log.info('Removing temporary files and folders..')
         try:
             if not self.istemp:                                         # if current project is not temporary

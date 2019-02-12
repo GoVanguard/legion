@@ -29,7 +29,10 @@ except ImportError:
 
 from ui.gui import *
 from ui.dialogs import *
-from ui.settingsdialogs import *
+from ui.settingsDialog import *
+from ui.helpDialog import *
+from ui.addHostDialog import *
+from ui.ancillaryDialog import *
 from app.hostmodels import *
 from app.servicemodels import *
 from app.scriptmodels import *
@@ -62,19 +65,8 @@ class View(QtCore.QObject):
         self.importProgressWidget = ProgressWidget('Importing nmap..', self.ui.centralwidget)
         self.adddialog = AddHostsDialog(self.ui.centralwidget)      
         self.settingsWidget = AddSettingsDialog(self.ui.centralwidget)
-        #self.helpWidget = QtWebKit.QWebView()
-        #self.helpWidget.setWindowTitle('LEGION Help')
+        self.helpWidget = AddHelpDialog(self.ui.centralwidget)
 
-        # kali moves the help file so let's find it
-        url = './doc/help.html'
-        if not os.path.exists(url):
-            url = '/usr/share/doc/legion/help.html'
-
-        #if usePySide:
-        #    self.helpWidget.load(url)
-        #else:
-        #self.helpWidget.load(QUrl(url))
-        
         self.ui.HostsTableView.setSelectionMode(1)                      # disable multiple selection
         self.ui.ServiceNamesTableView.setSelectionMode(1)
         self.ui.CvesTableView.setSelectionMode(1)
@@ -170,7 +162,7 @@ class View(QtCore.QObject):
         self.ui.keywordTextInput.returnPressed.connect(self.ui.FilterApplyButton.click)
         self.filterdialog.applyButton.clicked.connect(self.updateFilter)
         #self.settingsWidget.applyButton.clicked.connect(self.applySettings)
-        #self.settingsWidget.cancelButton.clicked.connect(self.cancelSettings)
+        #self.settingsWidget.cmdCancelButton.clicked.connect(self.cancelSettings)
         #self.settingsWidget.applyButton.clicked.connect(self.controller.applySettings(self.settingsWidget.settings))
         self.tick.connect(self.importProgressWidget.setProgress)        # slot used to update the progress bar
 
@@ -213,7 +205,7 @@ class View(QtCore.QObject):
         self.ui.ToolHostsTableView.horizontalHeader().resizeSection(5,150)      # default width for Host column
     
         # process table
-        headers = ["Progress", "Elapsed", "Estimated Remaining", "Display", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "OutputFile", "Output", "Status"]
+        headers = ["Progress", "Elapsed", "Est. Remaining", "Display", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "OutputFile", "Output", "Status"]
         setTableProperties(self.ui.ProcessesTableView, len(headers), [1, 2, 3, 4, 5, 8, 9, 10, 13, 14, 16])
         self.ui.ProcessesTableView.horizontalHeader().resizeSection(0, 125)
         self.ui.ProcessesTableView.horizontalHeader().resizeSection(4, 250)
@@ -394,27 +386,27 @@ class View(QtCore.QObject):
         self.ui.actionAddHosts.triggered.connect(self.connectAddHostsDialog)
         
     def connectAddHostsDialog(self):
-        self.adddialog.addButton.setDefault(True)   
-        self.adddialog.textinput.setFocus(True)
+        self.adddialog.cmdAddButton.setDefault(True)   
+        self.adddialog.txtHostList.setFocus(True)
         self.adddialog.validationLabel.hide()
         self.adddialog.spacer.changeSize(15,15)
         self.adddialog.show()
-        self.adddialog.addButton.clicked.connect(self.callAddHosts)
-        self.adddialog.cancelButton.clicked.connect(self.adddialog.close)
+        self.adddialog.cmdAddButton.clicked.connect(self.callAddHosts)
+        self.adddialog.cmdCancelButton.clicked.connect(self.adddialog.close)
         
     def callAddHosts(self):
-        hostListStr = str(self.adddialog.textinput.text()).replace(';',' ')
+        hostListStr = str(self.adddialog.txtHostList.toPlainText()).replace(';',' ')
         if validateNmapInput(hostListStr):
             self.adddialog.close()
             hostList = hostListStr.split(' ')
             for hostListEntry in hostList:
-                self.controller.addHosts(hostListEntry, self.adddialog.discovery.isChecked(), self.adddialog.nmap.isChecked())
-            self.adddialog.addButton.clicked.disconnect()                   # disconnect all the signals from that button
+                self.controller.addHosts(hostListEntry, self.adddialog.chkDiscovery.isChecked(), self.adddialog.chkNmapStaging.isChecked())
+            self.adddialog.cmdAddButton.clicked.disconnect()                   # disconnect all the signals from that button
         else:       
             self.adddialog.spacer.changeSize(0,0)
             self.adddialog.validationLabel.show()
-            self.adddialog.addButton.clicked.disconnect()                   # disconnect all the signals from that button
-            self.adddialog.addButton.clicked.connect(self.callAddHosts)
+            self.adddialog.cmdAddButton.clicked.disconnect()                   # disconnect all the signals from that button
+            self.adddialog.cmdAddButton.clicked.connect(self.callAddHosts)
 
     ###
     
@@ -461,7 +453,7 @@ class View(QtCore.QObject):
         self.controller.cancelSettings()
         
     def connectHelp(self):
-        #self.ui.menuHelp.triggered.connect(self.helpWidget.show)
+        self.ui.menuHelp.triggered.connect(self.helpWidget.show)
         pass
 
     ###
@@ -1132,7 +1124,7 @@ class View(QtCore.QObject):
     #################### BOTTOM PANEL INTERFACE UPDATE FUNCTIONS ####################       
         
     def updateProcessesTableView(self):
-        headers = ["Progress", "Display", "Elapsed", "Estimated Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
+        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
         self.ProcessesTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.filters, True), headers)
         self.ui.ProcessesTableView.setModel(self.ProcessesTableModel)
         
