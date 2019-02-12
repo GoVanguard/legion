@@ -10,3 +10,6 @@ PyQt5==5.11.3
 sanic==0.8.3
 sanic_swagger==0.0.4
 requests==2.20.1
+pyfiglet
+colorama
+termcolor
