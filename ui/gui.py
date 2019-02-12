@@ -14,6 +14,7 @@ Copyright (c) 2018 GoVanguard
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtGui import QColor
 from ui.dialogs import *                                                # for the screenshots (image viewer)
+from ui.ancillaryDialog import *
 from utilities.qtLogging import *
 import logging
 
@@ -275,11 +276,6 @@ class Ui_MainWindow(object):
         self.BottomTabWidget.addTab(self.ProcessTab, _fromUtf8(""))
 
     def setupBottom2Panel(self):
-        #self.Bottom2TabWidget = QtWidgets.QTabWidget(self.splitter_5)
-        #self.Bottom2TabWidget.setSizeIncrement(QtCore.QSize(0, 0))
-        #self.Bottom2TabWidget.setBaseSize(QtCore.QSize(0, 0))
-        #self.Bottom2TabWidget.setObjectName(_fromUtf8("Bottom2TabWidget"))
-
         # Log Tab
         self.LogTab = QtWidgets.QWidget()
         self.LogTab.setObjectName(_fromUtf8("LogTab"))
@@ -289,19 +285,17 @@ class Ui_MainWindow(object):
         self.LogOutputTextView.widget.setObjectName(_fromUtf8("LogOutputTextView"))
         self.LogOutputTextView.widget.setReadOnly(True)
         self.LogTabLayout.addWidget(self.LogOutputTextView.widget)
-        #self.Bottom2TabWidget.addTab(self.LogTab, _fromUtf8(""))
         self.BottomTabWidget.addTab(self.LogTab, _fromUtf8(""))
         log.addHandler(self.LogOutputTextView)
 
-        # Python Tab
-        self.PythonTab = QtWidgets.QWidget()
-        self.PythonTab.setObjectName(_fromUtf8("PythonTab"))
-        self.PythonOutputTextView = QtWidgets.QPlainTextEdit(self.PythonTab)
-        self.PythonOutputTextView.setReadOnly(False)
-        self.PythonTabLayout = QtWidgets.QHBoxLayout(self.PythonTab)
-        self.PythonTabLayout.addWidget(self.PythonOutputTextView)
-        self.BottomTabWidget.addTab(self.PythonTab, _fromUtf8(""))
-        #self.Bottom2TabWidget.addTab(self.PythonTab, _fromUtf8(""))      
+        # Python Tab - Disabled until next release
+        #self.PythonTab = QtWidgets.QWidget()
+        #self.PythonTab.setObjectName(_fromUtf8("PythonTab"))
+        #self.PythonOutputTextView = QtWidgets.QPlainTextEdit(self.PythonTab)
+        #self.PythonOutputTextView.setReadOnly(False)
+        #self.PythonTabLayout = QtWidgets.QHBoxLayout(self.PythonTab)
+        #self.PythonTabLayout.addWidget(self.PythonOutputTextView)
+        #self.BottomTabWidget.addTab(self.PythonTab, _fromUtf8(""))
 
     def setupMenuBar(self, MainWindow):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -373,7 +367,7 @@ class Ui_MainWindow(object):
         self.MainTabWidget.setTabText(self.MainTabWidget.indexOf(self.BruteTab), QtWidgets.QApplication.translate("MainWindow", "Brute", None))
         self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.ProcessTab), QtWidgets.QApplication.translate("MainWindow", "Processes", None))
         self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.LogTab), QtWidgets.QApplication.translate("MainWindow", "Log", None))
-        self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.PythonTab), QtWidgets.QApplication.translate("MainWindow", "Python", None))
+        # self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.PythonTab), QtWidgets.QApplication.translate("MainWindow", "Python", None)) - Disabled until future release
         self.menuFile.setTitle(QtWidgets.QApplication.translate("MainWindow", "File", None))
         #self.menuSettings.setTitle(QtWidgets.QApplication.translate("MainWindow", "Settings", None))
         self.menuHelp.setTitle(QtWidgets.QApplication.translate("MainWindow", "Help", None))
