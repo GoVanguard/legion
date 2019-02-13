@@ -118,8 +118,6 @@ if __name__ == "__main__":
     controller = Controller(view, logic)            # Controller prep (communication between model and view)
 
     MainWindow.show()
-    #log.addHandler(ui.LogOutputTextView)
-    #sys.exit(app.exec_())
 
     try:
         loop.run_forever()

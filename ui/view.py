@@ -400,7 +400,7 @@ class View(QtCore.QObject):
             self.adddialog.close()
             hostList = hostListStr.split(' ')
             for hostListEntry in hostList:
-                self.controller.addHosts(hostListEntry, self.adddialog.chkDiscovery.isChecked(), self.adddialog.chkNmapStaging.isChecked())
+                self.controller.addHosts(iprange = hostListEntry, runHostDiscovery = self.adddialog.chkDiscovery.isChecked(), runStagedNmap = self.adddialog.chkNmapStaging.isChecked(), nmapSpeed = self.adddialog.sldScanTimingSlider.value)
             self.adddialog.cmdAddButton.clicked.disconnect()                   # disconnect all the signals from that button
         else:       
             self.adddialog.spacer.changeSize(0,0)
