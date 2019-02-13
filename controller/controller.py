@@ -190,7 +190,7 @@ class Controller():
         self.logic.removeTemporaryFiles()
 
     @timing
-    def addHosts(self, iprange, runHostDiscovery, runStagedNmap):
+    def addHosts(self, iprange, runHostDiscovery, runStagedNmap, nmapSpeed, nmapOptions = []):
         if iprange == '':
             log.info('No hosts entered..')
             return
