@@ -26,7 +26,7 @@ class Controller():
     # initialisations that will happen once - when the program is launched
     @timing
     def __init__(self, view, logic):
-        self.version = 'LEGION 0.2.4'                            # update this everytime you commit!
+        self.version = 'LEGION 0.3.0'                            # update this everytime you commit!
         self.logic = logic
         self.view = view
         self.view.setController(self)
@@ -44,7 +44,6 @@ class Controller():
     def start(self, title='*untitled'):
         self.processes = []                                             # to store all the processes we run (nmaps, niktos, etc)
         self.fastProcessQueue = queue.Queue()                           # to manage fast processes (banner, snmpenum, etc)
-        #self.slowProcessQueue = Queue.Queue()                          # to manage slow processes (dirbuster, hydra, etc)
         self.fastProcessesRunning = 0                                   # counts the number of fast processes currently running
         self.slowProcessesRunning = 0                                   # counts the number of slow processes currently running
         self.nmapImporter.setDB(self.logic.db)                          # tell nmap importer which db to use
@@ -190,24 +189,29 @@ class Controller():
         self.logic.removeTemporaryFiles()
 
     @timing
-    def addHosts(self, iprange, runHostDiscovery, runStagedNmap, nmapSpeed, nmapOptions = []):
-        if iprange == '':
+    def addHosts(self, targetHosts, runHostDiscovery, runStagedNmap, nmapSpeed, scanMode, nmapOptions = []):
+        if targetHosts == '':
             log.info('No hosts entered..')
             return
 
-        if runStagedNmap:
-            self.runStagedNmap(iprange, runHostDiscovery)
-
-        elif runHostDiscovery:
-            outputfile = self.logic.runningfolder+"/nmap/"+getTimestamp()+'-host-discover'
-            command = "nmap -n -sV -O --version-light -T4 "+iprange+" -oA "+outputfile
-            log.info("Running {command}".format(command=command))
-            self.runCommand('nmap', 'nmap (discovery)', iprange, '','', command, getTimestamp(True), outputfile, self.view.createNewTabForHost(str(iprange), 'nmap (discovery)', True))
-                    
-        else:
-            outputfile = self.logic.runningfolder+"/nmap/"+getTimestamp()+'-nmap-list'
-            command = "nmap -n -sL "+iprange+" -oA "+outputfile
-            self.runCommand('nmap', 'nmap (list)', iprange, '','', command, getTimestamp(True), outputfile, self.view.createNewTabForHost(str(iprange), 'nmap (list)', True))
+        if scanMode == 'Easy':
+            if runStagedNmap:
+                self.runStagedNmap(targetHosts, runHostDiscovery)
+            elif runHostDiscovery:
+                outputfile = self.logic.runningfolder + "/nmap/" + getTimestamp() + '-host-discover'
+                command = "nmap -n -sV -O --version-light -T" + str(nmapSpeed) + " " + targetHosts + " -oA "+outputfile
+                log.info("Running {command}".format(command=command))
+                self.runCommand('nmap', 'nmap (discovery)', targetHosts, '','', command, getTimestamp(True), outputfile, self.view.createNewTabForHost(str(targetHosts), 'nmap (discovery)', True))               
+            else:
+                outputfile = self.logic.runningfolder + "/nmap/" + getTimestamp() + '-nmap-list'
+                command = "nmap -n -sL -T" + str(nmapSpeed) + " " + targetHosts + " -oA " + outputfile
+                self.runCommand('nmap', 'nmap (list)', targetHosts, '','', command, getTimestamp(True), outputfile, self.view.createNewTabForHost(str(targetHosts), 'nmap (list)', True))
+        elif scanMode == 'Hard':
+            outputfile = self.logic.runningfolder + "/nmap/" + getTimestamp() + '-nmap-custom'
+            nmapOptionsString = ' '.join(nmapOptions)
+            nmapOptionsString = nmapOptionsString + "-T" + str(nmapSpeed)
+            command = "nmap " + nmapOptionsString + " " + targetHosts + " -oA " + outputfile
+            self.runCommand('nmap', 'nmap (custom ' + nmapOptionsString + ')', targetHosts, '','', command, getTimestamp(True), outputfile, self.view.createNewTabForHost(str(targetHosts), 'nmap (custom ' + nmapOptionsString + ')', True))
 
     #################### CONTEXT MENUS ####################
 
@@ -640,10 +644,10 @@ class Controller():
         return qProcess.pid()
 
     # recursive function used to run nmap in different stages for quick results
-    def runStagedNmap(self, iprange, discovery = True, stage = 1, stop = False):
+    def runStagedNmap(self, targetHosts, discovery = True, stage = 1, stop = False):
         print("runStagedNmap called for stage {0}".format(str(stage)))
         if not stop:
-            textbox = self.view.createNewTabForHost(str(iprange), 'nmap (stage '+str(stage)+')', True)
+            textbox = self.view.createNewTabForHost(str(targetHosts), 'nmap (stage '+str(stage)+')', True)
             outputfile = self.logic.runningfolder+"/nmap/"+getTimestamp()+'-nmapstage'+str(stage)       
             
             if stage == 1:                                              # webservers/proxies
@@ -668,9 +672,9 @@ class Controller():
                     command += "-O "                                    # only check for OS once to save time and only if we are root otherwise it fails
             else:
                 command += "-sT "
-            command += "-p "+ports+' '+iprange+" -oA "+outputfile
+            command += "-p "+ports+' '+targetHosts+" -oA "+outputfile
                             
-            self.runCommand('nmap','nmap (stage '+str(stage)+')', str(iprange), '', '', command, getTimestamp(True), outputfile, textbox, discovery = discovery, stage = stage, stop = stop)
+            self.runCommand('nmap','nmap (stage '+str(stage)+')', str(targetHosts), '', '', command, getTimestamp(True), outputfile, textbox, discovery = discovery, stage = stage, stop = stop)
 
     def nmapImportFinished(self):
         self.updateUI2Timer.stop()

@@ -396,11 +396,29 @@ class View(QtCore.QObject):
         
     def callAddHosts(self):
         hostListStr = str(self.adddialog.txtHostList.toPlainText()).replace(';',' ')
+        nmapOptions = []
+        scanMode = 'Unset'
+
         if validateNmapInput(hostListStr):
             self.adddialog.close()
             hostList = hostListStr.split(' ')
+            hostAddOptionControls = [self.adddialog.rdoScanOptTcpConnect, self.adddialog.rdoScanOptSynStealth, self.adddialog.rdoScanOptFin, self.adddialog.rdoScanOptNull, self.adddialog.rdoScanOptXmas, self.adddialog.rdoScanOptPingTcp, self.adddialog.rdoScanOptPingUdp, self.adddialog.rdoScanOptPingDisable, self.adddialog.rdoScanOptPingRegular, self.adddialog.rdoScanOptPingSyn, self.adddialog.rdoScanOptPingAck, self.adddialog.rdoScanOptPingTimeStamp, self.adddialog.rdoScanOptPingNetmask, self.adddialog.chkScanOptFragmentation]
+            nmapOptions = []
+
+            if self.adddialog.rdoModeOptEasy.isChecked():
+                scanMode = 'Easy'
+            else:
+                scanMode = 'Hard'
+                for hostAddOptionControl in hostAddOptionControls:
+                    if hostAddOptionControl.isChecked():
+                       nmapOptionValue = str(hostAddOptionControl.toolTip())
+                       nmapOptionValueSplit = nmapOptionValue.split('[')
+                       if len(nmapOptionValueSplit) > 1:
+                           nmapOptionValue = nmapOptionValueSplit[1].replace(']','')
+                           nmapOptions.append(nmapOptionValue)
+                nmapOptions.append(str(self.adddialog.txtCustomOptList.toPlainText()))
             for hostListEntry in hostList:
-                self.controller.addHosts(iprange = hostListEntry, runHostDiscovery = self.adddialog.chkDiscovery.isChecked(), runStagedNmap = self.adddialog.chkNmapStaging.isChecked(), nmapSpeed = self.adddialog.sldScanTimingSlider.value)
+                self.controller.addHosts(targetHosts = hostListEntry, runHostDiscovery = self.adddialog.chkDiscovery.isChecked(), runStagedNmap = self.adddialog.chkNmapStaging.isChecked(), nmapSpeed = self.adddialog.sldScanTimingSlider.value(), scanMode = scanMode, nmapOptions = nmapOptions)
             self.adddialog.cmdAddButton.clicked.disconnect()                   # disconnect all the signals from that button
         else:       
             self.adddialog.spacer.changeSize(0,0)
