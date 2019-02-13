@@ -122,4 +122,3 @@ class ImagePlayer(QtWidgets.QWidget):
         self.movie.setSpeed(100)
         self.movie_screen.setMovie(self.movie)
         self.movie.start()
-        self.show()
