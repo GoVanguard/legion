@@ -14,9 +14,9 @@ Copyright (c) 2018 GoVanguard
 # check for dependencies first (make sure all non-standard dependencies are checked for here)
 try:
     from sqlalchemy.orm.scoping import ScopedSession as scoped_session
-    #import elixir
 except ImportError as e:
     log.info("Import failed. SQL Alchemy library not found. If on Ubuntu or similar try: apt-get install python3-sqlalchemy*")
+    log.info(e)
     exit(1)
     
 try:
@@ -27,9 +27,10 @@ except ImportError as e:
     exit(1)
 
 try:
-    from PyQt5 import QtWidgets, QtGui, QtCore
+    import quamash
+    import asyncio 
 except ImportError as e:
-    log.info("Import failed. QtWebKit library not found. If on Ubuntu or similar try: agt-get install python3-pyside.qtwebkit")
+    log.info("Import failed. Quamash or asyncio not found.")
     log.info(e)
     exit(1)
 
@@ -40,7 +41,7 @@ try:
     from termcolor import cprint
     from pyfiglet import figlet_format
 except ImportError as e:
-    log.info("Import failed. One or moreof the terminal drawing libraries not found.")
+    log.info("Import failed. One or more of the terminal drawing libraries not found.")
     log.info(e)
     exit(1)
     
@@ -48,12 +49,9 @@ from app.logic import *
 from ui.gui import *
 from ui.view import *
 from controller.controller import *
-import quamash
-import asyncio
 
 # this class is used to catch events such as arrow key presses or close window (X)
 class MyEventFilter(QObject):
-    
     def eventFilter(self, receiver, event):
         # catch up/down arrow key presses in hoststable
         if(event.type() == QEvent.KeyPress and (receiver == view.ui.HostsTableView or receiver == view.ui.ServiceNamesTableView or receiver == view.ui.ToolsTableView or receiver == view.ui.ToolHostsTableView or receiver == view.ui.ScriptsTableView or receiver == view.ui.ServicesTableView or receiver == view.settingsWidget.toolForHostsTableWidget or receiver == view.settingsWidget.toolForServiceTableWidget or receiver == view.settingsWidget.toolForTerminalTableWidget)):
@@ -116,6 +114,7 @@ if __name__ == "__main__":
     logic = Logic()                                 # Model prep (logic, db and models)
     view = View(ui, MainWindow)                     # View prep (gui)
     controller = Controller(view, logic)            # Controller prep (communication between model and view)
+    view.qss = qss_file
 
     MainWindow.show()
 

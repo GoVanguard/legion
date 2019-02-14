@@ -1,25 +1,25 @@
-LEGION 0.1.1
+LEGION 0.3.0
 
-* Support for WSL (Windows Subsystem for Linux)
-* Removed Elixir
-* Converted to Python3.5+
-* Process handeling ensures dead processes are shown as crashed or finished
+* UI polish everywhere (element sizing, scaling, icons, etc.)
+* Code cleanup
+* Highly configurable host addition dialog
+* Stability improvements
+* Docker image of preconfigured application published to DockerHub
 
-LEGION 0.2.0
+LEGION 0.2.4
 
-* Port to PyQt5
-* Handle process output encoding issues
-* Added dependancy installer
+* Open SPRT and Legion files
+* Resolve file open/save access issue
+* Consolidate lower panel
 
-LEGION 0.2.1
+LEGION 0.2.3
 
-* Fixed DB relationships
-* Removed X requirement for screen captures
-* Revised HTTP/HTTPS detection
-* Fixed Host panel columns
-* Fixed process lanuches for discovered services
-* Fixed context menus so they show applicable actions for context
-* Fixed note unique keys
+* Bug fixes for edge cases
+* Elapsed and estimated remaining time for processes
+* Host 1-M CVE UI element added
+* Service 1-M CVE UI element added
+* CVE object model revised
+* Improved UI performance
 
 LEGION 0.2.2
 
@@ -31,17 +31,25 @@ LEGION 0.2.2
 * Dep installer fixes
 * Addition of .justcloned to re-initalize on cloning / pull to update
 
-LEGION 0.2.3
+LEGION 0.2.1
 
-* Bug fixes for edge cases
-* Elapsed and estimated remaining time for processes
-* Host 1-M CVE UI element added
-* Service 1-M CVE UI element added
-* CVE object model revised
-* Improved UI performance
+* Fixed DB relationships
+* Removed X requirement for screen captures
+* Revised HTTP/HTTPS detection
+* Fixed Host panel columns
+* Fixed process lanuches for discovered services
+* Fixed context menus so they show applicable actions for context
+* Fixed note unique keys
 
-LEGION 0.2.4
+LEGION 0.2.0
 
-* Open SPRT and Legion files
-* Resolve file open/save access issue
-* Consolidate lower panel
+* Port to PyQt5
+* Handle process output encoding issues
+* Added dependancy installer
+
+LEGION 0.1.1
+
+* Support for WSL (Windows Subsystem for Linux)
+* Removed Elixir
+* Converted to Python3.5+
+* Process handeling ensures dead processes are shown as crashed or finished
