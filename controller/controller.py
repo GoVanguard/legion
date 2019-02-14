@@ -509,13 +509,13 @@ class Controller():
     def getNoteFromDB(self, hostid):
         return self.logic.getNoteFromDB(hostid)
 
-    def getHostsForTool(self, toolname, closed='False'):
+    def getHostsForTool(self, toolname, closed = 'False'):
         return self.logic.getHostsForTool(toolname, closed)
     
     #################### BOTTOM PANEL INTERFACE UPDATE FUNCTIONS ####################       
 
-    def getProcessesFromDB(self, filters, showProcesses=''):
-        return self.logic.getProcessesFromDB(filters, showProcesses)
+    def getProcessesFromDB(self, filters, showProcesses = '', sort = 'desc', ncol = 'id'):
+        return self.logic.getProcessesFromDB(filters, showProcesses, sort, ncol)
                     
     #################### PROCESSES ####################
 
