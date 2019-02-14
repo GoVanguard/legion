@@ -26,10 +26,22 @@ class Controller():
     # initialisations that will happen once - when the program is launched
     @timing
     def __init__(self, view, logic):
-        self.version = 'LEGION 0.3.0'                            # update this everytime you commit!
+        self.name = "LEGION"
+        self.version = '0.3.0'
+        self.author = 'GoVanguard'
+        self.copyright = '2019'
+        self.emails = ['hello@gvit.com']
+        self.update = '02/16/2019'
+        self.license = "GPL v3"
+        self.desc = "LEGION is a semi-automated intelligence gathering tool for penetration testing."
+        self.smallIcon = './images/icons/Legion-N_128x128.svg'
+        self.bigIcon = './images/icons/Legion-N_128x128.svg'
+
         self.logic = logic
         self.view = view
         self.view.setController(self)
+        self.view.startOnce()
+        self.view.startConnections()
 
         self.loadSettings()                                             # creation of context menu actions from settings file and set up of various settings        
         self.initNmapImporter()
@@ -209,7 +221,7 @@ class Controller():
         elif scanMode == 'Hard':
             outputfile = self.logic.runningfolder + "/nmap/" + getTimestamp() + '-nmap-custom'
             nmapOptionsString = ' '.join(nmapOptions)
-            nmapOptionsString = nmapOptionsString + "-T" + str(nmapSpeed)
+            nmapOptionsString = nmapOptionsString + " -T" + str(nmapSpeed)
             command = "nmap " + nmapOptionsString + " " + targetHosts + " -oA " + outputfile
             self.runCommand('nmap', 'nmap (custom ' + nmapOptionsString + ')', targetHosts, '','', command, getTimestamp(True), outputfile, self.view.createNewTabForHost(str(targetHosts), 'nmap (custom ' + nmapOptionsString + ')', True))
 
