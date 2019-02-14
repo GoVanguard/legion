@@ -95,6 +95,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
         array=[]
 
         sortColumns = {5:'name', 6:'tabtitle', 11:'starttime', 12:'endtime'}
+        field = sortColumns.get(int(Ncol)) or 'status'
 
         if Ncol == 7:
             for i in range(len(self.__processes)):
@@ -107,7 +108,6 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
                 else:
                     array.append(int(self.__processes[i]['port']))
         else:
-            field = sortColumns.get(int(Ncol)) or 'status'
             for i in range(len(self.__processes)):
                 array.append(self.__processes[i][field])
         
@@ -115,6 +115,11 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
 
         if order == Qt.AscendingOrder:                                  # reverse if needed
             self.__processes.reverse()
+            self.__controller.processesTableViewSort = 'desc'
+        else:
+            self.__controller.processesTableViewSort = 'asc'
+
+        self.__controller.processesTableViewSortColumn = field
 
         self.__controller.updateProcessesIcon()                         # to make sure the progress GIF is displayed in the right place
             

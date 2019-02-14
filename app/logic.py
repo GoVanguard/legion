@@ -349,7 +349,7 @@ class Logic():
     # this function returns all the processes from the DB
     # the showProcesses flag is used to ensure we don't display processes in the process table after we have cleared them or when an existing project is opened.
     # to speed up the queries we replace the columns we don't need by zeros (the reason we need all the columns is we are using the same model to display process information everywhere)
-    def getProcessesFromDB(self, filters, showProcesses=''):
+    def getProcessesFromDB(self, filters, showProcesses='', sort = 'desc', ncol = 'id'):
         if showProcesses == '':                                         # we do not fetch nmap processes because these are not displayed in the host tool tabs / tools
             query = ('SELECT "0", "0", "0", process.name, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0" FROM process AS process WHERE process.closed="False" AND process.name!="nmap" group by process.name')
             result = self.db.metadata.bind.execute(query).fetchall()
@@ -361,7 +361,7 @@ class Logic():
             result = self.db.metadata.bind.execute(query, str(showProcesses)).fetchall()
 
         else:                                                           # show all the processes in the (bottom) process table (no matter their closed value)
-            query = ('SELECT * FROM process AS process WHERE process.display=? order by id desc')
+            query = ('SELECT * FROM process AS process WHERE process.display=? order by {0} {1}'.format(ncol, sort))
             result = self.db.metadata.bind.execute(query, str(showProcesses)).fetchall()
 
         return result
