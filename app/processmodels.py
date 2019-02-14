@@ -121,12 +121,18 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
 
         self.__controller.processesTableViewSortColumn = field
 
-        self.__controller.updateProcessesIcon()                         # to make sure the progress GIF is displayed in the right place
-            
+        ## Extra?
+        #self.__controller.updateProcessesIcon()                         # to make sure the progress GIF is displayed in the right place
         self.layoutChanged.emit()
 
     def flags(self, index):                                             # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+
+    def setDataList(self, processes):
+        self.__processes = processes
+        self.layoutAboutToBeChanged.emit()
+        self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
+        self.layoutChanged.emit()
 
     ### getter functions ###
 
