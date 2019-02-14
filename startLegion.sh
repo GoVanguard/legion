@@ -22,4 +22,5 @@ then
     rm .justcloned -f
 fi
 
+export QT_XCB_NATIVE_PAINTING=0
 ${PYTHON3BIN} legion.py

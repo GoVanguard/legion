@@ -13,19 +13,9 @@ Copyright (c) 2018 GoVanguard
 
 import sys, os, ntpath, signal, re                                      # for file operations, to kill processes and for regex
 
-try:
-    from PyQt5.QtCore import *                                              # for filters dialog
-    from PyQt5 import QtCore
-    from PyQt5 import QtWidgets, QtGui, QtCore
-except ImportError:
-    log.info("Import failed. PyQt4 library not found. \nTry installing it with: apt install python-qt4")
-
-#try:
-#    from PySide import QtWebKit
-#    usePySide = True
-#except ImportErro as e:
-#    log.info("Import failed. QtWebKit library not found. \nTry installing it with: apt install python-pyside.qtwebkit")
-#    exit(1)
+from PyQt5.QtCore import *                                              # for filters dialog
+from PyQt5 import QtCore
+from PyQt5 import QtWidgets, QtGui, QtCore
 
 from ui.gui import *
 from ui.dialogs import *
@@ -49,11 +39,13 @@ class View(QtCore.QObject):
         QtCore.QObject.__init__(self)
         self.ui = ui
         self.ui_mainwindow = ui_mainwindow                              # TODO: retrieve window dimensions/location from settings
-        self.ui_mainwindow.setGeometry(0,30,1024,650)                   # align window to topleft corner and set default size
-        self.ui.splitter_2.setSizes([300,10])                           # set better default size for bottom panel
-        
-        self.startOnce()                                                # initialisations that happen only once, when the SPARTA is launched
-        self.startConnections()                                         # signal initialisations (signals/slots, actions, etc)
+        self.ui_mainwindow.setGeometry(0, 30, 1024, 768)                   # align window to topleft corner and set default size
+        self.ui.splitter_2.setSizes([300, 10])                           # set better default size for bottom panel
+        self.qss = None
+
+        ## Calling these remotely from controller after it initalizes
+        #self.startOnce()                                                # initialisations that happen only once, when the SPARTA is launched
+        #self.startConnections()                                         # signal initialisations (signals/slots, actions, etc)
 
     def setController(self, controller):                                # the view needs access to controller methods to link gui actions with real actions
         self.controller = controller
@@ -65,7 +57,7 @@ class View(QtCore.QObject):
         self.importProgressWidget = ProgressWidget('Importing nmap..', self.ui.centralwidget)
         self.adddialog = AddHostsDialog(self.ui.centralwidget)      
         self.settingsWidget = AddSettingsDialog(self.ui.centralwidget)
-        self.helpWidget = AddHelpDialog(self.ui.centralwidget)
+        self.helpDialog = HelpDialog(self.controller.name, self.controller.author, self.controller.copyright, self.controller.emails, self.controller.version, self.controller.update, self.controller.license, self.controller.desc, self.controller.smallIcon, self.controller.bigIcon, qss = self.qss, parent = self.ui.centralwidget)
 
         self.ui.HostsTableView.setSelectionMode(1)                      # disable multiple selection
         self.ui.ServiceNamesTableView.setSelectionMode(1)
@@ -228,7 +220,7 @@ class View(QtCore.QObject):
         else:
             title += ntpath.basename(str(self.controller.getProjectName()))
         
-        self.setMainWindowTitle(self.controller.getVersion() + ' - ' + title + ' - ' + self.controller.getCWD())
+        self.setMainWindowTitle(self.controller.name + ' ' + self.controller.getVersion() + ' - ' + title + ' - ' + self.controller.getCWD())
         
     #################### ACTIONS ####################
 
@@ -443,18 +435,19 @@ class View(QtCore.QObject):
                 return
 
             self.importProgressWidget.reset('Importing nmap..') 
+            self.importProgressWidget.show()
             self.controller.nmapImporter.setFilename(str(filename))
             self.controller.nmapImporter.start()
             self.controller.copyNmapXMLToOutputFolder(str(filename))
-            self.importProgressWidget.show()
+            #self.importProgressWidget.show()
             
         else:
             log.info('No file chosen..')
 
     ###
 
-    #def connectSettings(self):
-    #    self.ui.actionSettings.triggered.connect(self.showSettingsWidget)
+    def connectSettings(self):
+        self.ui.actionSettings.triggered.connect(self.showSettingsWidget)
 
     def showSettingsWidget(self):
         self.settingsWidget.resetTabIndexes()
@@ -469,10 +462,10 @@ class View(QtCore.QObject):
         log.info('DEBUG: cancel button pressed')                            # LEO: we can use this later to test ESC button once implemented.
         self.settingsWidget.hide()
         self.controller.cancelSettings()
-        
+
     def connectHelp(self):
-        self.ui.menuHelp.triggered.connect(self.helpWidget.show)
-        pass
+        self.ui.menuHelp.triggered.connect(self.helpDialog.show)
+        #self.helpDialog.cmdOkButton.clicked.connect(self.helpDialog.close)
 
     ###
     

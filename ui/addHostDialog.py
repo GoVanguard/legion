@@ -218,6 +218,7 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.lblCustomOpt = QtWidgets.QLabel(self)
         self.lblCustomOpt.setText('Additional arguments')
         self.txtCustomOptList = QtWidgets.QPlainTextEdit(self)
+        self.txtCustomOptList.setPlainText("-sV -O")
         self.scanOptCustomGroupWidgets.addWidget(self.lblCustomOpt)
         self.scanOptCustomGroupWidgets.addWidget(self.txtCustomOptList)
         self.scanOptCustomGroup.setLayout(self.scanOptCustomGroupWidgets)
