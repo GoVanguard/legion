@@ -42,6 +42,8 @@ class View(QtCore.QObject):
         self.ui_mainwindow.setGeometry(0, 30, 1024, 768)                   # align window to topleft corner and set default size
         self.ui.splitter_2.setSizes([300, 10])                           # set better default size for bottom panel
         self.qss = None
+        self.processesTableViewSort = 'desc'
+        self.processesTableViewSortColumn = 'id'
 
         ## Calling these remotely from controller after it initalizes
         #self.startOnce()                                                # initialisations that happen only once, when the SPARTA is launched
@@ -199,6 +201,7 @@ class View(QtCore.QObject):
         # process table
         headers = ["Progress", "Elapsed", "Est. Remaining", "Display", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "OutputFile", "Output", "Status"]
         setTableProperties(self.ui.ProcessesTableView, len(headers), [1, 2, 3, 4, 5, 8, 9, 10, 13, 14, 16])
+        self.ui.ProcessesTableView.setSortingEnabled(True)
         self.ui.ProcessesTableView.horizontalHeader().resizeSection(0, 125)
         self.ui.ProcessesTableView.horizontalHeader().resizeSection(4, 250)
     
@@ -1136,7 +1139,7 @@ class View(QtCore.QObject):
         
     def updateProcessesTableView(self):
         headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
-        self.ProcessesTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.filters, True), headers)
+        self.ProcessesTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.filters, True, sort = self.processesTableViewSort, ncol = self.processesTableViewSortColumn), headers)
         self.ui.ProcessesTableView.setModel(self.ProcessesTableModel)
         
         for i in [1, 5, 8, 9, 10, 13, 14, 16]:
