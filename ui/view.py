@@ -90,6 +90,8 @@ class View(QtCore.QObject):
         self.lazy_update_tools = False
         self.menuVisible = False                                        # to know if a context menu is showing (important to avoid disrupting the user)
         self.ProcessesTableModel = None                                 # fixes bug when sorting processes for the first time
+        ## Poop
+        self.setupProcessesTableView()
         
         self.setMainWindowTitle(title)
         self.ui.statusbar.showMessage('Starting up..', msecs=1000)
@@ -1136,22 +1138,23 @@ class View(QtCore.QObject):
             self.ui.HostsTableView.show()
             
     #################### BOTTOM PANEL INTERFACE UPDATE FUNCTIONS ####################       
-        
-    def updateProcessesTableView(self):
+
+    def setupProcessesTableView(self):
         headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
         self.ProcessesTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.filters, True, sort = self.processesTableViewSort, ncol = self.processesTableViewSortColumn), headers)
         self.ui.ProcessesTableView.setModel(self.ProcessesTableModel)
         
+    def updateProcessesTableView(self):
+        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
+        self.ProcessesTableModel.setDataList(self.controller.getProcessesFromDB(self.filters, True, sort = self.processesTableViewSort, ncol = self.processesTableViewSortColumn))
+        self.ui.ProcessesTableView.repaint()
+        self.ui.ProcessesTableView.update()
+        
         for i in [1, 5, 8, 9, 10, 13, 14, 16]:
             self.ui.ProcessesTableView.setColumnHidden(i, True)
-            
-        ## Force resize
-        #self.ui.ProcessesTableView.horizontalHeader().resizeSection(0,125)
-        #self.ui.ProcessesTableView.horizontalHeader().resizeSection(3,165)
-        #self.ui.ProcessesTableView.horizontalHeader().resizeSection(6,210)
-        #self.ui.ProcessesTableView.horizontalHeader().resizeSection(7,135)
-        #self.ui.ProcessesTableView.horizontalHeader().resizeSection(11,165)
-        #self.ui.ProcessesTableView.horizontalHeader().resizeSection(12,165)
+        
+        # Force size of progress animation    
+        self.ui.ProcessesTableView.horizontalHeader().resizeSection(0,125)
         self.updateProcessesIcon()
 
     def updateProcessesIcon(self):
