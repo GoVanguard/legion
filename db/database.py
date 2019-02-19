@@ -18,6 +18,7 @@ from sqlalchemy import Column, DateTime, String, Integer, ForeignKey, func, crea
 from sqlalchemy.orm import relationship, backref, sessionmaker
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.pool import SingletonThreadPool
 
 from six import u as unicode
  
@@ -240,7 +241,7 @@ class Database:
         try:
             self.name = dbfilename
             self.dbsemaphore = QSemaphore(1)                            # to control concurrent write access to db
-            self.engine = create_engine('sqlite:///{dbFileName}'.format(dbFileName = dbfilename))
+            self.engine = create_engine('sqlite:///{dbFileName}'.format(dbFileName = dbfilename), poolclass=SingletonThreadPool)
             self.session = scoped_session(sessionmaker())
             self.session.configure(bind = self.engine, autoflush=False)
             self.metadata = Base.metadata
@@ -255,7 +256,7 @@ class Database:
         try:
             self.name = dbfilename
             self.dbsemaphore = QSemaphore(1)                            # to control concurrent write access to db
-            self.engine = create_engine('sqlite:///{dbFileName}'.format(dbFileName = dbfilename))
+            self.engine = create_engine('sqlite:///{dbFileName}'.format(dbFileName = dbfilename), poolclass=SingletonThreadPool)
             self.session = scoped_session(sessionmaker())
             self.session.configure(bind = self.engine, autoflush=False)
             self.metadata = Base.metadata
