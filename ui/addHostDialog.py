@@ -28,7 +28,7 @@ class AddHostsDialog(QtWidgets.QDialog):
     def setupLayout(self):
         self.setModal(True)
         self.setWindowTitle('Add host(s) to scan seperated by semicolons')
-        self.setFixedSize(480, 500)
+        self.setFixedSize(700, 700)
 
         self.formLayout = QtWidgets.QVBoxLayout()
         
@@ -93,6 +93,7 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.grpScanTimingControlWidgets = QtWidgets.QHBoxLayout()
         self.grpScanTimingLabelWidgets = QtWidgets.QHBoxLayout()
         self.grpScanTiming.setTitle('Timing and Performance Options')
+        self.grpScanTimingSpacer = QSpacerItem(5,5)
         self.lblScanTimingLabel0 = QtWidgets.QLabel()
         self.lblScanTimingLabel1 = QtWidgets.QLabel()
         self.lblScanTimingLabel2 = QtWidgets.QLabel()
@@ -116,6 +117,7 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.sldScanTimingSlider.setSingleStep(1)
         self.sldScanTimingSlider.setValue(4)
         self.grpScanTimingControlWidgets.addWidget(self.sldScanTimingSlider)
+        self.grpScanTimingControlWidgets.addItem(self.grpScanTimingSpacer)
         self.grpScanTimingLabelWidgets.addWidget(self.lblScanTimingLabel0)
         self.grpScanTimingLabelWidgets.addWidget(self.lblScanTimingLabel1)
         self.grpScanTimingLabelWidgets.addWidget(self.lblScanTimingLabel2)
@@ -211,27 +213,29 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.rdoScanOptPingSyn.toggle()
         self.grpScanOptPing.setEnabled(False)
 
+        self.spacer6 = QSpacerItem(5,5)
+
         # Custom scan options
         self.scanOptCustomGroup = QtWidgets.QGroupBox()
         self.scanOptCustomGroupWidgets = QtWidgets.QHBoxLayout()
         self.scanOptCustomGroup.setTitle('Custom Options')
         self.lblCustomOpt = QtWidgets.QLabel(self)
         self.lblCustomOpt.setText('Additional arguments')
-        self.txtCustomOptList = QtWidgets.QPlainTextEdit(self)
-        self.txtCustomOptList.setPlainText("-sV -O")
+        self.txtCustomOptList = QtWidgets.QLineEdit(self)
+        self.txtCustomOptList.setText("-sV -O")
         self.scanOptCustomGroupWidgets.addWidget(self.lblCustomOpt)
         self.scanOptCustomGroupWidgets.addWidget(self.txtCustomOptList)
         self.scanOptCustomGroup.setLayout(self.scanOptCustomGroupWidgets)
         self.scanOptCustomGroup.setEnabled(False)
 
+        self.cmdAddButton = QPushButton('Submit', self)
+        self.cmdAddButton.setMaximumSize(160, 70)
         self.cmdCancelButton = QPushButton('Cancel', self)
         self.cmdCancelButton.setMaximumSize(110, 30)
-        self.cmdAddButton = QPushButton('Add host(s) to scan', self)
-        self.cmdAddButton.setMaximumSize(110, 30)
         self.cmdAddButton.setDefault(True)
         self.hlayout2 = QtWidgets.QHBoxLayout()
-        self.hlayout2.addWidget(self.cmdCancelButton)
         self.hlayout2.addWidget(self.cmdAddButton)
+        self.hlayout2.addWidget(self.cmdCancelButton)
         self.formLayout.addLayout(self.hlayout)
         self.formLayout.addWidget(self.lblHostExample)
 
@@ -247,6 +251,7 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.formLayout.addWidget(self.grpScanOpt)
         self.formLayout.addItem(self.spacer3)
         self.formLayout.addWidget(self.grpScanOptPing)
+        self.formLayout.addItem(self.spacer6)
         self.formLayout.addWidget(self.scanOptCustomGroup)
         self.formLayout.addItem(self.spacer4)
         self.formLayout.addLayout(self.hlayout2)
