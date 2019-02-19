@@ -28,6 +28,9 @@ class AddHostsDialog(QtWidgets.QDialog):
     def setupLayout(self):
         self.setModal(True)
         self.setWindowTitle('Add host(s) to scan seperated by semicolons')
+        flags = Qt.Window | Qt.WindowSystemMenuHint | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint | Qt.WindowCloseButtonHint
+        self.setWindowFlags(flags)
+
         self.setFixedSize(700, 700)
 
         self.formLayout = QtWidgets.QVBoxLayout()
