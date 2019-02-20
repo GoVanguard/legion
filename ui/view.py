@@ -398,7 +398,15 @@ class View(QtCore.QObject):
 
         if validateNmapInput(hostListStr):
             self.adddialog.close()
-            hostList = hostListStr.split(' ')
+            hostList = []
+            splitTypes = [';', ' ', '\n']
+
+            for splitType in splitTypes:
+                hostListStr = hostListStr.replace(splitType, ';')
+
+            hostList = hostListStr.split(';')
+            hostList = [hostEntry for hostEntry in hostList if len(hostEntry) > 0]
+
             hostAddOptionControls = [self.adddialog.rdoScanOptTcpConnect, self.adddialog.rdoScanOptSynStealth, self.adddialog.rdoScanOptFin, self.adddialog.rdoScanOptNull, self.adddialog.rdoScanOptXmas, self.adddialog.rdoScanOptPingTcp, self.adddialog.rdoScanOptPingUdp, self.adddialog.rdoScanOptPingDisable, self.adddialog.rdoScanOptPingRegular, self.adddialog.rdoScanOptPingSyn, self.adddialog.rdoScanOptPingAck, self.adddialog.rdoScanOptPingTimeStamp, self.adddialog.rdoScanOptPingNetmask, self.adddialog.chkScanOptFragmentation]
             nmapOptions = []
 
