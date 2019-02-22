@@ -110,8 +110,8 @@ tmp/
 .initialized
 
 # extension scripts
-./scrpts/ms08-067_check.py
-./scrpts/ndr.py
-./scrpts/rdp-sec-check.pl
-./scrpts/smbenum.sh
-./scrpts/snmpbrute.py
+scripts/ms08-067_check.py
+scripts/ndr.py
+scripts/rdp-sec-check.pl
+scripts/smbenum.sh
+scripts/snmpbrute.py
