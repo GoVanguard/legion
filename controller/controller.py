@@ -28,7 +28,7 @@ class Controller():
     def __init__(self, view, logic):
         self.name = "LEGION"
         self.version = '0.3.0'
-        self.build = '1550865637'
+        self.build = '1550867142'
         self.author = 'GoVanguard'
         self.copyright = '2019'
         self.emails = ['hello@gvit.com']
@@ -706,10 +706,6 @@ class Controller():
         self.updateUITimer.start(900)
 
     def processCrashed(self, proc):
-        # Not needed? POOP
-        self.processFinished(proc)
-        #
-
         self.logic.storeProcessCrashStatusInDB(str(proc.id))
         log.info('Process {qProcessId} Crashed!'.format(qProcessId=str(proc.id)))
         qProcessOutput = "\n\t" + str(proc.display.toPlainText()).replace('\n','').replace("b'","")
