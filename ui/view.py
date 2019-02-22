@@ -887,7 +887,6 @@ class View(QtCore.QObject):
     #################### LEFT PANEL INTERFACE UPDATE FUNCTIONS ####################
 
     def updateHostsTableView(self): 
-        # TACOS
         headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime", "Lastboot", "Distance", "CheckedHost", "State", "Count", "Padding"]
         self.HostsTableModel = HostsTableModel(self.controller.getHostsFromDB(self.filters), headers)
         self.ui.HostsTableView.setModel(self.HostsTableModel)
@@ -1066,7 +1065,7 @@ class View(QtCore.QObject):
         self.ToolHostsTableModel = ProcessesTableModel(self,self.controller.getHostsForTool(toolname), headers)
         self.ui.ToolHostsTableView.setModel(self.ToolHostsTableModel)
 
-        for i in [0,1,2,3,4,7,8,9,10,11,12,13]:                         # hide some columns
+        for i in [0, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15]:                         # hide some columns
             self.ui.ToolHostsTableView.setColumnHidden(i, True)
         
         self.ui.ToolHostsTableView.horizontalHeader().resizeSection(5,150)  # default width for Host column

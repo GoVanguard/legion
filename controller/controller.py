@@ -28,7 +28,7 @@ class Controller():
     def __init__(self, view, logic):
         self.name = "LEGION"
         self.version = '0.3.0'
-        self.build = '1550863411'
+        self.build = '1550865637'
         self.author = 'GoVanguard'
         self.copyright = '2019'
         self.emails = ['hello@gvit.com']
@@ -65,9 +65,6 @@ class Controller():
         
     def initNmapImporter(self):
         self.nmapImporter = NmapImporter()
-        # Disabled - This does not work
-        # self.nmapImporter.tick.connect(self.view.importProgressWidget.setProgress)                  # update the progress bar
-        # self.nmapImporter.tick.connect(lambda: print("progress---------------"))
         self.nmapImporter.done.connect(self.nmapImportFinished)
         self.nmapImporter.schedule.connect(self.scheduler)              # run automated attacks
         self.nmapImporter.log.connect(self.view.ui.LogOutputTextView.append)
@@ -93,10 +90,8 @@ class Controller():
 
         self.processTableUiUpdateTimer = QTimer()
         self.processTableUiUpdateTimer.timeout.connect(self.view.updateProcessesTableView)
-        #self.processTableUiUpdateTimer.start(1000) # Faster than this doesn't make anything smoother
-
-        #self.importDialogUpdateTimer = QTimer()
-        #self.importDialogUpdateTimer.timeout.connect(self.view.importProgressWidget.show)
+        # Update only when queue > 0
+        # self.processTableUiUpdateTimer.start(1000) # Faster than this doesn't make anything smoother
 
     # this function fetches all the settings from the conf file. Among other things it populates the actions lists that will be used in the context menus.
     def loadSettings(self):
@@ -403,11 +398,8 @@ class Controller():
         
         menu.addSeparator()
         menu.addAction("Send to Brute")
-        menu.addSeparator()
-                                                                        # dummy is there because we don't need the third return value
+        menu.addSeparator()  # dummy is there because we don't need the third return value
         menu, actions, dummy = self.getContextMenuForServiceName(serviceName, menu)
-            
-        ## TACOS
         menu.addSeparator()
         menu.addAction("Run custom command")
         
@@ -614,9 +606,10 @@ class Controller():
 
         self.checkProcessQueue()
         
-        ## Not needed? poop
-        #self.updateUITimer.stop()                                       # update the processes table
-        #self.updateUITimer.start(900)                                   # while the process is running, when there's output to read, display it in the GUI
+        # Not needed? POOP
+        # self.updateUITimer.stop()                                       # update the processes table
+        # self.updateUITimer.start(900)                                   # while the process is running, when there's output to read, display it in the GUI
+        #
 
         qProcess.setProcessChannelMode(QtCore.QProcess.MergedChannels)
         qProcess.readyReadStandardOutput.connect(lambda: qProcess.display.appendPlainText(str(qProcess.readAllStandardOutput().data().decode('ISO-8859-1'))))
@@ -702,9 +695,6 @@ class Controller():
     def nmapImportFinished(self):
         self.updateUI2Timer.stop()
         self.updateUI2Timer.start(800)  
-        # Disabled - This does not work
-        #self.importDialogUpdateTimer.stop()
-        #self.view.importProgressWidget.hide()                           # hide the progress widget
         self.view.displayAddHostsOverlay(False)                         # if nmap import was the first action, we need to hide the overlay (note: we shouldn't need to do this everytime. this can be improved)
 
     def screenshotFinished(self, ip, port, filename):
@@ -716,7 +706,10 @@ class Controller():
         self.updateUITimer.start(900)
 
     def processCrashed(self, proc):
-        #self.processFinished(proc, True)
+        # Not needed? POOP
+        self.processFinished(proc)
+        #
+
         self.logic.storeProcessCrashStatusInDB(str(proc.id))
         log.info('Process {qProcessId} Crashed!'.format(qProcessId=str(proc.id)))
         qProcessOutput = "\n\t" + str(proc.display.toPlainText()).replace('\n','').replace("b'","")
@@ -725,7 +718,6 @@ class Controller():
     # this function handles everything after a process ends
     #def processFinished(self, qProcess, crashed=False):
     def processFinished(self, qProcess):
-        #print 'processFinished!!'
         try:
             if not self.logic.isKilledProcess(str(qProcess.id)):        # if process was not killed
                 if not qProcess.outputfile == '':
@@ -735,14 +727,8 @@ class Controller():
                         if qProcess.exitCode() == 0:                    # if the process finished successfully
                             newoutputfile = qProcess.outputfile.replace(self.logic.runningfolder, self.logic.outputfolder)
                             self.nmapImporter.setFilename(str(newoutputfile)+'.xml')
-                            # Disabled - Does not work
-                            #self.view.importProgressWidget.reset('Importing nmap..')
-                            #self.importDialogUpdateTimer.start(100)
                             self.nmapImporter.setOutput(str(qProcess.display.toPlainText()))
                             self.nmapImporter.start()
-                            # Moved into NmapImporter class
-                            #if self.view.menuVisible == False:
-                            #    self.view.importProgressWidget.show()
                 if qProcess.exitCode() != 0:
                     log.info("Process {qProcessId} exited with code {qProcessExitCode}".format(qProcessId=qProcess.id, qProcessExitCode=qProcess.exitCode()))
                     self.processCrashed(qProcess)
@@ -760,8 +746,7 @@ class Controller():
                 self.checkProcessQueue()
                 self.processes.remove(qProcess)
                 self.updateUITimer.stop()
-                self.updateUITimer.start(500)                          # update the interface soon
-                # poop
+                self.updateUITimer.start(1000)                          # update the interface soon
                 
             except Exception as e:
                 log.info("Process Finished Cleanup Exception {e}".format(e=e))
