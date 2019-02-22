@@ -350,8 +350,8 @@ class Logic():
     # this function returns all the processes from the DB
     # the showProcesses flag is used to ensure we don't display processes in the process table after we have cleared them or when an existing project is opened.
     # to speed up the queries we replace the columns we don't need by zeros (the reason we need all the columns is we are using the same model to display process information everywhere)
-    def getProcessesFromDB(self, filters, showProcesses='', sort = 'desc', ncol = 'id'):
-        if showProcesses == '':                                         # we do not fetch nmap processes because these are not displayed in the host tool tabs / tools
+    def getProcessesFromDB(self, filters, showProcesses='noNmap', sort = 'desc', ncol = 'id'):
+        if showProcesses == 'noNmap':                                         # we do not fetch nmap processes because these are not displayed in the host tool tabs / tools
             query = ('SELECT "0", "0", "0", process.name, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0" FROM process AS process WHERE process.closed="False" AND process.name!="nmap" group by process.name')
             result = self.db.metadata.bind.execute(query).fetchall()
 
