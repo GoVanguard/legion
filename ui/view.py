@@ -409,7 +409,7 @@ class View(QtCore.QObject):
                        if len(nmapOptionValueSplit) > 1:
                            nmapOptionValue = nmapOptionValueSplit[1].replace(']','')
                            nmapOptions.append(nmapOptionValue)
-                nmapOptions.append(str(self.adddialog.txtCustomOptList.toPlainText()))
+                nmapOptions.append(str(self.adddialog.txtCustomOptList))
             for hostListEntry in hostList:
                 self.controller.addHosts(targetHosts = hostListEntry, runHostDiscovery = self.adddialog.chkDiscovery.isChecked(), runStagedNmap = self.adddialog.chkNmapStaging.isChecked(), nmapSpeed = self.adddialog.sldScanTimingSlider.value(), scanMode = scanMode, nmapOptions = nmapOptions)
             self.adddialog.cmdAddButton.clicked.disconnect()                   # disconnect all the signals from that button
