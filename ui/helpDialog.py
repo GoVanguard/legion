@@ -24,9 +24,10 @@ class License(QtWidgets.QPlainTextEdit):
         super(License,self).__init__(parent)
         self.setReadOnly(True)
         self.setWindowTitle('License')
-        self.setGeometry(0,0,300,300)
+        self.setGeometry(0, 0, 300, 300)
         self.center()
         self.setPlainText(open('LICENSE','r').read())
+
     def center(self):
         frameGm = self.frameGeometry()
         centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
@@ -37,8 +38,6 @@ class ChangeLog(QtWidgets.QPlainTextEdit):
     def __init__(self, qss, parent = None):
         super(ChangeLog,self).__init__(parent)
         self.setMinimumHeight(240)
-        #self.setStyleSheet('''QWidget {
-        #color: #b1b1b1; background-color: #323232;}''')
         self.setStyleSheet(qss)
         self.setPlainText(open('CHANGELOG.txt','r').read())
         self.setReadOnly(True)

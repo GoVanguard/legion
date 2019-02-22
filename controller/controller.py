@@ -28,7 +28,7 @@ class Controller():
     def __init__(self, view, logic):
         self.name = "LEGION"
         self.version = '0.3.0'
-        self.build = '1550857694'
+        self.build = '1550858562'
         self.author = 'GoVanguard'
         self.copyright = '2019'
         self.emails = ['hello@gvit.com']
