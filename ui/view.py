@@ -1061,14 +1061,14 @@ class View(QtCore.QObject):
             self.setDirty(False)
 
     def updateToolHostsTableView(self, toolname):
-        headers = ["Progress", "Display", "Pid", "Name", "Action", "Target", "Port", "Protocol", "Command", "Start time", "OutputFile", "Output", "Status", "Closed"]
-        self.ToolHostsTableModel = ProcessesTableModel(self,self.controller.getHostsForTool(toolname), headers)
+        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
+        self.ToolHostsTableModel = ProcessesTableModel(self, self.controller.getHostsForTool(toolname), headers)
         self.ui.ToolHostsTableView.setModel(self.ToolHostsTableModel)
 
-        for i in [0, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15]:                         # hide some columns
+        for i in [0, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14, 15]:                         # hide some columns
             self.ui.ToolHostsTableView.setColumnHidden(i, True)
         
-        self.ui.ToolHostsTableView.horizontalHeader().resizeSection(5,150)  # default width for Host column
+        self.ui.ToolHostsTableView.horizontalHeader().resizeSection(7, 150)  # default width for Host column
 
         ids = []                                                        # ensure that there is always something selected
         for row in range(self.ToolHostsTableModel.rowCount("")):
