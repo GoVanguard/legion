@@ -11,8 +11,13 @@ Copyright (c) 2018 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
+from utilities.stenoLogging import *
+log = get_logger('legion', path="./log/legion-db.log", console=False)
+log.setLevel(logging.INFO)
+
 from PyQt5.QtCore import QSemaphore
 import time
+from random import randint
 
 from sqlalchemy import Column, DateTime, String, Integer, ForeignKey, func, create_engine, Table
 from sqlalchemy.orm import relationship, backref, sessionmaker
@@ -241,7 +246,7 @@ class Database:
         try:
             self.name = dbfilename
             self.dbsemaphore = QSemaphore(1)                            # to control concurrent write access to db
-            self.engine = create_engine('sqlite:///{dbFileName}'.format(dbFileName = dbfilename), poolclass=SingletonThreadPool)
+            self.engine = create_engine('sqlite:///{dbFileName}'.format(dbFileName = dbfilename)) #, poolclass=SingletonThreadPool)
             self.session = scoped_session(sessionmaker())
             self.session.configure(bind = self.engine, autoflush=False)
             self.metadata = Base.metadata
@@ -256,7 +261,7 @@ class Database:
         try:
             self.name = dbfilename
             self.dbsemaphore = QSemaphore(1)                            # to control concurrent write access to db
-            self.engine = create_engine('sqlite:///{dbFileName}'.format(dbFileName = dbfilename), poolclass=SingletonThreadPool)
+            self.engine = create_engine('sqlite:///{dbFileName}'.format(dbFileName = dbfilename)) #, poolclass=SingletonThreadPool)
             self.session = scoped_session(sessionmaker())
             self.session.configure(bind = self.engine, autoflush=False)
             self.metadata = Base.metadata
@@ -268,9 +273,27 @@ class Database:
 
     def commit(self):
         self.dbsemaphore.acquire()
-        session = self.session()
-        session.commit()
+        log.info("DB lock aquired")
+        try:
+            session = self.session()
+            rnd = float(randint(1,99)) / 100.00
+            log.info("Waiting {0}s before commit...".format(str(rnd)))
+            time.sleep(rnd)
+            session.commit()
+        except Exception as e:
+            log.error("DB Commit issue")
+            log.error(str(e))
+            try:
+                rnd = float(randint(1,99)) / 100.00
+                time.sleep(rnd)
+                log.info("Waiting {0}s before commit...".format(str(rnd)))
+                session.commit()
+            except Exception as e:
+                log.error("DB Commit issue on retry")
+                log.error(str(e))
+                pass
         self.dbsemaphore.release()
+        log.info("DB lock released")
 
 
 if __name__ == "__main__":

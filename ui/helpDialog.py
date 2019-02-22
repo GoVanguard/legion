@@ -44,13 +44,14 @@ class ChangeLog(QtWidgets.QPlainTextEdit):
         self.setReadOnly(True)
 
 class HelpDialog(QtWidgets.QDialog):
-    def __init__(self, name, author, copyright, emails, version, update, license, desc, smallIcon, bigIcon, qss, parent = None):
+    def __init__(self, name, author, copyright, emails, version, build, update, license, desc, smallIcon, bigIcon, qss, parent = None):
         super(HelpDialog, self).__init__(parent)
         self.name = name
         self.author = author
         self.copyright = copyright
         self.emails = emails
         self.version = version
+        self.build = build
         self.update = update
         self.desc = QtWidgets.QLabel(desc + '<br>')
         self.smallIcon = smallIcon
@@ -75,7 +76,7 @@ class HelpDialog(QtWidgets.QDialog):
         self.logoapp.setPixmap(QtGui.QPixmap(self.smallIcon).scaled(64,64))
         self.form = QtWidgets.QFormLayout()
         self.form2 = QtWidgets.QHBoxLayout()
-        self.form.addRow(self.logoapp,QtWidgets.QLabel('<h2>{0} {1}</h2>'.format(self.name, self.version)))
+        self.form.addRow(self.logoapp,QtWidgets.QLabel('<h2>{0} {1}-{2}</h2>'.format(self.name, self.version, self.build)))
         self.tabwid = QtWidgets.QTabWidget(self)
         self.TabAbout = QtWidgets.QWidget(self)
         self.TabVersion = QtWidgets.QWidget(self)
@@ -103,7 +104,7 @@ class HelpDialog(QtWidgets.QDialog):
         self.TabAbout.setLayout(self.formAbout)
 
         # Version Section
-        self.formVersion.addRow(QtWidgets.QLabel('<strong>Version: {0}</strong><br>'.format(self.version)))
+        self.formVersion.addRow(QtWidgets.QLabel('<strong>Version: {0}-{1}</strong><br>'.format(self.version, self.build)))
         self.formVersion.addRow(QtWidgets.QLabel('Using:'))
         import platform
         python_version = platform.python_version()

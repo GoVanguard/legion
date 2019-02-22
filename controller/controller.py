@@ -28,10 +28,11 @@ class Controller():
     def __init__(self, view, logic):
         self.name = "LEGION"
         self.version = '0.3.0'
+        self.build = '1550852816'
         self.author = 'GoVanguard'
         self.copyright = '2019'
         self.emails = ['hello@gvit.com']
-        self.update = '02/16/2019'
+        self.update = '02/22/2019'
         self.license = "GPL v3"
         self.desc = "LEGION is a semi-automated intelligence gathering tool for penetration testing."
         self.smallIcon = './images/icons/Legion-N_128x128.svg'
@@ -64,7 +65,9 @@ class Controller():
         
     def initNmapImporter(self):
         self.nmapImporter = NmapImporter()
-        self.nmapImporter.tick.connect(self.view.importProgressWidget.setProgress)                  # update the progress bar
+        # Disabled - This does not work
+        # self.nmapImporter.tick.connect(self.view.importProgressWidget.setProgress)                  # update the progress bar
+        # self.nmapImporter.tick.connect(lambda: print("progress---------------"))
         self.nmapImporter.done.connect(self.nmapImportFinished)
         self.nmapImporter.schedule.connect(self.scheduler)              # run automated attacks
         self.nmapImporter.log.connect(self.view.ui.LogOutputTextView.append)
@@ -90,7 +93,10 @@ class Controller():
 
         self.processTableUiUpdateTimer = QTimer()
         self.processTableUiUpdateTimer.timeout.connect(self.view.updateProcessesTableView)
-        self.processTableUiUpdateTimer.start(1000) # Faster than this doesn't make anything smoother
+        #self.processTableUiUpdateTimer.start(1000) # Faster than this doesn't make anything smoother
+
+        #self.importDialogUpdateTimer = QTimer()
+        #self.importDialogUpdateTimer.timeout.connect(self.view.importProgressWidget.show)
 
     # this function fetches all the settings from the conf file. Among other things it populates the actions lists that will be used in the context menus.
     def loadSettings(self):
@@ -127,7 +133,7 @@ class Controller():
         return self.logic.projectname
         
     def getVersion(self):
-        return self.version
+        return (self.version + "-" + self.build)
         
     def getRunningFolder(self):
         return self.logic.runningfolder
@@ -525,6 +531,7 @@ class Controller():
         log.debug('# Fast processes queued: ' + str(self.fastProcessQueue.qsize()))
         
         if not self.fastProcessQueue.empty():
+            self.processTableUiUpdateTimer.start(1000)
             if (self.fastProcessesRunning < int(self.settings.general_max_fast_processes)):
                 next_proc = self.fastProcessQueue.get()
                 if not self.logic.isCanceledProcess(str(next_proc.id)):
@@ -539,6 +546,9 @@ class Controller():
                 elif not self.fastProcessQueue.empty():
                     log.debug('> next process was canceled, checking queue again..')
                     self.checkProcessQueue()
+        else:
+            log.info("Halting process panel update timer as all processes are finished.")
+            self.processTableUiUpdateTimer.stop()
             
     def cancelProcess(self, dbId):
         log.info('Canceling process: ' + str(dbId))
@@ -604,8 +614,9 @@ class Controller():
 
         self.checkProcessQueue()
         
-        self.updateUITimer.stop()                                       # update the processes table
-        self.updateUITimer.start(900)                                   # while the process is running, when there's output to read, display it in the GUI
+        ## Not needed? poop
+        #self.updateUITimer.stop()                                       # update the processes table
+        #self.updateUITimer.start(900)                                   # while the process is running, when there's output to read, display it in the GUI
 
         qProcess.setProcessChannelMode(QtCore.QProcess.MergedChannels)
         qProcess.readyReadStandardOutput.connect(lambda: qProcess.display.appendPlainText(str(qProcess.readAllStandardOutput().data().decode('ISO-8859-1'))))
@@ -691,7 +702,9 @@ class Controller():
     def nmapImportFinished(self):
         self.updateUI2Timer.stop()
         self.updateUI2Timer.start(800)  
-        self.view.importProgressWidget.hide()                           # hide the progress widget
+        # Disabled - This does not work
+        #self.importDialogUpdateTimer.stop()
+        #self.view.importProgressWidget.hide()                           # hide the progress widget
         self.view.displayAddHostsOverlay(False)                         # if nmap import was the first action, we need to hide the overlay (note: we shouldn't need to do this everytime. this can be improved)
 
     def screenshotFinished(self, ip, port, filename):
@@ -722,11 +735,14 @@ class Controller():
                         if qProcess.exitCode() == 0:                    # if the process finished successfully
                             newoutputfile = qProcess.outputfile.replace(self.logic.runningfolder, self.logic.outputfolder)
                             self.nmapImporter.setFilename(str(newoutputfile)+'.xml')
-                            self.view.importProgressWidget.reset('Importing nmap..')
+                            # Disabled - Does not work
+                            #self.view.importProgressWidget.reset('Importing nmap..')
+                            #self.importDialogUpdateTimer.start(100)
                             self.nmapImporter.setOutput(str(qProcess.display.toPlainText()))
                             self.nmapImporter.start()
-                            if self.view.menuVisible == False:
-                                self.view.importProgressWidget.show()
+                            # Moved into NmapImporter class
+                            #if self.view.menuVisible == False:
+                            #    self.view.importProgressWidget.show()
                 if qProcess.exitCode() != 0:
                     log.info("Process {qProcessId} exited with code {qProcessExitCode}".format(qProcessId=qProcess.id, qProcessExitCode=qProcess.exitCode()))
                     self.processCrashed(qProcess)
@@ -744,7 +760,8 @@ class Controller():
                 self.checkProcessQueue()
                 self.processes.remove(qProcess)
                 self.updateUITimer.stop()
-                self.updateUITimer.start(1500)                          # update the interface soon
+                self.updateUITimer.start(500)                          # update the interface soon
+                # poop
                 
             except Exception as e:
                 log.info("Process Finished Cleanup Exception {e}".format(e=e))

@@ -26,7 +26,8 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(2000, 800)
+
+        MainWindow.resize(1200, 900)
         
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))    # do not change this name
@@ -35,9 +36,6 @@ class Ui_MainWindow(object):
         self.splitter_2 = QtWidgets.QSplitter(self.centralwidget)
         self.splitter_2.setOrientation(QtCore.Qt.Vertical)
         self.splitter_2.setObjectName(_fromUtf8("splitter_2"))
-        #self.splitter_5 = QtWidgets.QSplitter(self.splitter_2)
-        #self.splitter_5.setOrientation(QtCore.Qt.Vertical)
-        #self.splitter_5.setObjectName(_fromUtf8("splitter_5"))
 
         self.MainTabWidget = QtWidgets.QTabWidget(self.splitter_2)
         self.MainTabWidget.setObjectName(_fromUtf8("MainTabWidget"))
@@ -65,7 +63,6 @@ class Ui_MainWindow(object):
         self.setupBottom2Panel()
         
         self.gridLayout.addWidget(self.splitter_2, 0, 0, 1, 1)
-        #self.gridLayout.addWidget(self.splitter_5, 1, 0, 1, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -86,12 +83,12 @@ class Ui_MainWindow(object):
         self.FilterApplyButton = QtWidgets.QToolButton()
         self.searchIcon = QtGui.QIcon()
         self.searchIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/search.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.FilterApplyButton.setIconSize(QtCore.QSize(29,21))
+        self.FilterApplyButton.setIconSize(QtCore.QSize(29, 21))
         self.FilterApplyButton.setIcon(self.searchIcon)
         self.FilterAdvancedButton = QtWidgets.QToolButton()
         self.advancedIcon = QtGui.QIcon()
         self.advancedIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/advanced.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.FilterAdvancedButton.setIconSize(QtCore.QSize(19,19))
+        self.FilterAdvancedButton.setIconSize(QtCore.QSize(19, 19))
         self.FilterAdvancedButton.setIcon(self.advancedIcon)
         self.vlayout = QtWidgets.QVBoxLayout(self.HostsTab)
         self.vlayout.setObjectName(_fromUtf8("vlayout"))

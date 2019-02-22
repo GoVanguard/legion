@@ -23,4 +23,5 @@ then
 fi
 
 export QT_XCB_NATIVE_PAINTING=0
+export QT_AUTO_SCREEN_SCALE_FACTOR=1.5
 ${PYTHON3BIN} legion.py

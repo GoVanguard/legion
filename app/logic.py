@@ -17,6 +17,7 @@ import subprocess   # for CWD
 from parsers.Parser import *
 from db.database import *
 from app.auxiliary import *
+from ui.ancillaryDialog import *
 from six import u as unicode
 
 class Logic():
@@ -412,6 +413,8 @@ class Logic():
         return p.id
     
     def addScreenshotToDB(self, ip, port, filename):
+        ## POOP ##
+        return 0
         p_output = process_output()                                     # add row to process_output table (separate table for performance reasons)
         p = process(0, "screenshooter", "screenshot ("+str(port)+"/tcp)", str(ip), str(port), "tcp", "", getTimestamp(True), getTimestamp(True), str(filename), "Finished", p_output, 2, 0)
         session = self.db.session()
@@ -558,6 +561,7 @@ class NmapImporter(QtCore.QThread):
     def __init__(self):
         QtCore.QThread.__init__(self, parent=None)
         self.output = ''
+        self.importProgressWidget = ProgressWidget('Importing nmap..')
 
     def tsLog(self, msg):
         self.log.emit(str(msg))
@@ -624,6 +628,7 @@ class NmapImporter(QtCore.QThread):
 
     def run(self):                                                      # it is necessary to get the qprocess because we need to send it back to the scheduler when we're done importing
         try:
+            self.importProgressWidget.show()
             session = self.db.session()
             self.tsLog("Parsing nmap xml file: " + self.filename)
             starttime = time()
@@ -644,10 +649,16 @@ class NmapImporter(QtCore.QThread):
             hostCount = len(parser.all_hosts())
             if hostCount==0:                                            # to fix a division by zero if we ran nmap on one host
                 hostCount=1
-            progress = 100.0 / hostCount
+            #progress = 100.0 / hostCount
             totalprogress = 0
-            self.tick.emit(int(totalprogress))
-    
+            #self.tick.emit(int(totalprogress))
+            self.importProgressWidget.setProgress(int(totalprogress))
+            self.importProgressWidget.show()
+   
+            createProgress = 0 
+            createOsNodesProgress = 0
+            createPortsProgress = 0
+
             for h in parser.all_hosts():                                # create all the hosts that need to be created
                 db_host = session.query(nmap_host).filter_by(ip=h.ip).first()
                 
@@ -659,6 +670,11 @@ class NmapImporter(QtCore.QThread):
                     session.add(t_note)
                 else:
                     self.tsLog("Found db_host already in db")
+                createProgress = createProgress + ((100.0 / hostCount) / 5)
+                totalprogress = totalprogress + createProgress
+                #self.tick.emit(int(totalprogress))
+                self.importProgressWidget.setProgress(int(totalprogress))
+                self.importProgressWidget.show()
 
             session.commit()
             
@@ -685,12 +701,18 @@ class NmapImporter(QtCore.QThread):
                         print(os.generation)
                         print(os.os_type)
                         print(os.vendor)
-                        osCves = self.getCveFuzzy(os.name)
-                        print(osCves)
-                        for osCve in osCves:
-                            t_cve = cve(name = osCve, url = "http://test", criteria = 'crit:test', fingerprint = 'fing:test')
-                            session.add(t_cve)
-                            t_cve = None
+                        ## CVE
+                        #osCves = self.getCveFuzzy(os.name)
+                        #print(osCves)
+                        #for osCve in osCves:
+                        #    t_cve = cve(name = osCve, url = "http://test", criteria = 'crit:test', fingerprint = 'fing:test')
+                        #    session.add(t_cve)
+                        #    t_cve = None
+                    createOsNodesProgress = createOsNodesProgress + ((100.0 / hostCount) / 5)
+                    totalprogress = totalprogress + createOsNodesProgress
+                    #self.tick.emit(int(totalprogress))
+                    self.importProgressWidget.setProgress(int(totalprogress))
+                    self.importProgressWidget.show()
 
                 all_ports = h.all_ports()
                 self.tsLog("    'ports' to process: {all_ports}".format(all_ports=str(len(all_ports))))
@@ -717,11 +739,16 @@ class NmapImporter(QtCore.QThread):
                         else:
                             db_port = nmap_port(p.portId, p.protocol, p.state, db_host.id, '')
                         session.add(db_port)
+                    createPortsProgress = createPortsProgress + ((100.0 / hostCount) / 5)
+                    totalprogress = totalprogress + createPortsProgress
+                    #self.tick.emit(int(totalprogress))
+                    self.importProgressWidget.setProgress(totalprogress)
+                    self.importProgressWidget.show()
 
             session.commit()
             
-            totalprogress += progress
-            self.tick.emit(int(totalprogress))
+            #totalprogress += progress
+            #self.tick.emit(int(totalprogress))
 
             for h in parser.all_hosts():                                # create all script objects that need to be created
                 
@@ -821,13 +848,16 @@ class NmapImporter(QtCore.QThread):
 
                         session.add(db_script)
                 
-                totalprogress += progress
-                self.tick.emit(int(totalprogress))      
+            totalprogress = 100
+            #self.tick.emit(int(totalprogress))      
+            self.importProgressWidget.setProgress(int(totalprogress))
+            self.importProgressWidget.show()
 
             session.commit()
             self.db.dbsemaphore.release()                               # we are done with the DB
             self.tsLog('Finished in '+ str(time()-starttime) + ' seconds.')
             self.done.emit()
+            self.importProgressWidget.hide()
             self.schedule.emit(parser, self.output == '')               # call the scheduler (if there is no terminal output it means we imported nmap)
             
         except Exception as e:

@@ -33,9 +33,9 @@ class ProgressWidget(QtWidgets.QDialog):
         self.setupLayout()
 
     def setupLayout(self):
-        self.setWindowModality(True)
+        #self.setWindowModality(True)
         vbox = QtWidgets.QVBoxLayout()
-        self.label = QtWidgets.QLabel('')
+        self.label = QtWidgets.QLabel(self.text)
         self.progressBar = QtWidgets.QProgressBar()
         vbox.addWidget(self.label)
         vbox.addWidget(self.progressBar)
@@ -45,7 +45,10 @@ class ProgressWidget(QtWidgets.QDialog):
         self.setLayout(vbox)
 
     def setProgress(self, progress):
+        if progress > 100:
+            progress = 100
         self.progressBar.setValue(progress)
+        print("progress {0}".format(str(progress)))
 
     def setText(self, text):
         self.text = text
