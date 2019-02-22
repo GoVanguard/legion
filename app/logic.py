@@ -413,8 +413,6 @@ class Logic():
         return p.id
     
     def addScreenshotToDB(self, ip, port, filename):
-        ## POOP ##
-        return 0
         p_output = process_output()                                     # add row to process_output table (separate table for performance reasons)
         p = process(0, "screenshooter", "screenshot ("+str(port)+"/tcp)", str(ip), str(port), "tcp", "", getTimestamp(True), getTimestamp(True), str(filename), "Finished", p_output, 2, 0)
         session = self.db.session()
