@@ -119,7 +119,7 @@ class AppSettings():
         self.actions.setValue("samrdump", ["Run samrdump", "python /usr/share/doc/python-impacket/examples/samrdump.py [IP] [PORT]/SMB", "netbios-ssn,microsoft-ds"])
         self.actions.setValue("nbtscan", ["Run nbtscan", "nbtscan -v -h [IP]", "netbios-ns"])
         self.actions.setValue("smbenum", ["Run smbenum", "bash ./scripts/smbenum.sh [IP]", "netbios-ssn,microsoft-ds"])
-        self.actions.setValue("enum4linux", ["Run enum4linux", "enum4linux [IP]", "netbios-ssn,microsoft-ds"])
+        self.actions.setValue("enum4linux", ["Run enum4linux", "enum4linux [IP]", "netbios-ssn, microsoft-ds"])
         self.actions.setValue("polenum", ["Extract password policy (polenum)", "polenum [IP]", "netbios-ssn,microsoft-ds"])
         self.actions.setValue("smb-enum-users", ["Enumerate users (nmap)", "nmap -p[PORT] --script=smb-enum-users [IP] -vvvvv", "netbios-ssn,microsoft-ds"])
         self.actions.setValue("smb-enum-users-rpc", ["Enumerate users (rpcclient)", "bash -c \"echo 'enumdomusers' | rpcclient [IP] -U%\"", "netbios-ssn,microsoft-ds"])        
@@ -301,7 +301,7 @@ class AppSettings():
     def backupAndSave(self, newSettings):
         # Backup and save
         log.info('Backing up old settings and saving new settings..')
-        os.rename('./legion.conf', './'+getTimestamp()+'-legion.conf')  
+        os.rename('./legion.conf', './backup/'+getTimestamp()+'-legion.conf')  
         self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
 
         self.actions.beginGroup('GeneralSettings')
@@ -351,7 +351,7 @@ class AppSettings():
 
         self.actions.beginGroup('SchedulerSettings')
         for tool in newSettings.automatedAttacks:
-            self.actions.setValue(tool, newSettings.automatedAttacks[tool])
+            self.actions.setValue(tool[0], [tool[1], tool[2]])
         self.actions.endGroup()
         
         self.actions.sync()
