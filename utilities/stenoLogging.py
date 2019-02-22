@@ -113,12 +113,13 @@ class StenoLogger(logging.Logger):
         if self.isEnabledFor(level):
             self._log(level, msg, args, **self._parse_extra(kwargs))
 
-def get_logger(name, path=None):
+def get_logger(name, path=None, console=True):
     logging.setLoggerClass(StenoLogger)
     logger = logging.getLogger(name)
-    shdlr = logging.StreamHandler()
-    shdlr.setFormatter(StenoFormatter())
-    logger.addHandler(shdlr)
+    if console == True:
+        shdlr = logging.StreamHandler()
+        shdlr.setFormatter(StenoFormatter())
+        logger.addHandler(shdlr)
     if path:
         fhdlr = RotatingFileHandler(path)
         fhdlr.setFormatter(StenoFormatter())

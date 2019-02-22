@@ -11,6 +11,10 @@ Copyright (c) 2018 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
+from utilities.stenoLogging import *
+log = get_logger('legion', path="./log/legion-startup.log")
+log.setLevel(logging.INFO)
+
 # check for dependencies first (make sure all non-standard dependencies are checked for here)
 try:
     from sqlalchemy.orm.scoping import ScopedSession as scoped_session
@@ -116,6 +120,12 @@ if __name__ == "__main__":
     controller = Controller(view, logic)            # Controller prep (communication between model and view)
     view.qss = qss_file
 
+    # Center the application in screen
+    x = app.desktop().screenGeometry().center().x()
+    y = app.desktop().screenGeometry().center().y()
+    MainWindow.move(x - MainWindow.geometry().width()/2, y - MainWindow.geometry().height()/2)
+
+    # Show main window
     MainWindow.show()
 
     try:

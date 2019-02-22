@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Update last update in controller
+sed -i -r "s/self.update = '.*?'/self.update = \'`date '+%m\/%d\/%Y'\'`/g" ./controller/controller.py
+sed -i -r "s/self.build = '.*?'/self.build = \'`date '+%s'\'`/g" ./controller/controller.py
+
+# Clear logs
+
+echo "" > ./log/legion.log
+echo "" > ./log/legion-db.log
+echo "" > ./log/legion-startup.log
+
+# Prep hidden files
+rm -f .initialized
+touch .justcloned
+
+# Clear tmp
+rm -Rf ./tmp/*
