@@ -94,7 +94,7 @@ class View(QtCore.QObject):
         self.ToolsTableModel = None
         self.setupProcessesTableView()
         self.setupToolsTableView()
-        
+
         self.setMainWindowTitle(title)
         self.ui.statusbar.showMessage('Starting up..', msecs=1000)
 
@@ -145,6 +145,7 @@ class View(QtCore.QObject):
         self.connectSwitchTabClick()                                    # to detect changing tabs (on left panel)
         self.connectSwitchMainTabClick()                                # to detect changing top level tabs
         self.connectTableDoubleClick()                                  # for double clicking on host (it redirects to the host view)
+        self.connectProcessTableHeaderResize()
         ### CONTEXT MENUS ###
         self.connectHostsTableContextMenu()
         self.connectServiceNamesTableContextMenu()
@@ -206,9 +207,7 @@ class View(QtCore.QObject):
         headers = ["Progress", "Elapsed", "Est. Remaining", "Display", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "OutputFile", "Output", "Status"]
         setTableProperties(self.ui.ProcessesTableView, len(headers), [1, 2, 3, 4, 5, 8, 9, 10, 13, 14, 16])
         self.ui.ProcessesTableView.setSortingEnabled(True)
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(0, 125)
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(4, 750)
-    
+
     def setMainWindowTitle(self, title):
         self.ui_mainwindow.setWindowTitle(str(title))
 
@@ -230,6 +229,22 @@ class View(QtCore.QObject):
         self.setMainWindowTitle(self.controller.name + ' ' + self.controller.getVersion() + ' - ' + title + ' - ' + self.controller.getCWD())
         
     #################### ACTIONS ####################
+
+
+    ###
+
+    def connectProcessTableHeaderResize(self):
+        self.ui.ProcessesTableView.horizontalHeader().sectionResized.connect(self.saveProcessHeaderWidth)
+
+    def saveProcessHeaderWidth(self, index, oldSize, newSize):
+        columnWidths = self.controller.getSettings().gui_process_tab_column_widths.split(',')
+        difference = abs(int(columnWidths[index]) - newSize)
+        if difference >= 5:
+            columnWidths[index] = str(newSize)
+            self.controller.settings.gui_process_tab_column_widths = ','.join(columnWidths)
+            self.controller.applySettings(self.controller.settings)
+            self.controller.saveSettings(False)
+    ###
 
     def dealWithRunningProcesses(self, exiting=False):
         if len(self.controller.getRunningProcesses()) > 0:
@@ -937,7 +952,7 @@ class View(QtCore.QObject):
         headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
         self.ToolsTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.filters, showProcesses = 'noNmap', sort = self.processesTableViewSort, ncol = self.processesTableViewSortColumn), headers)
         self.ui.ToolsTableView.setModel(self.ToolsTableModel)
-        
+
     def updateToolsTableView(self):
         if self.ui.MainTabWidget.tabText(self.ui.MainTabWidget.currentIndex()) == 'Scan' and self.ui.HostsTabWidget.tabText(self.ui.HostsTabWidget.currentIndex()) == 'Tools':
             headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
@@ -1149,7 +1164,13 @@ class View(QtCore.QObject):
         self.ui.ProcessesTableView.repaint()
         self.ui.ProcessesTableView.update()
 
-        # Hides columns we don't want to see
+        # load the column widths from settings to persist widths between sessions
+        columnWidths = self.controller.getSettings().gui_process_tab_column_widths.split(',')
+        header = self.ui.ProcessesTableView.horizontalHeader()
+        for index, width in enumerate(columnWidths):
+            header.resizeSection(index, int(width))
+
+        #Hides columns we don't want to see
         for i in [1, 12, 14, 16]:
             self.ui.ProcessesTableView.setColumnHidden(i, True)
         
