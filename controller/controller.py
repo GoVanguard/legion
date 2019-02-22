@@ -28,7 +28,7 @@ class Controller():
     def __init__(self, view, logic):
         self.name = "LEGION"
         self.version = '0.3.0'
-        self.build = '1550859208'
+        self.build = '1550863411'
         self.author = 'GoVanguard'
         self.copyright = '2019'
         self.emails = ['hello@gvit.com']
@@ -520,7 +520,7 @@ class Controller():
     
     #################### BOTTOM PANEL INTERFACE UPDATE FUNCTIONS ####################       
 
-    def getProcessesFromDB(self, filters, showProcesses = '', sort = 'desc', ncol = 'id'):
+    def getProcessesFromDB(self, filters, showProcesses = 'noNmap', sort = 'desc', ncol = 'id'):
         return self.logic.getProcessesFromDB(filters, showProcesses, sort, ncol)
                     
     #################### PROCESSES ####################
