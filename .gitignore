@@ -108,3 +108,10 @@ tmp/
 
 # init
 .initialized
+
+# extension scripts
+./scrpts/ms08-067_check.py
+./scrpts/ndr.py
+./scrpts/rdp-sec-check.pl
+./scrpts/smbenum.sh
+./scrpts/snmpbrute.py
