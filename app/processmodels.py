@@ -55,8 +55,6 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
         row = index.row()
         column = index.column()
         processColumns = {0:'progress', 1:'display',  2:'elapsed', 3:'estimatedremaining', 4:'pid', 5:'name', 6:'tabtitle', 7:'hostip', 8:'port', 9:'protocol', 10:'command', 11:'starttime', 12:'endtime', 13:'outputfile', 14:'output', 15:'status', 16:'closed'}
-        #print(str(column))
-        #print(str(self.__processes[row]))
         try:
             if column == 0:
                 value = ''
@@ -73,7 +71,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
                     elapsed = round(self.__controller.controller.processMeasurements.get(pid, 0), 2)
                     estimatedRemaining = int(self.__processes[row]['estimatedremaining']) - float(elapsed)
                 value = "{0:.2f}{1}".format(float(estimatedRemaining), "s") if estimatedRemaining >= 0 else 'Unknown'
-            elif column == 5 or column == 6:
+            elif column == 6:
                 if not self.__processes[row]['tabtitle'] == '':
                     value = self.__processes[row]['tabtitle']
                 else:
@@ -87,18 +85,13 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
                 value = ""
             else:
                 try:
-                    #print(self.__processes[row])
-                    #print(processColumns.get(int(column)))
                     value = self.__processes[row][processColumns.get(int(column))]
                 except:
-                    value = 'missing'
+                    value = "Missing data c #{0} - {1}".format(int(column), processColumns.get(int(column)))
                     pass
         except Exception as e:
-            print(str(column))
-            print(str(self.__processes[row]))
-            print(str(e))
-            print("HA!")
-            value = "ha"
+            value = "Missing data c #{0} - {1}".format(int(column), processColumns.get(int(column)))
+            pass
         return value            
 
     def sort(self, Ncol, order):

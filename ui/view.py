@@ -47,6 +47,8 @@ class View(QtCore.QObject):
         self.qss = None
         self.processesTableViewSort = 'desc'
         self.processesTableViewSortColumn = 'id'
+        self.toolsTableViewSort = 'desc'
+        self.toolsTableViewSortColumn = 'id'
 
     def setController(self, controller):                                # the view needs access to controller methods to link gui actions with real actions
         self.controller = controller
@@ -89,7 +91,9 @@ class View(QtCore.QObject):
         self.lazy_update_tools = False
         self.menuVisible = False                                        # to know if a context menu is showing (important to avoid disrupting the user)
         self.ProcessesTableModel = None                                 # fixes bug when sorting processes for the first time
+        self.ToolsTableModel = None
         self.setupProcessesTableView()
+        self.setupToolsTableView()
         
         self.setMainWindowTitle(title)
         self.ui.statusbar.showMessage('Starting up..', msecs=1000)
@@ -928,16 +932,23 @@ class View(QtCore.QObject):
         if not row == None:
             self.ui.ServiceNamesTableView.selectRow(row)
             self.serviceNamesTableClick()
+
+    def setupToolsTableView(self):
+        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
+        self.ToolsTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.filters, showProcesses = 'noNmap', sort = self.processesTableViewSort, ncol = self.processesTableViewSortColumn), headers)
+        self.ui.ToolsTableView.setModel(self.ToolsTableModel)
         
     def updateToolsTableView(self):
         if self.ui.MainTabWidget.tabText(self.ui.MainTabWidget.currentIndex()) == 'Scan' and self.ui.HostsTabWidget.tabText(self.ui.HostsTabWidget.currentIndex()) == 'Tools':
-            headers = ["Progress", "Display", "Pid", "Tool", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
-            self.ToolsTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.filters), headers)
-            self.ui.ToolsTableView.setModel(self.ToolsTableModel)
+            headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
+            self.ToolsTableModel.setDataList(self.controller.getProcessesFromDB(self.filters, showProcesses = 'noNmap', sort = self.toolsTableViewSort, ncol = self.toolsTableViewSortColumn))
+            self.ui.ToolsTableView.repaint()
+            self.ui.ToolsTableView.update()
 
             self.lazy_update_tools = False                              # to indicate that it doesn't need to be updated anymore
 
-            for i in [0,1,2,4,5,6,7,8,9,10,11,12,13,14]:                # hide some columns
+            # Hides columns we don't want to see
+            for i in [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]:                # hide some columns
                 self.ui.ToolsTableView.setColumnHidden(i, True)
                     
             tools = []                                                  # ensure that there is always something selected
@@ -1129,17 +1140,17 @@ class View(QtCore.QObject):
 
     def setupProcessesTableView(self):
         headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
-        self.ProcessesTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.filters, True, sort = self.processesTableViewSort, ncol = self.processesTableViewSortColumn), headers)
+        self.ProcessesTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.filters, showProcesses = True, sort = self.processesTableViewSort, ncol = self.processesTableViewSortColumn), headers)
         self.ui.ProcessesTableView.setModel(self.ProcessesTableModel)
         
     def updateProcessesTableView(self):
         headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
-        self.ProcessesTableModel.setDataList(self.controller.getProcessesFromDB(self.filters, True, sort = self.processesTableViewSort, ncol = self.processesTableViewSortColumn))
+        self.ProcessesTableModel.setDataList(self.controller.getProcessesFromDB(self.filters, showProcesses = True, sort = self.processesTableViewSort, ncol = self.processesTableViewSortColumn))
         self.ui.ProcessesTableView.repaint()
         self.ui.ProcessesTableView.update()
 
         # Hides columns we don't want to see
-        for i in [1, 5, 12, 14, 16]:
+        for i in [1, 12, 14, 16]:
             self.ui.ProcessesTableView.setColumnHidden(i, True)
         
         # Force size of progress animation    
@@ -1309,7 +1320,7 @@ class View(QtCore.QObject):
     def restoreToolTabs(self):
         ### CHEETOS
         return
-        tools = self.controller.getProcessesFromDB(self.filters, False) # false means we are fetching processes with display flag=False, which is the case for every process once a project is closed.
+        tools = self.controller.getProcessesFromDB(self.filters, showProcesses = False) # false means we are fetching processes with display flag=False, which is the case for every process once a project is closed.
         nbr = len(tools)                                                # show a progress bar because this could take long
         if nbr==0:                                          
             nbr=1

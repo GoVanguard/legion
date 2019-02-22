@@ -441,9 +441,10 @@ class Settings():
                 self.tools_path_cutycapt = self.toolSettings['cutycapt-path']
                 self.tools_path_texteditor = self.toolSettings['texteditor-path']
                 
-            except KeyError:
+            except KeyError as e:
                 log.info('Something went wrong while loading the configuration file. Falling back to default settings for some settings.')
                 log.info('Go to the settings menu to fix the issues!')
+                log.error(str(e))
                 # TODO: send signal to automatically open settings dialog here
 
     def __eq__(self, other):                                            # returns false if settings objects are different
