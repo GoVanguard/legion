@@ -102,7 +102,7 @@ class Controller():
     def loadSettings(self):
         self.settingsFile = AppSettings()
         self.settings = Settings(self.settingsFile)                     # load settings from conf file (create conf file first if necessary)
-        self.originalSettings = Settings(self.settingsFile)             # save the original state so that we can know if something has changed when we exit SPARTA      
+        self.originalSettings = Settings(self.settingsFile)             # save the original state so that we can know if something has changed when we exit LEGION
         self.logic.setStoreWordlistsOnExit(self.settings.brute_store_cleartext_passwords_on_exit=='True')
         self.view.settingsWidget.setSettings(Settings(self.settingsFile))
         
@@ -114,10 +114,10 @@ class Controller():
         self.view.settingsWidget.setSettings(self.settings)             # resets the dialog's settings to the current application settings to forget any changes made by the user
 
     @timing
-    def saveSettings(self):
+    def saveSettings(self, saveBackup=True):
         if not self.settings == self.originalSettings:
             log.info('Settings have been changed.')
-            self.settingsFile.backupAndSave(self.settings)
+            self.settingsFile.backupAndSave(self.settings, saveBackup)
         else:
             log.info('Settings have NOT been changed.')
 

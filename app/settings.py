@@ -25,6 +25,7 @@ class AppSettings():
             self.createDefaultBruteSettings()
             self.createDefaultNmapSettings()
             self.createDefaultToolSettings()
+            self.createDefaultGUISettings()
             self.createDefaultHostActions()
             self.createDefaultPortActions()
             self.createDefaultPortTerminalActions()
@@ -88,6 +89,13 @@ class AppSettings():
         self.actions.setValue('hydra-path','/usr/bin/hydra')
         self.actions.setValue('cutycapt-path','/usr/bin/cutycapt')
         self.actions.setValue('texteditor-path','/usr/bin/leafpad')
+        self.actions.endGroup()
+        self.actions.sync()
+
+    def createDefaultGUISettings(self):
+        self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
+        self.actions.beginGroup('GUISettings')
+        self.actions.setValue('process-tab-column-widths', ['125', '0', '100', '150', '100', '100', '100', '100', '100', '100', '100', '100', '100', '100', '100', '100', '100'])
         self.actions.endGroup()
         self.actions.sync()
 
@@ -240,7 +248,16 @@ class AppSettings():
             settings.update({str(k):str(self.actions.value(k))})
         self.actions.endGroup()
         return settings
-    
+
+    def getGUISettings(self):
+        settings = dict()
+        self.actions.beginGroup('GUISettings')
+        keys = self.actions.childKeys()
+        for k in keys:
+            settings.update({str(k):str(self.actions.value(k))})
+        self.actions.endGroup()
+        return settings
+
     # this function fetches all the host actions from the settings file 
     def getHostActions(self):
         hostactions = []
@@ -298,10 +315,14 @@ class AppSettings():
         self.actions.endGroup()
         return settings
         
-    def backupAndSave(self, newSettings):
+    def backupAndSave(self, newSettings, saveBackup=True):
         # Backup and save
-        log.info('Backing up old settings and saving new settings..')
-        os.rename('./legion.conf', './backup/'+getTimestamp()+'-legion.conf')  
+        if saveBackup:
+            log.info('Backing up old settings and saving new settings..')
+            os.rename('./legion.conf', './backup/' + getTimestamp() + '-legion.conf')
+        else:
+            log.info('saveBackup: {}'.format(saveBackup))
+
         self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
 
         self.actions.beginGroup('GeneralSettings')
@@ -332,6 +353,10 @@ class AppSettings():
         self.actions.setValue('stage3-ports',newSettings.tools_nmap_stage3_ports)
         self.actions.setValue('stage4-ports',newSettings.tools_nmap_stage4_ports)
         self.actions.setValue('stage5-ports',newSettings.tools_nmap_stage5_ports)
+        self.actions.endGroup()
+
+        self.actions.beginGroup('GUISettings')
+        self.actions.setValue('process-tab-column-widths', newSettings.gui_process_tab_column_widths)
         self.actions.endGroup()
 
         self.actions.beginGroup('HostActions')
@@ -391,6 +416,9 @@ class Settings():
         self.tools_path_cutycapt = "/usr/bin/cutycapt"
         self.tools_path_texteditor = "/usr/bin/leafpad"
 
+        # GUI settings
+        self.gui_process_tab_column_widths = "125,0,100,150,100,100,100,100,100,100,100,100,100,100,100,100,100"
+
         self.hostActions = []
         self.portActions = []
         self.portTerminalActions = []
@@ -404,6 +432,7 @@ class Settings():
                 self.bruteSettings = appSettings.getBruteSettings()
                 self.stagedNmapSettings = appSettings.getStagedNmapSettings()
                 self.toolSettings = appSettings.getToolSettings()
+                self.guiSettings = appSettings.getGUISettings()
                 self.hostActions = appSettings.getHostActions()
                 self.portActions = appSettings.getPortActions()
                 self.portTerminalActions = appSettings.getPortTerminalActions()
@@ -440,7 +469,10 @@ class Settings():
                 self.tools_path_hydra = self.toolSettings['hydra-path']
                 self.tools_path_cutycapt = self.toolSettings['cutycapt-path']
                 self.tools_path_texteditor = self.toolSettings['texteditor-path']
-                
+
+                # gui
+                self.gui_process_tab_column_widths = self.guiSettings['process-tab-column-widths']
+
             except KeyError as e:
                 log.info('Something went wrong while loading the configuration file. Falling back to default settings for some settings.')
                 log.info('Go to the settings menu to fix the issues!')
