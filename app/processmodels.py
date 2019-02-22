@@ -55,6 +55,8 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
         row = index.row()
         column = index.column()
         processColumns = {0:'progress', 1:'display',  2:'elapsed', 3:'estimatedremaining', 4:'pid', 5:'name', 6:'tabtitle', 7:'hostip', 8:'port', 9:'protocol', 10:'command', 11:'starttime', 12:'endtime', 13:'outputfile', 14:'output', 15:'status', 16:'closed'}
+        #print(str(column))
+        #print(str(self.__processes[row]))
         try:
             if column == 0:
                 value = ''
@@ -84,10 +86,19 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
             elif column == 16:
                 value = ""
             else:
-                value = self.__processes[row][processColumns.get(int(column))]
+                try:
+                    #print(self.__processes[row])
+                    #print(processColumns.get(int(column)))
+                    value = self.__processes[row][processColumns.get(int(column))]
+                except:
+                    value = 'missing'
+                    pass
         except Exception as e:
+            print(str(column))
             print(str(self.__processes[row]))
             print(str(e))
+            print("HA!")
+            value = "ha"
         return value            
 
     def sort(self, Ncol, order):
@@ -97,33 +108,37 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
         sortColumns = {5:'name', 6:'tabtitle', 11:'starttime', 12:'endtime'}
         field = sortColumns.get(int(Ncol)) or 'status'
 
-        if Ncol == 7:
-            for i in range(len(self.__processes)):
-                array.append(IP2Int(self.__processes[i]['hostip']))
+        try:
+            if Ncol == 7:
+                for i in range(len(self.__processes)):
+                    array.append(IP2Int(self.__processes[i]['hostip']))
 
-        elif Ncol == 8:
-            for i in range(len(self.__processes)):
-                if self.__processes[i]['port'] == '':
-                    return
-                else:
-                    array.append(int(self.__processes[i]['port']))
-        else:
-            for i in range(len(self.__processes)):
-                array.append(self.__processes[i][field])
+            elif Ncol == 8:
+                for i in range(len(self.__processes)):
+                    if self.__processes[i]['port'] == '':
+                        return
+                    else:
+                        array.append(int(self.__processes[i]['port']))
+            else:
+                for i in range(len(self.__processes)):
+                    array.append(self.__processes[i][field])
         
-        sortArrayWithArray(array, self.__processes)                     # sort the services based on the values in the array
+            sortArrayWithArray(array, self.__processes)                     # sort the services based on the values in the array
 
-        if order == Qt.AscendingOrder:                                  # reverse if needed
-            self.__processes.reverse()
-            self.__controller.processesTableViewSort = 'desc'
-        else:
-            self.__controller.processesTableViewSort = 'asc'
+            if order == Qt.AscendingOrder:                                  # reverse if needed
+                self.__processes.reverse()
+                self.__controller.processesTableViewSort = 'desc'
+            else:
+                self.__controller.processesTableViewSort = 'asc'
 
-        self.__controller.processesTableViewSortColumn = field
+            self.__controller.processesTableViewSortColumn = field
 
         ## Extra?
         #self.__controller.updateProcessesIcon()                         # to make sure the progress GIF is displayed in the right place
-        self.layoutChanged.emit()
+            self.layoutChanged.emit()
+        except:
+            log.error("Failed to sort")
+            pass
 
     def flags(self, index):                                             # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable

@@ -39,15 +39,14 @@ class View(QtCore.QObject):
         QtCore.QObject.__init__(self)
         self.ui = ui
         self.ui_mainwindow = ui_mainwindow                              # TODO: retrieve window dimensions/location from settings
-        self.ui_mainwindow.setGeometry(0, 30, 1024, 768)                   # align window to topleft corner and set default size
-        self.ui.splitter_2.setSizes([300, 10])                           # set better default size for bottom panel
+
+        self.bottomWindowSize = 100
+        self.leftPanelSize = 300
+
+        self.ui.splitter_2.setSizes([250, self.bottomWindowSize])                           # set better default size for bottom panel
         self.qss = None
         self.processesTableViewSort = 'desc'
         self.processesTableViewSortColumn = 'id'
-
-        ## Calling these remotely from controller after it initalizes
-        #self.startOnce()                                                # initialisations that happen only once, when the SPARTA is launched
-        #self.startConnections()                                         # signal initialisations (signals/slots, actions, etc)
 
     def setController(self, controller):                                # the view needs access to controller methods to link gui actions with real actions
         self.controller = controller
@@ -59,7 +58,7 @@ class View(QtCore.QObject):
         self.importProgressWidget = ProgressWidget('Importing nmap..', self.ui.centralwidget)
         self.adddialog = AddHostsDialog(self.ui.centralwidget)      
         self.settingsWidget = AddSettingsDialog(self.ui.centralwidget)
-        self.helpDialog = HelpDialog(self.controller.name, self.controller.author, self.controller.copyright, self.controller.emails, self.controller.version, self.controller.update, self.controller.license, self.controller.desc, self.controller.smallIcon, self.controller.bigIcon, qss = self.qss, parent = self.ui.centralwidget)
+        self.helpDialog = HelpDialog(self.controller.name, self.controller.author, self.controller.copyright, self.controller.emails, self.controller.version, self.controller.build, self.controller.update, self.controller.license, self.controller.desc, self.controller.smallIcon, self.controller.bigIcon, qss = self.qss, parent = self.ui.centralwidget)
 
         self.ui.HostsTableView.setSelectionMode(1)                      # disable multiple selection
         self.ui.ServiceNamesTableView.setSelectionMode(1)
@@ -90,7 +89,6 @@ class View(QtCore.QObject):
         self.lazy_update_tools = False
         self.menuVisible = False                                        # to know if a context menu is showing (important to avoid disrupting the user)
         self.ProcessesTableModel = None                                 # fixes bug when sorting processes for the first time
-        ## Poop
         self.setupProcessesTableView()
         
         self.setMainWindowTitle(title)
@@ -167,8 +165,8 @@ class View(QtCore.QObject):
     def initTables(self):                                               # this function prepares the default settings for each table
         # hosts table (left)
         headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime", "Lastboot", "Distance", "CheckedHost", "State", "Count", "Padding"]
-        setTableProperties(self.ui.HostsTableView, len(headers), [0,2,4,5,6,7,8,9,10,11,12,13,14,15,16])
-        self.ui.HostsTableView.horizontalHeader().resizeSection(1,30)
+        setTableProperties(self.ui.HostsTableView, len(headers), [0, 2, 4, 5, 6, 7, 8, 9, 10 , 11, 12, 13, 14, 15, 16])
+        self.ui.HostsTableView.horizontalHeader().resizeSection(1, 30)
 
         # service names table (left)
         headers = ["Name"]
@@ -180,16 +178,16 @@ class View(QtCore.QObject):
 
         # tools table (left)
         headers = ["Progress", "Display", "Pid", "Tool", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "OutputFile", "Output", "Status"]
-        setTableProperties(self.ui.ToolsTableView, len(headers), [0,1,2,4,5,6,7,8,9,10,11,12,13])
+        setTableProperties(self.ui.ToolsTableView, len(headers), [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
 
         # service table (right)
         headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version", "Extrainfo", "Fingerprint"]
-        setTableProperties(self.ui.ServicesTableView, len(headers), [0,1,5,6,8,10,11])      
+        setTableProperties(self.ui.ServicesTableView, len(headers), [0, 1, 5, 6, 8, 10, 11])      
 
         # ports by service (right)
         headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version", "Extrainfo", "Fingerprint"]
-        setTableProperties(self.ui.ServicesTableView, len(headers), [2,5,6,8,10,11])
-        self.ui.ServicesTableView.horizontalHeader().resizeSection(0,130)       # resize IP 
+        setTableProperties(self.ui.ServicesTableView, len(headers), [2, 5, 6, 8, 10, 11])
+        self.ui.ServicesTableView.horizontalHeader().resizeSection(0, 130)       # resize IP 
 
         # scripts table (right)
         headers = ["Id", "Script", "Port", "Protocol"]
@@ -205,7 +203,7 @@ class View(QtCore.QObject):
         setTableProperties(self.ui.ProcessesTableView, len(headers), [1, 2, 3, 4, 5, 8, 9, 10, 13, 14, 16])
         self.ui.ProcessesTableView.setSortingEnabled(True)
         self.ui.ProcessesTableView.horizontalHeader().resizeSection(0, 125)
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(4, 250)
+        self.ui.ProcessesTableView.horizontalHeader().resizeSection(4, 750)
     
     def setMainWindowTitle(self, title):
         self.ui_mainwindow.setWindowTitle(str(title))
@@ -262,8 +260,6 @@ class View(QtCore.QObject):
             return True
         return False
 
-    ###
-
     def connectCreateNewProject(self):
         self.ui.actionNew.triggered.connect(self.createNewProject)
 
@@ -272,8 +268,6 @@ class View(QtCore.QObject):
             log.info('Creating new project..')
             self.controller.createNewProject()
 
-    ###
-    
     def connectOpenExistingProject(self):
         self.ui.actionOpen.triggered.connect(self.openExistingProject)
 
@@ -298,8 +292,6 @@ class View(QtCore.QObject):
             else:
                 log.info('No file chosen..')
 
-    ###
-    
     def connectSaveProject(self):
         self.ui.actionSave.triggered.connect(self.saveProject)
     
@@ -315,8 +307,6 @@ class View(QtCore.QObject):
             self.ui.statusbar.showMessage('Saved!', msecs=1000)
             log.info('Saved!')
 
-    ###
-    
     def connectSaveProjectAs(self):
         self.ui.actionSaveAs.triggered.connect(self.saveProjectAs)
 
@@ -357,8 +347,6 @@ class View(QtCore.QObject):
         else:
             log.info('No file chosen..')
 
-    ###
-    
     def saveOrDiscard(self):
         reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', "The project has been modified. Do you want to save your changes?", QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Save)
         
@@ -370,15 +358,11 @@ class View(QtCore.QObject):
         else:
             return False                                                # the user cancelled
             
-    ###
-
     def closeProject(self):
         self.ui.statusbar.showMessage('Closing project..', msecs=1000)
         self.controller.closeProject()
         self.removeToolTabs()                                           # to make them disappear from the UI
                 
-    ###
-    
     def connectAddHosts(self):
         self.ui.actionAddHosts.triggered.connect(self.connectAddHostsDialog)
         
@@ -386,7 +370,7 @@ class View(QtCore.QObject):
         self.adddialog.cmdAddButton.setDefault(True)   
         self.adddialog.txtHostList.setFocus(True)
         self.adddialog.validationLabel.hide()
-        self.adddialog.spacer.changeSize(15,15)
+        self.adddialog.spacer.changeSize(15, 15)
         self.adddialog.show()
         self.adddialog.cmdAddButton.clicked.connect(self.callAddHosts)
         self.adddialog.cmdCancelButton.clicked.connect(self.adddialog.close)
@@ -438,7 +422,7 @@ class View(QtCore.QObject):
 
     def importNmap(self):
         self.ui.statusbar.showMessage('Importing nmap xml..', msecs=1000)
-        filename = QtWidgets.QFileDialog.getOpenFileName(self.ui.centralwidget, 'Choose nmap file', self.controller.getCWD(), filter='XML file (*.xml)')
+        filename = QtWidgets.QFileDialog.getOpenFileName(self.ui.centralwidget, 'Choose nmap file', self.controller.getCWD(), filter='XML file (*.xml)')[0]
         print(str(filename)) 
         if not filename == '':
 
@@ -448,16 +432,15 @@ class View(QtCore.QObject):
                 return
 
             self.importProgressWidget.reset('Importing nmap..') 
+            self.importProgressWidget.setProgress(5)
             self.importProgressWidget.show()
             self.controller.nmapImporter.setFilename(str(filename))
             self.controller.nmapImporter.start()
             self.controller.copyNmapXMLToOutputFolder(str(filename))
-            #self.importProgressWidget.show()
+            self.importProgressWidget.show()
             
         else:
             log.info('No file chosen..')
-
-    ###
 
     def connectSettings(self):
         self.ui.actionSettings.triggered.connect(self.showSettingsWidget)
@@ -478,10 +461,7 @@ class View(QtCore.QObject):
 
     def connectHelp(self):
         self.ui.menuHelp.triggered.connect(self.helpDialog.show)
-        #self.helpDialog.cmdOkButton.clicked.connect(self.helpDialog.close)
 
-    ###
-    
     def connectAppExit(self):
         self.ui.actionExit.triggered.connect(self.appExit)  
 
@@ -503,13 +483,13 @@ class View(QtCore.QObject):
     def hostTableClick(self):
         if self.ui.HostsTableView.selectionModel().selectedRows():      # get the IP address of the selected host (if any)
             row = self.ui.HostsTableView.selectionModel().selectedRows()[len(self.ui.HostsTableView.selectionModel().selectedRows())-1].row()
-            self.ip_clicked = self.HostsTableModel.getHostIPForRow(row)
+            ip = self.HostsTableModel.getHostIPForRow(row)
+            self.ip_clicked = ip
             save = self.ui.ServicesTabWidget.currentIndex()
             self.removeToolTabs()
             self.restoreToolTabsForHost(self.ip_clicked)
+            self.ui.ServicesTabWidget.setCurrentIndex(save)             # display services tab if we are coming from a dynamic tab (non-fixed)
             self.updateRightPanel(self.ip_clicked)
-            self.ui.ServicesTabWidget.setCurrentIndex(save)             # display services tab if we are coming from a dynamic tab (non-fixed)      
-    
         else:
             self.removeToolTabs()               
             self.updateRightPanel('')
@@ -1107,11 +1087,11 @@ class View(QtCore.QObject):
             self.updateNotesView('')        
             
     def displayToolPanel(self, display=False):
-        size = self.ui.splitter.parentWidget().width() - 210 - 24       # note: 24 is a fixed value
+        size = self.ui.splitter.parentWidget().width() - self.leftPanelSize - 24       # note: 24 is a fixed value
         if display:
             self.ui.ServicesTabWidget.hide()
             self.ui.splitter_3.show()
-            self.ui.splitter.setSizes([210,0,size])                     # reset hoststableview width
+            self.ui.splitter.setSizes([self.leftPanelSize, 0, size])                     # reset hoststableview width
             
             if self.tool_clicked == 'screenshooter':
                 self.displayScreenshots(True)
@@ -1122,20 +1102,20 @@ class View(QtCore.QObject):
         else:
             self.ui.splitter_3.hide()
             self.ui.ServicesTabWidget.show()
-            self.ui.splitter.setSizes([210,size,0])
+            self.ui.splitter.setSizes([self.leftPanelSize, size, 0])
 
     def displayScreenshots(self, display=False):
-        size = self.ui.splitter.parentWidget().width() - 210 - 24       # note: 24 is a fixed value
+        size = self.ui.splitter.parentWidget().width() - self.leftPanelSize - 24       # note: 24 is a fixed value
 
         if display:
             self.ui.DisplayWidget.hide()
             self.ui.ScreenshotWidget.scrollArea.show()
-            self.ui.splitter_3.setSizes([275,0,size-275])               # reset middle panel width  
+            self.ui.splitter_3.setSizes([275, 0, size - 275])               # reset middle panel width  
 
         else:
             self.ui.ScreenshotWidget.scrollArea.hide()
             self.ui.DisplayWidget.show()
-            self.ui.splitter_3.setSizes([275,size-275,0])               # reset middle panel width  
+            self.ui.splitter_3.setSizes([275, size - 275, 0])               # reset middle panel width  
 
     def displayAddHostsOverlay(self, display=False):
         if display:
@@ -1157,12 +1137,15 @@ class View(QtCore.QObject):
         self.ProcessesTableModel.setDataList(self.controller.getProcessesFromDB(self.filters, True, sort = self.processesTableViewSort, ncol = self.processesTableViewSortColumn))
         self.ui.ProcessesTableView.repaint()
         self.ui.ProcessesTableView.update()
-        
-        for i in [1, 5, 8, 9, 10, 13, 14, 16]:
+
+        # Hides columns we don't want to see
+        for i in [1, 5, 12, 14, 16]:
             self.ui.ProcessesTableView.setColumnHidden(i, True)
         
         # Force size of progress animation    
-        self.ui.ProcessesTableView.horizontalHeader().resizeSection(0,125)
+        self.ui.ProcessesTableView.horizontalHeader().resizeSection(0, 125)
+
+        # Update animations
         self.updateProcessesIcon()
 
     def updateProcessesIcon(self):

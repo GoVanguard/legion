@@ -30,7 +30,7 @@ from functools import wraps
 from time import time
 import io
 
-log = get_logger('legion', path="legion.log")
+log = get_logger('legion', path="./log/legion.log", console = False)
 log.setLevel(logging.INFO)
 
 def timing(f):
