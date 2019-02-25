@@ -28,11 +28,11 @@ class Controller():
     def __init__(self, view, logic):
         self.name = "LEGION"
         self.version = '0.3.0'
-        self.build = '1550873397'
+        self.build = '1551105370'
         self.author = 'GoVanguard'
         self.copyright = '2019'
         self.emails = ['hello@gvit.com']
-        self.update = '02/22/2019'
+        self.update = '02/25/2019'
         self.license = "GPL v3"
         self.desc = "LEGION is a semi-automated intelligence gathering tool for penetration testing."
         self.smallIcon = './images/icons/Legion-N_128x128.svg'
