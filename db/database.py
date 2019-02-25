@@ -45,7 +45,7 @@ class process(Base):
     estimatedremaining = Column(Integer)
     elapsed = Column(Integer)
     outputfile = Column(String)
-    output = relationship("process_output", uselist = False, backref = "process")
+    output = relationship("process_output") #, uselist = False, backref = "process")
     status = Column(String)
     closed = Column(String)
 
@@ -232,10 +232,9 @@ class note(Base):
 
 class process_output(Base):
     __tablename__ = 'process_output'
-    #output = Column(String, primary_key = True)
+    process_id = Column(Integer, ForeignKey('process.id'))
     id = Column(Integer, primary_key = True)
-    process_id = Column(Integer, ForeignKey('process.pid'))
-    output = (String)
+    output = Column(String)
 
     def __init__(self):
         self.output = unicode('')

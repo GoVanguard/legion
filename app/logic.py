@@ -356,10 +356,14 @@ class Logic():
             result = self.db.metadata.bind.execute(query).fetchall()
 
         elif showProcesses == False:                                    # when opening a project, fetch only the processes that have display=false and were not in tabs that were closed by the user
-            query = ('SELECT process.id, process.hostip, process.tabtitle, process.outputfile, poutput.output FROM process AS process '
-            'INNER JOIN process_output AS poutput ON process.id = poutput.process_id '
+            query = ('SELECT process.id, process.hostip, process.tabtitle, process.outputfile, output.output FROM process AS process '
+            'INNER JOIN process_output AS output ON process.id = output.process_id '
             'WHERE process.display=? AND process.closed="False" order by process.id desc')
             result = self.db.metadata.bind.execute(query, str(showProcesses)).fetchall()
+
+            #query = ('SELECT process.id, process.hostip, process.tabtitle, process.outputfile, output.output FROM process AS process '
+            #'INNER JOIN process_output AS output ON process.id = output.process_id '
+            #'WHERE process.display=? AND process.closed="False" order by process.id desc')
 
         else:                                                           # show all the processes in the (bottom) process table (no matter their closed value)
             query = ('SELECT * FROM process AS process WHERE process.display=? order by {0} {1}'.format(ncol, sort))
@@ -404,7 +408,7 @@ class Logic():
     def addProcessToDB(self, proc):
         log.info('Add process')
         p_output = process_output()                                     # add row to process_output table (separate table for performance reasons)
-        p = process(str(proc.pid()), str(proc.name), str(proc.tabtitle), str(proc.hostip), str(proc.port), str(proc.protocol), unicode(proc.command), proc.starttime, "", str(proc.outputfile), 'Waiting', p_output, 100, 0)
+        p = process(str(proc.pid()), str(proc.name), str(proc.tabtitle), str(proc.hostip), str(proc.port), str(proc.protocol), unicode(proc.command), proc.starttime, "", str(proc.outputfile), 'Waiting', [p_output], 100, 0)
         log.info(p)
         session = self.db.session()
         session.add(p)
@@ -414,7 +418,7 @@ class Logic():
     
     def addScreenshotToDB(self, ip, port, filename):
         p_output = process_output()                                     # add row to process_output table (separate table for performance reasons)
-        p = process(0, "screenshooter", "screenshot ("+str(port)+"/tcp)", str(ip), str(port), "tcp", "", getTimestamp(True), getTimestamp(True), str(filename), "Finished", p_output, 2, 0)
+        p = process(0, "screenshooter", "screenshot ("+str(port)+"/tcp)", str(ip), str(port), "tcp", "", getTimestamp(True), getTimestamp(True), str(filename), "Finished", [p_output], 2, 0)
         session = self.db.session()
         session.add(p)
         session.commit()
@@ -508,8 +512,9 @@ class Logic():
         session = self.db.session()
         proc = session.query(process).filter_by(id=procId).first()
         if proc:
-            proc_output = session.query(process_output).filter_by(process_id=procId).first()
+            proc_output = session.query(process_output).filter_by(id=procId).first()
             if proc_output:
+                log.info("Storing process output into db: {0}".format(str(proc_output)))
                 proc_output.output=unicode(output)
                 session.add(proc_output)
 
@@ -694,11 +699,6 @@ class NmapImporter(QtCore.QThread):
                     if not db_os:
                         t_nmap_os = nmap_os(os.name, os.family, os.generation, os.os_type, os.vendor, os.accuracy, db_host.id)
                         session.add(t_nmap_os)
-                        print(os.name)
-                        print(os.family)
-                        print(os.generation)
-                        print(os.os_type)
-                        print(os.vendor)
                         ## CVE
                         #osCves = self.getCveFuzzy(os.name)
                         #print(osCves)
