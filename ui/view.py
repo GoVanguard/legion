@@ -230,9 +230,6 @@ class View(QtCore.QObject):
         
     #################### ACTIONS ####################
 
-
-    ###
-
     def connectProcessTableHeaderResize(self):
         self.ui.ProcessesTableView.horizontalHeader().sectionResized.connect(self.saveProcessHeaderWidth)
 
@@ -243,8 +240,6 @@ class View(QtCore.QObject):
             columnWidths[index] = str(newSize)
             self.controller.settings.gui_process_tab_column_widths = ','.join(columnWidths)
             self.controller.applySettings(self.controller.settings)
-            self.controller.saveSettings(False)
-    ###
 
     def dealWithRunningProcesses(self, exiting=False):
         if len(self.controller.getRunningProcesses()) > 0:
@@ -442,9 +437,8 @@ class View(QtCore.QObject):
     def importNmap(self):
         self.ui.statusbar.showMessage('Importing nmap xml..', msecs=1000)
         filename = QtWidgets.QFileDialog.getOpenFileName(self.ui.centralwidget, 'Choose nmap file', self.controller.getCWD(), filter='XML file (*.xml)')[0]
-        print(str(filename)) 
+        log.info('Importing nmap xml from {0}...'.format(str(filename))) 
         if not filename == '':
-
             if not os.access(filename, os.R_OK):                        # check for read permissions on the xml file
                 log.info('Insufficient permissions to read this file.')
                 reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions to read this file.", "Ok")
@@ -1170,7 +1164,12 @@ class View(QtCore.QObject):
             header.resizeSection(index, int(width))
 
         #Hides columns we don't want to see
-        for i in [1, 12, 14, 16]:
+        showDetail = self.controller.settings.gui_process_tab_detail
+        if showDetail ==  True:
+            columnsToHide = [1, 5, 8, 9, 12, 14, 16]
+        else:
+            columnsToHide = [1, 5, 8, 9, 10, 11, 12, 13, 14, 16]
+        for i in columnsToHide:
             self.ui.ProcessesTableView.setColumnHidden(i, True)
         
         # Force size of progress animation    
@@ -1347,7 +1346,6 @@ class View(QtCore.QObject):
         self.tick.emit(int(totalprogress))
 
         for t in tools:
-            print(str(t))
             if not t.tabtitle == '':
                 if 'screenshot' in str(t.tabtitle):
                     imageviewer = self.createNewTabForHost(t.hostip, t.tabtitle, True, '', str(self.controller.getOutputFolder())+'/screenshots/'+str(t.outputfile))
