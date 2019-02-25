@@ -254,8 +254,7 @@ class Ui_MainWindow(object):
         self.BruteTabWidget = QtWidgets.QTabWidget(self.BruteTab)
         self.BruteTabWidget.setObjectName(_fromUtf8("BruteTabWidget"))
         self.horizontalLayout_7.addWidget(self.BruteTabWidget)
-        # Brute tab disabled for now
-        # self.MainTabWidget.addTab(self.BruteTab, _fromUtf8(""))     
+        self.MainTabWidget.addTab(self.BruteTab, _fromUtf8(""))     
 
     def setupBottomPanel(self):
         self.BottomTabWidget = QtWidgets.QTabWidget(self.splitter_2)
