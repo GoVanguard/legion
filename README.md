@@ -35,7 +35,7 @@ Legion is a fork of SECFORCE's Sparta, Legion is an open source, easy-to-use, su
 
 ### TRADITIONAL METHOD
 Assumes Ubuntu, Kali or Parrot Linux is being used with Python 3.6 installed.
-Other dependancies should automatically be installed. Within Terminal:
+Other dependencies should automatically be installed. Within Terminal:
 ```
 git clone https://github.com/GoVanguard/legion.git
 cd legion
