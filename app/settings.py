@@ -348,11 +348,11 @@ class AppSettings():
         self.actions.endGroup()
 
         self.actions.beginGroup('StagedNmapSettings')
-        self.actions.setValue('stage1-ports',newSettings.tools_nmap_stage1_ports)
-        self.actions.setValue('stage2-ports',newSettings.tools_nmap_stage2_ports)
-        self.actions.setValue('stage3-ports',newSettings.tools_nmap_stage3_ports)
-        self.actions.setValue('stage4-ports',newSettings.tools_nmap_stage4_ports)
-        self.actions.setValue('stage5-ports',newSettings.tools_nmap_stage5_ports)
+        self.actions.setValue('stage1-ports', newSettings.tools_nmap_stage1_ports)
+        self.actions.setValue('stage2-ports', newSettings.tools_nmap_stage2_ports)
+        self.actions.setValue('stage3-ports', newSettings.tools_nmap_stage3_ports)
+        self.actions.setValue('stage4-ports', newSettings.tools_nmap_stage4_ports)
+        self.actions.setValue('stage5-ports', newSettings.tools_nmap_stage5_ports)
         self.actions.endGroup()
 
         self.actions.beginGroup('GUISettings')
