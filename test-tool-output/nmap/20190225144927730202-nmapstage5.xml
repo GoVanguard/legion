@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///C:/Program Files (x86)/Nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.70 scan initiated Mon Feb 25 14:49:28 2019 as: &quot;C:\\Program Files (x86)\\Nmap\\nmap.exe&quot; -T4 -sC -n -sSU -p T:30000-65534,65535 -oA ./tmp/legion-1nytmlta-running/nmap/20190225144927730202-nmapstage5 127.0.0.1 -->
+<nmaprun scanner="nmap" args="&quot;C:\\Program Files (x86)\\Nmap\\nmap.exe&quot; -T4 -sC -n -sSU -p T:30000-65534,65535 -oA ./tmp/legion-1nytmlta-running/nmap/20190225144927730202-nmapstage5 127.0.0.1" start="1551127768" startstr="Mon Feb 25 14:49:28 2019" version="7.70" xmloutputversion="1.04">
+<scaninfo type="syn" protocol="tcp" numservices="35536" services="30000-65535"/>
+<scaninfo type="udp" protocol="udp" numservices="0" services=""/>
+<verbose level="0"/>
+<debugging level="0"/>
+<host starttime="1551127771" endtime="1551127779"><status state="up" reason="localhost-response" reason_ttl="0"/>
+<address addr="127.0.0.1" addrtype="ipv4"/>
+<hostnames>
+</hostnames>
+<ports><extraports state="closed" count="35536">
+<extrareasons reason="resets" count="35536"/>
+</extraports>
+</ports>
+<times srtt="397" rttvar="592" to="100000"/>
+</host>
+<runstats><finished time="1551127779" timestr="Mon Feb 25 14:49:39 2019" elapsed="10.88" summary="Nmap done at Mon Feb 25 14:49:39 2019; 1 IP address (1 host up) scanned in 10.88 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>

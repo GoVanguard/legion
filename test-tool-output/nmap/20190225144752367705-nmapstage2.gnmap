@@ -1,0 +1,4 @@
+# Nmap 7.70 scan initiated Mon Feb 25 14:47:54 2019 as: C:\Program Files (x86)\Nmap\nmap.exe -T4 -sC -n -sSU -O -p T:25,135,137,139,445,1433,3306,5432,U:137,161,162,1434 -oA ./tmp/legion-1nytmlta-running/nmap/20190225144752367705-nmapstage2 127.0.0.1
+Host: 127.0.0.1 ()	Status: Up
+Host: 127.0.0.1 ()	Ports: 25/closed/tcp//smtp///, 135/open/tcp//msrpc///, 137/filtered/tcp//netbios-ns///, 139/closed/tcp//netbios-ssn///, 445/open/tcp//microsoft-ds///, 1433/closed/tcp//ms-sql-s///, 3306/closed/tcp//mysql///, 5432/closed/tcp//postgresql///, 137/open|filtered/udp//netbios-ns///, 161/open|filtered/udp//snmp///, 162/open|filtered/udp//snmptrap///, 1434/open|filtered/udp//ms-sql-m///	Seq Index: 250	IP ID Seq: Incrementing by 2
+# Nmap done at Mon Feb 25 14:48:54 2019 -- 1 IP address (1 host up) scanned in 61.44 seconds

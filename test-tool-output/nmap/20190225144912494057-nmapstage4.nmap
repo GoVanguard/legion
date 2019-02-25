@@ -1,0 +1,20 @@
+WARNING: UDP scan was requested, but no udp ports were specified.  Skipping this scan type.
+# Nmap 7.70 scan initiated Mon Feb 25 14:49:15 2019 as: C:\Program Files (x86)\Nmap\nmap.exe -T4 -sC -n -sSU -p T:0-20,24,26-79,81-109,112-134,136,138,140-442,444,446-1432,1434-2048,2050-3305,3307-3388,3390-5431,5433-8079,8081-29999 -oA ./tmp/legion-1nytmlta-running/nmap/20190225144912494057-nmapstage4 127.0.0.1
+Nmap scan report for 127.0.0.1
+Host is up (0.00s latency).
+Not shown: 29971 closed ports
+PORT      STATE SERVICE
+1536/tcp  open  ampr-inter
+1537/tcp  open  sdsc-lm
+1538/tcp  open  3ds-lm
+1539/tcp  open  intellistor-lm
+1545/tcp  open  vistium-share
+1546/tcp  open  abbaccuray
+2179/tcp  open  vmrdp
+5040/tcp  open  unknown
+6000/tcp  open  X11
+|_x11-access: X server access is granted
+16423/tcp open  unknown
+16723/tcp open  unknown
+
+# Nmap done at Mon Feb 25 14:49:24 2019 -- 1 IP address (1 host up) scanned in 11.43 seconds

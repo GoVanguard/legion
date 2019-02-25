@@ -1,0 +1,4 @@
+# Nmap 7.70 scan initiated Mon Feb 25 14:49:28 2019 as: C:\Program Files (x86)\Nmap\nmap.exe -T4 -sC -n -sSU -p T:30000-65534,65535 -oA ./tmp/legion-1nytmlta-running/nmap/20190225144927730202-nmapstage5 127.0.0.1
+Host: 127.0.0.1 ()	Status: Up
+Host: 127.0.0.1 ()	Status: Up
+# Nmap done at Mon Feb 25 14:49:39 2019 -- 1 IP address (1 host up) scanned in 10.88 seconds
