@@ -177,6 +177,7 @@ class AppSettings():
 
         self.actions.beginGroup('GUISettings')
         self.actions.setValue('process-tab-column-widths', newSettings.gui_process_tab_column_widths)
+        self.actions.setValue('process-tab-detail', newSettings.gui_process_tab_detail)
         self.actions.endGroup()
 
         self.actions.beginGroup('HostActions')
@@ -238,6 +239,7 @@ class Settings():
 
         # GUI settings
         self.gui_process_tab_column_widths = "125,0,100,150,100,100,100,100,100,100,100,100,100,100,100,100,100"
+        self.gui_process_tab_detail = False
 
         self.hostActions = []
         self.portActions = []
@@ -292,12 +294,12 @@ class Settings():
 
                 # gui
                 self.gui_process_tab_column_widths = self.guiSettings['process-tab-column-widths']
+                self.gui_process_tab_detail = self.guiSettings['process-tab-detail']
 
             except KeyError as e:
                 log.info('Something went wrong while loading the configuration file. Falling back to default settings for some settings.')
                 log.info('Go to the settings menu to fix the issues!')
                 log.error(str(e))
-                # TODO: send signal to automatically open settings dialog here
 
     def __eq__(self, other):                                            # returns false if settings objects are different
         if type(other) is type(self):

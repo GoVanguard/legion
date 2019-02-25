@@ -28,7 +28,7 @@ class Controller():
     def __init__(self, view, logic):
         self.name = "LEGION"
         self.version = '0.3.0'
-        self.build = '1551134714'
+        self.build = '1551137165'
         self.author = 'GoVanguard'
         self.copyright = '2019'
         self.links = ['http://github.com/GoVanguard/legion/issues', 'https://GoVanguard.io/legion']
@@ -103,14 +103,13 @@ class Controller():
         self.view.settingsWidget.setSettings(Settings(self.settingsFile))
         
     def applySettings(self, newSettings):                               # call this function when clicking 'apply' in the settings menu (after validation)
-        log.info('Applying settings!')
         self.settings = newSettings
 
     def cancelSettings(self):                                           # called when the user presses cancel in the Settings dialog
         self.view.settingsWidget.setSettings(self.settings)             # resets the dialog's settings to the current application settings to forget any changes made by the user
 
     @timing
-    def saveSettings(self, saveBackup=True):
+    def saveSettings(self, saveBackup = True):
         if not self.settings == self.originalSettings:
             log.info('Settings have been changed.')
             self.settingsFile.backupAndSave(self.settings, saveBackup)
@@ -447,7 +446,6 @@ class Controller():
                 for p in selectedProcesses:
                     if p[1]!="Running":
                         if p[1]=="Waiting":
-                            #print "Process still waiting to start. Skipping."
                             if str(self.logic.getProcessStatusForDBId(p[2])) == 'Running':
                                 self.killProcess(self.view.ProcessesTableModel.getProcessPidForId(p[2]), p[2])
                             self.logic.storeProcessCancelStatusInDB(str(p[2]))
@@ -618,10 +616,10 @@ class Controller():
         qProcess.sigHydra.connect(self.handleHydraFindings)
         qProcess.finished.connect(lambda: self.processFinished(qProcess))
         qProcess.error.connect(lambda: self.processCrashed(qProcess))
-        print("runCommand called for stage {0}".format(str(stage)))
+        log.info("runCommand called for stage {0}".format(str(stage)))
 
         if stage > 0 and stage < 5:                                     # if this is a staged nmap, launch the next stage
-            print("runCommand connected for stage {0}".format(str(stage)))
+            log.info("runCommand connected for stage {0}".format(str(stage)))
             nextStage = stage + 1
             qProcess.finished.connect(lambda: self.runStagedNmap(str(hostip), discovery = discovery, stage = nextStage, stop = self.logic.isKilledProcess(str(qProcess.id))))
 
@@ -662,7 +660,7 @@ class Controller():
 
     # recursive function used to run nmap in different stages for quick results
     def runStagedNmap(self, targetHosts, discovery = True, stage = 1, stop = False):
-        print("runStagedNmap called for stage {0}".format(str(stage)))
+        log.info("runStagedNmap called for stage {0}".format(str(stage)))
         if not stop:
             textbox = self.view.createNewTabForHost(str(targetHosts), 'nmap (stage '+str(stage)+')', True)
             outputfile = self.logic.runningfolder+"/nmap/"+getTimestamp()+'-nmapstage'+str(stage)       
