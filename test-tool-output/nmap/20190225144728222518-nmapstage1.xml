@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///C:/Program Files (x86)/Nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.70 scan initiated Mon Feb 25 14:47:29 2019 as: &quot;C:\\Program Files (x86)\\Nmap\\nmap.exe&quot; -T4 -sC -sSU -p T:80,443 -oA ./tmp/legion-1nytmlta-running/nmap/20190225144728222518-nmapstage1 127.0.0.1 -->
+<nmaprun scanner="nmap" args="&quot;C:\\Program Files (x86)\\Nmap\\nmap.exe&quot; -T4 -sC -sSU -p T:80,443 -oA ./tmp/legion-1nytmlta-running/nmap/20190225144728222518-nmapstage1 127.0.0.1" start="1551127649" startstr="Mon Feb 25 14:47:29 2019" version="7.70" xmloutputversion="1.04">
+<scaninfo type="syn" protocol="tcp" numservices="2" services="80,443"/>
+<scaninfo type="udp" protocol="udp" numservices="0" services=""/>
+<verbose level="0"/>
+<debugging level="0"/>
+<host starttime="1551127669" endtime="1551127671"><status state="up" reason="localhost-response" reason_ttl="0"/>
+<address addr="127.0.0.1" addrtype="ipv4"/>
+<hostnames>
+<hostname name="localhost" type="PTR"/>
+</hostnames>
+<ports><port protocol="tcp" portid="80"><state state="closed" reason="reset" reason_ttl="128"/><service name="http" method="table" conf="3"/></port>
+<port protocol="tcp" portid="443"><state state="closed" reason="reset" reason_ttl="128"/><service name="https" method="table" conf="3"/></port>
+</ports>
+<times srtt="875" rttvar="4000" to="100000"/>
+</host>
+<runstats><finished time="1551127671" timestr="Mon Feb 25 14:47:51 2019" elapsed="22.18" summary="Nmap done at Mon Feb 25 14:47:51 2019; 1 IP address (1 host up) scanned in 22.18 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>
