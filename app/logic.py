@@ -847,7 +847,6 @@ class NmapImporter(QtCore.QThread):
                         session.add(db_script)
                 
             totalprogress = 100
-            #self.tick.emit(int(totalprogress))      
             self.importProgressWidget.setProgress(int(totalprogress))
             self.importProgressWidget.show()
 
