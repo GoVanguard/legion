@@ -28,13 +28,14 @@ class Controller():
     def __init__(self, view, logic):
         self.name = "LEGION"
         self.version = '0.3.0'
-        self.build = '1551133079'
+        self.build = '1551134714'
         self.author = 'GoVanguard'
         self.copyright = '2019'
-        self.emails = ['hello@gvit.com']
+        self.links = ['http://github.com/GoVanguard/legion/issues', 'https://GoVanguard.io/legion']
+        self.emails = []
         self.update = '02/25/2019'
         self.license = "GPL v3"
-        self.desc = "LEGION is a semi-automated intelligence gathering tool for penetration testing."
+        self.desc = "Legion is a fork of SECFORCE's Sparta, Legion is an open source, easy-to-use, \nsuper-extensible and semi-automated network penetration testing tool that aids in discovery, \nreconnaissance and exploitation of information systems."
         self.smallIcon = './images/icons/Legion-N_128x128.svg'
         self.bigIcon = './images/icons/Legion-N_128x128.svg'
 

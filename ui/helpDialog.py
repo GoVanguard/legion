@@ -43,16 +43,17 @@ class ChangeLog(QtWidgets.QPlainTextEdit):
         self.setReadOnly(True)
 
 class HelpDialog(QtWidgets.QDialog):
-    def __init__(self, name, author, copyright, emails, version, build, update, license, desc, smallIcon, bigIcon, qss, parent = None):
+    def __init__(self, name, author, copyright, links, emails, version, build, update, license, desc, smallIcon, bigIcon, qss, parent = None):
         super(HelpDialog, self).__init__(parent)
         self.name = name
         self.author = author
         self.copyright = copyright
+        self.links = links
         self.emails = emails
         self.version = version
         self.build = build
         self.update = update
-        self.desc = QtWidgets.QLabel(desc + '<br>')
+        self.desc = QtWidgets.QLabel(desc)
         self.smallIcon = smallIcon
         self.bigIcon = bigIcon
         self.qss = qss
@@ -74,7 +75,7 @@ class HelpDialog(QtWidgets.QDialog):
         self.logoapp = QtWidgets.QLabel('')
         self.logoapp.setPixmap(QtGui.QPixmap(self.smallIcon).scaled(64,64))
         self.form = QtWidgets.QFormLayout()
-        self.form2 = QtWidgets.QHBoxLayout()
+        self.form2 = QtWidgets.QVBoxLayout()
         self.form.addRow(self.logoapp,QtWidgets.QLabel('<h2>{0} {1}-{2}</h2>'.format(self.name, self.version, self.build)))
         self.tabwid = QtWidgets.QTabWidget(self)
         self.TabAbout = QtWidgets.QWidget(self)
@@ -91,11 +92,15 @@ class HelpDialog(QtWidgets.QDialog):
 
         # About section
         self.formAbout.addRow(self.desc)
+        self.formAbout.addRow(QtWidgets.QLabel('<br>'))
         self.formAbout.addRow(QtWidgets.QLabel('Last Update:'))
         self.formAbout.addRow(QtWidgets.QLabel(self.update + '<br>'))
         self.formAbout.addRow(QtWidgets.QLabel('Feedback:'))
+        for link in self.links:
+            self.formAbout.addRow(QtWidgets.QLabel('<a href="{0}">{0}</a>'.format(link)))
         for email in self.emails:
             self.formAbout.addRow(QtWidgets.QLabel(email))
+        self.formAbout.addRow(QtWidgets.QLabel('<br>'))
         self.formAbout.addRow(QtWidgets.QLabel(self.copyright + ' ' + self.author))
         self.gnu = QtWidgets.QLabel('<a href="link">License: GNU General Public License Version</a><br>')
         self.gnu.linkActivated.connect(self.link)
@@ -118,13 +123,13 @@ class HelpDialog(QtWidgets.QDialog):
         self.formChange.addRow(ChangeLog(qss = self.qss))
         self.TabChangelog.setLayout(self.formChange)
 
-        # self.form.addRow(self.cmdClose)
+        #self.form.addRow(self.cmdClose)
         self.tabwid.addTab(self.TabAbout,'About')
         self.tabwid.addTab(self.TabVersion,'Version')
         self.tabwid.addTab(self.TabChangelog,'ChangeLog')
         self.form.addRow(self.tabwid)
-        self.form2.addSpacing(240)
-        self.form2.addWidget(self.cmdClose)
+        self.form2.addWidget(QtWidgets.QLabel('<br>'))
+        self.form2.addWidget(self.cmdClose, alignment = Qt.AlignCenter)
         self.form.addRow(self.form2)
         self.Main.addLayout(self.form)
         self.setLayout(self.Main)
