@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///C:/Program Files (x86)/Nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.70 scan initiated Mon Feb 25 14:48:59 2019 as: &quot;C:\\Program Files (x86)\\Nmap\\nmap.exe&quot; -T4 -sC -n -sSU -p T:23,21,22,110,111,2049,3389,8080,U:500,5060 -oA ./tmp/legion-1nytmlta-running/nmap/20190225144857577797-nmapstage3 127.0.0.1 -->
+<nmaprun scanner="nmap" args="&quot;C:\\Program Files (x86)\\Nmap\\nmap.exe&quot; -T4 -sC -n -sSU -p T:23,21,22,110,111,2049,3389,8080,U:500,5060 -oA ./tmp/legion-1nytmlta-running/nmap/20190225144857577797-nmapstage3 127.0.0.1" start="1551127739" startstr="Mon Feb 25 14:48:59 2019" version="7.70" xmloutputversion="1.04">
+<scaninfo type="syn" protocol="tcp" numservices="8" services="21-23,110-111,2049,3389,8080"/>
+<scaninfo type="udp" protocol="udp" numservices="2" services="500,5060"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<host starttime="1551127741" endtime="1551127750"><status state="up" reason="localhost-response" reason_ttl="0"/>
+<address addr="127.0.0.1" addrtype="ipv4"/>
+<hostnames>
+</hostnames>
+<ports><port protocol="tcp" portid="21"><state state="closed" reason="reset" reason_ttl="128"/><service name="ftp" method="table" conf="3"/></port>
+<port protocol="tcp" portid="22"><state state="closed" reason="reset" reason_ttl="128"/><service name="ssh" method="table" conf="3"/></port>
+<port protocol="tcp" portid="23"><state state="closed" reason="reset" reason_ttl="128"/><service name="telnet" method="table" conf="3"/></port>
+<port protocol="tcp" portid="110"><state state="closed" reason="reset" reason_ttl="128"/><service name="pop3" method="table" conf="3"/></port>
+<port protocol="tcp" portid="111"><state state="closed" reason="reset" reason_ttl="128"/><service name="rpcbind" method="table" conf="3"/></port>
+<port protocol="tcp" portid="2049"><state state="closed" reason="reset" reason_ttl="128"/><service name="nfs" method="table" conf="3"/></port>
+<port protocol="tcp" portid="3389"><state state="closed" reason="reset" reason_ttl="128"/><service name="ms-wbt-server" method="table" conf="3"/></port>
+<port protocol="tcp" portid="8080"><state state="closed" reason="reset" reason_ttl="128"/><service name="http-proxy" method="table" conf="3"/></port>
+<port protocol="udp" portid="500"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="isakmp" method="table" conf="3"/></port>
+<port protocol="udp" portid="5060"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="sip" method="table" conf="3"/></port>
+</ports>
+<times srtt="0" rttvar="666" to="100000"/>
+</host>
+<runstats><finished time="1551127750" timestr="Mon Feb 25 14:49:10 2019" elapsed="11.75" summary="Nmap done at Mon Feb 25 14:49:10 2019; 1 IP address (1 host up) scanned in 11.75 seconds" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>

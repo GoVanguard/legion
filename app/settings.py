@@ -20,199 +20,12 @@ class AppSettings():
     def __init__(self):
         # check if settings file exists and creates it if it doesn't
         if not os.path.exists('./legion.conf'):
-            log.info('Creating settings file..')
-            self.createDefaultSettings()
-            self.createDefaultBruteSettings()
-            self.createDefaultNmapSettings()
-            self.createDefaultToolSettings()
-            self.createDefaultGUISettings()
-            self.createDefaultHostActions()
-            self.createDefaultPortActions()
-            self.createDefaultPortTerminalActions()
-            self.createDefaultSchedulerSettings()
+            log.info('Legion config is missing. Please reclone.')
+            os.exit(1)
         else:
             log.info('Loading settings file..')
             self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
 
-    # This function creates the default settings file. Note that, in general, everything is case sensitive.
-    # Each action should be in the following format:
-    #
-    # (key, [label, command, service])
-    # key       - must be unique within the group and is used to retrieve each action. is used to create the tab titles and also to recognise nmap commands so we can parse the output (case sensitive)
-    # label     - is what appears in the context menu in the gui
-    # command   - command that will be run. These placeholders will be replaced on-the-fly: [IP] [PORT] [OUTPUT]
-    # service   - service(s) to which the tool applies (comma-separated). Leave empty if valid for all services.
-    def createDefaultSettings(self):
-        self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
-
-        self.actions.beginGroup('GeneralSettings')
-        self.actions.setValue('default-terminal','gnome-terminal')
-        self.actions.setValue('tool-output-black-background','False')
-        self.actions.setValue('screenshooter-timeout','15000')
-        self.actions.setValue('web-services','http,https,ssl,soap,http-proxy,http-alt,https-alt')
-        self.actions.setValue('enable-scheduler','True')
-        self.actions.setValue('enable-scheduler-on-import','False')
-        self.actions.setValue('max-fast-processes', '10')
-        self.actions.setValue('max-slow-processes', '10')
-        self.actions.endGroup()
-        self.actions.sync()
-        
-    def createDefaultBruteSettings(self):
-        self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
-        self.actions.beginGroup('BruteSettings')
-        self.actions.setValue('store-cleartext-passwords-on-exit','True')
-        self.actions.setValue('username-wordlist-path','/usr/share/wordlists/')
-        self.actions.setValue('password-wordlist-path','/usr/share/wordlists/')
-        self.actions.setValue('default-username','root')
-        self.actions.setValue('default-password','password')
-        self.actions.setValue('services', "asterisk,afp,cisco,cisco-enable,cvs,firebird,ftp,ftps,http-head,http-get,https-head,https-get,http-get-form,http-post-form,https-get-form,https-post-form,http-proxy,http-proxy-urlenum,icq,imap,imaps,irc,ldap2,ldap2s,ldap3,ldap3s,ldap3-crammd5,ldap3-crammd5s,ldap3-digestmd5,ldap3-digestmd5s,mssql,mysql,ncp,nntp,oracle-listener,oracle-sid,pcanywhere,pcnfs,pop3,pop3s,postgres,rdp,rexec,rlogin,rsh,s7-300,sip,smb,smtp,smtps,smtp-enum,snmp,socks5,ssh,sshkey,svn,teamspeak,telnet,telnets,vmauthd,vnc,xmpp")
-        self.actions.setValue('no-username-services', "cisco,cisco-enable,oracle-listener,s7-300,snmp,vnc")
-        self.actions.setValue('no-password-services', "oracle-sid,rsh,smtp-enum")       
-        self.actions.endGroup()
-        self.actions.sync()
-
-    def createDefaultNmapSettings(self):
-        self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
-        self.actions.beginGroup('StagedNmapSettings')
-        self.actions.setValue('stage1-ports','T:80,443')
-        self.actions.setValue('stage2-ports','T:25,135,137,139,445,1433,3306,5432,U:137,161,162,1434')
-        self.actions.setValue('stage3-ports','T:23,21,22,110,111,2049,3389,8080,U:500,5060')
-        self.actions.setValue('stage4-ports','T:0-20,24,26-79,81-109,112-134,136,138,140-442,444,446-1432,1434-2048,2050-3305,3307-3388,3390-5431,5433-8079,8081-29999')
-        self.actions.setValue('stage5-ports','T:30000-65535')
-        self.actions.endGroup()
-        self.actions.sync()
-
-    def createDefaultToolSettings(self):
-        self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
-        self.actions.beginGroup('ToolSettings')
-        self.actions.setValue('nmap-path','/sbin/nmap')
-        self.actions.setValue('hydra-path','/usr/bin/hydra')
-        self.actions.setValue('cutycapt-path','/usr/bin/cutycapt')
-        self.actions.setValue('texteditor-path','/usr/bin/leafpad')
-        self.actions.endGroup()
-        self.actions.sync()
-
-    def createDefaultGUISettings(self):
-        self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
-        self.actions.beginGroup('GUISettings')
-        self.actions.setValue('process-tab-column-widths', ['125', '0', '100', '150', '100', '100', '100', '100', '100', '100', '100', '100', '100', '100', '100', '100', '100'])
-        self.actions.endGroup()
-        self.actions.sync()
-
-    def createDefaultHostActions(self):
-        self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
-        self.actions.beginGroup('HostActions')
-        self.actions.setValue("nmap-discover", ["Run nmap-discover", "nmap -n -sV -O --version-light -T4 [IP] -oA \"[OUTPUT]\""])
-        self.actions.setValue("nmap script - Vulners", ["Run nmap script - Vulners", "nmap -sV --script=./scripts/nmap/vulners.nse -vvvv [IP] -oA \"[OUTPUT]\""])
-        self.actions.setValue("nmap-fast-tcp", ["Run nmap (fast TCP)", "nmap -Pn -sV -sC -F -T4 -vvvv [IP] -oA \"[OUTPUT]\""])
-        self.actions.setValue("nmap-full-tcp", ["Run nmap (full TCP)", "nmap -Pn -sV -sC -O -p- -T4 -vvvvv [IP] -oA \"[OUTPUT]\""])
-        self.actions.setValue("nmap-fast-udp", ["Run nmap (fast UDP)", "nmap -n -Pn -sU -F --min-rate=1000 -vvvvv [IP] -oA \"[OUTPUT]\""])
-        self.actions.setValue("nmap-udp-1000", ["Run nmap (top 1000 quick UDP)", "nmap -n -Pn -sU --min-rate=1000 -vvvvv [IP] -oA \"[OUTPUT]\""])
-        self.actions.setValue("nmap-full-udp", ["Run nmap (full UDP)", "nmap -n -Pn -sU -p- -T4 -vvvvv [IP] -oA \"[OUTPUT]\""])
-        self.actions.setValue("unicornscan-full-udp", ["Run unicornscan (full UDP)", "unicornscan -mU -Ir 1000 [IP]:a -v"])
-        self.actions.endGroup()
-        self.actions.sync()
-
-    def createDefaultPortActions(self):
-        self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
-        self.actions.beginGroup('PortActions')
-        self.actions.setValue("banner", ["Grab banner", "bash -c \"echo \"\" | nc -v -n -w1 [IP] [PORT]\"", "telnet,ssh"])
-        self.actions.setValue("nmap", ["Run nmap (scripts) on port", "nmap -Pn -sV -sC -vvvvv -p[PORT] [IP] -oA [OUTPUT]", ""])
-        self.actions.setValue("whatweb", ["Run whatweb", "whatweb [IP]:[PORT] --color=never --log-brief=\"[OUTPUT].txt\"", "http,https,ssl,soap,http-proxy,http-alt"])
-        self.actions.setValue("nikto", ["Run nikto", "nikto -o \"[OUTPUT].txt\" -p [PORT] -h [IP]", "http,https,ssl,soap,http-proxy,http-alt"])     
-        self.actions.setValue("dirbuster", ["Launch dirbuster", "java -Xmx256M -jar /usr/share/dirbuster/DirBuster-1.0-RC1.jar -u http://[IP]:[PORT]/", "http,https,ssl,soap,http-proxy,http-alt"])
-        self.actions.setValue("webslayer", ["Launch webslayer", "webslayer", "http,https,ssl,soap,http-proxy,http-alt"])
-        
-        ### SMB
-        self.actions.setValue("samrdump", ["Run samrdump", "python /usr/share/doc/python-impacket/examples/samrdump.py [IP] [PORT]/SMB", "netbios-ssn,microsoft-ds"])
-        self.actions.setValue("nbtscan", ["Run nbtscan", "nbtscan -v -h [IP]", "netbios-ns"])
-        self.actions.setValue("smbenum", ["Run smbenum", "bash ./scripts/smbenum.sh [IP]", "netbios-ssn,microsoft-ds"])
-        self.actions.setValue("enum4linux", ["Run enum4linux", "enum4linux [IP]", "netbios-ssn, microsoft-ds"])
-        self.actions.setValue("polenum", ["Extract password policy (polenum)", "polenum [IP]", "netbios-ssn,microsoft-ds"])
-        self.actions.setValue("smb-enum-users", ["Enumerate users (nmap)", "nmap -p[PORT] --script=smb-enum-users [IP] -vvvvv", "netbios-ssn,microsoft-ds"])
-        self.actions.setValue("smb-enum-users-rpc", ["Enumerate users (rpcclient)", "bash -c \"echo 'enumdomusers' | rpcclient [IP] -U%\"", "netbios-ssn,microsoft-ds"])        
-        self.actions.setValue("smb-enum-admins", ["Enumerate domain admins (net)", "net rpc group members \"Domain Admins\" -I [IP] -U% ", "netbios-ssn,microsoft-ds"])
-        self.actions.setValue("smb-enum-groups", ["Enumerate groups (nmap)", "nmap -p[PORT] --script=smb-enum-groups [IP] -vvvvv", "netbios-ssn,microsoft-ds"])
-        self.actions.setValue("smb-enum-shares", ["Enumerate shares (nmap)", "nmap -p[PORT] --script=smb-enum-shares [IP] -vvvvv", "netbios-ssn,microsoft-ds"])     
-        self.actions.setValue("smb-enum-sessions", ["Enumerate logged in users (nmap)", "nmap -p[PORT] --script=smb-enum-sessions [IP] -vvvvv", "netbios-ssn,microsoft-ds"])
-        self.actions.setValue("smb-enum-policies", ["Extract password policy (nmap)", "nmap -p[PORT] --script=smb-enum-domains [IP] -vvvvv", "netbios-ssn,microsoft-ds"])
-        self.actions.setValue("smb-null-sessions", ["Check for null sessions (rpcclient)", "bash -c \"echo 'srvinfo' | rpcclient [IP] -U%\"", "netbios-ssn,microsoft-ds"])
-        ###
-
-        self.actions.setValue("ldapsearch", ["Run ldapsearch", "ldapsearch -h [IP] -p [PORT] -x -s base", "ldap"])      
-        self.actions.setValue("snmpcheck", ["Run snmpcheck", "snmp-check -t [IP]", "snmp,snmptrap"])    ###Change from snmpcheck to snmp-check for Kali 2.0
-        self.actions.setValue("rpcinfo", ["Run rpcinfo", "rpcinfo -p [IP]", "rpcbind"])
-        self.actions.setValue("rdp-sec-check", ["Run rdp-sec-check.pl", "perl ./scripts/rdp-sec-check.pl [IP]:[PORT]", "ms-wbt-server"])
-        self.actions.setValue("showmount", ["Show nfs shares", "showmount -e [IP]", "nfs"])
-        self.actions.setValue("x11screen", ["Run x11screenshot", "bash ./scripts/x11screenshot.sh [IP]", "X11"])
-        self.actions.setValue("sslscan", ["Run sslscan", "sslscan --no-failed [IP]:[PORT]", "https,ssl"])
-        self.actions.setValue("sslyze", ["Run sslyze", "sslyze --regular [IP]:[PORT]", "https,ssl,ms-wbt-server,imap,pop3,smtp"])
-
-        self.actions.setValue("rwho", ["Run rwho", "rwho -a [IP]", "who"])
-        self.actions.setValue("finger", ["Enumerate users (finger)", "./scripts/fingertool.sh [IP]", "finger"])
-
-        self.actions.setValue("smtp-enum-vrfy", ["Enumerate SMTP users (VRFY)", "smtp-user-enum -M VRFY -U /usr/share/metasploit-framework/data/wordlists/unix_users.txt -t [IP] -p [PORT]", "smtp"])
-        self.actions.setValue("smtp-enum-expn", ["Enumerate SMTP users (EXPN)", "smtp-user-enum -M EXPN -U /usr/share/metasploit-framework/data/wordlists/unix_users.txt -t [IP] -p [PORT]", "smtp"])       
-        self.actions.setValue("smtp-enum-rcpt", ["Enumerate SMTP users (RCPT)", "smtp-user-enum -M RCPT -U /usr/share/metasploit-framework/data/wordlists/unix_users.txt -t [IP] -p [PORT]", "smtp"])
-
-        self.actions.setValue("ftp-default", ["Check for default ftp credentials", "hydra -s [PORT] -C ./wordlists/ftp-default-userpass.txt -u -o \"[OUTPUT].txt\" -f [IP] ftp", "ftp"])
-        self.actions.setValue("mssql-default", ["Check for default mssql credentials", "hydra -s [PORT] -C ./wordlists/mssql-default-userpass.txt -u -o \"[OUTPUT].txt\" -f [IP] mssql", "ms-sql-s"])
-        self.actions.setValue("mysql-default", ["Check for default mysql credentials", "hydra -s [PORT] -C ./wordlists/mysql-default-userpass.txt -u -o \"[OUTPUT].txt\" -f [IP] mysql", "mysql"])
-        self.actions.setValue("oracle-default", ["Check for default oracle credentials", "hydra -s [PORT] -C ./wordlists/oracle-default-userpass.txt -u -o \"[OUTPUT].txt\" -f [IP] oracle-listener", "oracle-tns"])        
-        self.actions.setValue("postgres-default", ["Check for default postgres credentials", "hydra -s [PORT] -C ./wordlists/postgres-default-userpass.txt -u -o \"[OUTPUT].txt\" -f [IP] postgres", "postgresql"])
-        self.actions.setValue("snmp-default", ["Check for default community strings", "python ./scripts/snmpbrute.py -t [IP] -p [PORT] -f ./wordlists/snmp-default.txt -b --no-colours", "snmp,snmptrap"])
-        self.actions.setValue("snmp-brute", ["Bruteforce community strings (medusa)", "bash -c \"medusa -h [IP] -u root -P ./wordlists/snmp-default.txt -M snmp | grep SUCCESS\"", "snmp,snmptrap"])
-        self.actions.setValue("oracle-version", ["Get version", "msfcli auxiliary/scanner/oracle/tnslsnr_version rhosts=[IP] E", "oracle-tns"])
-        self.actions.setValue("oracle-sid", ["Oracle SID enumeration", "msfcli auxiliary/scanner/oracle/sid_enum rhosts=[IP] E", "oracle-tns"])
-        self.actions.endGroup()
-        self.actions.sync()
-
-    def createDefaultPortTerminalActions(self):
-        self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
-        self.actions.beginGroup('PortTerminalActions')
-        self.actions.setValue("netcat", ["Open with netcat", "nc -v [IP] [PORT]", ""])
-        self.actions.setValue("telnet", ["Open with telnet", "telnet [IP] [PORT]", ""])
-        self.actions.setValue("ftp", ["Open with ftp client", "ftp [IP] [PORT]", "ftp"])
-        self.actions.setValue("mysql", ["Open with mysql client (as root)", "mysql -u root -h [IP] --port=[PORT] -p", "mysql"])
-        self.actions.setValue("mssql", ["Open with mssql client (as sa)", "python /usr/share/doc/python-impacket/examples/mssqlclient.py -p [PORT] sa@[IP]", "mys-sql-s,codasrv-se"])
-        self.actions.setValue("ssh", ["Open with ssh client (as root)", "ssh root@[IP] -p [PORT]", "ssh"])
-        self.actions.setValue("psql", ["Open with postgres client (as postgres)", "psql -h [IP] -p [PORT] -U postgres", "postgres"])
-        self.actions.setValue("rdesktop", ["Open with rdesktop", "rdesktop [IP]:[PORT]", "ms-wbt-server"])
-        self.actions.setValue("rpcclient", ["Open with rpcclient (NULL session)", "rpcclient [IP] -p [PORT] -U%", "netbios-ssn,microsoft-ds"])
-        self.actions.setValue("vncviewer", ["Open with vncviewer", "vncviewer [IP]:[PORT]", "vnc"])
-        self.actions.setValue("xephyr", ["Open with Xephyr", "Xephyr -query [IP] :1", "xdmcp"])
-        self.actions.setValue("rlogin", ["Open with rlogin", "rlogin -i root -p [PORT] [IP]", "login"])
-        self.actions.setValue("rsh", ["Open with rsh", "rsh -l root [IP]", "shell"])
-
-        self.actions.endGroup()
-        self.actions.sync()
-
-    def createDefaultSchedulerSettings(self):
-        self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
-        self.actions.beginGroup('SchedulerSettings')
-        self.actions.setValue("whatweb", ["http,https,ssl,soap,http-proxy,http-alt,https-alt","tcp"])
-        self.actions.setValue("nikto", ["http,https,ssl,soap,http-proxy,http-alt,https-alt","tcp"])
-        self.actions.setValue("sslscan", ["https,ssl","tcp"])
-        self.actions.setValue("screenshooter",["http,https,ssl,http-proxy,http-alt,https-alt","tcp"])
-        self.actions.setValue("smbenum", ["microsoft-ds","tcp"])
-        self.actions.setValue("enum4linux", "netbios-ssn,microsoft-ds")
-        self.actions.setValue("smb-null-sessions", "netbios-ssn,microsoft-ds")
-        self.actions.setValue("nbtscan", "netbios-ns")
-        self.actions.setValue("snmpcheck", ["snmp","udp"])
-        self.actions.setValue("x11screen", ["X11","tcp"])
-        self.actions.setValue("snmp-default", ["snmp","udp"])
-        self.actions.setValue("smtp-enum-vrfy", ["smtp","tcp"])
-        self.actions.setValue("mysql-default", ["mysql","tcp"])
-        self.actions.setValue("mssql-default", ["ms-sql-s","tcp"])
-        self.actions.setValue("ftp-default", ["ftp","tcp"])
-        self.actions.setValue("postgres-default", ["postgresql","tcp"])
-        self.actions.setValue("oracle-default", ["oracle-tns","tcp"])
-
-        self.actions.endGroup()
-        self.actions.sync()
-
-    # NOTE: the weird order of elements in the functions below is due to historical reasons. Change this some day.
-    
     def getGeneralSettings(self):
         settings = dict()
         self.actions.beginGroup('GeneralSettings')
@@ -315,13 +128,13 @@ class AppSettings():
         self.actions.endGroup()
         return settings
         
-    def backupAndSave(self, newSettings, saveBackup=True):
+    def backupAndSave(self, newSettings, saveBackup = True):
         # Backup and save
         if saveBackup:
-            log.info('Backing up old settings and saving new settings..')
+            log.info('Backing up old settings and saving new settings...')
             os.rename('./legion.conf', './backup/' + getTimestamp() + '-legion.conf')
         else:
-            log.info('saveBackup: {}'.format(saveBackup))
+            log.info('Saving config...')
 
         self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
 
@@ -345,6 +158,13 @@ class AppSettings():
         self.actions.setValue('services', newSettings.brute_services)
         self.actions.setValue('no-username-services', newSettings.brute_no_username_services)
         self.actions.setValue('no-password-services', newSettings.brute_no_password_services)
+        self.actions.endGroup()
+
+        self.actions.beginGroup('ToolSettings')
+        self.actions.setValue('nmap-path', newSettings.tools_path_nmap)
+        self.actions.setValue('hydra-path', newSettings.tools_path_hydra)
+        self.actions.setValue('cutycapt-path', newSettings.tools_path_cutycapt)
+        self.actions.setValue('texteditor-path', newSettings.tools_path_texteditor)
         self.actions.endGroup()
 
         self.actions.beginGroup('StagedNmapSettings')

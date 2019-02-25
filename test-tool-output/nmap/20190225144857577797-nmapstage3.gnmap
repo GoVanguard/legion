@@ -1,0 +1,4 @@
+# Nmap 7.70 scan initiated Mon Feb 25 14:48:59 2019 as: C:\Program Files (x86)\Nmap\nmap.exe -T4 -sC -n -sSU -p T:23,21,22,110,111,2049,3389,8080,U:500,5060 -oA ./tmp/legion-1nytmlta-running/nmap/20190225144857577797-nmapstage3 127.0.0.1
+Host: 127.0.0.1 ()	Status: Up
+Host: 127.0.0.1 ()	Ports: 21/closed/tcp//ftp///, 22/closed/tcp//ssh///, 23/closed/tcp//telnet///, 110/closed/tcp//pop3///, 111/closed/tcp//rpcbind///, 2049/closed/tcp//nfs///, 3389/closed/tcp//ms-wbt-server///, 8080/closed/tcp//http-proxy///, 500/open|filtered/udp//isakmp///, 5060/open|filtered/udp//sip///
+# Nmap done at Mon Feb 25 14:49:10 2019 -- 1 IP address (1 host up) scanned in 11.75 seconds
