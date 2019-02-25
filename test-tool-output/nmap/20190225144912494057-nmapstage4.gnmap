@@ -1,4 +1,0 @@
-# Nmap 7.70 scan initiated Mon Feb 25 14:49:15 2019 as: C:\Program Files (x86)\Nmap\nmap.exe -T4 -sC -n -sSU -p T:0-20,24,26-79,81-109,112-134,136,138,140-442,444,446-1432,1434-2048,2050-3305,3307-3388,3390-5431,5433-8079,8081-29999 -oA ./tmp/legion-1nytmlta-running/nmap/20190225144912494057-nmapstage4 127.0.0.1
-Host: 127.0.0.1 ()	Status: Up
-Host: 127.0.0.1 ()	Ports: 1536/open/tcp//ampr-inter///, 1537/open/tcp//sdsc-lm///, 1538/open/tcp//3ds-lm///, 1539/open/tcp//intellistor-lm///, 1545/open/tcp//vistium-share///, 1546/open/tcp//abbaccuray///, 2179/open/tcp//vmrdp///, 5040/open/tcp//unknown///, 6000/open/tcp//X11///, 16423/open/tcp/////, 16723/open/tcp//unknown///	Ignored State: closed (29971)
-# Nmap done at Mon Feb 25 14:49:24 2019 -- 1 IP address (1 host up) scanned in 11.43 seconds
