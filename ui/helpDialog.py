@@ -21,7 +21,7 @@ from ui.ancillaryDialog import flipState
 
 class License(QtWidgets.QPlainTextEdit):
     def __init__(self,parent = None):
-        super(License,self).__init__(parent)
+        super(License, self).__init__(parent)
         self.setReadOnly(True)
         self.setWindowTitle('License')
         self.setGeometry(0, 0, 300, 300)
@@ -36,7 +36,7 @@ class License(QtWidgets.QPlainTextEdit):
 
 class ChangeLog(QtWidgets.QPlainTextEdit):
     def __init__(self, qss, parent = None):
-        super(ChangeLog,self).__init__(parent)
+        super(ChangeLog, self).__init__(parent)
         self.setMinimumHeight(240)
         self.setStyleSheet(qss)
         self.setPlainText(open('CHANGELOG.txt','r').read())
@@ -123,7 +123,6 @@ class HelpDialog(QtWidgets.QDialog):
         self.formChange.addRow(ChangeLog(qss = self.qss))
         self.TabChangelog.setLayout(self.formChange)
 
-        #self.form.addRow(self.cmdClose)
         self.tabwid.addTab(self.TabAbout,'About')
         self.tabwid.addTab(self.TabVersion,'Version')
         self.tabwid.addTab(self.TabChangelog,'ChangeLog')

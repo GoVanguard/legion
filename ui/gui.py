@@ -357,6 +357,11 @@ class Ui_MainWindow(object):
         self.menuHelp.addAction(self.actionHelp)
         self.menubar.addAction(self.menuHelp.menuAction())      
 
+        self.actionConfig = QtWidgets.QAction(MainWindow)
+        self.actionConfig.setObjectName(_fromUtf8("config"))
+        self.menuHelp.addAction(self.actionConfig)
+        self.menubar.addAction(self.menuHelp.menuAction())
+
     def setDefaultIndexes(self):
         self.MainTabWidget.setCurrentIndex(1)
         self.HostsTabWidget.setCurrentIndex(1)
@@ -403,6 +408,8 @@ class Ui_MainWindow(object):
         #self.actionSettings.setText(QtWidgets.QApplication.translate("MainWindow", "Preferences", None))
         self.actionHelp.setText(QtWidgets.QApplication.translate("MainWindow", "Help", None))
         self.actionHelp.setShortcut(QtWidgets.QApplication.translate("MainWindow", "F1", None))
+        self.actionConfig.setText(QtWidgets.QApplication.translate("MainWindow", "Config", None))
+        self.actionConfig.setShortcut(QtWidgets.QApplication.translate("MainWindow", "F2", None))
 
 if __name__ == "__main__":
     import sys
