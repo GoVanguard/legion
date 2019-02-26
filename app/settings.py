@@ -173,6 +173,7 @@ class AppSettings():
         self.actions.setValue('stage3-ports', newSettings.tools_nmap_stage3_ports)
         self.actions.setValue('stage4-ports', newSettings.tools_nmap_stage4_ports)
         self.actions.setValue('stage5-ports', newSettings.tools_nmap_stage5_ports)
+        self.actions.setValue('stage6-ports', newSettings.tools_nmap_stage6_ports)
         self.actions.endGroup()
 
         self.actions.beginGroup('GUISettings')
@@ -228,9 +229,10 @@ class Settings():
         # tools
         self.tools_nmap_stage1_ports = "T:80,443"
         self.tools_nmap_stage2_ports = "T:25,135,137,139,445,1433,3306,5432,U:137,161,162,1434"
-        self.tools_nmap_stage3_ports = "T:23,21,22,110,111,2049,3389,8080,U:500,5060"
-        self.tools_nmap_stage4_ports = "T:0-20,24,26-79,81-109,112-134,136,138,140-442,444,446-1432,1434-2048,2050-3305,3307-3388,3390-5431,5433-8079,8081-29999"
-        self.tools_nmap_stage5_ports = "T:30000-65535"
+        self.tools_nmap_stage3_ports = "Vulners,CVE"
+        self.tools_nmap_stage4_ports = "T:23,21,22,110,111,2049,3389,8080,U:500,5060"
+        self.tools_nmap_stage5_ports = "T:0-20,24,26-79,81-109,112-134,136,138,140-442,444,446-1432,1434-2048,2050-3305,3307-3388,3390-5431,5433-8079,8081-29999"
+        self.tools_nmap_stage6_ports = "T:30000-65535"
 
         self.tools_path_nmap = "/sbin/nmap"
         self.tools_path_hydra = "/usr/bin/hydra"
@@ -286,6 +288,7 @@ class Settings():
                 self.tools_nmap_stage3_ports = self.stagedNmapSettings['stage3-ports']
                 self.tools_nmap_stage4_ports = self.stagedNmapSettings['stage4-ports']
                 self.tools_nmap_stage5_ports = self.stagedNmapSettings['stage5-ports']
+                self.tools_nmap_stage6_ports = self.stagedNmapSettings['stage6-ports']
 
                 self.tools_path_nmap = self.toolSettings['nmap-path']
                 self.tools_path_hydra = self.toolSettings['hydra-path']

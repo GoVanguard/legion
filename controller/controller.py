@@ -28,7 +28,7 @@ class Controller():
     def __init__(self, view, logic):
         self.name = "LEGION"
         self.version = '0.3.1'
-        self.build = '1551199043'
+        self.build = '1551201971'
         self.author = 'GoVanguard'
         self.copyright = '2019'
         self.links = ['http://github.com/GoVanguard/legion/issues', 'https://GoVanguard.io/legion']
@@ -621,7 +621,7 @@ class Controller():
         qProcess.error.connect(lambda: self.processCrashed(qProcess))
         log.info("runCommand called for stage {0}".format(str(stage)))
 
-        if stage > 0 and stage < 5:                                     # if this is a staged nmap, launch the next stage
+        if stage > 0 and stage < 6:                                     # if this is a staged nmap, launch the next stage
             log.info("runCommand connected for stage {0}".format(str(stage)))
             nextStage = stage + 1
             qProcess.finished.connect(lambda: self.runStagedNmap(str(hostip), discovery = discovery, stage = nextStage, stop = self.logic.isKilledProcess(str(qProcess.id))))
@@ -672,25 +672,29 @@ class Controller():
                 ports = self.settings.tools_nmap_stage1_ports
             elif stage == 2:                                            # juicy stuff that we could enumerate + db
                 ports = self.settings.tools_nmap_stage2_ports
-            elif stage == 3:                                            # bruteforceable protocols + portmapper + nfs
-                ports = self.settings.tools_nmap_stage3_ports
-            elif stage == 4:                                            # first 30000 ports except ones above
+            elif stage == 4:                                            # bruteforceable protocols + portmapper + nfs
                 ports = self.settings.tools_nmap_stage4_ports
-            else:                                                       # last 35535 ports
+            elif stage == 5:                                            # first 30000 ports except ones above
                 ports = self.settings.tools_nmap_stage5_ports
+            else:                                                       # last 35535 ports
+                ports = self.settings.tools_nmap_stage6_ports
             command = "nmap "
             if not discovery:                                           # is it with/without host discovery?
                 command += "-Pn "
             command += "-T4 -sC "
-            if not stage == 1:
+            if not stage == 1 and not stage == 3:
                 command += "-n "                                        # only do DNS resolution on first stage
             if os.geteuid() == 0:                                       # if we are root we can run SYN + UDP scans
                 command += "-sSU "
                 if stage == 2:
-                    command += "-O "                                    # only check for OS once to save time and only if we are root otherwise it fails
+                    command += '-O '                                    # only check for OS once to save time and only if we are root otherwise it fail
             else:
-                command += "-sT "
-            command += "-p "+ports+' '+targetHosts+" -oA "+outputfile
+                command += '-sT '
+
+            if stage != 3:
+                command += '-p ' + ports + ' ' + targetHosts + ' -oA ' + outputfile
+            else:
+                command = 'nmap -sV --script=./scripts/nmap/vulners.nse -vvvv ' + targetHosts + ' -oA ' + outputfile
                             
             self.runCommand('nmap','nmap (stage '+str(stage)+')', str(targetHosts), '', '', command, getTimestamp(True), outputfile, textbox, discovery = discovery, stage = stage, stop = stop)
 

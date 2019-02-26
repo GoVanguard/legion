@@ -706,19 +706,13 @@ class NmapImporter(QtCore.QThread):
                     if not db_os:
                         t_nmap_os = nmap_os(os.name, os.family, os.generation, os.os_type, os.vendor, os.accuracy, db_host.id)
                         session.add(t_nmap_os)
-                        ## CVE
-                        #osCves = self.getCveFuzzy(os.name)
-                        #print(osCves)
-                        #for osCve in osCves:
-                        #    print(osCve)
-                        #    t_cve = cve(name = osCve, url = "http://test", criteria = 'crit:test', fingerprint = 'fing:test')
-                        #    session.add(t_cve)
-                        #session.commit()
-                        #    t_cve = None
+
                     createOsNodesProgress = createOsNodesProgress + ((100.0 / hostCount) / 5)
                     totalprogress = totalprogress + createOsNodesProgress
                     self.importProgressWidget.setProgress(int(totalprogress))
                     self.importProgressWidget.show()
+
+                session.commit()
 
                 all_ports = h.all_ports()
                 self.tsLog("    'ports' to process: {all_ports}".format(all_ports=str(len(all_ports))))
@@ -747,7 +741,6 @@ class NmapImporter(QtCore.QThread):
                         session.add(db_port)
                     createPortsProgress = createPortsProgress + ((100.0 / hostCount) / 5)
                     totalprogress = totalprogress + createPortsProgress
-                    #self.tick.emit(int(totalprogress))
                     self.importProgressWidget.setProgress(totalprogress)
                     self.importProgressWidget.show()
 
@@ -769,7 +762,6 @@ class NmapImporter(QtCore.QThread):
                         for cveEntry in cveResults:
                             t_cve = cve(name = cveEntry.name, url = cveEntry.url, source = cveEntry.source, severity = cveEntry.severity, product = cveEntry.product, version = cveEntry.version, hostId = db_host.id)
                             session.add(t_cve)
-                        session.commit()
 
                         if not db_script:                               # if this script object doesn't exist, create it
                             t_nmap_script = nmap_script(scr.scriptId, scr.output, db_port.id, db_host.id)
