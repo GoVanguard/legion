@@ -28,7 +28,7 @@ class Controller():
     def __init__(self, view, logic):
         self.name = "LEGION"
         self.version = '0.3.2'
-        self.build = '1551210212'
+        self.build = '1551213682'
         self.author = 'GoVanguard'
         self.copyright = '2019'
         self.links = ['http://github.com/GoVanguard/legion/issues', 'https://GoVanguard.io/legion']
@@ -526,7 +526,7 @@ class Controller():
         
         if not self.fastProcessQueue.empty():
             self.processTableUiUpdateTimer.start(1000)
-            if (self.fastProcessesRunning < int(self.settings.general_max_fast_processes)):
+            if (self.fastProcessesRunning <= int(self.settings.general_max_fast_processes)):
                 next_proc = self.fastProcessQueue.get()
                 if not self.logic.isCanceledProcess(str(next_proc.id)):
                     log.debug('Running: '+ str(next_proc.command))
@@ -608,10 +608,8 @@ class Controller():
 
         self.checkProcessQueue()
         
-        # Not needed? POOP
-        # self.updateUITimer.stop()                                       # update the processes table
-        # self.updateUITimer.start(900)                                   # while the process is running, when there's output to read, display it in the GUI
-        #
+        self.updateUITimer.stop()                                       # update the processes table
+        self.updateUITimer.start(900)                                   # while the process is running, when there's output to read, display it in the GUI
 
         qProcess.setProcessChannelMode(QtCore.QProcess.MergedChannels)
         qProcess.readyReadStandardOutput.connect(lambda: qProcess.display.appendPlainText(str(qProcess.readAllStandardOutput().data().decode('ISO-8859-1'))))
@@ -731,7 +729,8 @@ class Controller():
                             self.nmapImporter.setFilename(str(newoutputfile)+'.xml')
                             self.nmapImporter.setOutput(str(qProcess.display.toPlainText()))
                             self.nmapImporter.start()
-                if qProcess.exitCode() != 0:
+                exitCode = qProcess.exitCode()
+                if exitCode != 0 and exitCode != 255:
                     log.info("Process {qProcessId} exited with code {qProcessExitCode}".format(qProcessId=qProcess.id, qProcessExitCode=qProcess.exitCode()))
                     self.processCrashed(qProcess)
                 
