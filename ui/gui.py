@@ -133,14 +133,15 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addWidget(self.ToolsTableView)
         self.HostsTabWidget.addTab(self.ToolsTab, _fromUtf8(""))        
 
-        self.CvesLeftTab = QtWidgets.QWidget()
-        self.CvesLeftTab.setObjectName(_fromUtf8("CvesLeftTab"))
-        self.horizontalLayout_8 = QtWidgets.QHBoxLayout(self.CvesLeftTab)
-        self.horizontalLayout_8.setObjectName(_fromUtf8("horizontalLayout_8"))
-        self.CvesTableView = QtWidgets.QTableView(self.CvesLeftTab)
-        self.CvesTableView.setObjectName(_fromUtf8("CvesTableView"))
-        self.horizontalLayout_8.addWidget(self.CvesTableView)
-        self.HostsTabWidget.addTab(self.CvesLeftTab, _fromUtf8(""))
+        # Disabled for now
+        #self.CvesLeftTab = QtWidgets.QWidget()
+        #self.CvesLeftTab.setObjectName(_fromUtf8("CvesLeftTab"))
+        #self.horizontalLayout_8 = QtWidgets.QHBoxLayout(self.CvesLeftTab)
+        #self.horizontalLayout_8.setObjectName(_fromUtf8("horizontalLayout_8"))
+        #self.CvesTableView = QtWidgets.QTableView(self.CvesLeftTab)
+        #self.CvesTableView.setObjectName(_fromUtf8("CvesTableView"))
+        #self.horizontalLayout_8.addWidget(self.CvesTableView)
+        #self.HostsTabWidget.addTab(self.CvesLeftTab, _fromUtf8(""))
 
     def setupRightPanel(self):
         self.ServicesTabWidget = QtWidgets.QTabWidget()
@@ -353,7 +354,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "LEGION", None))
         self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.HostsTab), QtWidgets.QApplication.translate("MainWindow", "Hosts", None))
         self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.ServicesLeftTab), QtWidgets.QApplication.translate("MainWindow", "Services", None))
-        self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.CvesLeftTab), QtWidgets.QApplication.translate("MainWindow", "CVEs", None))
+        #self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.CvesLeftTab), QtWidgets.QApplication.translate("MainWindow", "CVEs", None))
         self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.ToolsTab), QtWidgets.QApplication.translate("MainWindow", "Tools", None))
         self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.ServicesRightTab), QtWidgets.QApplication.translate("MainWindow", "Services", None))
         self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.CvesRightTab), QtWidgets.QApplication.translate("MainWindow", "CVEs", None))
