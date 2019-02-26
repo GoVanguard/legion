@@ -23,11 +23,20 @@ if [ "$3" == "" ]
 		OUTFOLDER="/tmp"
 	else
 		OUTFOLDER="$3"
+        if [ ! -d "$OUTFOLDER" ]
+        then
+            mkdir $OUTFOLDER
+        fi
 fi
 
 echo "xwd -root -screen -silent -display $IP:$DSP > $OUTFOLDER/x11screenshot-$IP.xwd"
 xwd -root -screen -silent -display $IP:$DSP > $OUTFOLDER/x11screenshot-$IP.xwd
+
 echo "convert $OUTFOLDER/x11screenshot-$IP.xwd $OUTFOLDER/x11screenshot-$IP.jpg"
 convert $OUTFOLDER/x11screenshot-$IP.xwd $OUTFOLDER/x11screenshot-$IP.jpg
-echo "eog $OUTFOLDER/x11screenshot-$IP.jpg"
-eog $OUTFOLDER/x11screenshot-$IP.jpg
+
+if [ -f "$OUTFOLDER/x11screenshot-$IP.jpg" ]
+then
+    echo "eog $OUTFOLDER/x11screenshot-$IP.jpg"
+    eog $OUTFOLDER/x11screenshot-$IP.jpg
+fi
