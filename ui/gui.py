@@ -80,16 +80,29 @@ class Ui_MainWindow(object):
         self.HostsTab = QtWidgets.QWidget()
         self.HostsTab.setObjectName(_fromUtf8("HostsTab"))
         self.keywordTextInput = QtWidgets.QLineEdit()
+        self.keywordTextInput.setToolTip('Enter keywords and click apply to filter view')
+
         self.FilterApplyButton = QtWidgets.QToolButton()
         self.searchIcon = QtGui.QIcon()
         self.searchIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/search.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.FilterApplyButton.setIconSize(QtCore.QSize(29, 21))
+        self.FilterApplyButton.setIconSize(QtCore.QSize(19, 19))
         self.FilterApplyButton.setIcon(self.searchIcon)
+        self.FilterApplyButton.setToolTip('Apply filters to view')
+
         self.FilterAdvancedButton = QtWidgets.QToolButton()
         self.advancedIcon = QtGui.QIcon()
         self.advancedIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/advanced.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.FilterAdvancedButton.setIconSize(QtCore.QSize(19, 19))
         self.FilterAdvancedButton.setIcon(self.advancedIcon)
+        self.FilterAdvancedButton.setToolTip('Choose advanced filters')
+
+        self.AddHostButton = QtWidgets.QToolButton()
+        self.addIcon = QtGui.QIcon()
+        self.addIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/add.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.AddHostButton.setIconSize(QtCore.QSize(19, 19))
+        self.AddHostButton.setIcon(self.addIcon)
+        self.AddHostButton.setToolTip('Add host')
+
         self.vlayout = QtWidgets.QVBoxLayout(self.HostsTab)
         self.vlayout.setObjectName(_fromUtf8("vlayout"))
         self.HostsTableView = QtWidgets.QTableView(self.HostsTab)
@@ -112,6 +125,7 @@ class Ui_MainWindow(object):
         self.hlayout.addWidget(self.keywordTextInput)
         self.hlayout.addWidget(self.FilterApplyButton)
         self.hlayout.addWidget(self.FilterAdvancedButton)
+        self.hlayout.addWidget(self.AddHostButton)
         self.vlayout.addLayout(self.hlayout)
         self.HostsTabWidget.addTab(self.HostsTab, _fromUtf8(""))
 

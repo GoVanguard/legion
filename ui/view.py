@@ -143,6 +143,7 @@ class View(QtCore.QObject):
         self.connectScriptTableClick()
         self.connectToolHostsClick()
         self.connectAdvancedFilterClick()
+        self.connectAddHostClick()
         self.connectSwitchTabClick()                                    # to detect changing tabs (on left panel)
         self.connectSwitchMainTabClick()                                # to detect changing top level tabs
         self.connectTableDoubleClick()                                  # for double clicking on host (it redirects to the host view)
@@ -580,6 +581,9 @@ class View(QtCore.QObject):
                         break
 
     ###
+
+    def connectAddHostClick(self):
+        self.ui.AddHostButton.clicked.connect(self.connectAddHostsDialog)
 
     def connectAdvancedFilterClick(self):
         self.ui.FilterAdvancedButton.clicked.connect(self.advancedFilterClick)
@@ -1053,7 +1057,6 @@ class View(QtCore.QObject):
     def updateCvesByHostView(self, hostIP):
         headers = ["HostId", "ID", "Severity", "Product", "Version", "URL", "Source"]
         cves = self.controller.getCvesFromDB(hostIP)
-        print(cves)
         self.CvesTableModel = CvesTableModel(self,self.controller.getCvesFromDB(hostIP), headers)
 
         for i in [0]:                                                 # hide some columns
