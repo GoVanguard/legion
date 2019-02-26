@@ -1,3 +1,10 @@
+LEGION 0.3.1
+
+* UI polish everywhere (element sizing, scaling, icons, tooltips, etc.)
+* Code cleanup
+* UI performance improvements
+* More port actions
+
 LEGION 0.3.0
 
 * UI polish everywhere (element sizing, scaling, icons, etc.)
