@@ -199,7 +199,7 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.rdoScanOptPingSyn.setToolTip('TCP Ping that sends SYN packets instead of ACK packets [-PT -PS]')
         self.rdoScanOptPingAck = QtWidgets.QRadioButton(self)
         self.rdoScanOptPingAck.setText('TCP ACK')
-        self.rdoScanOptPingAck.setToolTip('TCP Ping that sends SYN packets instead of ACK packets [-PT]')
+        self.rdoScanOptPingAck.setToolTip('TCP Ping that sends ACK packets instead of SYN packets [-PT]')
         self.rdoScanOptPingTimeStamp = QtWidgets.QRadioButton(self)
         self.rdoScanOptPingTimeStamp.setText('Timestamp')
         self.rdoScanOptPingTimeStamp.setToolTip('ICMP Timestamp Request [-PP]')

@@ -251,7 +251,7 @@ class Logic():
 
     ## FIX
     def getCvesFromDB(self, hostIP):
-        query = ('SELECT hosts.id, cves.name, cves.severity, cves.product, cves.version, cves.url, cves.source FROM cve AS cves ' +
+        query = ('SELECT cves.name, cves.severity, cves.product, cves.version, cves.url, cves.source FROM cve AS cves ' +
             'INNER JOIN nmap_host AS hosts ON hosts.id = cves.host_id ' +
             'WHERE hosts.ip=?')
 
