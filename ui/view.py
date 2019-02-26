@@ -20,6 +20,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from ui.gui import *
 from ui.dialogs import *
 from ui.settingsDialog import *
+from ui.configDialog import *
 from ui.helpDialog import *
 from ui.addHostDialog import *
 from ui.ancillaryDialog import *
@@ -62,6 +63,7 @@ class View(QtCore.QObject):
         self.adddialog = AddHostsDialog(self.ui.centralwidget)      
         self.settingsWidget = AddSettingsDialog(self.ui.centralwidget)
         self.helpDialog = HelpDialog(self.controller.name, self.controller.author, self.controller.copyright, self.controller.links, self.controller.emails, self.controller.version, self.controller.build, self.controller.update, self.controller.license, self.controller.desc, self.controller.smallIcon, self.controller.bigIcon, qss = self.qss, parent = self.ui.centralwidget)
+        self.configDialog = ConfigDialog(controller = self.controller, qss = self.qss, parent = self.ui.centralwidget)
 
         self.ui.HostsTableView.setSelectionMode(1)                      # disable multiple selection
         self.ui.ServiceNamesTableView.setSelectionMode(1)
@@ -134,6 +136,7 @@ class View(QtCore.QObject):
         self.connectImportNmap()
         #self.connectSettings()
         self.connectHelp()      
+        self.connectConfig()
         self.connectAppExit()
         ### TABLE ACTIONS ###
         self.connectAddHostsOverlayClick()
@@ -476,7 +479,10 @@ class View(QtCore.QObject):
         self.controller.cancelSettings()
 
     def connectHelp(self):
-        self.ui.menuHelp.triggered.connect(self.helpDialog.show)
+        self.ui.actionHelp.triggered.connect(self.helpDialog.show)
+
+    def connectConfig(self):
+        self.ui.actionConfig.triggered.connect(self.configDialog.show)
 
     def connectAppExit(self):
         self.ui.actionExit.triggered.connect(self.appExit)  
