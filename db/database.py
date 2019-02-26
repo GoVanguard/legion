@@ -45,7 +45,7 @@ class process(Base):
     estimatedremaining = Column(Integer)
     elapsed = Column(Integer)
     outputfile = Column(String)
-    output = relationship("process_output") #, uselist = False, backref = "process")
+    output = relationship("process_output")
     status = Column(String)
     closed = Column(String)
 

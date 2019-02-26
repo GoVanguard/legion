@@ -5,6 +5,7 @@ __version__=  '0.1'
 
 import sys
 import xml.dom.minidom
+#import parsers.CPE as CPE
 import parsers.Service as Service
 import parsers.Script as Script
 
@@ -28,6 +29,17 @@ class Port:
            return Service.Service(service_node[0])
 
         return None
+
+   # def get_cpe(self):
+
+   #     cpes = []
+   #     cpe = self.port_node.getElementsByTagName('cpe')
+   #     print(cpe)
+
+   #     if len(cpe) > 0:
+   #        return CPE.CPE(cpe[0])
+
+   #     return None
 
     def get_scripts(self):
 

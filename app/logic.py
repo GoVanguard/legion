@@ -22,13 +22,12 @@ from six import u as unicode
 
 class Logic():
     def __init__(self):     
-        self.cwd = str(subprocess.check_output("echo $PWD", shell=True)[:-1].decode())+'/'
+        self.cwd = str(subprocess.check_output("echo $PWD", shell=True)[:-1].decode()) + '/'
         self.createTemporaryFiles()                                     # creates temporary files/folders used by SPARTA
 
     def createTemporaryFiles(self):
         try:
             log.info('Creating temporary files..')
-            
             self.istemp = True                                          # indicates that file is temporary and can be deleted if user exits without saving
             log.info(self.cwd)
             tf = tempfile.NamedTemporaryFile(suffix=".legion",prefix="legion-", delete=False, dir="./tmp/")         # to store the database file
@@ -42,30 +41,31 @@ class Logic():
             self.projectname = tf.name
             log.info(tf.name)
             self.db = Database(self.projectname)
-            
+
         except:
             log.info('Something went wrong creating the temporary files..')
             log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
 
-    def removeTemporaryFiles(self):
-        return
-        log.info('Removing temporary files and folders..')
-        try:
-            if not self.istemp:                                         # if current project is not temporary
-                if not self.storeWordlists:                             # delete wordlists if necessary
-                    log.info('Removing wordlist files.')
-                    os.remove(self.usernamesWordlist.filename)
-                    os.remove(self.passwordsWordlist.filename)
+    def removeTemporaryFiles(self, doCleanup = False):
+        if doCleanup == True:
+            log.info('Removing temporary files and folders..')
+            try:
+                if not self.istemp:                                         # if current project is not temporary
+                    if not self.storeWordlists:                             # delete wordlists if necessary
+                        log.info('Removing wordlist files.')
+                        os.remove(self.usernamesWordlist.filename)
+                        os.remove(self.passwordsWordlist.filename)
                 
-            else:
-                os.remove(self.projectname)
-                shutil.rmtree(self.outputfolder)
+                else:
+                    os.remove(self.projectname)
+                    shutil.rmtree(self.outputfolder)
             
-            shutil.rmtree(self.runningfolder)
+                shutil.rmtree(self.runningfolder)
 
-        except:
-            log.info('Something went wrong removing temporary files and folders..')
-            log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
+            except:
+                log.info('Something went wrong removing temporary files and folders..')
+                log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
+        return
 
     def createFolderForTool(self, tool):
         if 'nmap' in tool:
@@ -652,9 +652,8 @@ class NmapImporter(QtCore.QThread):
             hostCount = len(parser.all_hosts())
             if hostCount==0:                                            # to fix a division by zero if we ran nmap on one host
                 hostCount=1
-            #progress = 100.0 / hostCount
             totalprogress = 0
-            #self.tick.emit(int(totalprogress))
+
             self.importProgressWidget.setProgress(int(totalprogress))
             self.importProgressWidget.show()
    
@@ -673,9 +672,9 @@ class NmapImporter(QtCore.QThread):
                     session.add(t_note)
                 else:
                     self.tsLog("Found db_host already in db")
+
                 createProgress = createProgress + ((100.0 / hostCount) / 5)
                 totalprogress = totalprogress + createProgress
-                #self.tick.emit(int(totalprogress))
                 self.importProgressWidget.setProgress(int(totalprogress))
                 self.importProgressWidget.show()
 
@@ -703,12 +702,13 @@ class NmapImporter(QtCore.QThread):
                         #osCves = self.getCveFuzzy(os.name)
                         #print(osCves)
                         #for osCve in osCves:
+                        #    print(osCve)
                         #    t_cve = cve(name = osCve, url = "http://test", criteria = 'crit:test', fingerprint = 'fing:test')
                         #    session.add(t_cve)
+                        #session.commit()
                         #    t_cve = None
                     createOsNodesProgress = createOsNodesProgress + ((100.0 / hostCount) / 5)
                     totalprogress = totalprogress + createOsNodesProgress
-                    #self.tick.emit(int(totalprogress))
                     self.importProgressWidget.setProgress(int(totalprogress))
                     self.importProgressWidget.show()
 
