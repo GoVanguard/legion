@@ -248,6 +248,14 @@ class Logic():
                     'WHERE hosts.ip=?')
 
         return self.db.metadata.bind.execute(query, str(hostIP)).fetchall()
+
+    ## FIX
+    def getCvesFromDB(self, hostIP):
+        query = ('SELECT hosts.id, cves.name, cves.severity, cves.product, cves.version, cves.url, cves.source FROM cve AS cves ' +
+            'INNER JOIN nmap_host AS hosts ON hosts.id = cves.host_id ' +
+            'WHERE hosts.ip=?')
+
+        return self.db.metadata.bind.execute(query, str(hostIP)).fetchall()
         
     def getScriptOutputFromDB(self, scriptDBId):
         query = ('SELECT script.output FROM nmap_script as script WHERE script.id=?')
@@ -759,7 +767,7 @@ class NmapImporter(QtCore.QThread):
                         db_script = session.query(nmap_script).filter_by(script_id=scr.scriptId).filter_by(port_id=db_port.id).first()
                         cveResults = scr.get_cves()
                         for cveEntry in cveResults:
-                            t_cve = cve(name = cveEntry.name, url = cveEntry.url, source = cveEntry.source, severity = cveEntry.severity, product = cveEntry.product, version = cveEntry.version)
+                            t_cve = cve(name = cveEntry.name, url = cveEntry.url, source = cveEntry.source, severity = cveEntry.severity, product = cveEntry.product, version = cveEntry.version, hostId = db_host.id)
                             session.add(t_cve)
                         session.commit()
 
