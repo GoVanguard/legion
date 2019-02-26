@@ -132,7 +132,6 @@ class cve(Base):
     name = Column(String)
     id = Column(Integer, primary_key = True)
     url = Column(String)
-    name = Column(String)
     product = Column(String)
     severity = Column(String)
     source = Column(String)
@@ -140,13 +139,14 @@ class cve(Base):
     service_id = Column(String, ForeignKey('nmap_service.id'))
     host_id = Column(String, ForeignKey('nmap_host.id'))
 
-    def __init__(self, url = '', name = '', product = '', severity = '', source = '', version = ''):
+    def __init__(self, name, url, product, hostId, severity = '', source = '', version = ''):
         self.url = url
         self.name = name
         self.product = product
         self.severity = severity
         self.source = source
         self.version = version
+        self.host_id = hostId
 
 class nmap_service(Base):
     __tablename__ = 'nmap_service'

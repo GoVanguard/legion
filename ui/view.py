@@ -26,6 +26,7 @@ from ui.ancillaryDialog import *
 from app.hostmodels import *
 from app.servicemodels import *
 from app.scriptmodels import *
+from app.cvemodels import *
 from app.processmodels import *
 from app.auxiliary import *
 import time #temp
@@ -177,8 +178,8 @@ class View(QtCore.QObject):
         headers = ["Name"]
         setTableProperties(self.ui.ServiceNamesTableView, len(headers))
 
-        # cves table (left)
-        headers = ["Name", "URL", "Fingerprint"]
+        # cves table (right)
+        headers = ["HostId", "Id", "Severity", "Product", "Version", "URL", "Source"]
         setTableProperties(self.ui.CvesTableView, len(headers))
 
         # tools table (left)
@@ -658,13 +659,13 @@ class View(QtCore.QObject):
                     self.updateServiceNamesTableView()
                 self.serviceNamesTableClick()
 
-            elif  selectedTab == 'CVEs':
-                self.ui.ServicesTabWidget.setCurrentIndex(0)
-                self.removeToolTabs(0)                                  # remove the tool tabs
-                self.controller.saveProject(self.lastHostIdClicked, self.ui.NotesTextEdit.toPlainText())
-                if self.lazy_update_services == True:
-                    self.updateServiceNamesTableView()
-                self.serviceNamesTableClick()
+            #elif  selectedTab == 'CVEs':
+            #    self.ui.ServicesTabWidget.setCurrentIndex(0)
+            #    self.removeToolTabs(0)                                  # remove the tool tabs
+            #    self.controller.saveProject(self.lastHostIdClicked, self.ui.NotesTextEdit.toPlainText())
+            #    if self.lazy_update_services == True:
+            #        self.updateServiceNamesTableView()
+            #    self.serviceNamesTableClick()
                 
             elif selectedTab == 'Tools':
                 self.updateToolsTableView()
@@ -1049,6 +1050,20 @@ class View(QtCore.QObject):
             self.ui.ScriptsTableView.selectRow(row)
             self.scriptTableClick()
 
+    def updateCvesByHostView(self, hostIP):
+        headers = ["HostId", "ID", "Severity", "Product", "Version", "URL", "Source"]
+        cves = self.controller.getCvesFromDB(hostIP)
+        print(cves)
+        self.CvesTableModel = CvesTableModel(self,self.controller.getCvesFromDB(hostIP), headers)
+
+        for i in [0]:                                                 # hide some columns
+            self.ui.CvesTableView.setColumnHidden(i, True)
+        self.ui.CvesTableView.horizontalHeader().resizeSection(5,200)
+
+        self.ui.CvesTableView.setModel(self.CvesTableModel)
+        self.ui.CvesTableView.repaint()
+        self.ui.CvesTableView.update()
+
     def updateScriptsOutputView(self, scriptId):
         self.ui.ScriptsOutputTextEdit.clear()
         lines = self.controller.getScriptOutputFromDB(scriptId)
@@ -1097,6 +1112,7 @@ class View(QtCore.QObject):
     def updateRightPanel(self, hostIP):
         self.updateServiceTableView(hostIP)
         self.updateScriptsView(hostIP)
+        self.updateCvesByHostView(hostIP)
         self.updateInformationView(hostIP)                              # populate host info tab
         self.controller.saveProject(self.lastHostIdClicked, self.ui.NotesTextEdit.toPlainText())
 
