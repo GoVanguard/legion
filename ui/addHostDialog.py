@@ -19,6 +19,11 @@ from app.auxiliary import *                                             # for ti
 from six import u as unicode
 from ui.ancillaryDialog import flipState
 
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    _fromUtf8 = lambda s: s
+
 # dialog shown when the user selects "Add host(s)" from the menu
 class AddHostsDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -233,8 +238,18 @@ class AddHostsDialog(QtWidgets.QDialog):
 
         self.cmdAddButton = QPushButton('Submit', self)
         self.cmdAddButton.setMaximumSize(160, 70)
+        self.addIcon = QtGui.QIcon()
+        self.addIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/add.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.cmdAddButton.setIconSize(QtCore.QSize(19, 19))
+        self.cmdAddButton.setIcon(self.addIcon)
+
         self.cmdCancelButton = QPushButton('Cancel', self)
         self.cmdCancelButton.setMaximumSize(110, 30)
+        self.cancelIcon = QtGui.QIcon()
+        self.cancelIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/minus-black.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.cmdCancelButton.setIconSize(QtCore.QSize(19, 19))
+        self.cmdCancelButton.setIcon(self.cancelIcon)
+
         self.cmdAddButton.setDefault(True)
         self.hlayout2 = QtWidgets.QHBoxLayout()
         self.hlayout2.addWidget(self.cmdAddButton)
