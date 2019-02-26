@@ -115,3 +115,6 @@ scripts/ndr.py
 scripts/rdp-sec-check.pl
 scripts/smbenum.sh
 scripts/snmpbrute.py
+scripts/installDeps.sh
+scripts/smtp-user-enum.pl
+scripts/snmpcheck.rb

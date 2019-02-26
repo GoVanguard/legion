@@ -28,7 +28,7 @@ class Controller():
     def __init__(self, view, logic):
         self.name = "LEGION"
         self.version = '0.3.2'
-        self.build = '1551213682'
+        self.build = '1551216508'
         self.author = 'GoVanguard'
         self.copyright = '2019'
         self.links = ['http://github.com/GoVanguard/legion/issues', 'https://GoVanguard.io/legion']
@@ -92,7 +92,7 @@ class Controller():
         self.processTableUiUpdateTimer = QTimer()
         self.processTableUiUpdateTimer.timeout.connect(self.view.updateProcessesTableView)
         # Update only when queue > 0
-        # self.processTableUiUpdateTimer.start(1000) # Faster than this doesn't make anything smoother
+        self.processTableUiUpdateTimer.start(1000) # Faster than this doesn't make anything smoother
 
     # this function fetches all the settings from the conf file. Among other things it populates the actions lists that will be used in the context menus.
     def loadSettings(self):
@@ -540,9 +540,9 @@ class Controller():
                 elif not self.fastProcessQueue.empty():
                     log.debug('> next process was canceled, checking queue again..')
                     self.checkProcessQueue()
-        else:
-            log.info("Halting process panel update timer as all processes are finished.")
-            self.processTableUiUpdateTimer.stop()
+        #else:
+        #    log.info("Halting process panel update timer as all processes are finished.")
+        #    self.processTableUiUpdateTimer.stop()
             
     def cancelProcess(self, dbId):
         log.info('Canceling process: ' + str(dbId))
