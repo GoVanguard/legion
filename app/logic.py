@@ -757,6 +757,11 @@ class NmapImporter(QtCore.QThread):
                         self.tsLog("        Processing script obj {scr}".format(scr=str(scr)))                             
                         db_port = session.query(nmap_port).filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
                         db_script = session.query(nmap_script).filter_by(script_id=scr.scriptId).filter_by(port_id=db_port.id).first()
+                        cveResults = scr.get_cves()
+                        for cveEntry in cveResults:
+                            t_cve = cve(name = cveEntry.name, url = cveEntry.url, source = cveEntry.source, severity = cveEntry.severity, product = cveEntry.product, version = cveEntry.version)
+                            session.add(t_cve)
+                        session.commit()
 
                         if not db_script:                               # if this script object doesn't exist, create it
                             t_nmap_script = nmap_script(scr.scriptId, scr.output, db_port.id, db_host.id)
