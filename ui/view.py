@@ -1066,7 +1066,9 @@ class View(QtCore.QObject):
         cves = self.controller.getCvesFromDB(hostIP)
         self.CvesTableModel = CvesTableModel(self,self.controller.getCvesFromDB(hostIP), headers)
 
-        self.ui.CvesTableView.horizontalHeader().resizeSection(4,200)
+        self.ui.CvesTableView.horizontalHeader().resizeSection(0,175)
+        self.ui.CvesTableView.horizontalHeader().resizeSection(2,200)
+        self.ui.CvesTableView.horizontalHeader().resizeSection(4,250)
 
         self.ui.CvesTableView.setModel(self.CvesTableModel)
         self.ui.CvesTableView.repaint()
