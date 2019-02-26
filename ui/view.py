@@ -180,8 +180,9 @@ class View(QtCore.QObject):
         setTableProperties(self.ui.ServiceNamesTableView, len(headers))
 
         # cves table (right)
-        headers = ["HostId", "Id", "Severity", "Product", "Version", "URL", "Source"]
+        headers = ["Id", "Severity", "Product", "Version", "URL", "Source"]
         setTableProperties(self.ui.CvesTableView, len(headers))
+        self.ui.CvesTableView.setSortingEnabled(True)
 
         # tools table (left)
         headers = ["Progress", "Display", "Pid", "Tool", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "OutputFile", "Output", "Status"]
@@ -1055,13 +1056,11 @@ class View(QtCore.QObject):
             self.scriptTableClick()
 
     def updateCvesByHostView(self, hostIP):
-        headers = ["HostId", "ID", "Severity", "Product", "Version", "URL", "Source"]
+        headers = ["ID", "Severity", "Product", "Version", "URL", "Source"]
         cves = self.controller.getCvesFromDB(hostIP)
         self.CvesTableModel = CvesTableModel(self,self.controller.getCvesFromDB(hostIP), headers)
 
-        for i in [0]:                                                 # hide some columns
-            self.ui.CvesTableView.setColumnHidden(i, True)
-        self.ui.CvesTableView.horizontalHeader().resizeSection(5,200)
+        self.ui.CvesTableView.horizontalHeader().resizeSection(4,200)
 
         self.ui.CvesTableView.setModel(self.CvesTableModel)
         self.ui.CvesTableView.repaint()
@@ -1193,6 +1192,7 @@ class View(QtCore.QObject):
         
         # Force size of progress animation    
         self.ui.ProcessesTableView.horizontalHeader().resizeSection(0, 125)
+        self.ui.ProcessesTableView.horizontalHeader().resizeSection(15, 125)
 
         # Update animations
         self.updateProcessesIcon()

@@ -52,18 +52,16 @@ class CvesTableModel(QtCore.QAbstractTableModel):
             row = index.row()
             column = index.column()
             if column == 0:
-                value = self.__cves[row]['id']        
-            elif column == 1:
                 value = self.__cves[row]['name']
-            elif column == 2:
+            elif column == 1:
                 value = self.__cves[row]['severity']
-            elif column == 3:
+            elif column == 2:
                 value = self.__cves[row]['product']
-            elif column == 4:
+            elif column == 3:
                 value = self.__cves[row]['version']
-            elif column == 5:
+            elif column == 4:
                 value = self.__cves[row]['url']
-            elif column == 6:
+            elif column == 5:
                 value = self.__cves[row]['source']
             return value
                     
@@ -72,25 +70,22 @@ class CvesTableModel(QtCore.QAbstractTableModel):
         self.layoutAboutToBeChanged.emit()
         array=[]
         
-        if Ncol == 0:
-            for i in range(len(self.__cves)):
-                array.append(self.__cves[i]['id'])
-        elif Ncol == 1:            
+        if Ncol == 0:            
             for i in range(len(self.__cves)):
                 array.append(self.__cves[i]['name'])
-        elif Ncol == 2:
+        elif Ncol == 1:
             for i in range(len(self.__cves)):
                 array.append(self.__cves[i]['severity'])
-        elif Ncol == 3:
+        elif Ncol == 2:
             for i in range(len(self.__cves)):
                 array.append(self.__cves[i]['product'])
-        elif Ncol == 4:
+        elif Ncol == 3:
             for i in range(len(self.__cves)):
                 array.append(self.__cves[i]['version'])
-        elif Ncol == 5:
+        elif Ncol == 4:
             for i in range(len(self.__cves)):
                 array.append(self.__cves[i]['url'])
-        elif Ncol == 6:
+        elif Ncol == 5:
             for i in range(len(self.__cves)):
                 array.append(self.__cves[i]['source'])
 
@@ -107,9 +102,9 @@ class CvesTableModel(QtCore.QAbstractTableModel):
     ### getter functions ###
 
     def getCveDBIdForRow(self, row):
-        return self.__cves[row]['id']
+        return self.__cves[row]['name']
     
     def getRowForDBId(self, id):
         for i in range(len(self.__cves)):
-            if self.__cves[i]['id'] == id:
+            if self.__cves[i]['name'] == id:
                 return i
