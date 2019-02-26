@@ -48,7 +48,7 @@ class View(QtCore.QObject):
         self.ui.splitter_2.setSizes([250, self.bottomWindowSize])                           # set better default size for bottom panel
         self.qss = None
         self.processesTableViewSort = 'desc'
-        self.processesTableViewSortColumn = 'id'
+        self.processesTableViewSortColumn = 'status'
         self.toolsTableViewSort = 'desc'
         self.toolsTableViewSortColumn = 'id'
 
@@ -955,7 +955,7 @@ class View(QtCore.QObject):
 
     def setupToolsTableView(self):
         headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
-        self.ToolsTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.filters, showProcesses = 'noNmap', sort = self.processesTableViewSort, ncol = self.processesTableViewSortColumn), headers)
+        self.ToolsTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.filters, showProcesses = 'noNmap', sort = self.toolsTableViewSort, ncol = self.toolsTableViewSortColumn), headers)
         self.ui.ToolsTableView.setModel(self.ToolsTableModel)
 
     def updateToolsTableView(self):
@@ -1176,6 +1176,7 @@ class View(QtCore.QObject):
         headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
         self.ProcessesTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.filters, showProcesses = True, sort = self.processesTableViewSort, ncol = self.processesTableViewSortColumn), headers)
         self.ui.ProcessesTableView.setModel(self.ProcessesTableModel)
+        self.ProcessesTableModel.sort(15, Qt.DescendingOrder)
         
     def updateProcessesTableView(self):
         headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]

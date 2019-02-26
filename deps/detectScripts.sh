@@ -36,3 +36,29 @@ if [ -a scripts/ndr.py ]
 else
   wget -v -P scripts/ https://raw.githubusercontent.com/GoVanguard/sparta-scripts/master/ndr.py  
 fi
+
+if [ -a scripts/installDeps.sh ]
+  then
+    echo "installDeps.sh is already installed"
+else
+  wget -v -P scripts/ https://raw.githubusercontent.com/GoVanguard/sparta-scripts/master/installDeps.sh
+fi
+
+if [ -a scripts/snmpcheck.rb ]
+  then
+    echo "snmpcheck.rb is already installed"
+else
+  wget -v -P scripts/ https://raw.githubusercontent.com/GoVanguard/sparta-scripts/master/snmpcheck.rb
+fi
+
+if [ -a scripts/smtp-user-enum.pl ]
+  then
+    echo "smtp-user-enum.pl is already installed"
+else
+  wget -v -P scripts/ https://raw.githubusercontent.com/GoVanguard/sparta-scripts/master/smtp-user-enum.pl
+fi
+
+if [ ! -f ".initialized" ]
+  then
+    scripts/installDeps.sh
+fi
