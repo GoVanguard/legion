@@ -1,3 +1,9 @@
+LEGION 0.3.2
+
+* Stage 3 is now vulners scan
+* Former stages 3, 4 and 5 are respectively 4, 5 and 6 now
+* Config editor dialog
+
 LEGION 0.3.1
 
 * UI polish everywhere (element sizing, scaling, icons, tooltips, etc.)
