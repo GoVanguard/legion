@@ -4,7 +4,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/4e33e52aab8f49cdcd02/maintainability)](https://codeclimate.com/github/GoVanguard/legion/maintainability)
 
 ## ABOUT
-Legion is a fork of SECFORCE's Sparta, Legion is an open source, easy-to-use, super-extensible and semi-automated network penetration testing tool that aids in discovery, reconnaissance and exploitation of information systems. [Legion](https://govanguard.io/legion) is developed and maintained by [GoVanguard](https://govanguard.io). For more info about Legion and it's roadmap check out it's product page at [https://GoVanguard.io/legion](https://govanguard.io/legion).
+Legion is a fork of SECFORCE's Sparta, Legion is an open source, easy-to-use, super-extensible and semi-automated network penetration testing tool that aids in discovery, reconnaissance and exploitation of information systems. [Legion](https://govanguard.io/legion) is developed and maintained by [GoVanguard](https://govanguard.io). More information about Legion, including the product roadmap, can be found on it's product page at [https://GoVanguard.io/legion](https://govanguard.io/legion).
 
 ### FEATURES
 * Automatic recon and scanning with NMAP, whataweb, nikto, Vulners, Hydra, SMBenum, dirbuster, sslyzer, webslayer and more (with almost 100 auto-scheduled scripts)
