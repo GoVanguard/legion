@@ -1,3 +1,8 @@
+LEGION 0.3.3
+
+* Fix hydra 8.7+ issues
+* Fix minor UI update issues
+
 LEGION 0.3.2
 
 * Stage 3 is now vulners scan
