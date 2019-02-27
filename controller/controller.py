@@ -27,8 +27,8 @@ class Controller():
     @timing
     def __init__(self, view, logic):
         self.name = "LEGION"
-        self.version = '0.3.3'
-        self.build = '1551290572'
+        self.version = '0.3.4'
+        self.build = '1551291663'
         self.author = 'GoVanguard'
         self.copyright = '2019'
         self.links = ['http://github.com/GoVanguard/legion/issues', 'https://GoVanguard.io/legion']
