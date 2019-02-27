@@ -1062,13 +1062,13 @@ class View(QtCore.QObject):
             self.scriptTableClick()
 
     def updateCvesByHostView(self, hostIP):
-        headers = ["ID", "Severity", "Product", "Version", "URL", "Source"]
+        headers = ["ID", "CVSS Score", "Product", "Version", "URL", "Source"]
         cves = self.controller.getCvesFromDB(hostIP)
         self.CvesTableModel = CvesTableModel(self,self.controller.getCvesFromDB(hostIP), headers)
 
         self.ui.CvesTableView.horizontalHeader().resizeSection(0,175)
-        self.ui.CvesTableView.horizontalHeader().resizeSection(2,200)
-        self.ui.CvesTableView.horizontalHeader().resizeSection(4,250)
+        self.ui.CvesTableView.horizontalHeader().resizeSection(2,175)
+        self.ui.CvesTableView.horizontalHeader().resizeSection(4,225)
 
         self.ui.CvesTableView.setModel(self.CvesTableModel)
         self.ui.CvesTableView.repaint()

@@ -297,7 +297,9 @@ oracle-default=oracle-tns, tcp
 postgres-default=postgresql, tcp
 screenshooter="http,https,ssl,http-proxy,http-alt,https-alt", tcp
 smbenum=microsoft-ds, tcp
+smtp-enum-vrfy=smtp, tcp
 snmp-default=snmp, udp
+snmpcheck=snmp, udp
 x11screen=X11, tcp
 
 [StagedNmapSettings]
