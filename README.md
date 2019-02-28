@@ -7,7 +7,7 @@
 
 
 ## ABOUT
-Legion, a fork of SECFORCE's Sparta, is an open source, easy-to-use, super-extensible and semi-automated network penetration testing tool that aids in discovery, reconnaissance and exploitation of information systems. 
+Legion, a fork of SECFORCE's Sparta, is an open source, easy-to-use, super-extensible and semi-automated network penetration testing framework that aids in discovery, reconnaissance and exploitation of information systems. 
 [Legion](https://govanguard.io/legion) is developed and maintained by [GoVanguard](https://govanguard.io). More information about Legion, including the [product roadmap](https://govanguard.io/legion), can be found on it's product page at [https://GoVanguard.io/legion](https://govanguard.io/legion).
 
 ### FEATURES
