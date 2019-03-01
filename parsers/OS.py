@@ -22,7 +22,7 @@ class OS:
             self.generation = OSNode.getAttribute('osgen')
             self.os_type = OSNode.getAttribute('type')
             self.vendor = OSNode.getAttribute('vendor')
-            self.accuracy = OSNode.getAttribute('accuracy')
+            self.accuracy = int(OSNode.getAttribute('accuracy'))
 
 if __name__ == '__main__':
 
