@@ -41,6 +41,13 @@ then
     then
         releaseVersion="4.5"
     fi
+elif [[ ${releaseOutput} == *"CentOS"* ]]
+then
+	releaseName="CentOS"
+	if [[ ${releaseOutput} == *"2018"* ]]
+    then
+        releaseVersion="7"
+	fi
 else
     releaseName="something unsupported"
 fi
