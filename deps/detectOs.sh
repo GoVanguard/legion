@@ -44,7 +44,7 @@ then
 elif [[ ${releaseOutput} == *"CentOS"* ]]
 then
 	releaseName="CentOS"
-	if [[ ${releaseOutput} == *"2018"* ]]
+	if [[ ${releaseOutput} == *"Linux 7"* ]]
     then
         releaseVersion="7"
 	fi

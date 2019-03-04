@@ -47,7 +47,7 @@ function runYumGetUpdate()
     if [[ "${lastYumGetUpdate}" -gt "${updateInterval}" ]]
     then
         info "yum update"
-        yum update -m
+        yum update
     else
         local lastUpdate="$(date -u -d @"${lastYumGetUpdate}" +'%-Hh %-Mm %-Ss')"
 
