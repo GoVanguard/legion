@@ -7,7 +7,7 @@ echo "Checking Yum..."
 runYumGetUpdate
 
 echo "Installing deps..."
-yum install -y epel-release centos-release-scl git python36-pip python36-devel nmap finger hydra nikto rpcbind sslscan rwho medusa CutyCapt eog hping3 python-sqlalchemy.x86_64 PyQt4 rh-python36-python-sqlalchemy.x86_64 python-impacket ruby perl nfs-utils samba-client openldap
+yum install -y epel-release centos-release-scl git python36-pip python36-devel nmap finger hydra nikto rpcbind sslscan rwho medusa CutyCapt eog hping3 python-sqlalchemy.x86_64 PyQt4 rh-python36-python-sqlalchemy.x86_64 python-impacket ruby perl nfs-utils samba-client openldap xorg-x11-apps xorg-x11-server-Xvfb
 
 if [ -a /usr/bin/whatweb ]
   then
@@ -44,4 +44,32 @@ else
   cd ../
   rm sratoolkit.current-centos_linux64.tar.gz
   cd ../deps
+fi
+
+if [ -a /usr/bin/leafpad ]
+  then
+    echo "Leafpad is already installed"
+else
+  wget -v -P scripts/ http://savannah.nongnu.org/download/leafpad/leafpad-0.8.17.tar.gz
+  cd scripts
+  tar -xvf leafpad-0.8.17.tar.gz
+  cd leafpad-0.8.17
+  ./configure
+  make
+  make install-strip
+  cd ../
+  rm leafpad-0.8.17.tar.gz
+  cd ../
+fi 
+
+if [ -a /usr/bin/imagemagick ]
+  then
+    echo "ImageMagick is already installed"
+else
+  wget -v -P ftp://ftp.imagemagick.org/pub/ImageMagick/linux/CentOS/x86_64/ImageMagick-7.0.8-32.x86_64.rpm
+  wget -v -P ftp://ftp.imagemagick.org/pub/ImageMagick/linux/CentOS/x86_64/ImageMagick-libs-7.0.8-32.x86_64.rpm
+  rpm -Uvh ImageMagick-7.0.8-32.x86_64.rpm
+  rpm -Uvh ImageMagick-libs-7.0.8-32.x86_64.rpm
+  rm ImageMagick-7.0.8-32.x86_64.rpm
+  rm ImageMagick-libs-7.0.8-32.x86_64.rpm
 fi 
