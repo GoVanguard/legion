@@ -66,8 +66,8 @@ if [ -a /usr/bin/imagemagick ]
   then
     echo "ImageMagick is already installed"
 else
-  wget -v -P ftp://ftp.imagemagick.org/pub/ImageMagick/linux/CentOS/x86_64/ImageMagick-7.0.8-32.x86_64.rpm
-  wget -v -P ftp://ftp.imagemagick.org/pub/ImageMagick/linux/CentOS/x86_64/ImageMagick-libs-7.0.8-32.x86_64.rpm
+  wget -v "ftp://ftp.imagemagick.org/pub/ImageMagick/linux/CentOS/x86_64/ImageMagick-7.0.8-32.x86_64.rpm"
+  wget -v "ftp://ftp.imagemagick.org/pub/ImageMagick/linux/CentOS/x86_64/ImageMagick-libs-7.0.8-32.x86_64.rpm"
   rpm -Uvh ImageMagick-7.0.8-32.x86_64.rpm
   rpm -Uvh ImageMagick-libs-7.0.8-32.x86_64.rpm
   rm ImageMagick-7.0.8-32.x86_64.rpm
