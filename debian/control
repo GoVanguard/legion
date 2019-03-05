@@ -1,0 +1,26 @@
+Source: legion
+Section: misc
+Priority: optional
+Maintainer: GoVanguard <hello@gvit.com>
+Uploaders: Shane Scott <sscott@gvit.com>
+Build-Depends: debhelper-compat (= 12), python, python-qt5, python-requests
+Standards-Version: 4.3.0
+Homepage: https://github.com/GoVanguard/Legion
+
+Package: legion
+Architecture: all
+Depends: ${misc:Depends},
+         python,
+         python-qt5,
+         python-impacket,
+         nmap,
+         hydra,
+         cutycapt,
+         ldap-utils,
+         rwho,
+         rsh-client,
+         x11-apps,
+         finger,
+         xsltproc,
+         nikto
+Description: Legion, a fork of SECFORCE's Sparta, is an open source, easy-to-use, super-extensible and semi-automated network penetration testing framework that aids in discovery, reconnaissance and exploitation of information systems.
