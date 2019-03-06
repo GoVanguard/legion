@@ -26,8 +26,14 @@ function info()
 
 function getLastYumGetUpdate()
 {
-    local yumDate="$(stat -c %Y '/var/cache/yum')"
-    local nowDate="$(date +'%s')"
+	releaseOutput=`cat /etc/os-release`
+	if [[ ${releaseOutput} == *"Fedora"* ]]
+		then
+			local yumDate="$(stat -c %Y '/var/cache/dnf')"
+	else
+		local yumDate="$(stat -c %Y '/var/cache/yum')"
+    fi 
+	local nowDate="$(date +'%s')"
 
     echo $((nowDate - yumDate))
 }
@@ -46,8 +52,14 @@ function runYumGetUpdate()
 
     if [[ "${lastYumGetUpdate}" -gt "${updateInterval}" ]]
     then
-        info "yum update"
-        yum update
+		if [[ ${releaseOutput} == *"Fedora"* ]]
+			then
+				info "dnf update"
+				dnf update
+		else
+			info "yum update"
+			yum update
+			fi 
     else
         local lastUpdate="$(date -u -d @"${lastYumGetUpdate}" +'%-Hh %-Mm %-Ss')"
 
