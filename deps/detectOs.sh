@@ -48,6 +48,16 @@ then
     then
         releaseVersion="7"
 	fi
+elif [[ ${releaseOutput} == *"Fedora"* ]]
+then
+	releaseName="Fedora"
+	if [[ ${releaseOutput} == *"29"* ]]
+    then
+        releaseVersion="29"
+	elif [[ ${releaseOutput} == *"28"* ]]
+	then
+		releaseVersion="28"
+	fi
 else
     releaseName="something unsupported"
 fi
