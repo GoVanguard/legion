@@ -16,3 +16,7 @@ touch .justcloned
 
 # Clear tmp
 rm -Rf ./tmp/*
+
+# Clear all pyc and pyc
+find . -name \*.pyc -delete
+find . -name \*.pyo -delete

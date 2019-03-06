@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+
+PACKAGE_DIR=debian/legion/usr/share/legion
+%:
+	dh $@ 
+
+override_dh_install:
+	PYTHONPATH=. python3 app/settings.py
+	dh_install -X.pyc
+
+
+override_dh_fixperms:
+	dh_fixperms
+	chmod 755 debian/legion/usr/share/legion/scripts/*
+	chmod 755 debian/legion/usr/share/legion/deps/*
+	chmod 755 debian/legion/usr/share/legion/startLegion.sh
