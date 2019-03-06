@@ -19,7 +19,7 @@ then
     echo "Running ${DEPINSTALLER}..."
     bash ./deps/${DEPINSTALLER}
     # Determine if additional Sparta scripts are installed
-    source ./deps/detectScripts.sh
+    bash ./deps/detectScripts.sh
     touch .initialized
     rm .justcloned -f
 fi
