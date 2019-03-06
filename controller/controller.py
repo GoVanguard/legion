@@ -33,7 +33,9 @@ class Controller():
         self.copyright = '2019'
         self.links = ['http://github.com/GoVanguard/legion/issues', 'https://GoVanguard.io/legion']
         self.emails = []
+
         self.update = '03/06/2019'
+
         self.license = "GPL v3"
         self.desc = "Legion is a fork of SECFORCE's Sparta, Legion is an open source, easy-to-use, \nsuper-extensible and semi-automated network penetration testing tool that aids in discovery, \nreconnaissance and exploitation of information systems."
         self.smallIcon = './images/icons/Legion-N_128x128.svg'
