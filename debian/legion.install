@@ -1,0 +1,11 @@
+app usr/share/legion/
+controller usr/share/legion/
+db usr/share/legion/
+images usr/share/legion/
+parsers usr/share/legion/
+scripts usr/share/legion/
+legion.py usr/share/legion/
+ui usr/share/legion/
+wordlists usr/share/legion/
+legion usr/bin/
+legion.conf etc/
