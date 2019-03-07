@@ -17,6 +17,9 @@ then
 		yum install -y rh-python36
 		scl enable rh-python36 bash
 		yum groupinstall 'Development Tools'
+	elif [[ ${releaseOutput} == *"Fedora"* ]]
+		then
+		dnf install python-36
 	else
 		yum install -y python36
 	fi
