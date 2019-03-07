@@ -35,7 +35,8 @@ class Logic():
             self.runningfolder = tempfile.mkdtemp(suffix="-running",prefix="legion-", dir="./tmp/")               # to store tool output of running processes
             os.makedirs(self.outputfolder+'/screenshots')                                           # to store screenshots
             os.makedirs(self.runningfolder+'/nmap')                                                 # to store nmap output
-            os.makedirs(self.runningfolder+'/hydra')                                                # to store hydra output         
+            os.makedirs(self.runningfolder+'/hydra')                                                # to store hydra output     
+           	os.makedirs(self.runningfolder+'/dnsmap')                                               # to store dnsmap output 
             self.usernamesWordlist = Wordlist(self.outputfolder + '/legion-usernames.txt')          # to store found usernames
             self.passwordsWordlist = Wordlist(self.outputfolder + '/legion-passwords.txt')          # to store found passwords
             self.projectname = tf.name
