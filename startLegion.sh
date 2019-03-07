@@ -20,6 +20,7 @@ then
     bash ./deps/${DEPINSTALLER}
     # Determine if additional Sparta scripts are installed
     bash ./deps/detectScripts.sh
+    source ./deps/detectPython.sh
     touch .initialized
     rm .justcloned -f
 fi
