@@ -1,7 +1,8 @@
 #!/bin/bash
 
 echo "Checking for additional Sparta scripts..."
-echo $(pwd)
+curPath=`pwd`
+
 if [ -a scripts/smbenum.sh ]
   then
     echo "smbenum.sh is already installed"
@@ -62,3 +63,5 @@ if [ ! -f ".initialized" ]
   then
     scripts/installDeps.sh
 fi
+
+cd ${curPath}
