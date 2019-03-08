@@ -8,7 +8,6 @@ releaseOutput=`cat /etc/os-release`
 
 if [[ ${PYTHON3BIN} == "Missing" ]] | [[ ${PIP3BIN} == "Missing" ]] | [[ -z "${PYTHON3BIN}" ]] | [[ -z "${PIP3BIN}" ]]
 then
-    echo "Installing python3.6 from YUM..."
     echo "Checking Yum..."
     runYumGetUpdate
 	if [[ ${releaseOutput} == *"CentOS"* ]]
@@ -20,7 +19,6 @@ then
 	elif [[ ${releaseOutput} == *"Fedora"* ]]
 		then
 			echo "Install Python3.7 and Pip3.7 from YUM..."
-			dnf install python-36
 			dnf install python37
 	else
 		yum install -y python36

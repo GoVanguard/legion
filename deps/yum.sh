@@ -63,6 +63,6 @@ function runYumGetUpdate()
     else
         local lastUpdate="$(date -u -d @"${lastYumGetUpdate}" +'%-Hh %-Mm %-Ss')"
 
-        info "\nSkip yum update because its last run was '${lastUpdate}' ago"
+        info "\nSkip yum/dnf update because its last run was '${lastUpdate}' ago"
     fi
 }
