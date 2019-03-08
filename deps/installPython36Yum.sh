@@ -20,6 +20,7 @@ then
 	elif [[ ${releaseOutput} == *"Fedora"* ]]
 		then
 		dnf install python-36
+        dnf install python37
 	else
 		yum install -y python36
 	fi
