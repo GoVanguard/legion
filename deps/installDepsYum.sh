@@ -12,10 +12,10 @@ echo "Installing deps..."
 
 if [[ ${releaseOutput} == *"CentOS"* ]]
 	then
-		yum install -y epel-release centos-release-scl git python36-pip python36-devel nmap finger hydra nikto rpcbind sslscan rwho medusa CutyCapt eog hping3 python-sqlalchemy.x86_64 PyQt4 rh-python36-python-sqlalchemy.x86_64 python-impacket ruby perl nfs-utils samba-client openldap xorg-x11-apps xorg-x11-server-Xvfb
+		yum install -y epel-release centos-release-scl git python36-pip python36-devel nmap finger hydra nikto rpcbind sslscan rwho medusa CutyCapt eog hping3 python-sqlalchemy.x86_64 PyQt4 rh-python36-python-sqlalchemy.x86_64 python-impacket ruby perl nfs-utils samba-client openldap xorg-x11-apps xorg-x11-server-Xvfb dnsmap
 elif [[ ${releaseOutput} == *"Fedora"* ]]
 	then
-		dnf install -y git python-sqlalchemy python3-sqlalchemy nmap finger hydra nikto rpcbind sslscan rwho medusa CutyCapt eog hping3 PyQt4 python-impacket ruby perl nfs-utils samba-client openldap xorg-x11-apps xorg-x11-server-Xvfb
+		dnf install -y git python-sqlalchemy python3-sqlalchemy nmap finger hydra nikto rpcbind sslscan rwho medusa CutyCapt eog hping3 PyQt4 python-impacket ruby perl nfs-utils samba-client openldap xorg-x11-apps xorg-x11-server-Xvfb dnsmap
 else
 	yum install -y git python36-pip python36-devel nmap finger hydra nikto rpcbind sslscan rwho medusa CutyCapt eog hping3 python-sqlalchemy.x86_64 PyQt4 rh-python36-python-sqlalchemy.x86_64 python-impacket ruby perl nfs-utils samba-client openldap xorg-x11-apps xorg-x11-server-Xvfb
 fi 
