@@ -3,6 +3,20 @@
 testForPython=`python --version 2>&1`
 testForPython2=`python3 --version 2>&1`
 testForPython3=`python3.6 --version 2>&1`
+testForPython37=`python3.7 --version 2>&1`
+releaseOutput=`cat /etc/os-release`
+
+if [[ ${releaseOutput} == *"Fedora"* ]]
+	then
+		if [[ $testForPython == *"3.7"* ]]; then
+			pythonBin='python'
+		elif [[ $testForPython2 == *"3.7"* ]]; then
+			pythonBin='python3'
+		elif [[ $testForPython3 == *"3.7"* ]] && [[ $testForPython3 != *"not found"* ]]; then
+			pythonBin='python3.7'
+		else
+			pythonBin='Missing'
+		fi
 
 if [[ $testForPython == *"3.6"* ]]; then
     pythonBin='python'
