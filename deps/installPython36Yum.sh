@@ -12,11 +12,11 @@ then
     echo "Checking Yum..."
     runYumGetUpdate
 	if [[ ${releaseOutput} == *"CentOS"* ]]
-	then
-		echo "Install Python3.6 and Pip3.6 from YUM..."
-		yum install -y rh-python36
-		scl enable rh-python36 bash
-		yum groupinstall 'Development Tools'
+		then
+			echo "Install Python3.6 and Pip3.6 from YUM..."
+			yum install -y rh-python36
+			scl enable rh-python36 bash
+			yum groupinstall 'Development Tools'
 	elif [[ ${releaseOutput} == *"Fedora"* ]]
 		then
 			echo "Install Python3.7 and Pip3.7 from YUM..."
