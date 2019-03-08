@@ -16,7 +16,7 @@ if [[ ${releaseOutput} == *"Fedora"* ]]
 			pythonBin='python3.7'
 		else
 			pythonBin='Missing'
-		fi
+fi
 
 if [[ $testForPython == *"3.6"* ]]; then
     pythonBin='python'
