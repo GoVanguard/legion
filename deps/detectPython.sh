@@ -17,16 +17,16 @@ if [[ ${releaseOutput} == *"Fedora"* ]]
 		else
 			pythonBin='Missing'
 		fi
-fi
-
-if [[ $testForPython == *"3.6"* ]]; then
-    pythonBin='python'
-elif [[ $testForPython2 == *"3.6"* ]]; then
-    pythonBin='python3'
-elif [[ $testForPython3 == *"3.6"* ]] && [[ $testForPython3 != *"not found"* ]]; then
-    pythonBin='python3.6'
 else
-    pythonBin='Missing'
+	if [[ $testForPython == *"3.6"* ]]; then
+		pythonBin='python'
+	elif [[ $testForPython2 == *"3.6"* ]]; then
+		pythonBin='python3'
+	elif [[ $testForPython3 == *"3.6"* ]] && [[ $testForPython3 != *"not found"* ]]; then
+		pythonBin='python3.6'
+	else
+		pythonBin='Missing'
+	fi
 fi
 
 #echo "Python 3.6 bin is ${pythonBin} ($(which ${pythonBin}))"
