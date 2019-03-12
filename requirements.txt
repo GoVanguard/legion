@@ -1,6 +1,6 @@
-asyncio==3.4.3
-aiohttp==3.4.4
-aioredis==1.2.0
+asyncio
+aiohttp
+aioredis
 six==1.11.0
 Quamash==0.6.1
 SQLAlchemy==1.3.0b1
