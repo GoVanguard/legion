@@ -27,10 +27,13 @@ then
 elif [[ ${releaseOutput} == *"Kali"* ]]
 then
     releaseName="Kali"
-    if [[ ${releaseOutput} == *"2018"* ]]
+    if [[ ${releaseOutput} == *"2019"* ]]
+    then
+        releaseVersion="2019"
+    elif [[ ${releaseOutput} == *"2018"* ]]
     then
         releaseVersion="2018"
-    elif [[ ${releaseOutput} == *"2016."* ]]
+    elif [[ ${releaseOutput} == *"2016"* ]]
     then
         releaseVersion="2016"
     fi
