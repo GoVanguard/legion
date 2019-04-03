@@ -11,7 +11,17 @@ then
     echo "Install Python 3.6 or 3.7 and Pip 3.6 or 3.7 from APT..."
     apt-get install -yqqqq python3 python3-pip
 else
-    echo "Python 3.6 or 3.7 found!"
+    if [[ ${PYTHON3BIN} == *"3.7"* ]]; then
+        echo "Python 3.7 found!"
+    elif [[ ${PYTHON3BIN} == *"3.6"* ]]; then
+        echo "Python 3.6 found!"
+    fi
+    if [[ ${PIP3BIN} == *"3.7"* ]]; then
+        echo "Pip 3.7 found!"
+    elif [[ ${PIP3BIN} == *"3.6"* ]]; then
+        echo "Pip 3.6 found!"
+    fi
+        
     echo "Python3: ${PYTHON3BIN}"
     echo "PIP3: ${PIP3BIN}"
     exit 0
