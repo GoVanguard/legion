@@ -13,7 +13,7 @@ Are you interested in contributing to Legion? We love contributors! We ask that 
 #### Did you find a bug?
 
 * Awesome. First, ensure that your bug isn't a duplicate by checking the [Issues](https://github.com/GoVanguard/legion/issues). **If the issue already exists**, go ahead and comment on the issue with your bug report information, following the guidelines below as if you were reporting a new issue - just don't make a new issue.
-* **If you can't find the issue**, its time to open a new issue. Fill in the issue title with a clear title and description. Where possible, include steps to reproduce the bug, code samples, and screenshots. Tag the issue if it fits into one of our existing categories.
+* **If you can't find the issue**, its time to [open a new issue](https://github.com/GoVanguard/legion/issues/new). Fill in the issue with a clear title and description. Where possible, include steps to reproduce the bug, code samples, and screenshots. Tag the issue if it fits into one of our existing categories.
 
 
 
