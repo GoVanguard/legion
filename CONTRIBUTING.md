@@ -36,6 +36,6 @@ Are you interested in contributing to Legion? We love contributors! We ask that 
 
 We like to keep the rules simple. 
 
-* Any behaviors meant to malign, disrespect, denigrate, harass, or attack any person will not be tolerated.
-* Use respectful language and foster a community of respect and collaboration.
+* Behavior meant to malign, disrespect, denigrate, harass, or attack any person will not be tolerated.
+* Use respectful language and foster a community of collaboration.
 
