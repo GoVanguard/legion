@@ -26,7 +26,7 @@ except ImportError as e:
 try:
     from PyQt5 import QtWidgets, QtGui, QtCore
 except ImportError as e:
-    log.info("Import failed. PyQt4 library not found. If on Ubuntu or similar try: agt-get install python3-pyqt4")
+    log.info("Import failed. PyQt5 library not found. If on Ubuntu or similar try: agt-get install python3-pyqt5")
     log.info(e)
     exit(1)
 

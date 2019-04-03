@@ -35,7 +35,8 @@ class Logic():
             self.runningfolder = tempfile.mkdtemp(suffix="-running",prefix="legion-", dir="./tmp/")               # to store tool output of running processes
             os.makedirs(self.outputfolder+'/screenshots')                                           # to store screenshots
             os.makedirs(self.runningfolder+'/nmap')                                                 # to store nmap output
-            os.makedirs(self.runningfolder+'/hydra')                                                # to store hydra output         
+            os.makedirs(self.runningfolder+'/hydra')                                                # to store hydra output     
+            os.makedirs(self.runningfolder+'/dnsmap')                                               # to store dnsmap output
             self.usernamesWordlist = Wordlist(self.outputfolder + '/legion-usernames.txt')          # to store found usernames
             self.passwordsWordlist = Wordlist(self.outputfolder + '/legion-passwords.txt')          # to store found passwords
             self.projectname = tf.name
@@ -715,9 +716,9 @@ class NmapImporter(QtCore.QThread):
                 session.commit()
 
                 all_ports = h.all_ports()
-                #self.tsLog("    'ports' to process: {all_ports}".format(all_ports=str(len(all_ports))))
+                self.tsLog("    'ports' to process: {all_ports}".format(all_ports=str(len(all_ports))))
                 for p in all_ports:                                 # parse the ports
-                    #self.tsLog("        Processing port obj {port}".format(port=str(p.portId)))
+                    self.tsLog("        Processing port obj {port}".format(port=str(p.portId)))
                     s = p.get_service()
 
                     if not (s is None):                                 # check if service already exists to avoid adding duplicates
@@ -725,11 +726,11 @@ class NmapImporter(QtCore.QThread):
                         #db_service = session.query(nmap_service).filter_by(name=s.name).filter_by(product=s.product).filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).filter_by(fingerprint=s.fingerprint).first()
                         db_service = session.query(nmap_service).filter_by(name=s.name).first()
                         if not db_service:
-                            print("Did not find service *********** name={0} prod={1} ver={2} extra={3} fing={4}".format(s.name, s.product, s.version, s.extrainfo, s.fingerprint))
+                            #print("Did not find service *********** name={0} prod={1} ver={2} extra={3} fing={4}".format(s.name, s.product, s.version, s.extrainfo, s.fingerprint))
                             db_service = nmap_service(s.name, s.product, s.version, s.extrainfo, s.fingerprint)
                             session.add(db_service)
-                        else:
-                            print("FOUND service *************** name={0}".format(db_service.name))
+                       # else:
+                            #print("FOUND service *************** name={0}".format(db_service.name))
 
                     else:                                               # else, there is no service info to parse
                         db_service = None                   
@@ -737,14 +738,14 @@ class NmapImporter(QtCore.QThread):
                     db_port = session.query(nmap_port).filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
                     
                     if not db_port:     
-                        print("Did not find port *********** portid={0} proto={1}".format(p.portId, p.protocol))
+                        #print("Did not find port *********** portid={0} proto={1}".format(p.portId, p.protocol))
                         if db_service:
                             db_port = nmap_port(p.portId, p.protocol, p.state, db_host.id, db_service.id)
                         else:
                             db_port = nmap_port(p.portId, p.protocol, p.state, db_host.id, '')
                         session.add(db_port)
-                    else:
-                        print('FOUND port *************** portid={0}'.format(db_port.port_id))
+                    #else:
+                        #print('FOUND port *************** portid={0}'.format(db_port.port_id))
                     createPortsProgress = createPortsProgress + ((100.0 / hostCount) / 5)
                     totalprogress = totalprogress + createPortsProgress
                     self.importProgressWidget.setProgress(totalprogress)
@@ -843,7 +844,7 @@ class NmapImporter(QtCore.QThread):
                                                                         # fetch the port
                     db_port = session.query(nmap_port).filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
                     if db_port:
-                        print("************************ Found {0}".format(db_port))
+                        #print("************************ Found {0}".format(db_port))
 
                         if db_port.state != p.state:
                             db_port.state = p.state
