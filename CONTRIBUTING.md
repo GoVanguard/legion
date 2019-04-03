@@ -28,7 +28,8 @@ Are you interested in contributing to Legion? We love contributors! We ask that 
 #### Do you want to add a feature?
 
 * We love new features! Please [make an issue](https://github.com/GoVanguard/legion/issues/new) for discussion, with a clear title and description of the proposed feature. Add the Proposal tag, and use the comments to follow up with the team.
-* We suggest you wait for feedback on your feature proposal before working on a patch and submitting a PR.
+* Wait for a response and approval to your proposal before working on your patch and submitting a PR. This way, if we find any problems with the proposal, and discuss remediation before work gets wasted.
+* Once your feature is complete, all you need to do is [submit a PR](https://github.com/GoVanguard/legion/pulls). 
 
 
 
