@@ -1,7 +1,8 @@
 #!/bin/bash
 
 echo "Checking for additional Sparta scripts..."
-echo $(pwd)
+curPath=`pwd`
+
 if [ -a scripts/smbenum.sh ]
   then
     echo "smbenum.sh is already installed"
@@ -58,7 +59,16 @@ else
   wget -v -P scripts/ https://raw.githubusercontent.com/GoVanguard/sparta-scripts/master/smtp-user-enum.pl
 fi
 
+if [ -a scripts/CloudFail/cloudfail.py ]
+  then
+    echo "Cloudfail has been found"
+else
+  git clone https://github.com/m0rtem/CloudFail.git scripts/CloudFail
+fi
+
 if [ ! -f ".initialized" ]
   then
     scripts/installDeps.sh
 fi
+
+cd ${curPath}
