@@ -8,9 +8,6 @@ source ./deps/detectPython.sh
 # Determine OS, version and if WSL
 source ./deps/detectOs.sh
 
-# Determine if additional Sparta scripts are installed
-source ./deps/detectScripts.sh 
-
 # Figure if fist run or recloned and install deps 
 if [ ! -f ".initialized" ] | [ -f ".justcloned" ]
 then
@@ -21,6 +18,9 @@ then
     fi
     echo "Running ${DEPINSTALLER}..."
     bash ./deps/${DEPINSTALLER}
+    # Determine if additional Sparta scripts are installed
+    bash ./deps/detectScripts.sh
+    source ./deps/detectPython.sh
     touch .initialized
     rm .justcloned -f
 fi
