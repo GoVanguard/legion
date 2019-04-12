@@ -13,3 +13,4 @@ requests==2.20.1
 pyfiglet
 colorama
 termcolor
+win_inet_pton
