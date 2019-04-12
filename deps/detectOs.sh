@@ -43,9 +43,13 @@ then
     if [[ ${releaseOutput} == *"4.5"* ]]
     then
         releaseVersion="4.5"
+    elif [[ ${releaseOutput} == *"4.6"* ]]
+    then
+        releaseVersion="4.6"
     fi
 else
-    releaseName="something unsupported"
+    releaseName="Unknown"
+    releaseVersion=""
 fi
 
 echo "Detected ${releaseName} ${releaseVersion} ${wslEnv}"
