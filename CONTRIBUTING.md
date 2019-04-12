@@ -29,7 +29,7 @@ Are you interested in contributing to Legion? We love contributors! We ask that 
 
 #### Do you have a general question?
 
-* Ask your question [ place to ask questions ]
+* If you have any questions not related to legion's code, features, or bugs use support@gvit.com
 
 
 
