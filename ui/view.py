@@ -1466,7 +1466,7 @@ class View(QtCore.QObject):
                     return
                 else:
                     log.info('Adding host to scope here!!')
-                    self.controller.addHosts(str(bWidget.ipTextinput.text()).replace(';',' '), False, False)
+                    self.controller.addHosts(str(bWidget.ipTextinput.text()).replace(';',' '), False, False, "unset", "unset")
             
             bWidget.validationLabel.hide()
             bWidget.toggleRunButton()
