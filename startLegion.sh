@@ -2,6 +2,13 @@
 
 echo "Strap yourself in, we're starting Legion..."
 
+# Set everything we might need as executable
+chmod a+x ./deps/*.sh
+chmod a+x ./scripts/*.sh
+chmod a+x ./scripts/*.py
+chmod a+x ./scripts/*.pl
+chmod a+x ./scripts/*.rb
+
 # Determine and set the Python and Pip paths
 source ./deps/detectPython.sh
 
