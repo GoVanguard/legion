@@ -4,12 +4,6 @@ Are you interested in contributing to Legion? We love contributors! We ask that 
 
 
 
-#### Do you have a general question?
-
-* Ask your question [ place to ask questions ]
-
-
-
 #### Did you find a bug?
 
 * Awesome. First, ensure that your bug isn't a duplicate by checking the [Issues](https://github.com/GoVanguard/legion/issues). **If the issue already exists**, go ahead and comment on the issue with your bug report information, following the guidelines below as if you were reporting a new issue - just don't make a new issue.
@@ -30,6 +24,12 @@ Are you interested in contributing to Legion? We love contributors! We ask that 
 * We love new features! Please [make an issue](https://github.com/GoVanguard/legion/issues/new) for discussion, with a clear title and description of the proposed feature. Add the Proposal tag, and use the comments to follow up with the team.
 * Wait for a response and approval to your proposal before working on your patch and submitting a PR. This way, if we find any problems with the proposal, and discuss remediation before work gets wasted.
 * Once your feature is complete, all you need to do is [submit a PR](https://github.com/GoVanguard/legion/pulls). 
+
+
+
+#### Do you have a general question?
+
+* Ask your question [ place to ask questions ]
 
 
 
