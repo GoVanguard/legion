@@ -66,6 +66,13 @@ else
   git clone https://github.com/m0rtem/CloudFail.git scripts/CloudFail
 fi
 
+if [ -a scripts/AutoSploit/autosploit.py ]
+  then
+    echo "AutoSploit is already installed"
+else
+  git clone https://github.com/NullArray/AutoSploit.git scripts/AutoSploit
+fi
+
 if [ ! -f ".initialized" ]
   then
     scripts/installDeps.sh
