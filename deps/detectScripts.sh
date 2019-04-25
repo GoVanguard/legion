@@ -73,6 +73,13 @@ else
   git clone https://github.com/NullArray/AutoSploit.git scripts/AutoSploit
 fi
 
+if [ -d "scripts/wpscan" ]
+  then
+    echo "wpscan is already installed"
+else
+  git clone https://github.com/wpscanteam/wpscan.git scripts/wpscan
+fi
+
 if [ ! -f ".initialized" ]
   then
     scripts/installDeps.sh
