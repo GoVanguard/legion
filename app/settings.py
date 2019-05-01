@@ -165,7 +165,6 @@ class AppSettings():
         self.actions.setValue('hydra-path', newSettings.tools_path_hydra)
         self.actions.setValue('cutycapt-path', newSettings.tools_path_cutycapt)
         self.actions.setValue('texteditor-path', newSettings.tools_path_texteditor)
-        self.actions.setValue('python-path', newSettings.tools_path_python)
         self.actions.endGroup()
 
         self.actions.beginGroup('StagedNmapSettings')
@@ -239,7 +238,6 @@ class Settings():
         self.tools_path_hydra = "/usr/bin/hydra"
         self.tools_path_cutycapt = "/usr/bin/cutycapt"
         self.tools_path_texteditor = "/usr/bin/leafpad"
-        self.tools_path_python = os.environ["PYTHON3BIN"]
 
         # GUI settings
         self.gui_process_tab_column_widths = "125,0,100,150,100,100,100,100,100,100,100,100,100,100,100,100,100"
@@ -296,7 +294,6 @@ class Settings():
                 self.tools_path_hydra = self.toolSettings['hydra-path']
                 self.tools_path_cutycapt = self.toolSettings['cutycapt-path']
                 self.tools_path_texteditor = self.toolSettings['texteditor-path']
-                self.tools_path_python = self.toolSettings['python-path']
 
                 # gui
                 self.gui_process_tab_column_widths = self.guiSettings['process-tab-column-widths']

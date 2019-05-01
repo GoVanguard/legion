@@ -47,7 +47,7 @@ class CvesTableModel(QtCore.QAbstractTableModel):
                 
     def data(self, index, role):                                        # this method takes care of how the information is displayed
 
-        if role == QtCore.Qt.DisplayRole:                               # how to display each cell
+        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:                               # how to display each cell
             value = ''
             row = index.row()
             column = index.column()
@@ -97,12 +97,15 @@ class CvesTableModel(QtCore.QAbstractTableModel):
         self.layoutChanged.emit()
 
     def flags(self, index):                                             # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
 
     ### getter functions ###
 
     def getCveDBIdForRow(self, row):
         return self.__cves[row]['name']
+
+    def getCveForRow(self, row):
+        return self.__cves[row]
     
     def getRowForDBId(self, id):
         for i in range(len(self.__cves)):

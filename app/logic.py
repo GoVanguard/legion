@@ -186,14 +186,14 @@ class Logic():
             return False
 
     def isHostInDB(self, host):                                         # used we don't run tools on hosts out of scope
-        query = 'SELECT host.ip FROM nmap_host AS host WHERE host.ip == ? OR host.hostname == ?'
+        query = 'SELECT host.ip FROM hostObj AS host WHERE host.ip == ? OR host.hostname == ?'
         result = self.db.metadata.bind.execute(query, str(host), str(host)).fetchall()
         if result:
             return True
         return False
 
     def getHostsFromDB(self, filters):
-        query = 'SELECT * FROM nmap_host AS hosts WHERE 1=1'
+        query = 'SELECT * FROM hostObj AS hosts WHERE 1=1'
 
         if filters.down == False:
             query += ' AND hosts.status!=\'down\''
@@ -208,9 +208,9 @@ class Logic():
 
     # get distinct service names from DB
     def getServiceNamesFromDB(self, filters):
-        query = ('SELECT DISTINCT service.name FROM nmap_service as service ' +
-                    'INNER JOIN nmap_port as ports ' +
-                    'INNER JOIN nmap_host AS hosts ' + 
+        query = ('SELECT DISTINCT service.name FROM serviceObj as service ' +
+                    'INNER JOIN portObj as ports ' +
+                    'INNER JOIN hostObj AS hosts ' + 
                     'ON hosts.id = ports.host_id AND service.id=ports.service_id WHERE 1=1')
                     
         if filters.down == False:
@@ -243,31 +243,31 @@ class Logic():
 
     # get script info for given host IP
     def getScriptsFromDB(self, hostIP):
-        query = ('SELECT host.id,host.script_id,port.port_id,port.protocol FROM nmap_script AS host ' +
-                    'INNER JOIN nmap_host AS hosts ON hosts.id = host.host_id ' +
-                    'LEFT OUTER JOIN nmap_port AS port ON port.id=host.port_id ' +
-                    'WHERE hosts.ip=?')
+        query = ('SELECT host.id, host.script_id, port.port_id, port.protocol FROM l1ScriptObj AS host ' +
+                 'INNER JOIN hostObj AS hosts ON hosts.id = host.host_id ' +
+                 'LEFT OUTER JOIN portObj AS port ON port.id = host.port_id ' +
+                 'WHERE hosts.ip=?')
 
         return self.db.metadata.bind.execute(query, str(hostIP)).fetchall()
 
     ## FIX
     def getCvesFromDB(self, hostIP):
         query = ('SELECT cves.name, cves.severity, cves.product, cves.version, cves.url, cves.source FROM cve AS cves ' +
-            'INNER JOIN nmap_host AS hosts ON hosts.id = cves.host_id ' +
-            'WHERE hosts.ip=?')
+                 'INNER JOIN hostObj AS hosts ON hosts.id = cves.host_id ' +
+                 'WHERE hosts.ip = ?')
 
         return self.db.metadata.bind.execute(query, str(hostIP)).fetchall()
         
     def getScriptOutputFromDB(self, scriptDBId):
-        query = ('SELECT script.output FROM nmap_script as script WHERE script.id=?')
+        query = ('SELECT script.output FROM l1ScriptObj as script WHERE script.id = ?')
         return self.db.metadata.bind.execute(query, str(scriptDBId)).fetchall()
 
     # get port and service info for given host IP
     def getPortsAndServicesForHostFromDB(self, hostIP, filters):
-        query = ('SELECT hosts.ip,ports.port_id,ports.protocol,ports.state,ports.host_id,ports.service_id,services.name,services.product,services.version,services.extrainfo,services.fingerprint FROM nmap_port AS ports ' +
-            'INNER JOIN nmap_host AS hosts ON hosts.id = ports.host_id ' +
-            'LEFT OUTER JOIN nmap_service AS services ON services.id=ports.service_id ' +
-            'WHERE hosts.ip=?')
+        query = ('SELECT hosts.ip, ports.port_id, ports.protocol, ports.state, ports.host_id, ports.service_id, services.name, services.product, services.version, services.extrainfo, services.fingerprint FROM portObj AS ports ' +
+                 'INNER JOIN hostObj AS hosts ON hosts.id = ports.host_id ' +
+                 'LEFT OUTER JOIN serviceObj AS services ON services.id = ports.service_id ' +
+                 'WHERE hosts.ip = ?')
         
         if filters.portopen == False:
             query += ' AND ports.state!=\'open\' AND ports.state!=\'open|filtered\''
@@ -284,27 +284,27 @@ class Logic():
 
     # used to check if there are any ports of a specific protocol for a given host
     def getPortsForHostFromDB(self, hostIP, protocol):
-        query = ('SELECT ports.port_id FROM nmap_port AS ports ' +
-            'INNER JOIN nmap_host AS hosts ON hosts.id = ports.host_id ' +
-            'WHERE hosts.ip=? and ports.protocol=?')
+        query = ('SELECT ports.port_id FROM portObj AS ports ' +
+            'INNER JOIN hostObj AS hosts ON hosts.id = ports.host_id ' +
+            'WHERE hosts.ip = ? and ports.protocol = ?')
         results = self.db.metadata.bind.execute(query, str(hostIP), str(protocol)).first()
         return results
 
     # used to get the service name given a host ip and a port when we are in tools tab (left) and right click on a host
     def getServiceNameForHostAndPort(self, hostIP, port):
-        query = ('SELECT services.name FROM nmap_service AS services ' +
-            'INNER JOIN nmap_host AS hosts ON hosts.id = ports.host_id ' +
-            'INNER JOIN nmap_port AS ports ON services.id=ports.service_id ' +
-            'WHERE hosts.ip=? and ports.port_id=?')
+        query = ('SELECT services.name FROM serviceObj AS services ' +
+            'INNER JOIN hostObj AS hosts ON hosts.id = ports.host_id ' +
+            'INNER JOIN portObj AS ports ON services.id=ports.service_id ' +
+            'WHERE hosts.ip=? and ports.port_id = ?')
         results = self.db.metadata.bind.execute(query, str(hostIP), str(port)).first()
         return results
 
     # used to delete all port/script data related to a host - to overwrite portscan info with the latest scan   
     def deleteAllPortsAndScriptsForHostFromDB(self, hostID, protocol):
         session = self.db.session()
-        ports_for_host = session.query(nmap_port).filter(nmap_port.host_id == hostID).filter(nmap_port.protocol == str(protocol)).all()
+        ports_for_host = session.query(portObj).filter(portObj.host_id == hostID).filter(portObj.protocol == str(protocol)).all()
         for p in ports_for_host:
-            scripts_for_ports = session.query(nmap_script).filter(nmap_script.port_id == p.id).all()
+            scripts_for_ports = session.query(l1ScriptObj).filter(l1ScriptObj.port_id == p.id).all()
             for s in scripts_for_ports:
                 session.delete(s)
         for p in ports_for_host:
@@ -314,25 +314,25 @@ class Logic():
 
     def getHostInformation(self, hostIP):
         session = self.db.session()
-        results = session.query(nmap_host).filter_by(ip=str(hostIP)).first()
+        results = session.query(hostObj).filter_by(ip=str(hostIP)).first()
         return results
 
     def deleteHost(self, hostIP):
         session = self.db.session()
-        h = session.query(nmap_host).filter_by(ip=str(hostIP)).first()
+        h = session.query(hostObj).filter_by(ip=str(hostIP)).first()
         session.delete(h)
         session.commit()
         return
 
     def getPortStatesForHost(self, hostID):
-        query = ('SELECT port.state FROM nmap_port as port WHERE port.host_id=?')
+        query = ('SELECT port.state FROM portObj as port WHERE port.host_id = ?')
         results = self.db.metadata.bind.execute(query, str(hostID)).fetchall()
         return results
 
     def getHostsAndPortsForServiceFromDB(self, serviceName, filters):
-        query = ('SELECT hosts.ip,ports.port_id,ports.protocol,ports.state,ports.host_id,ports.service_id,services.name,services.product,services.version,services.extrainfo,services.fingerprint FROM nmap_port AS ports ' +
-            'INNER JOIN nmap_host AS hosts ON hosts.id = ports.host_id ' +
-            'LEFT OUTER JOIN nmap_service AS services ON services.id=ports.service_id ' +
+        query = ('SELECT hosts.ip,ports.port_id,ports.protocol,ports.state,ports.host_id,ports.service_id,services.name,services.product,services.version,services.extrainfo,services.fingerprint FROM portObj AS ports ' +
+            'INNER JOIN hostObj AS hosts ON hosts.id = ports.host_id ' +
+            'LEFT OUTER JOIN serviceObj AS services ON services.id=ports.service_id ' +
             'WHERE services.name=?')
 
         if filters.down == False:
@@ -404,7 +404,7 @@ class Logic():
 
     def toggleHostCheckStatus(self, ipaddr):
         session = self.db.session()
-        h = session.query(nmap_host).filter_by(ip=ipaddr).first()
+        h = session.query(hostObj).filter_by(ip=ipaddr).first()
         if h:
             if h.checked == 'False':
                 h.checked = 'True'
@@ -671,10 +671,10 @@ class NmapImporter(QtCore.QThread):
             createPortsProgress = 0
 
             for h in parser.all_hosts():                                # create all the hosts that need to be created
-                db_host = session.query(nmap_host).filter_by(ip=h.ip).first()
+                db_host = session.query(hostObj).filter_by(ip=h.ip).first()
                 
                 if not db_host:                                         # if host doesn't exist in DB, create it first
-                    hid = nmap_host(os_match='', os_accuracy='', ip=h.ip, ipv4=h.ipv4, ipv6=h.ipv6, macaddr=h.macaddr, status=h.status, hostname=h.hostname, vendor=h.vendor, uptime=h.uptime, lastboot=h.lastboot, distance=h.distance, state=h.state, count=h.count)
+                    hid = hostObj(os_match='', os_accuracy='', ip=h.ip, ipv4=h.ipv4, ipv6=h.ipv6, macaddr=h.macaddr, status=h.status, hostname=h.hostname, vendor=h.vendor, uptime=h.uptime, lastboot=h.lastboot, distance=h.distance, state=h.state, count=h.count)
                     self.tsLog("Adding db_host")
                     session.add(hid)
                     t_note = note(h.ip, 'Added by nmap')
@@ -692,7 +692,7 @@ class NmapImporter(QtCore.QThread):
             for h in parser.all_hosts():                                # create all OS, service and port objects that need to be created
                 self.tsLog("Processing h {ip}".format(ip=h.ip))
 
-                db_host = session.query(nmap_host).filter_by(ip=h.ip).first()
+                db_host = session.query(hostObj).filter_by(ip=h.ip).first()
                 if db_host:
                     self.tsLog("Found db_host during os/ports/service processing")
                 else:
@@ -702,11 +702,11 @@ class NmapImporter(QtCore.QThread):
                 self.tsLog("    'os_nodes' to process: {os_nodes}".format(os_nodes=str(len(os_nodes))))
                 for os in os_nodes:
                     self.tsLog("    Processing os obj {os}".format(os=str(os.name)))
-                    db_os = session.query(nmap_os).filter_by(host_id=db_host.id).filter_by(name=os.name).filter_by(family=os.family).filter_by(generation=os.generation).filter_by(os_type=os.os_type).filter_by(vendor=os.vendor).first()
+                    db_os = session.query(osObj).filter_by(host_id=db_host.id).filter_by(name=os.name).filter_by(family=os.family).filter_by(generation=os.generation).filter_by(os_type=os.os_type).filter_by(vendor=os.vendor).first()
                     
                     if not db_os:
-                        t_nmap_os = nmap_os(os.name, os.family, os.generation, os.os_type, os.vendor, os.accuracy, db_host.id)
-                        session.add(t_nmap_os)
+                        t_osObj = osObj(os.name, os.family, os.generation, os.os_type, os.vendor, os.accuracy, db_host.id)
+                        session.add(t_osObj)
 
                     createOsNodesProgress = createOsNodesProgress + ((100.0 / hostCount) / 5)
                     totalprogress = totalprogress + createOsNodesProgress
@@ -723,11 +723,11 @@ class NmapImporter(QtCore.QThread):
 
                     if not (s is None):                                 # check if service already exists to avoid adding duplicates
                         #print("            Found service {service} for port {port}".format(service=str(s.name),port=str(p.portId)))
-                        #db_service = session.query(nmap_service).filter_by(name=s.name).filter_by(product=s.product).filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).filter_by(fingerprint=s.fingerprint).first()
-                        db_service = session.query(nmap_service).filter_by(name=s.name).first()
+                        #db_service = session.query(serviceObj).filter_by(name=s.name).filter_by(product=s.product).filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).filter_by(fingerprint=s.fingerprint).first()
+                        db_service = session.query(serviceObj).filter_by(name=s.name).first()
                         if not db_service:
                             #print("Did not find service *********** name={0} prod={1} ver={2} extra={3} fing={4}".format(s.name, s.product, s.version, s.extrainfo, s.fingerprint))
-                            db_service = nmap_service(s.name, s.product, s.version, s.extrainfo, s.fingerprint)
+                            db_service = serviceObj(s.name, s.product, s.version, s.extrainfo, s.fingerprint)
                             session.add(db_service)
                        # else:
                             #print("FOUND service *************** name={0}".format(db_service.name))
@@ -735,14 +735,14 @@ class NmapImporter(QtCore.QThread):
                     else:                                               # else, there is no service info to parse
                         db_service = None                   
                                                                         # fetch the port
-                    db_port = session.query(nmap_port).filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
+                    db_port = session.query(portObj).filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
                     
                     if not db_port:     
                         #print("Did not find port *********** portid={0} proto={1}".format(p.portId, p.protocol))
                         if db_service:
-                            db_port = nmap_port(p.portId, p.protocol, p.state, db_host.id, db_service.id)
+                            db_port = portObj(p.portId, p.protocol, p.state, db_host.id, db_service.id)
                         else:
-                            db_port = nmap_port(p.portId, p.protocol, p.state, db_host.id, '')
+                            db_port = portObj(p.portId, p.protocol, p.state, db_host.id, '')
                         session.add(db_port)
                     #else:
                         #print('FOUND port *************** portid={0}'.format(db_port.port_id))
@@ -758,34 +758,35 @@ class NmapImporter(QtCore.QThread):
 
             for h in parser.all_hosts():                                # create all script objects that need to be created
                 
-                db_host = session.query(nmap_host).filter_by(ip=h.ip).first()
+                db_host = session.query(hostObj).filter_by(ip=h.ip).first()
                 
                 for p in h.all_ports():
                     for scr in p.get_scripts():
                         self.tsLog("        Processing script obj {scr}".format(scr=str(scr)))                             
-                        db_port = session.query(nmap_port).filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
-                        db_script = session.query(nmap_script).filter_by(script_id=scr.scriptId).filter_by(port_id=db_port.id).first()
+                        print("        Processing script obj {scr}".format(scr=str(scr)))
+                        db_port = session.query(portObj).filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
+                        db_script = session.query(l1ScriptObj).filter_by(script_id=scr.scriptId).filter_by(port_id=db_port.id).first()
                         cveResults = scr.get_cves()
                         for cveEntry in cveResults:
                             t_cve = cve(name = cveEntry.name, url = cveEntry.url, source = cveEntry.source, severity = cveEntry.severity, product = cveEntry.product, version = cveEntry.version, hostId = db_host.id)
                             session.add(t_cve)
 
                         if not db_script:                               # if this script object doesn't exist, create it
-                            t_nmap_script = nmap_script(scr.scriptId, scr.output, db_port.id, db_host.id)
-                            self.tsLog("        Adding nmap_script obj {script}".format(script=scr.scriptId))
-                            session.add(t_nmap_script)
+                            t_l1ScriptObj = l1ScriptObj(scr.scriptId, scr.output, db_port.id, db_host.id)
+                            self.tsLog("        Adding l1ScriptObj obj {script}".format(script=scr.scriptId))
+                            session.add(t_l1ScriptObj)
                     
                 for hs in h.get_hostscripts():
-                    db_script = session.query(nmap_script).filter_by(script_id=hs.scriptId).filter_by(host_id=db_host.id).first()
+                    db_script = session.query(l1ScriptObj).filter_by(script_id=hs.scriptId).filter_by(host_id=db_host.id).first()
                     if not db_script:
-                        t_nmap_script = nmap_script(hs.scriptId, hs.output, None, db_host.id)                  
-                        session.add(t_nmap_script)
+                        t_l1ScriptObj = l1ScriptObj(hs.scriptId, hs.output, None, db_host.id)                  
+                        session.add(t_l1ScriptObj)
                     
             session.commit()
                     
             for h in parser.all_hosts():                                # update everything
 
-                db_host = session.query(nmap_host).filter_by(ip=h.ip).first()
+                db_host = session.query(hostObj).filter_by(ip=h.ip).first()
                 
                 if db_host.ipv4 == '' and not h.ipv4 == '':
                     db_host.ipv4 = h.ipv4
@@ -817,7 +818,7 @@ class NmapImporter(QtCore.QThread):
                 
                 os_nodes = h.get_OS()
                 for os in os_nodes:
-                    db_os = session.query(nmap_os).filter_by(host_id=db_host.id).filter_by(name=os.name).filter_by(family=os.family).filter_by(generation=os.generation).filter_by(os_type=os.os_type).filter_by(vendor=os.vendor).first()
+                    db_os = session.query(osObj).filter_by(host_id=db_host.id).filter_by(name=os.name).filter_by(family=os.family).filter_by(generation=os.generation).filter_by(os_type=os.os_type).filter_by(vendor=os.vendor).first()
                     
                     db_os.os_accuracy = os.accuracy                     # update the accuracy
                             
@@ -837,12 +838,12 @@ class NmapImporter(QtCore.QThread):
                 for p in h.all_ports():     
                     s = p.get_service()
                     if not (s is None):
-                        #db_service = session.query(nmap_service).filter_by(name=s.name).filter_by(product=s.product).filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).filter_by(fingerprint=s.fingerprint).first()
-                        db_service = session.query(nmap_service).filter_by(name=s.name).first()
+                        #db_service = session.query(serviceObj).filter_by(name=s.name).filter_by(product=s.product).filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).filter_by(fingerprint=s.fingerprint).first()
+                        db_service = session.query(serviceObj).filter_by(name=s.name).first()
                     else:
                         db_service = None                       
                                                                         # fetch the port
-                    db_port = session.query(nmap_port).filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
+                    db_port = session.query(portObj).filter_by(host_id=db_host.id).filter_by(port_id=p.portId).filter_by(protocol=p.protocol).first()
                     if db_port:
                         #print("************************ Found {0}".format(db_port))
 
@@ -855,7 +856,7 @@ class NmapImporter(QtCore.QThread):
                             session.add(db_port)
                 
                     for scr in p.get_scripts():                         # store the script results (note that existing script outputs are also kept)    
-                        db_script = session.query(nmap_script).filter_by(script_id=scr.scriptId).filter_by(port_id=db_port.id).first()
+                        db_script = session.query(l1ScriptObj).filter_by(script_id=scr.scriptId).filter_by(port_id=db_port.id).first()
 
                         if not scr.output == '' and scr.output is not None:
                             db_script.output = scr.output

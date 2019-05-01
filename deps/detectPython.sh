@@ -241,6 +241,5 @@ fi
 echo "Python 3 bin is ${pythonBin} ($(which ${pythonBin}))"
 echo "Pip 3 bin is ${pipBin} ($(which ${pipBin}))"
 
-PYTHON3BIN=${pythonBin}
-export PYTHON3BIN
+export PYTHON3BIN=$(which ${pythonBin})
 export PIP3BIN=$(which ${pipBin})

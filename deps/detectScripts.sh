@@ -66,18 +66,16 @@ else
   git clone https://github.com/m0rtem/CloudFail.git scripts/CloudFail
 fi
 
-if [ -a scripts/AutoSploit/autosploit.py ]
+if [ -a scripts/exploutdb/searchsploit ]
   then
-    echo "AutoSploit is already installed"
+    echo "Exploit-db has been found"
 else
-  git clone https://github.com/NullArray/AutoSploit.git scripts/AutoSploit
+  git clone https://github.com/offensive-security/exploitdb.git scripts/exploitdb
 fi
 
-if [ -d "scripts/wpscan" ]
+if [ ! -f ".initialized" ]
   then
-    echo "wpscan is already installed"
-else
-  git clone https://github.com/wpscanteam/wpscan.git scripts/wpscan
+    scripts/installDeps.sh
 fi
 
 if [ ! -f ".initialized" ]

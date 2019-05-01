@@ -134,7 +134,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
             pass
 
     def flags(self, index):                                             # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
 
     def setDataList(self, processes):
         self.__processes = processes
