@@ -32,6 +32,7 @@ from app.processmodels import *
 from app.auxiliary import *
 import time #temp
 from six import u as unicode
+import pandas as pd
 
 # this class handles everything gui-related
 class View(QtCore.QObject):
@@ -505,6 +506,7 @@ class View(QtCore.QObject):
     def hostTableClick(self):
         if self.ui.HostsTableView.selectionModel().selectedRows():      # get the IP address of the selected host (if any)
             row = self.ui.HostsTableView.selectionModel().selectedRows()[len(self.ui.HostsTableView.selectionModel().selectedRows())-1].row()
+            print(row)
             ip = self.HostsTableModel.getHostIPForRow(row)
             self.ip_clicked = ip
             save = self.ui.ServicesTabWidget.currentIndex()
@@ -524,6 +526,7 @@ class View(QtCore.QObject):
     def serviceNamesTableClick(self):
         if self.ui.ServiceNamesTableView.selectionModel().selectedRows():
             row = self.ui.ServiceNamesTableView.selectionModel().selectedRows()[len(self.ui.ServiceNamesTableView.selectionModel().selectedRows())-1].row()
+            print(row)
             self.service_clicked = self.ServiceNamesTableModel.getServiceNameForRow(row)
             self.updatePortsByServiceTableView(self.service_clicked)
         
@@ -535,6 +538,7 @@ class View(QtCore.QObject):
     def toolsTableClick(self):
         if self.ui.ToolsTableView.selectionModel().selectedRows():
             row = self.ui.ToolsTableView.selectionModel().selectedRows()[len(self.ui.ToolsTableView.selectionModel().selectedRows())-1].row()
+            print(row)
             self.tool_clicked = self.ToolsTableModel.getToolNameForRow(row)
             self.updateToolHostsTableView(self.tool_clicked)
             self.displayScreenshots(self.tool_clicked == 'screenshooter')   # if we clicked on the screenshooter we need to display the screenshot widget
@@ -553,6 +557,7 @@ class View(QtCore.QObject):
     def scriptTableClick(self):
         if self.ui.ScriptsTableView.selectionModel().selectedRows():
             row = self.ui.ScriptsTableView.selectionModel().selectedRows()[len(self.ui.ScriptsTableView.selectionModel().selectedRows())-1].row()
+            print(row)
             self.script_clicked = self.ScriptsTableModel.getScriptDBIdForRow(row)
             self.updateScriptsOutputView(self.script_clicked)
                 
@@ -565,6 +570,7 @@ class View(QtCore.QObject):
     def toolHostsClick(self):
         if self.ui.ToolHostsTableView.selectionModel().selectedRows():
             row = self.ui.ToolHostsTableView.selectionModel().selectedRows()[len(self.ui.ToolHostsTableView.selectionModel().selectedRows())-1].row()
+            print(row)
             self.tool_host_clicked = self.ToolHostsTableModel.getProcessIdForRow(row)
             ip = self.ToolHostsTableModel.getIpForRow(row)
             
@@ -614,17 +620,47 @@ class View(QtCore.QObject):
     def connectTableDoubleClick(self):
         self.ui.ServicesTableView.doubleClicked.connect(self.tableDoubleClick)
         self.ui.ToolHostsTableView.doubleClicked.connect(self.tableDoubleClick)
+        self.ui.CvesTableView.doubleClicked.connect(self.rightTableDoubleClick)
+ 
+    def rightTableDoubleClick(self, signal):
+        row = signal.row()  # RETRIEVES ROW OF CELL THAT WAS DOUBLE CLICKED
+        column = signal.column()  # RETRIEVES COLUMN OF CELL THAT WAS DOUBLE CLICKED
+        model = self.CvesTableModel
+        cell_dict = model.itemData(signal)  # RETURNS DICT VALUE OF SIGNAL
+        cell_value = cell_dict.get(0)  # RETRIEVE VALUE FROM DICT
+ 
+        index = signal.sibling(row, 0)
+        index_dict = model.itemData(index)
+        index_value = index_dict.get(0)
+        print(
+            'Row {}, Column {} clicked - value: {}\nColumn 1 contents: {}'.format(row, column, cell_value, index_value))
+        df=pd.DataFrame([cell_value])
+        df.to_clipboard(index=False,header=False)
+
+     #def rightTableDoubleClick(self):
+     #   tab = self.ui.ServicesTabWidget.tabText(self.ui.ServicesTabWidget.currentIndex())
+     #   print(tab)
+     #
+     #   if tab == 'CVEs':
+     #       row = self.ui.CvesTableView.selectionModel().selectedRows()[len(self.ui.CvesTableView.selectionModel().selectedRows())-1].row()
+     #       selectedRowData = self.CvesTableModel.getCveForRow(row)
+     #       print(row)
+     #       print(selectedRowData)
+     #       column = self.ui.CvesTableView.selectionModel().selectedColumns()[len(self.ui.CvesTableView.selectionModel().selectedRows())-1].column()
+     #       print(column)
+     #       
+     #   else:
+     #       return
 
     def tableDoubleClick(self):
         tab = self.ui.HostsTabWidget.tabText(self.ui.HostsTabWidget.currentIndex())
+        print(tab)
 
         if tab == 'Services':
             row = self.ui.ServicesTableView.selectionModel().selectedRows()[len(self.ui.ServicesTableView.selectionModel().selectedRows())-1].row()
-            ## Missing
             ip = self.PortsByServiceTableModel.getIpForRow(row)
         elif tab == 'Tools':
             row = self.ui.ToolHostsTableView.selectionModel().selectedRows()[len(self.ui.ToolHostsTableView.selectionModel().selectedRows())-1].row()
-            ## Missing
             ip = self.ToolHostsTableModel.getIpForRow(row)
         else:
             return
@@ -670,7 +706,7 @@ class View(QtCore.QObject):
                     self.updateServiceNamesTableView()
                 self.serviceNamesTableClick()
 
-            #elif  selectedTab == 'CVEs':
+            #elif selectedTab == 'CVEs':
             #    self.ui.ServicesTabWidget.setCurrentIndex(0)
             #    self.removeToolTabs(0)                                  # remove the tool tabs
             #    self.controller.saveProject(self.lastHostIdClicked, self.ui.NotesTextEdit.toPlainText())
@@ -1064,6 +1100,7 @@ class View(QtCore.QObject):
     def updateCvesByHostView(self, hostIP):
         headers = ["ID", "CVSS Score", "Product", "Version", "URL", "Source"]
         cves = self.controller.getCvesFromDB(hostIP)
+        print(cves)
         self.CvesTableModel = CvesTableModel(self,self.controller.getCvesFromDB(hostIP), headers)
 
         self.ui.CvesTableView.horizontalHeader().resizeSection(0,175)

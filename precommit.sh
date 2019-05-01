@@ -20,3 +20,9 @@ rm -Rf ./tmp/*
 # Clear all pyc and pyc
 find . -name \*.pyc -delete
 find . -name \*.pyo -delete
+
+# Remove cloned scripts
+rm -Rf ./scripts/CloudFail/
+
+# Removed backups
+rm -Rf ./backups/*
