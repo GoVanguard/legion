@@ -93,7 +93,7 @@ class ServicesTableModel(QtCore.QAbstractTableModel):                   # needs 
             return value
 
     def flags(self, index):                                             # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
 
     def sort(self, Ncol, order):                                        # sort function called when the user clicks on a header
         self.layoutAboutToBeChanged.emit()
@@ -195,7 +195,7 @@ class ServiceNamesTableModel(QtCore.QAbstractTableModel):
                 return self.__serviceNames[row]['name']
 
     def flags(self, index):                                             # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
 
     def sort(self, Ncol, order):                                        # sort function called when the user clicks on a header
         
