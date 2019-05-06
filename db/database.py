@@ -35,14 +35,14 @@ class process(Base):
     id = Column(Integer, primary_key = True)
     display = Column(String)
     name = Column(String)
-    tabtitle = Column(String)
-    hostip = Column(String)
+    tabTitle = Column(String)
+    hostIp = Column(String)
     port = Column(String)
     protocol = Column(String)
     command = Column(String)
-    starttime = Column(String)
-    endtime = Column(String)
-    estimatedremaining = Column(Integer)
+    startTime = Column(String)
+    endTime = Column(String)
+    estimatedRemaining = Column(Integer)
     elapsed = Column(Integer)
     outputfile = Column(String)
     output = relationship("process_output")
@@ -53,79 +53,79 @@ class process(Base):
         self.display = 'True'
         self.pid = pid
         self.name = args[0]
-        self.tabtitle = args[1]
-        self.hostip = args[2]
+        self.tabTitle = args[1]
+        self.hostIp = args[2]
         self.port = args[3]
         self.protocol = args[4]
         self.command = args[5]
-        self.starttime = args[6]
-        self.endtime = args[7]
+        self.startTime = args[6]
+        self.endTime = args[7]
         self.outputfile = args[8]
         self.output = args[10]
         self.status = args[9]
         self.closed = 'False'
-        self.estimatedremaining = args[11]
+        self.estimatedRemaining = args[11]
         self.elapsed = args[12]
 
 # This class holds various info about an nmap scan
-class nmap_session(Base):
-    __tablename__ = 'nmap_session'
+class nmapSessionObj(Base):
+    __tablename__ = 'nmapSessionObj'
     filename = Column(String, primary_key = True)
-    start_time = Column(String)
+    startTime = Column(String)
     finish_time = Column(String)
-    nmap_version = Column(String)
-    scan_args = Column(String)
-    total_hosts = Column(String)
-    up_hosts = Column(String)
-    down_hosts = Column(String)
+    nmapVersion = Column(String)
+    scanArgs = Column(String)
+    totalHosts = Column(String)
+    upHosts = Column(String)
+    downHosts = Column(String)
 
     def __init__(self, filename, *args, **kwargs):
         self.filename = filename
-        self.start_time = args[0]
+        self.startTime = args[0]
         self.finish_time = args[1]
-        self.nmap_version = kwargs.get('nmap_version') or 'unknown'
-        self.scan_args = kwargs.get('scan_args') or ''
-        self.total_hosts = kwargs.get('total_host') or '0'
-        self.up_hosts = kwargs.get('up_hosts') or '0'
-        self.down_hosts = kwargs.get('down_hosts') or '0'
+        self.nmapVersion = kwargs.get('nmapVersion') or 'unknown'
+        self.scanArgs = kwargs.get('scanArgs') or ''
+        self.totalHosts = kwargs.get('total_host') or '0'
+        self.upHosts = kwargs.get('upHosts') or '0'
+        self.downHosts = kwargs.get('downHosts') or '0'
 
 
-class nmap_os(Base):
-    __tablename__ = 'nmap_os'
+class osObj(Base):
+    __tablename__ = 'osObj'
     id = Column(Integer, primary_key = True)
     name = Column(String)
     family = Column(String)
     generation = Column(String)
-    os_type = Column(String)
+    osType = Column(String)
     vendor = Column(String)
     accuracy = Column(String)
-    host_id = Column(String, ForeignKey('nmap_host.id'))
+    hostId = Column(String, ForeignKey('hostObj.id'))
 
     def __init__(self, name, *args):
         self.name = name
         self.family = args[0]
         self.generation = args[1]
-        self.os_type = args[2]
+        self.osType = args[2]
         self.vendor = args[3]
         self.accuracy = args[4]
-        self.host_id = args[5]
+        self.hostId = args[5]
 
-class nmap_port(Base):
-    __tablename__ = 'nmap_port'
-    port_id = Column(String)
+class portObj(Base):
+    __tablename__ = 'portObj'
+    portId = Column(String)
     id = Column(Integer, primary_key = True)
     protocol = Column(String)
     state = Column(String)
-    host_id = Column(String, ForeignKey('nmap_host.id'))
-    service_id = Column(String, ForeignKey('nmap_service.id'))
-    script_id = Column(String, ForeignKey('nmap_script.id'))
+    hostId = Column(String, ForeignKey('hostObj.id'))
+    serviceId = Column(String, ForeignKey('serviceObj.id'))
+    scriptId = Column(String, ForeignKey('l1ScriptObj.id'))
 
-    def __init__(self, port_id, protocol, state, host, service = ''):
-        self.port_id = port_id
+    def __init__(self, portId, protocol, state, host, service = ''):
+        self.portId = portId
         self.protocol = protocol
         self.state = state
-        self.service_id = service
-        self.host_id = host
+        self.serviceId = service
+        self.hostId = host
 
 class cve(Base):
     __tablename__ = 'cve'
@@ -136,28 +136,54 @@ class cve(Base):
     severity = Column(String)
     source = Column(String)
     version = Column(String)
-    service_id = Column(String, ForeignKey('nmap_service.id'))
-    host_id = Column(String, ForeignKey('nmap_host.id'))
+    exploitId = Column(Integer)
+    exploit = Column(String)
+    exploitUrl = Column(String)
+    serviceId = Column(String, ForeignKey('serviceObj.id'))
+    hostId = Column(String, ForeignKey('hostObj.id'))
 
-    def __init__(self, name, url, product, hostId, severity = '', source = '', version = ''):
+    def __init__(self, name, url, product, hostId, severity = '', source = '', version = '', exploitId = 0, exploit = '', exploitUrl = ''):
         self.url = url
         self.name = name
         self.product = product
         self.severity = severity
         self.source = source
         self.version = version
-        self.host_id = hostId
+        self.exploitId = exploitId
+        self.exploit = exploit
+        self.exploitUrl = exploitUrl
+        self.hostId = hostId
 
-class nmap_service(Base):
-    __tablename__ = 'nmap_service'
+class appObj(Base):
+    __tablename__ = 'appObj'
     name = Column(String)
     id = Column(Integer, primary_key = True)
     product = Column(String)
     version = Column(String)
     extrainfo = Column(String)
     fingerprint = Column(String)
-    port = relationship(nmap_port)
+    cpe = Column(String)
+    serviceId = Column(String, ForeignKey('serviceObj.id'))
+
+    def __init__(self, name = '', product = '', version = '', extrainfo = '', fingerprint = '', cpe = ''):
+        self.name = name
+        self.product = product
+        self.version = version
+        self.extrainfo = extrainfo
+        self.fingerprint = fingerprint
+        self.cpe = cpe
+
+class serviceObj(Base):
+    __tablename__ = 'serviceObj'
+    name = Column(String)
+    id = Column(Integer, primary_key = True)
+    product = Column(String)
+    version = Column(String)
+    extrainfo = Column(String)
+    fingerprint = Column(String)
+    port = relationship(portObj)
     cves = relationship(cve)
+    application = relationship(appObj)
 
     def __init__(self, name = '', product = '', version = '', extrainfo = '', fingerprint = ''):
         self.name = name
@@ -166,56 +192,92 @@ class nmap_service(Base):
         self.extrainfo = extrainfo
         self.fingerprint = fingerprint
 
-class nmap_script(Base):
-    __tablename__ = 'nmap_script'
-    script_id = Column(String)
+class l1ScriptObj(Base):
+    __tablename__ = 'l1ScriptObj'
+    scriptId = Column(String)
     id = Column(Integer, primary_key = True)
     output = Column(String)
-    port_id = Column(String, ForeignKey('nmap_port.id'))
-    host_id = Column(String, ForeignKey('nmap_host.id'))
+    portId = Column(String, ForeignKey('portObj.id'))
+    hostId = Column(String, ForeignKey('hostObj.id'))
 
-    def __init__(self, script_id, output, portId, hostId):
-        self.script_id = script_id
+    def __init__(self, scriptId, output, portId, hostId):
+        self.scriptId = scriptId
         self.output = unicode(output)
-        self.port_id = portId
-        self.host_id = hostId
+        self.portId = portId
+        self.hostId = hostId
 
-class nmap_host(Base):
-    __tablename__ = 'nmap_host'
+class l2ScriptObj(Base):
+    __tablename__ = 'l2ScriptObj'
+    scriptId = Column(String)
+    id = Column(Integer, primary_key = True)
+    output = Column(String)
+    portId = Column(String, ForeignKey('portObj.id'))
+    hostId = Column(String, ForeignKey('hostObj.id'))
+
+    def __init__(self, scriptId, output, portId, hostId):
+        self.scriptId = scriptId
+        self.output = unicode(output)
+        self.portId = portId
+        self.hostId = hostId
+
+
+class hostObj(Base):
+    __tablename__ = 'hostObj'
+    # State
+    state = Column(String)
+    count = Column(String)
     checked = Column(String)
-    os_match = Column(String)
-    os_accuracy = Column(String)
+
+    # OS
+    osMatch = Column(String)
+    osAccuracy = Column(String)
+    vendor = Column(String)
+    uptime = Column(String)
+    lastboot = Column(String)
+
+    # Network
+    isp = Column(String)
+    asn = Column(String)
     ip = Column(String)
     ipv4 = Column(String)
     ipv6 = Column(String)
     macaddr = Column(String)
     status = Column(String)
     hostname = Column(String)
-    host_id = Column(String)
+
+    # ID
+    hostId = Column(String)
     id = Column(Integer, primary_key = True)
-    vendor = Column(String)
-    uptime = Column(String)
-    lastboot = Column(String)
-    distance = Column(String)
-    state = Column(String)
     count = Column(String)
 
+    # Location
+    city = Column(String)
+    countryCode = Column(String)
+    postalCode = Column(String)
+    longitude = Column(String)
+    latitude = Column(String)
+    distance = Column(String)
+
+    # Network
+    isp = Column(String)
+    asn = Column(String)
+
     # host relationships
-    os = relationship(nmap_os)
-    ports = relationship(nmap_port)
+    os = relationship(osObj)
+    ports = relationship(portObj)
     cves = relationship(cve)
 
     def __init__(self, **kwargs):
         self.checked = kwargs.get('checked') or 'False'
-        self.os_match = kwargs.get('os_match') or 'unknown'
-        self.os_accuracy = kwargs.get('os_accuracy') or 'NaN'
+        self.osMatch = kwargs.get('osMatch') or 'unknown'
+        self.osAccuracy = kwargs.get('osAccuracy') or 'NaN'
         self.ip = kwargs.get('ip') or 'unknown'
         self.ipv4 = kwargs.get('ipv4') or 'unknown'
         self.ipv6 = kwargs.get('ipv6') or 'unknown'
         self.macaddr = kwargs.get('macaddr') or 'unknown'
         self.status = kwargs.get('status') or 'unknown'
         self.hostname = kwargs.get('hostname') or 'unknown'
-        self.host_id = kwargs.get('hostname') or 'unknown'
+        self.hostId = kwargs.get('hostname') or 'unknown'
         self.vendor = kwargs.get('vendor') or 'unknown'
         self.uptime = kwargs.get('uptime') or 'unknown'
         self.lastboot = kwargs.get('lastboot') or 'unknown'
@@ -226,17 +288,17 @@ class nmap_host(Base):
 
 class note(Base):
     __tablename__ = 'note'
-    host_id = Column(Integer, ForeignKey('nmap_host.id'))
+    hostId = Column(Integer, ForeignKey('hostObj.id'))
     id = Column(Integer, primary_key = True)
     text = Column(String)
 
     def __init__(self, hostId, text):
         self.text = unicode(text)
-        self.host_id = hostId
+        self.hostId = hostId
 
 class process_output(Base):
     __tablename__ = 'process_output'
-    process_id = Column(Integer, ForeignKey('process.id'))
+    processId = Column(Integer, ForeignKey('process.id'))
     id = Column(Integer, primary_key = True)
     output = Column(String)
 
@@ -297,8 +359,3 @@ class Database:
                 pass
         self.dbsemaphore.release()
         log.info("DB lock released")
-
-
-if __name__ == "__main__":
-
-    db = Database('myDatabase')
