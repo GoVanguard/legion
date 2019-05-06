@@ -25,4 +25,4 @@ find . -name \*.pyo -delete
 rm -Rf ./scripts/CloudFail/
 
 # Removed backups
-rm -Rf ./backups/*
+rm -Rf ./backup/*.conf

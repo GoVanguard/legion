@@ -46,7 +46,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
     def data(self, index, role):                                        # this method takes care of how the information is displayed
         if role == QtCore.Qt.DecorationRole:                            # to show the operating system icon instead of text                 
             if index.column() == 1:                                     # if trying to display the operating system
-                os_string = self.__hosts[index.row()]['os_match']               
+                os_string = self.__hosts[index.row()]['osMatch']               
                 if os_string == '':                                     # if there is no OS information, use the question mark icon
                     return QtGui.QIcon("./images/question-icon.png")
                     
@@ -78,7 +78,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
             if column == 0:
                 value = self.__hosts[row]['id']
             elif column == 2:
-                value = self.__hosts[row]['os_accuracy']
+                value = self.__hosts[row]['osAccuracy']
             elif column == 3:
                 if not self.__hosts[row]['hostname'] == '':
                     value = self.__hosts[row]['ip'] + ' ('+ self.__hosts[row]['hostname'] +')'
@@ -133,7 +133,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
         elif Ncol == 1:                                                 # if sorting by OS
             for i in range(len(self.__hosts)):
                 
-                os_string = self.__hosts[i]['os_match']
+                os_string = self.__hosts[i]['osMatch']
                 if os_string == '':
                     array.append('')
                                     

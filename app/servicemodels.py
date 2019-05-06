@@ -62,17 +62,17 @@ class ServicesTableModel(QtCore.QAbstractTableModel):                   # needs 
             if column == 0:             
                 value = '   ' + self.__services[row]['ip']              # the spaces are needed for spacing with the icon that precedes the text
             elif column == 1:
-                value = self.__services[row]['port_id']
+                value = self.__services[row]['portId']
             elif column == 2:
-                value = '   ' + self.__services[row]['port_id']         # the spaces are needed for spacing with the icon that precedes the text
+                value = '   ' + self.__services[row]['portId']         # the spaces are needed for spacing with the icon that precedes the text
             elif column == 3:
                 value = self.__services[row]['protocol']
             elif column == 4:
                 value = self.__services[row]['state']
             elif column == 5:
-                value = self.__services[row]['host_id']
+                value = self.__services[row]['hostId']
             elif column == 6:
-                value = self.__services[row]['service_id']
+                value = self.__services[row]['serviceId']
             elif column == 7:
                 value = self.__services[row]['name']
             elif column == 8:
@@ -105,11 +105,11 @@ class ServicesTableModel(QtCore.QAbstractTableModel):                   # needs 
 
         elif Ncol == 1:                                                 # if sorting by port
             for i in range(len(self.__services)):
-                array.append(int(self.__services[i]['port_id']))
+                array.append(int(self.__services[i]['portId']))
 
         elif Ncol == 2:                                                 # if sorting by port
             for i in range(len(self.__services)):
-                array.append(int(self.__services[i]['port_id']))
+                array.append(int(self.__services[i]['portId']))
                 
         elif Ncol == 3:                                                 # if sorting by protocol
             for i in range(len(self.__services)):
@@ -146,7 +146,7 @@ class ServicesTableModel(QtCore.QAbstractTableModel):                   # needs 
     ### getter functions ###
     
     def getPortForRow(self, row):
-        return self.__services[row]['port_id']
+        return self.__services[row]['portId']
         
     def getServiceNameForRow(self, row):
         return self.__services[row]['name']

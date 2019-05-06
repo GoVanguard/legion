@@ -63,6 +63,12 @@ class CvesTableModel(QtCore.QAbstractTableModel):
                 value = self.__cves[row]['url']
             elif column == 5:
                 value = self.__cves[row]['source']
+            elif column == 6:
+                value = self.__cves[row]['exploitId']
+            elif column == 7:
+                value = self.__cves[row]['exploit']
+            elif column == 8:
+                value = self.__cves[row]['exploitUrl']
             return value
                     
 
@@ -88,6 +94,15 @@ class CvesTableModel(QtCore.QAbstractTableModel):
         elif Ncol == 5:
             for i in range(len(self.__cves)):
                 array.append(self.__cves[i]['source'])
+        elif Ncol == 6:
+            for i in range(len(self.__cves)):
+                array.append(self.__cves[i]['exploitId'])
+        elif Ncol == 7:
+            for i in range(len(self.__cves)):
+                array.append(self.__cves[i]['exploit'])
+        elif Ncol == 8:
+            for i in range(len(self.__cves)):
+                array.append(self.__cves[i]['exploitUrl'])
 
         sortArrayWithArray(array, self.__cves)                       # sort the services based on the values in the array
 

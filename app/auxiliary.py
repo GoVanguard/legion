@@ -199,16 +199,16 @@ class Wordlist():
 class MyQProcess(QProcess):
     sigHydra = QtCore.pyqtSignal(QObject, list, list, name="hydra")     # signal to indicate Hydra found stuff
 
-    def __init__(self, name, tabtitle, hostip, port, protocol, command, starttime, outputfile, textbox):
+    def __init__(self, name, tabTitle, hostIp, port, protocol, command, startTime, outputfile, textbox):
         QProcess.__init__(self)
         self.id = -1
         self.name = name
-        self.tabtitle = tabtitle
-        self.hostip = hostip
+        self.tabTitle = tabTitle
+        self.hostIp = hostIp
         self.port = port
         self.protocol = protocol        
         self.command = command
-        self.starttime = starttime      
+        self.startTime = startTime      
         self.outputfile = outputfile
         self.display = textbox                                          # has its own display widget to be able to display its output in the GUI
         self.elapsed = -1
