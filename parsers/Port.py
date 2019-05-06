@@ -15,14 +15,14 @@ class Port:
 
     def __init__(self, PortNode):
         if not (PortNode is None):
-            self.port_node = PortNode
+            self.portNode = PortNode
             self.portId = PortNode.getAttribute('portid')
             self.protocol = PortNode.getAttribute('protocol')
             self.state = PortNode.getElementsByTagName('state')[0].getAttribute('state')
 
-    def get_service(self):
+    def getService(self):
 
-        service_node = self.port_node.getElementsByTagName('service')
+        service_node = self.portNode.getElementsByTagName('service')
         
         if len(service_node) > 0:
            return Service.Service(service_node[0])
@@ -32,7 +32,7 @@ class Port:
    # def get_cpe(self):
 
    #     cpes = []
-   #     cpe = self.port_node.getElementsByTagName('cpe')
+   #     cpe = self.portNode.getElementsByTagName('cpe')
    #     print(cpe)
 
    #     if len(cpe) > 0:
@@ -40,12 +40,12 @@ class Port:
 
    #     return None
 
-    def get_scripts(self):
+    def getScripts(self):
 
         scripts = [ ]
 
-        for script_node in self.port_node.getElementsByTagName('script'):
-            scr = Script.Script(script_node)
+        for scriptNode in self.portNode.getElementsByTagName('script'):
+            scr = Script.Script(scriptNode)
             scripts.append(scr)
 
         return scripts

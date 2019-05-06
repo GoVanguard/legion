@@ -47,7 +47,7 @@ class CvesTableModel(QtCore.QAbstractTableModel):
                 
     def data(self, index, role):                                        # this method takes care of how the information is displayed
 
-        if role == QtCore.Qt.DisplayRole:                               # how to display each cell
+        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:                               # how to display each cell
             value = ''
             row = index.row()
             column = index.column()
@@ -63,6 +63,12 @@ class CvesTableModel(QtCore.QAbstractTableModel):
                 value = self.__cves[row]['url']
             elif column == 5:
                 value = self.__cves[row]['source']
+            elif column == 6:
+                value = self.__cves[row]['exploitId']
+            elif column == 7:
+                value = self.__cves[row]['exploit']
+            elif column == 8:
+                value = self.__cves[row]['exploitUrl']
             return value
                     
 
@@ -88,6 +94,15 @@ class CvesTableModel(QtCore.QAbstractTableModel):
         elif Ncol == 5:
             for i in range(len(self.__cves)):
                 array.append(self.__cves[i]['source'])
+        elif Ncol == 6:
+            for i in range(len(self.__cves)):
+                array.append(self.__cves[i]['exploitId'])
+        elif Ncol == 7:
+            for i in range(len(self.__cves)):
+                array.append(self.__cves[i]['exploit'])
+        elif Ncol == 8:
+            for i in range(len(self.__cves)):
+                array.append(self.__cves[i]['exploitUrl'])
 
         sortArrayWithArray(array, self.__cves)                       # sort the services based on the values in the array
 
@@ -97,12 +112,15 @@ class CvesTableModel(QtCore.QAbstractTableModel):
         self.layoutChanged.emit()
 
     def flags(self, index):                                             # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
 
     ### getter functions ###
 
     def getCveDBIdForRow(self, row):
         return self.__cves[row]['name']
+
+    def getCveForRow(self, row):
+        return self.__cves[row]
     
     def getRowForDBId(self, id):
         for i in range(len(self.__cves)):

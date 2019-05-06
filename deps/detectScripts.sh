@@ -71,4 +71,9 @@ if [ ! -f ".initialized" ]
     scripts/installDeps.sh
 fi
 
+if [ ! -f ".initialized" ]
+  then
+    scripts/installDeps.sh
+fi
+
 cd ${curPath}
