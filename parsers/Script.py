@@ -81,7 +81,7 @@ class Script:
                 if exploitResults:
                     resultCveDict['exploitId'] = exploitResults['edbid']
                     resultCveDict['exploit'] = exploitResults['exploit']
-                    resultCveDict['exploitUrl'] = "https://www.exploit-db.com/exploits/{0}".format(resultCveDict['exploit'])
+                    resultCveDict['exploitUrl'] = "https://www.exploit-db.com/exploits/{0}".format(resultCveDict['exploitId'])
                 resultCvesProcessed.append(resultCveDict)
             resultCpeDetails['cves'] = resultCvesProcessed
             resultsDict[resultCpeData[3]] = resultCpeDetails

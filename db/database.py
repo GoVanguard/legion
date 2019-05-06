@@ -284,6 +284,14 @@ class hostObj(Base):
         self.distance = kwargs.get('distance') or 'unknown'
         self.state = kwargs.get('state') or 'unknown'
         self.count = kwargs.get('count') or 'unknown'
+        self.city = kwargs.get('city') or 'unknown'
+        self.countryCode = kwargs.get('countryCode') or 'unknown'
+        self.postalCode = kwargs.get('postalCode') or 'unknown'
+        self.longitude = kwargs.get('longitude') or 'unknown'
+        self.latitude = kwargs.get('latitude') or 'unknown'
+        self.isp = kwargs.get('isp') or 'unknown'
+        self.asn = kwargs.get('asn') or 'unknown'
+
 
 
 class note(Base):
