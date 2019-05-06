@@ -66,13 +66,6 @@ else
   git clone https://github.com/m0rtem/CloudFail.git scripts/CloudFail
 fi
 
-if [ -a scripts/exploutdb/searchsploit ]
-  then
-    echo "Exploit-db has been found"
-else
-  git clone https://github.com/offensive-security/exploitdb.git scripts/exploitdb
-fi
-
 if [ ! -f ".initialized" ]
   then
     scripts/installDeps.sh

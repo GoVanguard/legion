@@ -55,10 +55,10 @@ class ScriptsTableModel(QtCore.QAbstractTableModel):
             if column == 0:
                 value = self.__scripts[row]['id']        
             elif column == 1:
-                value = self.__scripts[row]['script_id']
+                value = self.__scripts[row]['scriptId']
             elif column == 2:
-                if self.__scripts[row]['port_id'] and self.__scripts[row]['protocol'] and not self.__scripts[row]['port_id'] == '' and not self.__scripts[row]['protocol'] == '':
-                    value = self.__scripts[row]['port_id'] + '/' + self.__scripts[row]['protocol']              
+                if self.__scripts[row]['portId'] and self.__scripts[row]['protocol'] and not self.__scripts[row]['portId'] == '' and not self.__scripts[row]['protocol'] == '':
+                    value = self.__scripts[row]['portId'] + '/' + self.__scripts[row]['protocol']              
                 else:
                     value = ''
             elif column == 3:
@@ -72,10 +72,10 @@ class ScriptsTableModel(QtCore.QAbstractTableModel):
         
         if Ncol == 1:            
             for i in range(len(self.__scripts)):
-                array.append(self.__scripts[i]['script_id'])
+                array.append(self.__scripts[i]['scriptId'])
         if Ncol == 2:            
             for i in range(len(self.__scripts)):
-                array.append(int(self.__scripts[i]['port_id']))
+                array.append(int(self.__scripts[i]['portId']))
 
         sortArrayWithArray(array, self.__scripts)                       # sort the services based on the values in the array
 

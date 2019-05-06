@@ -11,7 +11,7 @@ class OS:
     name = ''
     family = ''
     generation = ''
-    os_type = ''
+    osType = ''
     vendor = ''
     accuracy = 0
 
@@ -20,7 +20,7 @@ class OS:
             self.name = OSNode.getAttribute('name')
             self.family = OSNode.getAttribute('osfamily')
             self.generation = OSNode.getAttribute('osgen')
-            self.os_type = OSNode.getAttribute('type')
+            self.osType = OSNode.getAttribute('type')
             self.vendor = OSNode.getAttribute('vendor')
             self.accuracy = OSNode.getAttribute('accuracy')
 
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     log.info(os.name)
     log.info(os.family)
     log.info(os.generation)
-    log.info(os.os_type)
+    log.info(os.osType)
     log.info(os.vendor)
     log.info(str(os.accuracy))
 
@@ -45,6 +45,6 @@ if __name__ == '__main__':
     log.info(os.name)
     log.info(os.family)
     log.info(os.generation)
-    log.info(os.os_type)
+    log.info(os.osType)
     log.info(os.vendor)
     log.info(str(os.accuracy))
