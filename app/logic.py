@@ -250,12 +250,10 @@ class Logic():
 
         return self.db.metadata.bind.execute(query, str(hostIP)).fetchall()
 
-    ## FIX
     def getCvesFromDB(self, hostIP):
-        query = ('SELECT cves.name, cves.severity, cves.product, cves.version, cves.url, cves.source FROM cve AS cves ' +
+        query = ('SELECT cves.name, cves.severity, cves.product, cves.version, cves.url, cves.source, cves.edbid, cves.exploit, cves.exploiturl FROM cve AS cves ' +
                  'INNER JOIN hostObj AS hosts ON hosts.id = cves.host_id ' +
                  'WHERE hosts.ip = ?')
-
         return self.db.metadata.bind.execute(query, str(hostIP)).fetchall()
         
     def getScriptOutputFromDB(self, scriptDBId):

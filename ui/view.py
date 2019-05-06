@@ -184,7 +184,7 @@ class View(QtCore.QObject):
         setTableProperties(self.ui.ServiceNamesTableView, len(headers))
 
         # cves table (right)
-        headers = ["Id", "Severity", "Product", "Version", "URL", "Source"]
+        headers = ["Id", "Severity", "Product", "Version", "URL", "Source", "Exploit ID", "Exploit", "Exploit URL"]
         setTableProperties(self.ui.CvesTableView, len(headers))
         self.ui.CvesTableView.setSortingEnabled(True)
 
@@ -1097,11 +1097,14 @@ class View(QtCore.QObject):
             self.ui.ScriptsTableView.selectRow(row)
             self.scriptTableClick()
 
+        self.ui.ScriptsTableView.repaint()
+        self.ui.ScriptsTableView.update()
+
     def updateCvesByHostView(self, hostIP):
-        headers = ["ID", "CVSS Score", "Product", "Version", "URL", "Source"]
+        headers = ["ID", "CVSS Score", "Product", "Version", "URL", "Source", "Exploit ID", "Exploit", "Exploit URL"]
         cves = self.controller.getCvesFromDB(hostIP)
-        print(cves)
-        self.CvesTableModel = CvesTableModel(self,self.controller.getCvesFromDB(hostIP), headers)
+        print("CVES: {0}".format(str(cves)))
+        self.CvesTableModel = CvesTableModel(self, cves, headers)
 
         self.ui.CvesTableView.horizontalHeader().resizeSection(0,175)
         self.ui.CvesTableView.horizontalHeader().resizeSection(2,175)

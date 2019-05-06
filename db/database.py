@@ -136,6 +136,9 @@ class cve(Base):
     severity = Column(String)
     source = Column(String)
     version = Column(String)
+    edbid = Column(Integer)
+    exploit = Column(String)
+    exploitUrl = Column(String)
     service_id = Column(String, ForeignKey('serviceObj.id'))
     host_id = Column(String, ForeignKey('hostObj.id'))
 
@@ -146,7 +149,29 @@ class cve(Base):
         self.severity = severity
         self.source = source
         self.version = version
+        self.edbid = 0
+        self.exploit = ''
+        self.exploitUrl = ''
         self.host_id = hostId
+
+class appObj(Base):
+    __tablename__ = 'appObj'
+    name = Column(String)
+    id = Column(Integer, primary_key = True)
+    product = Column(String)
+    version = Column(String)
+    extrainfo = Column(String)
+    fingerprint = Column(String)
+    cpe = Column(String)
+    service_id = Column(String, ForeignKey('serviceObj.id'))
+
+    def __init__(self, name = '', product = '', version = '', extrainfo = '', fingerprint = '', cpe = ''):
+        self.name = name
+        self.product = product
+        self.version = version
+        self.extrainfo = extrainfo
+        self.fingerprint = fingerprint
+        self.cpe = cpe
 
 class serviceObj(Base):
     __tablename__ = 'serviceObj'
@@ -158,6 +183,7 @@ class serviceObj(Base):
     fingerprint = Column(String)
     port = relationship(portObj)
     cves = relationship(cve)
+    application = relationship(appObj)
 
     def __init__(self, name = '', product = '', version = '', extrainfo = '', fingerprint = ''):
         self.name = name
@@ -194,24 +220,6 @@ class l2ScriptObj(Base):
         self.port_id = portId
         self.host_id = hostId
 
-class appObj(Base):
-    __tablename__ = 'appObj'
-    name = Column(String)
-    id = Column(Integer, primary_key = True)
-    product = Column(String)
-    version = Column(String)
-    extrainfo = Column(String)
-    fingerprint = Column(String)
-    cpe = Column(String)
-    service = relationship(serviceObj)
-
-    def __init__(self, name = '', product = '', version = '', extrainfo = '', fingerprint = '', cpe = ''):
-        self.name = name
-        self.product = product
-        self.version = version
-        self.extrainfo = extrainfo
-        self.fingerprint = fingerprint
-        self.cpe - cpe
 
 class hostObj(Base):
     __tablename__ = 'hostObj'
