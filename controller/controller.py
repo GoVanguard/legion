@@ -28,7 +28,7 @@ class Controller():
     def __init__(self, view, logic):
         self.name = "LEGION"
         self.version = '0.3.5'
-        self.build = '1557146732'
+        self.build = '1557176518'
         self.author = 'GoVanguard'
         self.copyright = '2019'
         self.links = ['http://github.com/GoVanguard/legion/issues', 'https://GoVanguard.io/legion']
@@ -49,7 +49,7 @@ class Controller():
 
         self.loadSettings()                                             # creation of context menu actions from settings file and set up of various settings        
         self.initNmapImporter()
-        self.initShodanImporter()
+        self.initPythonImporter()
         self.initScreenshooter()
         self.initBrowserOpener()
         self.start()                                                    # initialisations (globals, etc)
@@ -64,7 +64,7 @@ class Controller():
         self.fastProcessesRunning = 0                                   # counts the number of fast processes currently running
         self.slowProcessesRunning = 0                                   # counts the number of slow processes currently running
         self.nmapImporter.setDB(self.logic.db)                          # tell nmap importer which db to use
-        self.shodanImporter.setDB(self.logic.db)
+        self.pythonImporter.setDB(self.logic.db)
         self.updateOutputFolder()                                       # tell screenshooter where the output folder is
         self.view.start(title)
         
@@ -74,11 +74,11 @@ class Controller():
         self.nmapImporter.schedule.connect(self.scheduler)              # run automated attacks
         self.nmapImporter.log.connect(self.view.ui.LogOutputTextView.append)
 
-    def initShodanImporter(self):
-        self.shodanImporter = ShodanImporter()
-        self.shodanImporter.done.connect(self.importFinished)
-        self.shodanImporter.schedule.connect(self.scheduler)              # run automated attacks
-        self.shodanImporter.log.connect(self.view.ui.LogOutputTextView.append)
+    def initPythonImporter(self):
+        self.pythonImporter = PythonImporter()
+        self.pythonImporter.done.connect(self.importFinished)
+        self.pythonImporter.schedule.connect(self.scheduler)              # run automated attacks
+        self.pythonImporter.log.connect(self.view.ui.LogOutputTextView.append)
     
     def initScreenshooter(self):
         self.screenshooter = Screenshooter(self.settings.general_screenshooter_timeout)         # screenshot taker object (different thread)
@@ -316,6 +316,8 @@ class Controller():
                 if 'nmap' in name:                                      # to make sure different nmap scans appear under the same tool name
                     name = 'nmap'
                     invisibleTab = True                 
+                elif 'python-script' in name:
+                    invisibleTab = True
                                                                         # remove all chars that are not alphanumeric from tool name (used in the outputfile's name)
                 outputfile = self.logic.runningfolder+"/"+re.sub("[^0-9a-zA-Z]", "", str(name))+"/"+getTimestamp()+"-"+re.sub("[^0-9a-zA-Z]", "", str(self.settings.hostActions[i][1]))+"-"+ip  
                 command = str(self.settings.hostActions[i][2])
@@ -387,6 +389,8 @@ class Controller():
                         command=command.replace("-sV","-sVU")
 
                     if 'nmap' in tabTitle:                              # we don't want to show nmap tabs
+                        restoring = True
+                    elif 'python-script' in tabTitle:                              # we don't want to show nmap tabs
                         restoring = True
 
                     self.runCommand(tool, tabTitle, ip[0], ip[1], ip[2], command, getTimestamp(True), outputfile, self.view.createNewTabForHost(ip[0], tabTitle, restoring))
@@ -466,7 +470,7 @@ class Controller():
                 self.view.updateProcessesTableView()
             return
                         
-        if action.text() == 'Clear':                                    # hide all the processes that are not running
+        if action.text() == 'Clear':                                    # h.ide all the processes that are not running
             self.logic.toggleProcessDisplayStatus()
             self.view.updateProcessesTableView()
 
@@ -723,6 +727,8 @@ class Controller():
         self.logic.storeProcessCrashStatusInDB(str(proc.id))
         log.info('Process {qProcessId} Crashed!'.format(qProcessId=str(proc.id)))
         qProcessOutput = "\n\t" + str(proc.display.toPlainText()).replace('\n','').replace("b'","")
+        #self.view.closeHostToolTab(self, index))
+        self.view.findFinishedServiceTab(str(self.logic.getPidForProcess(str(proc.id))))
         log.info('Process {qProcessId} Output: {qProcessOutput}'.format(qProcessId=str(proc.id), qProcessOutput=qProcessOutput))
 
     # this function handles everything after a process ends
@@ -732,13 +738,21 @@ class Controller():
             if not self.logic.isKilledProcess(str(qProcess.id)):        # if process was not killed
                 if not qProcess.outputfile == '':
                     self.logic.moveToolOutput(qProcess.outputfile)      # move tool output from runningfolder to output folder if there was an output file
-                
-                    if 'nmap' in qProcess.name:                         # if the process was nmap, use the parser to store it
+                    print(qProcess.command) 
+                    if 'nmap' in qProcess.command :                         # if the process was nmap, use the parser to store it
                         if qProcess.exitCode() == 0:                    # if the process finished successfully
                             newoutputfile = qProcess.outputfile.replace(self.logic.runningfolder, self.logic.outputfolder)
                             self.nmapImporter.setFilename(str(newoutputfile)+'.xml')
                             self.nmapImporter.setOutput(str(qProcess.display.toPlainText()))
                             self.nmapImporter.start()
+                    elif 'PythonScript' in qProcess.command:
+                        pythonScript = str(qProcess.command).split(' ')[2]
+                        print('PythonImporter running for script: {0}'.format(pythonScript))
+                        if qProcess.exitCode() == 0:                    # if the process finished successfully
+                            self.pythonImporter.setOutput(str(qProcess.display.toPlainText()))
+                            self.pythonImporter.setHostIp(str(qProcess.hostIp))
+                            self.pythonImporter.setPythonScript(pythonScript)
+                            self.pythonImporter.start()
                 exitCode = qProcess.exitCode()
                 if exitCode != 0 and exitCode != 255:
                     log.info("Process {qProcessId} exited with code {qProcessExitCode}".format(qProcessId=qProcess.id, qProcessExitCode=qProcess.exitCode()))
@@ -813,6 +827,8 @@ class Controller():
                             log.debug("Running tool command " + str(command))
 
                             if 'nmap' in tabTitle:                          # we don't want to show nmap tabs
+                                restoring = True
+                            elif 'python-script' in tabTitle:
                                 restoring = True
 
                             tab = self.view.ui.HostsTabWidget.tabText(self.view.ui.HostsTabWidget.currentIndex())                       

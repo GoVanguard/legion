@@ -41,7 +41,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
                 if section < len(self.__headers):
                     return self.__headers[section]
                 else:
-                    return "!not implemented"
+                    return "not implemented in view model"
 
     def data(self, index, role):                                        # this method takes care of how the information is displayed
         if role == QtCore.Qt.DecorationRole:                            # to show the operating system icon instead of text                 
@@ -108,6 +108,8 @@ class HostsTableModel(QtCore.QAbstractTableModel):
                 value = self.__hosts[row]['state']
             elif column == 15:
                 value = self.__hosts[row]['count']
+            else:
+                value = 'Not set in view model'
             return value
             
         if role == QtCore.Qt.FontRole:
