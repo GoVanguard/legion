@@ -48,51 +48,49 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
                     return "not implemented"
 
     def data(self, index, role):                                        # this method takes care of how the information is displayed
-        if role != QtCore.Qt.DisplayRole:                               # how to display each cell      
-            return
-
-        value = ''
-        row = index.row()
-        column = index.column()
-        processColumns = {0:'progress', 1:'display',  2:'elapsed', 3:'estimatedremaining', 4:'pid', 5:'name', 6:'tabtitle', 7:'hostip', 8:'port', 9:'protocol', 10:'command', 11:'starttime', 12:'endtime', 13:'outputfile', 14:'output', 15:'status', 16:'closed'}
-        try:
-            if column == 0:
-                value = ''
-            elif column == 2:
-                pid = int(self.__processes[row]['pid'])
-                elapsed = round(self.__controller.controller.processMeasurements.get(pid, 0), 2)
-                value = "{0:.2f}{1}".format(float(elapsed), "s")
-            elif column == 3:
-                status = str(self.__processes[row]['status'])
-                if status == "Finished" or status == "Crashed" or status == "Killed":
-                    estimatedRemaining = 0
-                else:
+        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:                               # how to display each cell      
+            value = ''
+            row = index.row()
+            column = index.column()
+            processColumns = {0:'progress', 1:'display',  2:'elapsed', 3:'estimatedremaining', 4:'pid', 5:'name', 6:'tabtitle', 7:'hostip', 8:'port', 9:'protocol', 10:'command', 11:'starttime', 12:'endtime', 13:'outputfile', 14:'output', 15:'status', 16:'closed'}
+            try:
+                if column == 0:
+                    value = ''
+                elif column == 2:
                     pid = int(self.__processes[row]['pid'])
                     elapsed = round(self.__controller.controller.processMeasurements.get(pid, 0), 2)
-                    estimatedRemaining = int(self.__processes[row]['estimatedremaining']) - float(elapsed)
-                value = "{0:.2f}{1}".format(float(estimatedRemaining), "s") if estimatedRemaining >= 0 else 'Unknown'
-            elif column == 6:
-                if not self.__processes[row]['tabtitle'] == '':
-                    value = self.__processes[row]['tabtitle']
+                    value = "{0:.2f}{1}".format(float(elapsed), "s")
+                elif column == 3:
+                    status = str(self.__processes[row]['status'])
+                    if status == "Finished" or status == "Crashed" or status == "Killed":
+                        estimatedRemaining = 0
+                    else:
+                        pid = int(self.__processes[row]['pid'])
+                        elapsed = round(self.__controller.controller.processMeasurements.get(pid, 0), 2)
+                        estimatedRemaining = int(self.__processes[row]['estimatedremaining']) - float(elapsed)
+                    value = "{0:.2f}{1}".format(float(estimatedRemaining), "s") if estimatedRemaining >= 0 else 'Unknown'
+                elif column == 6:
+                    if not self.__processes[row]['tabtitle'] == '':
+                        value = self.__processes[row]['tabtitle']
+                    else:
+                        value = self.__processes[row]['name']
+                elif column == 8:
+                    if not self.__processes[row]['port'] == '' and not self.__processes[row]['protocol'] == '':
+                        value = self.__processes[row]['port'] + '/' + self.__processes[row]['protocol']
+                    else:
+                        value = self.__processes[row]['port']
+                elif column == 16:
+                    value = ""
                 else:
-                    value = self.__processes[row]['name']
-            elif column == 8:
-                if not self.__processes[row]['port'] == '' and not self.__processes[row]['protocol'] == '':
-                    value = self.__processes[row]['port'] + '/' + self.__processes[row]['protocol']
-                else:
-                    value = self.__processes[row]['port']
-            elif column == 16:
-                value = ""
-            else:
-                try:
-                    value = self.__processes[row][processColumns.get(int(column))]
-                except:
-                    value = "Missing data c #{0} - {1}".format(int(column), processColumns.get(int(column)))
-                    pass
-        except Exception as e:
-            value = "Missing data c #{0} - {1}".format(int(column), processColumns.get(int(column)))
-            pass
-        return value            
+                    try:
+                        value = self.__processes[row][processColumns.get(int(column))]
+                    except:
+                        value = "Missing data c #{0} - {1}".format(int(column), processColumns.get(int(column)))
+                        pass
+            except Exception as e:
+                value = "Missing data c #{0} - {1}".format(int(column), processColumns.get(int(column)))
+                pass
+            return value            
 
     def sort(self, Ncol, order):
         self.layoutAboutToBeChanged.emit()

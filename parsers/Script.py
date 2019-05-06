@@ -7,6 +7,7 @@ __modified_by = 'ketchup'
 import sys
 import xml.dom.minidom
 import parsers.CVE as CVE
+from pyExploitDb import PyExploitDb
 
 class Script:
     scriptId = ''
@@ -17,6 +18,11 @@ class Script:
             self.scriptId = ScriptNode.getAttribute('id')
             self.output = ScriptNode.getAttribute('output')
 
+    def getExploitDataFromCves(self, cveSet):
+        for cveEntry in cveSet:
+            print("CVE Entry: {0}".format(cveEntry))
+            cveExploitData = self.pyExploitDb.searchCve(cveEntry(0))
+            print("CVE Exploit Data: {0}".format(cveExploitData))
 
     def processVulnersScriptOutput(self, vulnersOutput):
         output = vulnersOutput.replace('\t\t\t','\t')
@@ -26,6 +32,10 @@ class Script:
         output = output.replace(' ','')
         output = output.split('\n')
         output = [entry for entry in output if len(entry) > 1]
+
+        pyExploitDb = PyExploitDb()
+        pyExploitDb.debug = False
+        pyExploitDb.openFile()
 
         cpeList = []
         count = 0
@@ -59,6 +69,12 @@ class Script:
                 resultCveDict['id'] = resultCveData[0]
                 resultCveDict['severity'] = resultCveData[1]
                 resultCveDict['url'] = resultCveData[2]
+                exploitResults = pyExploitDb.searchCve(resultCveData[0])
+                print("-----------------{0}".format(exploitResults))
+                if exploitResults:
+                    resultCveDict['exploitid'] = exploitResults['edbid']
+                    resultCveDict['exploit'] = exploitResults['exploit']
+                    resultCveDict['exploiturl'] = "https://www.exploit-db.com/exploits/{0}".format(resultCveDict['exploit'])
                 resultCvesProcessed.append(resultCveDict)
             resultCpeDetails['cves'] = resultCvesProcessed
             resultsDict[resultCpeData[3]] = resultCpeDetails
@@ -72,6 +88,7 @@ class Script:
 
         if len(cveOutput) > 0:
            cvesResults = self.processVulnersScriptOutput(cveOutput)
+
            for cpeEntry in cvesResults:
                cpeData = cvesResults[cpeEntry]
                cpeProduct = cpeEntry
