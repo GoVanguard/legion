@@ -118,3 +118,5 @@ scripts/snmpbrute.py
 scripts/installDeps.sh
 scripts/smtp-user-enum.pl
 scripts/snmpcheck.rb
+
+scripts/CloudFail
