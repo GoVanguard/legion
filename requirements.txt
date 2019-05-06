@@ -14,3 +14,4 @@ pyfiglet
 colorama
 termcolor
 win_inet_pton
+pyExploitDb==0.1.7
