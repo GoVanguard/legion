@@ -52,7 +52,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
             value = ''
             row = index.row()
             column = index.column()
-            processColumns = {0:'progress', 1:'display',  2:'elapsed', 3:'estimatedremaining', 4:'pid', 5:'name', 6:'tabtitle', 7:'hostip', 8:'port', 9:'protocol', 10:'command', 11:'starttime', 12:'endtime', 13:'outputfile', 14:'output', 15:'status', 16:'closed'}
+            processColumns = {0:'progress', 1:'display',  2:'elapsed', 3:'estimatedRemaining', 4:'pid', 5:'name', 6:'tabTitle', 7:'hostIp', 8:'port', 9:'protocol', 10:'command', 11:'startTime', 12:'endTime', 13:'outputfile', 14:'output', 15:'status', 16:'closed'}
             try:
                 if column == 0:
                     value = ''
@@ -67,11 +67,11 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
                     else:
                         pid = int(self.__processes[row]['pid'])
                         elapsed = round(self.__controller.controller.processMeasurements.get(pid, 0), 2)
-                        estimatedRemaining = int(self.__processes[row]['estimatedremaining']) - float(elapsed)
+                        estimatedRemaining = int(self.__processes[row]['estimatedRemaining']) - float(elapsed)
                     value = "{0:.2f}{1}".format(float(estimatedRemaining), "s") if estimatedRemaining >= 0 else 'Unknown'
                 elif column == 6:
-                    if not self.__processes[row]['tabtitle'] == '':
-                        value = self.__processes[row]['tabtitle']
+                    if not self.__processes[row]['tabTitle'] == '':
+                        value = self.__processes[row]['tabTitle']
                     else:
                         value = self.__processes[row]['name']
                 elif column == 8:
@@ -96,13 +96,13 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
         self.layoutAboutToBeChanged.emit()
         array=[]
 
-        sortColumns = {5:'name', 6:'tabtitle', 11:'starttime', 12:'endtime'}
+        sortColumns = {5:'name', 6:'tabTitle', 11:'startTime', 12:'endTime'}
         field = sortColumns.get(int(Ncol)) or 'status'
 
         try:
             if Ncol == 7:
                 for i in range(len(self.__processes)):
-                    array.append(IP2Int(self.__processes[i]['hostip']))
+                    array.append(IP2Int(self.__processes[i]['hostIp']))
 
             elif Ncol == 8:
                 for i in range(len(self.__processes)):
@@ -180,7 +180,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
                 return i
 
     def getIpForRow(self, row):
-        return self.__processes[row]['hostip']
+        return self.__processes[row]['hostIp']
 
     def getPortForRow(self, row):
         return self.__processes[row]['port']

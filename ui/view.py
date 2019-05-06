@@ -632,25 +632,12 @@ class View(QtCore.QObject):
         index = signal.sibling(row, 0)
         index_dict = model.itemData(index)
         index_value = index_dict.get(0)
-        print(
-            'Row {}, Column {} clicked - value: {}\nColumn 1 contents: {}'.format(row, column, cell_value, index_value))
-        df=pd.DataFrame([cell_value])
-        df.to_clipboard(index=False,header=False)
+        log.info('Row {}, Column {} clicked - value: {}\nColumn 1 contents: {}'.format(row, column, cell_value, index_value))
 
-     #def rightTableDoubleClick(self):
-     #   tab = self.ui.ServicesTabWidget.tabText(self.ui.ServicesTabWidget.currentIndex())
-     #   print(tab)
-     #
-     #   if tab == 'CVEs':
-     #       row = self.ui.CvesTableView.selectionModel().selectedRows()[len(self.ui.CvesTableView.selectionModel().selectedRows())-1].row()
-     #       selectedRowData = self.CvesTableModel.getCveForRow(row)
-     #       print(row)
-     #       print(selectedRowData)
-     #       column = self.ui.CvesTableView.selectionModel().selectedColumns()[len(self.ui.CvesTableView.selectionModel().selectedRows())-1].column()
-     #       print(column)
-     #       
-     #   else:
-     #       return
+        ## Does not work under WSL!
+        df = pd.DataFrame([cell_value])
+        df.to_clipboard(index = False, header = False)
+
 
     def tableDoubleClick(self):
         tab = self.ui.HostsTabWidget.tabText(self.ui.HostsTabWidget.currentIndex())
@@ -1073,7 +1060,7 @@ class View(QtCore.QObject):
                 else:
                     counterFiltered = 65535 - counterOpen - counterClosed
 
-                self.hostInfoWidget.updateFields(status=host.status, openPorts=counterOpen, closedPorts=counterClosed, filteredPorts=counterFiltered, ipv4=host.ipv4, ipv6=host.ipv6, macaddr=host.macaddr, osMatch=host.os_match, osAccuracy=host.os_accuracy)
+                self.hostInfoWidget.updateFields(status=host.status, openPorts=counterOpen, closedPorts=counterClosed, filteredPorts=counterFiltered, ipv4=host.ipv4, ipv6=host.ipv6, macaddr=host.macaddr, osMatch=host.osMatch, osAccuracy=host.osAccuracy)
 
     def updateScriptsView(self, hostIP):
         headers = ["Id", "Script", "Port", "Protocol"]
@@ -1103,7 +1090,6 @@ class View(QtCore.QObject):
     def updateCvesByHostView(self, hostIP):
         headers = ["ID", "CVSS Score", "Product", "Version", "URL", "Source", "Exploit ID", "Exploit", "Exploit URL"]
         cves = self.controller.getCvesFromDB(hostIP)
-        print("CVES: {0}".format(str(cves)))
         self.CvesTableModel = CvesTableModel(self, cves, headers)
 
         self.ui.CvesTableView.horizontalHeader().resizeSection(0,175)
@@ -1286,17 +1272,17 @@ class View(QtCore.QObject):
     # this function creates a new tool tab for a given host
     # TODO: refactor/review, especially the restoring part. we should not check if toolname=nmap everywhere in the code
     # ..maybe we should do it here. rethink
-    def createNewTabForHost(self, ip, tabtitle, restoring=False, content='', filename=''):
+    def createNewTabForHost(self, ip, tabTitle, restoring=False, content='', filename=''):
     
-        if 'screenshot' in str(tabtitle):       # TODO: use regex otherwise tools with 'screenshot' in the name are screwed.    
+        if 'screenshot' in str(tabTitle):       # TODO: use regex otherwise tools with 'screenshot' in the name are screwed.    
             tempWidget = ImageViewer()
-            tempWidget.setObjectName(str(tabtitle))
+            tempWidget.setObjectName(str(tabTitle))
             tempWidget.open(str(filename))
             tempTextView = tempWidget.scrollArea
-            tempTextView.setObjectName(str(tabtitle))
+            tempTextView.setObjectName(str(tabTitle))
         else:
             tempWidget = QtWidgets.QWidget()
-            tempWidget.setObjectName(str(tabtitle))
+            tempWidget.setObjectName(str(tabTitle))
             tempTextView = QtWidgets.QPlainTextEdit(tempWidget)
             tempTextView.setReadOnly(True)
             if self.controller.getSettings().general_tool_output_black_background == 'True':
@@ -1312,13 +1298,13 @@ class View(QtCore.QObject):
                 tempTextView.appendPlainText(content)
 
         if restoring == False:                                          # if restoring tabs (after opening a project) don't show the tab in the ui
-            tabindex = self.ui.ServicesTabWidget.addTab(tempWidget, str(tabtitle))
+            tabindex = self.ui.ServicesTabWidget.addTab(tempWidget, str(tabTitle))
     
         hosttabs = []                                                   # fetch tab list for this host (if any)
         if str(ip) in self.hostTabs:
             hosttabs = self.hostTabs[str(ip)]
         
-        if 'screenshot' in str(tabtitle):
+        if 'screenshot' in str(tabTitle):
             hosttabs.append(tempWidget.scrollArea)                      # add the new tab to the list
         else:
             hosttabs.append(tempWidget)                                 # add the new tab to the list
@@ -1328,10 +1314,10 @@ class View(QtCore.QObject):
         return tempTextView
 
 
-    def createNewConsole(self, tabtitle, content='Hello\n', filename=''):
+    def createNewConsole(self, tabTitle, content='Hello\n', filename=''):
 
         tempWidget = QtWidgets.QWidget()
-        tempWidget.setObjectName(str(tabtitle))
+        tempWidget.setObjectName(str(tabTitle))
         tempTextView = QtWidgets.QPlainTextEdit(tempWidget)
         tempTextView.setReadOnly(True)
         if self.controller.getSettings().general_tool_output_black_background == 'True':
@@ -1414,13 +1400,13 @@ class View(QtCore.QObject):
         self.tick.emit(int(totalprogress))
 
         for t in tools:
-            if not t.tabtitle == '':
-                if 'screenshot' in str(t.tabtitle):
-                    imageviewer = self.createNewTabForHost(t.hostip, t.tabtitle, True, '', str(self.controller.getOutputFolder())+'/screenshots/'+str(t.outputfile))
-                    imageviewer.setObjectName(str(t.tabtitle))
+            if not t.tabTitle == '':
+                if 'screenshot' in str(t.tabTitle):
+                    imageviewer = self.createNewTabForHost(t.hostIp, t.tabTitle, True, '', str(self.controller.getOutputFolder())+'/screenshots/'+str(t.outputfile))
+                    imageviewer.setObjectName(str(t.tabTitle))
                     imageviewer.setProperty('dbId', str(t.id))
                 else:
-                    self.createNewTabForHost(t.hostip, t.tabtitle, True, t.output).setProperty('dbId', str(t.id))     # True means we are restoring tabs. Set the widget's object name to the DB id of the process
+                    self.createNewTabForHost(t.hostIp, t.tabTitle, True, t.output).setProperty('dbId', str(t.id))     # True means we are restoring tabs. Set the widget's object name to the DB id of the process
 
             totalprogress += progress                                   # update the progress bar
             self.tick.emit(int(totalprogress))
@@ -1495,7 +1481,7 @@ class View(QtCore.QObject):
             self.ui.BruteTabWidget.removeTab(count -i -1)
         self.createNewBruteTab('127.0.0.1', '22', 'ssh')
 
-    # TODO: show udp in tabtitle when udp service
+    # TODO: show udp in tabTitle when udp service
     def callHydra(self, bWidget):
         if validateNmapInput(bWidget.ipTextinput.text()) and validateNmapInput(bWidget.portTextinput.text()) and validateCredentials(bWidget.usersTextinput.text()) and validateCredentials(bWidget.passwordsTextinput.text()):
                                                                         # check if host is already in scope

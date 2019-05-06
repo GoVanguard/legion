@@ -27,14 +27,14 @@ class Controller():
     @timing
     def __init__(self, view, logic):
         self.name = "LEGION"
-        self.version = '0.3.4'
-        self.build = '1557101410'
+        self.version = '0.3.5'
+        self.build = '1557145534'
         self.author = 'GoVanguard'
         self.copyright = '2019'
         self.links = ['http://github.com/GoVanguard/legion/issues', 'https://GoVanguard.io/legion']
         self.emails = []
 
-        self.update = '05/05/2019'
+        self.update = '05/06/2019'
 
         self.license = "GPL v3"
         self.desc = "Legion is a fork of SECFORCE's Sparta, Legion is an open source, easy-to-use, \nsuper-extensible and semi-automated network penetration testing tool that aids in discovery, \nreconnaissance and exploitation of information systems."
@@ -49,6 +49,7 @@ class Controller():
 
         self.loadSettings()                                             # creation of context menu actions from settings file and set up of various settings        
         self.initNmapImporter()
+        self.initShodanImporter()
         self.initScreenshooter()
         self.initBrowserOpener()
         self.start()                                                    # initialisations (globals, etc)
@@ -63,14 +64,21 @@ class Controller():
         self.fastProcessesRunning = 0                                   # counts the number of fast processes currently running
         self.slowProcessesRunning = 0                                   # counts the number of slow processes currently running
         self.nmapImporter.setDB(self.logic.db)                          # tell nmap importer which db to use
+        self.shodanImporter.setDB(self.logic.db)
         self.updateOutputFolder()                                       # tell screenshooter where the output folder is
         self.view.start(title)
         
     def initNmapImporter(self):
         self.nmapImporter = NmapImporter()
-        self.nmapImporter.done.connect(self.nmapImportFinished)
+        self.nmapImporter.done.connect(self.importFinished)
         self.nmapImporter.schedule.connect(self.scheduler)              # run automated attacks
         self.nmapImporter.log.connect(self.view.ui.LogOutputTextView.append)
+
+    def initShodanImporter(self):
+        self.shodanImporter = ShodanImporter()
+        self.shodanImporter.done.connect(self.importFinished)
+        self.shodanImporter.schedule.connect(self.scheduler)              # run automated attacks
+        self.shodanImporter.log.connect(self.view.ui.LogOutputTextView.append)
     
     def initScreenshooter(self):
         self.screenshooter = Screenshooter(self.settings.general_screenshooter_timeout)         # screenshot taker object (different thread)
@@ -321,8 +329,8 @@ class Controller():
                     if self.logic.getPortsForHostFromDB(ip, proto):     # if we are running nmap we need to purge previous portscan results (of the same protocol)
                         self.logic.deleteAllPortsAndScriptsForHostFromDB(hostid, proto)
 
-                tabtitle = self.settings.hostActions[i][1]
-                self.runCommand(name, tabtitle, ip, '','', command, getTimestamp(True), outputfile, self.view.createNewTabForHost(ip, tabtitle, invisibleTab))
+                tabTitle = self.settings.hostActions[i][1]
+                self.runCommand(name, tabTitle, ip, '','', command, getTimestamp(True), outputfile, self.view.createNewTabForHost(ip, tabTitle, invisibleTab))
                 break
 
     @timing    
@@ -369,7 +377,7 @@ class Controller():
                 srvc_num = actions[i][0]
                 for ip in targets:
                     tool = self.settings.portActions[srvc_num][1]
-                    tabtitle = self.settings.portActions[srvc_num][1]+" ("+ip[1]+"/"+ip[2]+")"                  
+                    tabTitle = self.settings.portActions[srvc_num][1]+" ("+ip[1]+"/"+ip[2]+")"                  
                     outputfile = self.logic.runningfolder+"/"+re.sub("[^0-9a-zA-Z]", "", str(tool))+"/"+getTimestamp()+'-'+tool+"-"+ip[0]+"-"+ip[1]
                                         
                     command = str(self.settings.portActions[srvc_num][2])
@@ -378,10 +386,10 @@ class Controller():
                     if 'nmap' in command and ip[2] == 'udp':
                         command=command.replace("-sV","-sVU")
 
-                    if 'nmap' in tabtitle:                              # we don't want to show nmap tabs
+                    if 'nmap' in tabTitle:                              # we don't want to show nmap tabs
                         restoring = True
 
-                    self.runCommand(tool, tabtitle, ip[0], ip[1], ip[2], command, getTimestamp(True), outputfile, self.view.createNewTabForHost(ip[0], tabtitle, restoring))
+                    self.runCommand(tool, tabTitle, ip[0], ip[1], ip[2], command, getTimestamp(True), outputfile, self.view.createNewTabForHost(ip[0], tabTitle, restoring))
                 break
 
     @timing
@@ -583,19 +591,19 @@ class Controller():
             self.processMeasurements[qProcess.pid()] = procTime
 
         name = args[0]
-        tabtitle = args[1]
-        hostip = args[2]
+        tabTitle = args[1]
+        hostIp = args[2]
         port = args[3]
         protocol = args[4]
         command = args[5]
-        starttime = args[6]
+        startTime = args[6]
         outputfile = args[7]
         textbox = args[8]
         timer = QtCore.QTime()
         updateElapsed = QTimer()
 
         self.logic.createFolderForTool(name)
-        qProcess = MyQProcess(name, tabtitle, hostip, port, protocol, command, starttime, outputfile, textbox)
+        qProcess = MyQProcess(name, tabTitle, hostIp, port, protocol, command, startTime, outputfile, textbox)
         qProcess.started.connect(timer.start)
         qProcess.finished.connect(handleProcStop)
         updateElapsed.timeout.connect(handleProcUpdate)
@@ -624,21 +632,21 @@ class Controller():
         if stage > 0 and stage < 6:                                     # if this is a staged nmap, launch the next stage
             log.info("runCommand connected for stage {0}".format(str(stage)))
             nextStage = stage + 1
-            qProcess.finished.connect(lambda: self.runStagedNmap(str(hostip), discovery = discovery, stage = nextStage, stop = self.logic.isKilledProcess(str(qProcess.id))))
+            qProcess.finished.connect(lambda: self.runStagedNmap(str(hostIp), discovery = discovery, stage = nextStage, stop = self.logic.isKilledProcess(str(qProcess.id))))
 
         return qProcess.pid()                                           # return the pid so that we can kill the process if needed
 
     def runPython(self):
         textbox = self.view.createNewConsole("python")
         name = 'python'
-        tabtitle = name
-        hostip = '127.0.0.1'
+        tabTitle = name
+        hostIp = '127.0.0.1'
         port = '22'
         protocol = 'tcp'
         command = 'python3 /mnt/c/Users/hackm/OneDrive/Documents/Customers/GVIT/GIT/legion/test.py'
-        starttime = getTimestamp(True)
+        startTime = getTimestamp(True)
         outputfile = '/tmp/a'
-        qProcess = MyQProcess(name, tabtitle, hostip, port, protocol, command, starttime, outputfile, textbox)
+        qProcess = MyQProcess(name, tabTitle, hostIp, port, protocol, command, startTime, outputfile, textbox)
 
         textbox.setProperty('dbId', str(self.logic.addProcessToDB(qProcess)))
 
@@ -698,7 +706,7 @@ class Controller():
                             
             self.runCommand('nmap','nmap (stage '+str(stage)+')', str(targetHosts), '', '', command, getTimestamp(True), outputfile, textbox, discovery = discovery, stage = stage, stop = stop)
 
-    def nmapImportFinished(self):
+    def importFinished(self):
         self.updateUI2Timer.stop()
         self.updateUI2Timer.start(800)  
         self.view.displayAddHostsOverlay(False)                         # if nmap import was the first action, we need to hide the overlay (note: we shouldn't need to do this everytime. this can be improved)
@@ -771,10 +779,10 @@ class Controller():
         if self.settings.general_enable_scheduler == 'True':
             log.info('Scheduler started!')
             
-            for h in parser.all_hosts():
+            for h in parser.getAllHosts():
                 for p in h.all_ports():
                     if p.state == 'open':
-                        s = p.get_service()
+                        s = p.getService()
                         if not (s is None):
                             self.runToolsFor(s.name, h.ip, p.portId, p.protocol)
                     
@@ -798,16 +806,16 @@ class Controller():
                     for a in self.settings.portActions:                                                     
                         if tool[0] == a[1]:
                             restoring = False
-                            tabtitle = a[1]+" ("+port+"/"+protocol+")"
+                            tabTitle = a[1]+" ("+port+"/"+protocol+")"
                             outputfile = self.logic.runningfolder+"/"+re.sub("[^0-9a-zA-Z]", "", str(tool[0]))+"/"+getTimestamp()+'-'+a[1]+"-"+ip+"-"+port
                             command = str(a[2])
                             command = command.replace('[IP]', ip).replace('[PORT]', port).replace('[OUTPUT]', outputfile)
                             log.debug("Running tool command " + str(command))
 
-                            if 'nmap' in tabtitle:                          # we don't want to show nmap tabs
+                            if 'nmap' in tabTitle:                          # we don't want to show nmap tabs
                                 restoring = True
 
                             tab = self.view.ui.HostsTabWidget.tabText(self.view.ui.HostsTabWidget.currentIndex())                       
-                            self.runCommand(tool[0], tabtitle, ip, port, protocol, command, getTimestamp(True), outputfile, self.view.createNewTabForHost(ip, tabtitle, not (tab == 'Hosts')))
+                            self.runCommand(tool[0], tabTitle, ip, port, protocol, command, getTimestamp(True), outputfile, self.view.createNewTabForHost(ip, tabTitle, not (tab == 'Hosts')))
                             break
 

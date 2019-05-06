@@ -16,6 +16,7 @@ Legion, a fork of SECFORCE's Sparta, is an open source, easy-to-use, super-exten
 * Modular functionality allows users to easily customize Legion and automatically call their own scripts/tools
 * Highly customizable stage scanning for ninja-like IPS evasion
 * Automatic detection of CPEs (Common Platform Enumeration) and CVEs (Common Vulnerabilities and Exposures)
+* Ties CVEs to Exploits as detailed in Exploit-Database
 * Realtime autosaving of project results and tasks
 
 ### NOTABLE CHANGES FROM SPARTA
@@ -36,6 +37,7 @@ Legion, a fork of SECFORCE's Sparta, is an open source, easy-to-use, super-exten
 ![](https://govanguard.io/wp-content/uploads/2019/02/LegionDemo.gif)
 
 ## INSTALLATION
+It is preferable to use the docker image over a traditional installation. This is because of all the dependancy requirements and the complications that occur in environments which differ from a clean, non-default installation.
 
 ### TRADITIONAL METHOD
 Assumes Ubuntu, Kali or Parrot Linux is being used with Python 3.6 installed.

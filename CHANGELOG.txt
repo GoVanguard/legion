@@ -1,3 +1,9 @@
+LEGION 0.3.5
+
+* Bug Fixes
+* Copy from tables using double click
+* CVE -> ExploitDB redesign using pyExploitDb and bugfixes
+
 LEGION 0.3.4
 
 * Depnendancy polish
