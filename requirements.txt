@@ -17,3 +17,4 @@ win_inet_pton
 pyExploitDb>=0.1.8
 GitPython
 pandas
+pyShodan
