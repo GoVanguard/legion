@@ -34,5 +34,6 @@ export QT_AUTO_SCREEN_SCALE_FACTOR=1.5
 
 if [[ $1 != 'setup' ]]
 then
-    ${PYTHON3BIN} legion.py
+#    ${PYTHON3BIN} legion.py
+    /usr/bin/env python3 legion.py
 fi
