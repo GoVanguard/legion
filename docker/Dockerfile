@@ -7,6 +7,6 @@ RUN     apt-get update && apt-get install -y \
 	hydra \ 
 	git
 RUN 	git clone https://github.com/GoVanguard/legion.git
-RUN	cd legion; chmod +x ./startLegion.sh; mkdir /legion/tmp
+RUN	cd legion; chmod +x ./startLegion.sh setup; mkdir /legion/tmp
 WORKDIR	/legion
 CMD 	["python3", "legion.py"]
