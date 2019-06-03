@@ -3,11 +3,8 @@
 echo "Strap yourself in, we're starting Legion..."
 
 # Set everything we might need as executable
-chmod a+x ./deps/*.sh
-chmod a+x ./scripts/*.sh
-chmod a+x ./scripts/*.py
-chmod a+x ./scripts/*.pl
-chmod a+x ./scripts/*.rb
+chmod a+x -R ./deps/*
+chmod a+x -R ./scripts/*
 
 # Determine and set the Python and Pip paths
 source ./deps/detectPython.sh
@@ -34,4 +31,8 @@ fi
 
 export QT_XCB_NATIVE_PAINTING=0
 export QT_AUTO_SCREEN_SCALE_FACTOR=1.5
-${PYTHON3BIN} legion.py
+
+if [[ $1 != 'setup' ]]
+then
+    ${PYTHON3BIN} legion.py
+fi
