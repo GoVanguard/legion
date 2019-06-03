@@ -68,12 +68,8 @@ fi
 
 if [ ! -f ".initialized" ]
   then
-    scripts/installDeps.sh
-fi
-
-if [ ! -f ".initialized" ]
-  then
-    scripts/installDeps.sh
+    chmod a+x scripts/installDeps.sh
+    ./scripts/installDeps.sh
 fi
 
 cd ${curPath}
