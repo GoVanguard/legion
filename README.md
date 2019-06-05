@@ -76,7 +76,7 @@ Windows under WSL using Xming:
 Windows using Xming without WSL:
  - Why? Don't do this. :)
 
-OSX using Glas:
+OSX using XQuartz:
  - Not yet in runIt.sh script.
  - Possible to setup using socat. See instructions here: https://kartoza.com/en/blog/how-to-run-a-linux-gui-application-on-osx-using-docker/
 
