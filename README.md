@@ -44,6 +44,8 @@ It is preferable to use the docker image over a traditional installation. This i
 
 Linux with Local X11:
  - Assumes Docker and X11 are installed and setup (including running docker commands as a non-root user)
+ - See detailed instructions to setup running containers as non-root users and granting docker group ssh rights(#setup-docker-non-root)
+
  - Within Terminal:
    ```
    git clone https://github.com/GoVanguard/legion.git
@@ -91,10 +93,14 @@ Setup Docker on Linux:
    sudo apt-get install -y docker.io python-pip -y
    sudo groupadd docker
    pip install --user docker-compose
+
+<a name="docker-setup-non-root"></a>docker-setup-non-root
+Setup Docker to allow non-root users:
  - To enable non-root users to run docker commands, under a term, run:
    ```
    sudo usermod -aG docker $USER
    sudo chmod 666 /var/run/docker.sock
+   sudo xhost +local:docker
    ```
 
 Setup Hyper-V, Docker Desktop, Xming and WSL:
