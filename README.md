@@ -96,7 +96,7 @@ Setup Docker on Linux:
    sudo apt-get install -y docker.io python-pip -y
    sudo groupadd docker
    pip install --user docker-compose
-
+   ```
 
 <a name="docker-setup-non-root"></a>
 Setup Docker to allow non-root users:
