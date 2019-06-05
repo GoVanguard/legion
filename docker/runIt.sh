@@ -1,13 +1,10 @@
 #!/bin/bash
 
-if [[ -z $1 ]]
+if [[ ! -z $1 ]]
 then
-    X11HOST=localhost
-else
-    X11HOST=$1
+    export DISPLAY=$1:0.0
 fi
 
-export DISPLAY=$X11HOST:0.0
 docker pull gvit/legion
 XSOCK=/tmp/.X11-unix
 XAUTH=/tmp/.docker.xauth
