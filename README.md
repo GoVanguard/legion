@@ -91,11 +91,11 @@ Setup Docker on Linux:
       $(lsb_release -cs) stable"
    sudo apt-get update
    sudo apt-get install -y docker-ce python-pip -y
+   pip install --user docker-compose
  - To enable non-root users to run docker commands, under a term, run:
    ```
    sudo usermod -aG docker $USER
    sudo chmod 666 /var/run/docker.sock
-   pip install --user docker-compose
    ```
 
 Setup Hyper-V, Docker Desktop, Xming and WSL:
