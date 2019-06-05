@@ -18,3 +18,4 @@ pyExploitDb>=0.2.0
 pyShodan
 GitPython
 pandas
+pyShodan
