@@ -42,14 +42,14 @@ It is preferable to use the docker image over a traditional installation. This i
 ### DOCKER METHOD
 ------
 
-Linux with local X11:
- - Assumes Docker and X11 are installed and setup
+Linux with Local X11:
+ - Assumes Docker and X11 are installed and setup (including running docker commands as a non-root user)
  - Within Terminal:
    ```
    git clone https://github.com/GoVanguard/legion.git
    cd legion/docker
-   sudo chmod +x runIt.sh
-   sudo ./runIt.sh
+   chmod +x runIt.sh
+   ./runIt.sh
    ```
 
 Linux with Remote X11:
@@ -59,8 +59,8 @@ Linux with Remote X11:
    ```
    git clone https://github.com/GoVanguard/legion.git
    cd legion/docker
-   sudo chmod +x runIt.sh
-   sudo ./runIt.sh X.X.X.X
+   chmod +x runIt.sh
+   ./runIt.sh X.X.X.X
    ```
 
 Windows under WSL using Xming and Docker Desktop:
@@ -83,6 +83,20 @@ Windows using Xming and Docker Desktop without WSL:
 OSX using XQuartz:
  - Not yet in runIt.sh script.
  - Possible to setup using socat. See instructions here: https://kartoza.com/en/blog/how-to-run-a-linux-gui-application-on-osx-using-docker/
+
+Setup Docker on Linux:
+ - To install docker components typically needed and add setup the environment for docker, under a term, run:
+   ```
+   sudo add-apt-repository    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) stable"
+   sudo apt-get update
+   sudo apt-get install -y docker-ce python-pip -y
+ - To enable non-root users to run docker commands, under a term, run:
+   ```
+   sudo usermod -aG docker $USER
+   sudo chmod 666 /var/run/docker.sock
+   pip install --user docker-compose
+   ```
 
 Setup Hyper-V, Docker Desktop, Xming and WSL:
  - The order is important for port reservation reasons. If you have WSL, HyperV or Docker Desktop installed then please uninstall those features before proceeding.
