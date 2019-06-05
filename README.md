@@ -87,10 +87,9 @@ OSX using XQuartz:
 Setup Docker on Linux:
  - To install docker components typically needed and add setup the environment for docker, under a term, run:
    ```
-   sudo add-apt-repository    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-      $(lsb_release -cs) stable"
    sudo apt-get update
-   sudo apt-get install -y docker-ce python-pip -y
+   sudo apt-get install -y docker.io python-pip -y
+   sudo groupadd docker
    pip install --user docker-compose
  - To enable non-root users to run docker commands, under a term, run:
    ```
