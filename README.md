@@ -45,34 +45,33 @@ Assumes Docker and Xauthority are installed.
 
 Linux with local X11:
  - Within Terminal:
-```
-git clone https://github.com/GoVanguard/legion.git
-cd legion/docker
-sudo chmod +x runIt.sh
-sudo ./runIt.sh
-```
+   ```
+   git clone https://github.com/GoVanguard/legion.git
+   cd legion/docker
+   sudo chmod +x runIt.sh
+   sudo ./runIt.sh
+   ```
 
 Linux with Remote X11:
  - Replace X.X.X.X with the IP of the remote running X11.
  - Within Terminal:
-```
-git clone https://github.com/GoVanguard/legion.git
-cd legion/docker
-sudo chmod +x runIt.sh
-sudo ./runIt.sh X.X.X.X
-```
+   ```
+   git clone https://github.com/GoVanguard/legion.git
+   cd legion/docker
+   sudo chmod +x runIt.sh
+   sudo ./runIt.sh X.X.X.X
+   ```
 
 Windows under WSL using Xming:
  - Replace X.X.X.X with the IP with which Xming has registered itself.
    - Right click Xming in system tray -> View log and see IP next to "XdmcpRegisterConnection: newAddress"
  - Within Terminal:
-```
-
-git clone https://github.com/GoVanguard/legion.git
-cd legion/docker
-sudo chmod +x runIt.sh
-sudo ./runIt.sh X.X.X.X
-```
+   ```
+   git clone https://github.com/GoVanguard/legion.git
+   cd legion/docker
+   sudo chmod +x runIt.sh
+   sudo ./runIt.sh X.X.X.X
+   ```
 
 Windows using Xming without WSL:
  - Why? Don't do this. :)
@@ -82,15 +81,15 @@ OSX using Glas:
  - Possible to setup using socat. See instructions here: https://kartoza.com/en/blog/how-to-run-a-linux-gui-application-on-osx-using-docker/
 
 ### TRADITIONAL METHOD
-* Please use the docker image where possible! It's becoming very difficult to support all the various platforms and their own quirks *
-Assumes Ubuntu, Kali or Parrot Linux is being used with Python 3.6 installed.
-Other dependencies should automatically be installed. Within Terminal:
-```
-git clone https://github.com/GoVanguard/legion.git
-cd legion
-sudo chmod +x startLegion.sh
-sudo ./startLegion.sh
-```
+ - Please use the docker image where possible! It's becoming very difficult to support all the various platforms and their own quirks
+ - Assumes Ubuntu, Kali or Parrot Linux is being used with Python 3.6 installed.
+ - Within Terminal:
+   ```
+   git clone https://github.com/GoVanguard/legion.git
+   cd legion
+   sudo chmod +x startLegion.sh
+   sudo ./startLegion.sh
+   ```
 
 ## LICENSE
 Legion is licensed under the GNU General Public License v3.0. Take a look at the [LICENSE](https://github.com/GoVanguard/legion/blob/master/LICENSE) for more information.
