@@ -44,7 +44,7 @@ It is preferable to use the docker image over a traditional installation. This i
 
 Linux with Local X11:
  - Assumes Docker and X11 are installed and setup (including running docker commands as a non-root user)
- - See detailed instructions to setup running containers as non-root users and granting docker group ssh rights(#setup-docker-non-root)
+ - See detailed instructions to setup docker [here](#docker-setup) and enable running containers as non-root users and granting docker group ssh rights [here](#docker-setup-non-root)
 
  - Within Terminal:
    ```
@@ -68,7 +68,7 @@ Linux with Remote X11:
 Windows under WSL using Xming and Docker Desktop:
  - Assumes Xming is installed in Windows
  - Assumes Docker Desktop is installed in Windows, Docker Desktop is running in Linux containers mode and Docker Desktop is connected to WSL
- - See detailed instructions on setting this up below
+ - See detailed instructions [here](#docker-setup-wsl)
  - Replace X.X.X.X with the IP with which Xming has registered itself.
    - Right click Xming in system tray -> View log and see IP next to "XdmcpRegisterConnection: newAddress"
  - Within Terminal:
@@ -82,10 +82,13 @@ Windows under WSL using Xming and Docker Desktop:
 Windows using Xming and Docker Desktop without WSL:
  - Why? Don't do this. :)
 
+
 OSX using XQuartz:
  - Not yet in runIt.sh script.
  - Possible to setup using socat. See instructions here: https://kartoza.com/en/blog/how-to-run-a-linux-gui-application-on-osx-using-docker/
 
+
+<a name="docker-setup"></a>
 Setup Docker on Linux:
  - To install docker components typically needed and add setup the environment for docker, under a term, run:
    ```
@@ -94,7 +97,8 @@ Setup Docker on Linux:
    sudo groupadd docker
    pip install --user docker-compose
 
-<a name="docker-setup-non-root"></a>docker-setup-non-root
+
+<a name="docker-setup-non-root"></a>
 Setup Docker to allow non-root users:
  - To enable non-root users to run docker commands, under a term, run:
    ```
@@ -103,6 +107,7 @@ Setup Docker to allow non-root users:
    sudo xhost +local:docker
    ```
 
+<a name="docker-setup-wsl"></a>
 Setup Hyper-V, Docker Desktop, Xming and WSL:
  - The order is important for port reservation reasons. If you have WSL, HyperV or Docker Desktop installed then please uninstall those features before proceeding.
  - Cortana / Search -> cmd -> Right click -> Run as Administrator
