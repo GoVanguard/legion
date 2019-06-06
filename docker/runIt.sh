@@ -13,5 +13,5 @@ then
     xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
     docker run -ti -v $XSOCK -v $XAUTH -e XAUTHORITY=$XAUTH -e DISPLAY=$DISPLAY gvit/legion
 else
-    docker run -ti -e DISPLAY=$DISPLAY --net=host --security-opt=apparmor:unconfined gvit/legion
+    docker run -ti -e DISPLAY=$DISPLAY --net=host --security-opt=apparmor:unconfined --security-opt=label:disable gvit/legion
 fi
