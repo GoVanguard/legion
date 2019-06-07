@@ -36,7 +36,7 @@ class AddHostsDialog(QtWidgets.QDialog):
         flags = Qt.Window | Qt.WindowSystemMenuHint | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint | Qt.WindowCloseButtonHint
         self.setWindowFlags(flags)
 
-        self.setFixedSize(700, 700)
+        self.resize(700, 700)
 
         self.formLayout = QtWidgets.QVBoxLayout()
         
