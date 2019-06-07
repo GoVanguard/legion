@@ -39,11 +39,11 @@ Legion, a fork of SECFORCE's Sparta, is an open source, easy-to-use, super-exten
 ## INSTALLATION
 It is preferable to use the docker image over a traditional installation. This is because of all the dependancy requirements and the complications that occur in environments which differ from a clean, non-default installation.
 
-## Supported Distributions
-# Docker runIt script
+### Supported Distributions
+#### Docker runIt script
 runIt supports Ubuntu 18, Fedora 30, Parrot and Kali at this time. It is possible to run the docker image on any Linux distribution, however, different distributions have different hoops to jump through to get a docker app to be able to connect to the X server. Eveyone is welcome to try and figure those hoops out and create a PR for runIt. 
 
-# Traditional Install
+#### Traditional Install
 We can only promise correct operation on Ubuntu 18 using the traditional installation at this time. While it should work on ParrotOS, Kali and others, until we have Legion packaged and placed into the repos for each of these distros it's musical chairs with reguards to platform updates changing and breaking dependancies.
 
 ### DOCKER METHOD
