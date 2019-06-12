@@ -56,7 +56,7 @@ class BruteWidget(QtWidgets.QWidget):
 
         self.label1 = QtWidgets.QLabel()
         self.label1.setText('IP')
-        self.label1.setFixedWidth(10)          # experimental
+        self.label1.setFixedWidth(20)          # experimental
         self.label1.setAlignment(Qt.AlignLeft)
         self.ipTextinput = QtWidgets.QLineEdit()
         self.ipTextinput.setText(str(self.ip))
@@ -64,7 +64,7 @@ class BruteWidget(QtWidgets.QWidget):
         
         self.label2 = QtWidgets.QLabel()
         self.label2.setText('Port')
-        self.label2.setFixedWidth(10)          # experimental
+        self.label2.setFixedWidth(30)          # experimental
         self.label2.setAlignment(Qt.AlignLeft)
         self.portTextinput = QtWidgets.QLineEdit()
         self.portTextinput.setText(str(self.port))
@@ -72,7 +72,7 @@ class BruteWidget(QtWidgets.QWidget):
         
         self.label3 = QtWidgets.QLabel()
         self.label3.setText('Service')
-        self.label3.setFixedWidth(10)          # experimental
+        self.label3.setFixedWidth(50)          # experimental
         self.label3.setAlignment(Qt.AlignLeft)
         self.serviceComboBox = QtWidgets.QComboBox()
         self.serviceComboBox.insertItems(0, self.settings.brute_services.split(","))
