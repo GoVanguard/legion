@@ -1547,13 +1547,13 @@ class View(QtCore.QObject):
 
     def findFinishedBruteTab(self, pid):
         for i in range(0, self.ui.BruteTabWidget.count()):
-            if str(self.ui.BruteTabWidget.widget(i).pid) == pid:
+            if str(self.ui.BruteTabWidget.widget(i)) == pid:
                 self.bruteProcessFinished(self.ui.BruteTabWidget.widget(i))
                 return
 
     def findFinishedServiceTab(self, pid):
         for i in range(0, self.ui.ServicesTabWidget.count()):
-            if str(self.ui.ServicesTabWidget.widget(i).pid) == pid:
+            if str(self.ui.ServicesTabWidget.widget(i)) == pid:
                 #self.bruteProcessFinished(self.ui.BruteTabWidget.widget(i))
                 print("Close Tab: {0}".format(str(i)))
                 return
