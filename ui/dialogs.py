@@ -56,24 +56,27 @@ class BruteWidget(QtWidgets.QWidget):
 
         self.label1 = QtWidgets.QLabel()
         self.label1.setText('IP')
-        self.label1.setFixedWidth(10)          # experimental
+        #self.label1.setFixedWidth(10)          # experimental
         self.label1.setAlignment(Qt.AlignLeft)
+        self.label1.setAlignment(Qt.AlignVCenter)
         self.ipTextinput = QtWidgets.QLineEdit()
         self.ipTextinput.setText(str(self.ip))
         self.ipTextinput.setFixedWidth(125)
         
         self.label2 = QtWidgets.QLabel()
         self.label2.setText('Port')
-        self.label2.setFixedWidth(10)          # experimental
+        #self.label2.setFixedWidth(10)          # experimental
         self.label2.setAlignment(Qt.AlignLeft)
+        self.label2.setAlignment(Qt.AlignVCenter)
         self.portTextinput = QtWidgets.QLineEdit()
         self.portTextinput.setText(str(self.port))
         self.portTextinput.setFixedWidth(60)
         
         self.label3 = QtWidgets.QLabel()
         self.label3.setText('Service')
-        self.label3.setFixedWidth(10)          # experimental
+        #self.label3.setFixedWidth(10)          # experimental
         self.label3.setAlignment(Qt.AlignLeft)
+        self.label3.setAlignment(Qt.AlignVCenter)
         self.serviceComboBox = QtWidgets.QComboBox()
         self.serviceComboBox.insertItems(0, self.settings.brute_services.split(","))
         self.serviceComboBox.setStyleSheet("QComboBox { combobox-popup: 0; }");
