@@ -25,4 +25,4 @@ after_success:
   - export REPO=gvit/legion
   - docker build -f Dockerfile -t $REPO:$COMMIT . --no-cache
   - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
-  - docker push gvit/legion
+  - test $TRAVIS_BRANCH = "master" && docker push gvit/legion
