@@ -23,6 +23,6 @@ after_success:
   - cd ./docker/
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
   - export REPO=gvit/legion
-  - docker build -f Dockerfile -t $REPO:$COMMIT .
+  - docker build -f Dockerfile -t $REPO:$COMMIT . --no-cache
   - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
   - docker push gvit/legion
