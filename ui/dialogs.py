@@ -56,7 +56,6 @@ class BruteWidget(QtWidgets.QWidget):
 
         self.label1 = QtWidgets.QLabel()
         self.label1.setText('IP')
-        #self.label1.setFixedWidth(10)          # experimental
         self.label1.setAlignment(Qt.AlignLeft)
         self.label1.setAlignment(Qt.AlignVCenter)
         self.ipTextinput = QtWidgets.QLineEdit()
@@ -65,7 +64,6 @@ class BruteWidget(QtWidgets.QWidget):
         
         self.label2 = QtWidgets.QLabel()
         self.label2.setText('Port')
-        #self.label2.setFixedWidth(10)          # experimental
         self.label2.setAlignment(Qt.AlignLeft)
         self.label2.setAlignment(Qt.AlignVCenter)
         self.portTextinput = QtWidgets.QLineEdit()
@@ -74,7 +72,6 @@ class BruteWidget(QtWidgets.QWidget):
         
         self.label3 = QtWidgets.QLabel()
         self.label3.setText('Service')
-        #self.label3.setFixedWidth(10)          # experimental
         self.label3.setAlignment(Qt.AlignLeft)
         self.label3.setAlignment(Qt.AlignVCenter)
         self.serviceComboBox = QtWidgets.QComboBox()
@@ -305,11 +302,11 @@ class BruteWidget(QtWidgets.QWidget):
     
         if title == 'Choose username list':
             filename = QtWidgets.QFileDialog.getOpenFileName(self, title, self.settings.brute_username_wordlist_path)
-            self.userlistTextinput.setText(str(filename))
+            self.userlistTextinput.setText(str(filename[0]))
             self.userListRadio.toggle()
         else:
             filename = QtWidgets.QFileDialog.getOpenFileName(self, title, self.settings.brute_password_wordlist_path)
-            self.passlistTextinput.setText(str(filename))
+            self.passlistTextinput.setText(str(filename[0]))
             self.passListRadio.toggle()
 
     def buildHydraCommand(self, runningfolder, userlistPath, passlistPath):
@@ -317,37 +314,27 @@ class BruteWidget(QtWidgets.QWidget):
         self.ip = self.ipTextinput.text()
         self.port = self.portTextinput.text()
         self.service = str(self.serviceComboBox.currentText())
-        self.command = "hydra "+self.ip+" -s "+self.port+" -o "
-        self.outputfile = runningfolder+"/hydra/"+getTimestamp()+"-"+self.ip+"-"+self.port+"-"+self.service+".txt"
-        self.command += "\""+self.outputfile+"\""                       # deal with paths with spaces
+        self.command = "hydra " + str(self.ip) + " -s " + self.port + " -o "
+        self.outputfile = runningfolder + "/hydra/" + getTimestamp() + "-" + str(self.ip) + "-" + self.port + "-" + self.service + ".txt"
+        self.command += "\"" + self.outputfile + "\""
         
-        #self.service = str(self.serviceComboBox.currentText())
-        
-        #if not self.service == "snmp":                                 # no username required for snmp
         if not self.service in self.settings.brute_no_username_services.split(","):
             if self.singleUserRadio.isChecked():
-                self.command += " -l "+self.usersTextinput.text()
+                self.command += " -l " + self.usersTextinput.text()
             elif self.foundUsersRadio.isChecked():
-                self.command += " -L \""+userlistPath+"\""
+                self.command += " -L \"" + userlistPath+"\""
             else:
-                self.command += " -L \""+self.userlistTextinput.text()+"\""
+                self.command += " -L \"" + self.userlistTextinput.text()+"\""
                 
-        #if not self.service == "smtp-enum":                                # no password required for smtp-enum
         if not self.service in self.settings.brute_no_password_services.split(","):
             if self.singlePassRadio.isChecked():
-                
-
-                #print self.passwordsTextinput.text()
-                #escaped_password = self.passwordsTextinput.text().replace('"', '\"')
-                escaped_password = self.passwordsTextinput.text().replace('"', '\"\"\"')#.replace("'", "\'")
-                #print escaped_password 
-                self.command += " -p \""+escaped_password+"\""
-                #self.command += " -p "+self.passwordsTextinput.text()
+                escaped_password = self.passwordsTextinput.text().replace('"', '\"\"\"')
+                self.command += " -p \"" + escaped_password + "\""
 
             elif self.foundPasswordsRadio.isChecked():
-                self.command += " -P \""+passlistPath+"\""
+                self.command += " -P \"" + passlistPath + "\""
             else:
-                self.command += " -P \""+self.passlistTextinput.text()+"\""
+                self.command += " -P \"" + self.passlistTextinput.text() + "\""
 
         if self.checkBlankPass.isChecked():
             self.command += " -e n"
@@ -366,9 +353,9 @@ class BruteWidget(QtWidgets.QWidget):
         if self.checkVerbose.isChecked():
             self.command += " -V"
             
-        self.command += " -t "+str(self.threadsComboBox.currentText())
+        self.command += " -t " + str(self.threadsComboBox.currentText())
             
-        self.command += " "+self.service
+        self.command += " " + self.service
 
 #       if self.labelPath.isVisible():                                  # append the additional field's content, if it was visible
         if self.checkAddMoreOptions.isChecked():
