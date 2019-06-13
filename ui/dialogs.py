@@ -77,6 +77,7 @@ class BruteWidget(QtWidgets.QWidget):
         self.serviceComboBox = QtWidgets.QComboBox()
         self.serviceComboBox.insertItems(0, self.settings.brute_services.split(","))
         self.serviceComboBox.setStyleSheet("QComboBox { combobox-popup: 0; }");
+        self.serviceComboBox.currentIndexChanged.connect(self.checkSelectedService)
         
         # autoselect service from combo box
         for i in range(len(self.settings.brute_services.split(","))):
@@ -142,6 +143,12 @@ class BruteWidget(QtWidgets.QWidget):
         self.userGroup.addButton(self.foundUsersRadio)
         self.foundUsersRadio.toggle()
 
+        self.warningLabel = QtWidgets.QLabel()
+        self.warningLabel.setText('*Note: when using form-based services from the Service menu, select the "Additional Options" checkbox and add the proper arguments for the webpage form. See Hydra documentation for extra help when targeting HTTP/HTTPS forms.')
+        self.warningLabel.setWordWrap(True)
+        self.warningLabel.setAlignment(Qt.AlignRight)
+        self.warningLabel.setStyleSheet('QLabel { color: red }')
+
         self.hlayout2 = QtWidgets.QHBoxLayout()
         self.hlayout2.addWidget(self.singleUserRadio)
         self.hlayout2.addWidget(self.label4)
@@ -152,9 +159,18 @@ class BruteWidget(QtWidgets.QWidget):
         self.hlayout2.addWidget(self.browseUsersButton)
         self.hlayout2.addWidget(self.foundUsersRadio)
         self.hlayout2.addWidget(self.label9)
+        self.hlayout2.addWidget(self.warningLabel)
+        self.warningLabel.hide()
         self.hlayout2.addStretch()
 
         return self.hlayout2
+
+    def checkSelectedService(self):
+        self.service = str(self.serviceComboBox.currentText())
+        if 'form' in str(self.service):
+            self.warningLabel.show()
+        #else: This clause would produce an interesting logic error and crash
+            #self.warningLabel.hide()
 
     def setupLayoutHlayout3(self):        
         #add usernames wordlist
@@ -257,7 +273,7 @@ class BruteWidget(QtWidgets.QWidget):
         ###
         self.labelPath = QtWidgets.QLineEdit()                              # this is the extra input field to insert the path to brute force
         self.labelPath.setFixedWidth(800)
-        self.labelPath.setText('/')
+        self.labelPath.setText('-m "/login/login.html:username=^USER^&password=^PASS^&Login=Login:failed"')
         ###
 
         self.layoutAddOptions = QtWidgets.QHBoxLayout()
@@ -317,6 +333,9 @@ class BruteWidget(QtWidgets.QWidget):
         self.command = "hydra " + str(self.ip) + " -s " + self.port + " -o "
         self.outputfile = runningfolder + "/hydra/" + getTimestamp() + "-" + str(self.ip) + "-" + self.port + "-" + self.service + ".txt"
         self.command += "\"" + self.outputfile + "\""
+
+        if 'form' not in str(self.service):
+            self.warningLabel.hide()
         
         if not self.service in self.settings.brute_no_username_services.split(","):
             if self.singleUserRadio.isChecked():
