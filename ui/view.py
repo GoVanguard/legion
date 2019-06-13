@@ -1441,7 +1441,7 @@ class View(QtCore.QObject):
     #################### BRUTE TABS ####################
     
     def createNewBruteTab(self, ip, port, service): 
-        self.ui.statusbar.showMessage('Sending to Brute: '+ip+':'+port+' ('+service+')', msecs=1000)
+        self.ui.statusbar.showMessage('Sending to Brute: '+str(ip)+':'+str(port)+' ('+str(service)+')', msecs=1000)
         bWidget = BruteWidget(ip, port, service, self.controller.getSettings())
         bWidget.runButton.clicked.connect(lambda: self.callHydra(bWidget))
         self.ui.BruteTabWidget.addTab(bWidget, str(self.bruteTabCount)) 
