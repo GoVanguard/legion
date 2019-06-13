@@ -19,6 +19,8 @@ from db.database import *
 from app.auxiliary import *
 from ui.ancillaryDialog import *
 from six import u as unicode
+from pyShodan import PyShodan
+from scripts.python import pyShodan
 
 class Logic():
     def __init__(self):     
@@ -562,7 +564,7 @@ class Logic():
             return True
         return False
 
-class ShodanImporter(QtCore.QThread):
+class PythonImporter(QtCore.QThread):
     tick = QtCore.pyqtSignal(int, name="changed")                       # New style signal
     done = QtCore.pyqtSignal(name="done")                               # New style signal
     schedule = QtCore.pyqtSignal(object, bool, name="schedule")         # New style signal
@@ -571,6 +573,9 @@ class ShodanImporter(QtCore.QThread):
     def __init__(self):
         QtCore.QThread.__init__(self, parent=None)
         self.output = ''
+        self.hostIp = ''
+        self.pythonScriptDispatch = {'pyShodan': pyShodan.PyShodanScript()}
+        self.pythonScriptObj = None
         self.importProgressWidget = ProgressWidget('Importing shodan data..')
 
     def tsLog(self, msg):
@@ -579,8 +584,11 @@ class ShodanImporter(QtCore.QThread):
     def setDB(self, db):
         self.db = db
 
-    def setFilename(self, filename):
-        self.filename = filename
+    def setHostIp(self, hostIp):
+        self.hostIp = hostIp
+
+    def setPythonScript(self, pythonScript):
+        self.pythonScriptObj = self.pythonScriptDispatch[pythonScript]
 
     def setOutput(self, output):
         self.output = output
@@ -590,22 +598,15 @@ class ShodanImporter(QtCore.QThread):
             session = self.db.session()
             startTime = time()
             self.db.dbsemaphore.acquire()                               # ensure that while this thread is running, no one else can write to the DB
-
-            for h in parser.getAllHosts():                                # create all the hosts that need to be created
-                db_host = session.query(hostObj).filter_by(ip=h.ip).first()
-
-                if not db_host:                                         # if host doesn't exist in DB, create it first
-                    hid = hostObj(osMatch='', osAccuracy='', ip=h.ip, ipv4=h.ipv4, ipv6=h.ipv6, macaddr=h.macaddr, status=h.status, hostname=h.hostname, vendor=h.vendor, uptime=h.uptime, \
-                                  lastboot=h.lastboot, distance=h.distance, state=h.state, count=h.count)
-                    self.tsLog("Adding db_host")
-                    session.add(hid)
-                else:
-                    self.tsLog("Found db_host already in db")
+            #self.setPythonScript(self.pythonScript)
+            db_host = session.query(hostObj).filter_by(ip = self.hostIp).first()
+            self.pythonScriptObj.setDbHost(db_host)
+            self.pythonScriptObj.setSession(session)
+            self.pythonScriptObj.run()
             session.commit()
             self.db.dbsemaphore.release()                               # we are done with the DB
-            self.tsLog('Finished in '+ str(time()-startTime) + ' seconds.')
+            self.tsLog('Finished in ' + str(time() - startTime) + ' seconds.')
             self.done.emit()
-            self.schedule.emit(parser, self.output == '')               # call the scheduler (if there is no terminal output it means we imported nmap)
 
         except Exception as e:
             self.tsLog(e)

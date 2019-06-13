@@ -56,24 +56,27 @@ class BruteWidget(QtWidgets.QWidget):
 
         self.label1 = QtWidgets.QLabel()
         self.label1.setText('IP')
-        self.label1.setFixedWidth(20)          # experimental
+        #self.label1.setFixedWidth(10)          # experimental
         self.label1.setAlignment(Qt.AlignLeft)
+        self.label1.setAlignment(Qt.AlignVCenter)
         self.ipTextinput = QtWidgets.QLineEdit()
         self.ipTextinput.setText(str(self.ip))
         self.ipTextinput.setFixedWidth(125)
         
         self.label2 = QtWidgets.QLabel()
         self.label2.setText('Port')
-        self.label2.setFixedWidth(30)          # experimental
+        #self.label2.setFixedWidth(10)          # experimental
         self.label2.setAlignment(Qt.AlignLeft)
+        self.label2.setAlignment(Qt.AlignVCenter)
         self.portTextinput = QtWidgets.QLineEdit()
         self.portTextinput.setText(str(self.port))
         self.portTextinput.setFixedWidth(60)
         
         self.label3 = QtWidgets.QLabel()
         self.label3.setText('Service')
-        self.label3.setFixedWidth(50)          # experimental
+        #self.label3.setFixedWidth(10)          # experimental
         self.label3.setAlignment(Qt.AlignLeft)
+        self.label3.setAlignment(Qt.AlignVCenter)
         self.serviceComboBox = QtWidgets.QComboBox()
         self.serviceComboBox.insertItems(0, self.settings.brute_services.split(","))
         self.serviceComboBox.setStyleSheet("QComboBox { combobox-popup: 0; }");
@@ -568,6 +571,22 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.MacLayout.addWidget(self.MacLabel)
         self.MacLayout.addWidget(self.MacText)
         self.MacLayout.addStretch()
+
+        self.AsnLabel = QtWidgets.QLabel()
+        self.AsnText = QtWidgets.QLabel()
+        self.AsnLayout = QtWidgets.QHBoxLayout()
+        self.AsnLayout.addSpacing(20)
+        self.AsnLayout.addWidget(self.AsnLabel)
+        self.AsnLayout.addWidget(self.AsnText)
+        self.AsnLayout.addStretch()
+
+        self.IspLabel = QtWidgets.QLabel()
+        self.IspText = QtWidgets.QLabel()
+        self.IspLayout = QtWidgets.QHBoxLayout()
+        self.IspLayout.addSpacing(20)
+        self.IspLayout.addWidget(self.IspLabel)
+        self.IspLayout.addWidget(self.IspText)
+        self.IspLayout.addStretch()
         
         self.dummyLabel = QtWidgets.QLabel()
         self.dummyText = QtWidgets.QLabel()
@@ -608,6 +627,8 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.IP4Label.setText('IPv4:')
         self.IP6Label.setText('IPv6:')
         self.MacLabel.setText('MAC:')
+        self.AsnLabel.setText('ASN:')
+        self.IspLabel.setText('ISP:')
         self.OSLabel.setText('Operating System')
         self.OSLabel.setFont(font)
         self.OSNameLabel.setText('Name:')
@@ -628,6 +649,8 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.vlayout_2.addLayout(self.IP4Layout)
         self.vlayout_2.addLayout(self.IP6Layout)
         self.vlayout_2.addLayout(self.MacLayout)
+        self.vlayout_2.addLayout(self.AsnLayout)
+        self.vlayout_2.addLayout(self.IspLayout)
         self.vlayout_2.addLayout(self.dummyLayout)
         
         self.hlayout_1.addLayout(self.vlayout_1)
@@ -657,5 +680,7 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.IP4Text.setText(kwargs.get('ipv4') or 'unknown')
         self.IP6Text.setText(kwargs.get('ipv6') or 'unknown')
         self.MacText.setText(kwargs.get('macaddr') or 'unknown')
+        self.AsnText.setText(kwargs.get('asn') or 'unknown')
+        self.IspText.setText(kwargs.get('isp') or 'unknown')
         self.OSNameText.setText(kwargs.get('osMatch') or 'unknown')
         self.OSAccuracyText.setText(kwargs.get('osAccuracy') or 'unknown')
