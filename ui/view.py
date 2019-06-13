@@ -175,8 +175,8 @@ class View(QtCore.QObject):
 
     def initTables(self):                                               # this function prepares the default settings for each table
         # hosts table (left)
-        headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime", "Lastboot", "Distance", "CheckedHost", "State", "Count", "Padding"]
-        setTableProperties(self.ui.HostsTableView, len(headers), [0, 2, 4, 5, 6, 7, 8, 9, 10 , 11, 12, 13, 14, 15, 16])
+        headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime", "Lastboot", "Distance", "CheckedHost", "State", "Count", "Closed"]
+        setTableProperties(self.ui.HostsTableView, len(headers), [0, 2, 4, 5, 6, 7, 8, 9, 10 , 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24])
         self.ui.HostsTableView.horizontalHeader().resizeSection(1, 30)
 
         # service names table (left)
@@ -184,7 +184,7 @@ class View(QtCore.QObject):
         setTableProperties(self.ui.ServiceNamesTableView, len(headers))
 
         # cves table (right)
-        headers = ["Id", "Severity", "Product", "Version", "URL", "Source", "Exploit ID", "Exploit", "Exploit URL"]
+        headers = ["CVE Id", "Severity", "Product", "Version", "CVE URL", "Source", "ExploitDb ID", "ExploitDb", "ExploitDb URL"]
         setTableProperties(self.ui.CvesTableView, len(headers))
         self.ui.CvesTableView.setSortingEnabled(True)
 
@@ -931,16 +931,17 @@ class View(QtCore.QObject):
     #################### LEFT PANEL INTERFACE UPDATE FUNCTIONS ####################
 
     def updateHostsTableView(self): 
-        headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime", "Lastboot", "Distance", "CheckedHost", "State", "Count", "Padding"]
+        headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime", "Lastboot", "Distance", "CheckedHost", "State", "Count", "Closed"]
+        print(str(self.controller.getHostsFromDB(self.filters)))
         self.HostsTableModel = HostsTableModel(self.controller.getHostsFromDB(self.filters), headers)
         self.ui.HostsTableView.setModel(self.HostsTableModel)
 
         self.lazy_update_hosts = False                                  # to indicate that it doesn't need to be updated anymore
 
-        for i in [0,2,4,5,6,7,8,9,10,11,12,13,14,15,16]:                   # hide some columns
+        for i in [0, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]:                   # hide some columns
             self.ui.HostsTableView.setColumnHidden(i, True)
 
-        self.ui.HostsTableView.horizontalHeader().resizeSection(1,30)
+        self.ui.HostsTableView.horizontalHeader().resizeSection(1, 30)
         self.HostsTableModel.sort(3, Qt.DescendingOrder)
 
         ips = []                                                        # ensure that there is always something selected
@@ -991,7 +992,7 @@ class View(QtCore.QObject):
             self.lazy_update_tools = False                              # to indicate that it doesn't need to be updated anymore
 
             # Hides columns we don't want to see
-            for i in [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]:                # hide some columns
+            for i in [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]:                # hide some columns
                 self.ui.ToolsTableView.setColumnHidden(i, True)
                     
             tools = []                                                  # ensure that there is always something selected
@@ -1060,7 +1061,7 @@ class View(QtCore.QObject):
                 else:
                     counterFiltered = 65535 - counterOpen - counterClosed
 
-                self.hostInfoWidget.updateFields(status=host.status, openPorts=counterOpen, closedPorts=counterClosed, filteredPorts=counterFiltered, ipv4=host.ipv4, ipv6=host.ipv6, macaddr=host.macaddr, osMatch=host.osMatch, osAccuracy=host.osAccuracy)
+                self.hostInfoWidget.updateFields(status=host.status, openPorts=counterOpen, closedPorts=counterClosed, filteredPorts=counterFiltered, ipv4=host.ipv4, ipv6=host.ipv6, macaddr=host.macaddr, osMatch=host.osMatch, osAccuracy=host.osAccuracy, asn=host.asn, isp=host.isp)
 
     def updateScriptsView(self, hostIP):
         headers = ["Id", "Script", "Port", "Protocol"]
@@ -1088,7 +1089,7 @@ class View(QtCore.QObject):
         self.ui.ScriptsTableView.update()
 
     def updateCvesByHostView(self, hostIP):
-        headers = ["ID", "CVSS Score", "Product", "Version", "URL", "Source", "Exploit ID", "Exploit", "Exploit URL"]
+        headers = ["CVE Id", "CVSS Score", "Product", "Version", "CVE URL", "Source", "ExploitDb ID", "ExploitDb", "ExploitDb URL"]
         cves = self.controller.getCvesFromDB(hostIP)
         self.CvesTableModel = CvesTableModel(self, cves, headers)
 
@@ -1548,6 +1549,13 @@ class View(QtCore.QObject):
         for i in range(0, self.ui.BruteTabWidget.count()):
             if str(self.ui.BruteTabWidget.widget(i).pid) == pid:
                 self.bruteProcessFinished(self.ui.BruteTabWidget.widget(i))
+                return
+
+    def findFinishedServiceTab(self, pid):
+        for i in range(0, self.ui.ServicesTabWidget.count()):
+            if str(self.ui.ServicesTabWidget.widget(i).pid) == pid:
+                #self.bruteProcessFinished(self.ui.BruteTabWidget.widget(i))
+                print("Close Tab: {0}".format(str(i)))
                 return
 
     def blinkBruteTab(self, bWidget):
