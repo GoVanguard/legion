@@ -66,7 +66,7 @@ class View(QtCore.QObject):
         self.helpDialog = HelpDialog(self.controller.name, self.controller.author, self.controller.copyright, self.controller.links, self.controller.emails, self.controller.version, self.controller.build, self.controller.update, self.controller.license, self.controller.desc, self.controller.smallIcon, self.controller.bigIcon, qss = self.qss, parent = self.ui.centralwidget)
         self.configDialog = ConfigDialog(controller = self.controller, qss = self.qss, parent = self.ui.centralwidget)
 
-        self.ui.HostsTableView.setSelectionMode(1)                      # disable multiple selection
+        self.ui.HostsTableView.setSelectionMode(3)
         self.ui.ServiceNamesTableView.setSelectionMode(1)
         self.ui.CvesTableView.setSelectionMode(1)
         self.ui.ToolsTableView.setSelectionMode(1)
