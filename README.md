@@ -149,8 +149,8 @@ Setup Hyper-V, Docker Desktop, Xming and WSL:
  - Open the distribution, let it bootstrap and fill in the user creation details
  - To install docker components typically needed and add setup the environment for docker redirection, under the WSL window, run:
    ```
-   sudo add-apt-repository    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-      $(lsb_release -cs) stable"
+   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+   sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
    sudo apt-get update
    sudo apt-get install -y docker-ce python-pip -y
    sudo apt autoremove
