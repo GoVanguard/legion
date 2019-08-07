@@ -1553,10 +1553,10 @@ class View(QtCore.QObject):
 
     def findFinishedServiceTab(self, pid):
         for i in range(0, self.ui.ServicesTabWidget.count()):
-            if str(self.ui.ServicesTabWidget.widget(i).pid) == pid:
-                #self.bruteProcessFinished(self.ui.BruteTabWidget.widget(i))
-                print("Close Tab: {0}".format(str(i)))
-                return
+            #if str(self.ui.ServicesTabWidget.widget(i).pid) == pid:
+            #    #self.bruteProcessFinished(self.ui.BruteTabWidget.widget(i))
+            print("Close Tab: {0}".format(str(i)))
+            return
 
     def blinkBruteTab(self, bWidget):
         self.ui.MainTabWidget.tabBar().setTabTextColor(1, QtGui.QColor('red'))
