@@ -351,7 +351,8 @@ class View(QtCore.QObject):
                 if not str(filename).endswith('.legion'):
                     filename = str(filename) + '.legion'
                 msgBox = QtWidgets.QMessageBox()
-                reply = msgBox.question(self.ui.centralwidget, 'Confirm', "A file named \""+ntpath.basename(str(filename))+"\" already exists.  Do you want to replace it?", "Abort", "Replace", "", 0)
+                reply = msgBox.question(self.ui.centralwidget, 'Confirm', "A file named \""+ntpath.basename(str(filename))+"\" already exists.  Do you want to replace it?", \
+                    msgBox.QMessageBox.Abort | msgBox.QMessageBox.Save)
             
                 if reply == 1:
                     self.controller.saveProjectAs(filename, 1)          # replace
