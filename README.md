@@ -7,12 +7,18 @@
 
 
 ## ABOUT
-Legion, a fork of SECFORCE's Sparta, is an open source, easy-to-use, super-extensible and semi-automated network penetration testing framework that aids in discovery, reconnaissance and exploitation of information systems. 
-[Legion](https://govanguard.io/legion) is developed and maintained by [GoVanguard](https://govanguard.io). More information about Legion, including the [roadmap](https://govanguard.io/legion), can be found on it's project page at [https://GoVanguard.io/legion](https://govanguard.io/legion).
+Legion, a fork of SECFORCE's Sparta, is an open source, easy-to-use, super-extensible and semi-automated network 
+penetration testing framework that aids in discovery, reconnaissance and exploitation of information systems. 
+[Legion](https://govanguard.io/legion) is developed and maintained by [GoVanguard](https://govanguard.io). 
+More information about Legion, including the [roadmap](https://govanguard.io/legion), can be found on its project 
+page at [https://GoVanguard.io/legion](https://govanguard.io/legion).
 
 ### FEATURES
-* Automatic recon and scanning with NMAP, whataweb, nikto, Vulners, Hydra, SMBenum, dirbuster, sslyzer, webslayer and more (with almost 100 auto-scheduled scripts)
-* Easy to use graphical interface with rich context menus and panels that allow pentesters to quickly find and exploit attack vectors on hosts
+
+* Automatic recon and scanning with NMAP, whataweb, nikto, Vulners, Hydra, SMBenum, dirbuster, sslyzer, webslayer 
+and more (with almost 100 auto-scheduled scripts)
+* Easy to use graphical interface with rich context menus and panels that allow pentesters to quickly find and 
+exploit attack vectors on hosts
 * Modular functionality allows users to easily customize Legion and automatically call their own scripts/tools
 * Highly customizable stage scanning for ninja-like IPS evasion
 * Automatic detection of CPEs (Common Platform Enumeration) and CVEs (Common Vulnerabilities and Exposures)
@@ -20,39 +26,52 @@ Legion, a fork of SECFORCE's Sparta, is an open source, easy-to-use, super-exten
 * Realtime autosaving of project results and tasks
 
 ### NOTABLE CHANGES FROM SPARTA
-* Refactored from Python 2.7 to Python 3.6 and the elimination of depreciated and unmaintained libraries
+
+* Refactored from Python 2.7 to Python 3.6 and the elimination of deprecated and unmaintained libraries
 * Upgraded to PyQT5, increased responsiveness, less buggy, more intuitive GUI that includes features like:
    * Task completion estimates
    * 1-Click scan lists of ips, hostnames and CIDR subnets
    * Ability to purge results, rescan hosts and delete hosts
-   * Granual NMAP scanning options
+   * Granular NMAP scanning options
 * Support for hostname resolution and scanning of vhosts/sni hosts
 * Revise process queuing and execution routines for increased app reliability and performance
 * Simplification of installation with dependency resolution and installation routines
-* Realtime project autosaving so in the event some goes wrong, you will not loose any progress!
+* Realtime project autosaving so in the event some goes wrong, you will not lose any progress!
 * Docker container deployment option
 * Supported by a highly active development team
 
 ### GIF DEMO 
+
 ![](https://govanguard.io/wp-content/uploads/2019/02/LegionDemo.gif)
 
 ## INSTALLATION
-It is preferable to use the docker image over a traditional installation. This is because of all the dependancy requirements and the complications that occur in environments which differ from a clean, non-default installation.
+
+It is preferable to use the docker image over a traditional installation. This is because of all the dependancy 
+requirements and the complications that occur in environments which differ from a clean, non-default installation.
 
 ### Supported Distributions
 #### Docker runIt script
-runIt supports Ubuntu 18, Fedora 30, Parrot and Kali at this time. It is possible to run the docker image on any Linux distribution, however, different distributions have different hoops to jump through to get a docker app to be able to connect to the X server. Eveyone is welcome to try and figure those hoops out and create a PR for runIt. 
+
+runIt supports Ubuntu 18, Fedora 30, Parrot and Kali at this time. It is possible to run the docker image on any 
+Linux distribution, however, different distributions have different hoops to jump through to get a docker app to 
+be able to connect to the X server. Everyone is welcome to try and figure those hoops out and create a PR for runIt. 
 
 #### Traditional Install
-We can only promise correct operation on Ubuntu 18 using the traditional installation at this time. While it should work on ParrotOS, Kali and others, until we have Legion packaged and placed into the repos for each of these distros it's musical chairs with reguards to platform updates changing and breaking dependancies.
+
+We can only promise correct operation on Ubuntu 18 using the traditional installation at this time. While it should 
+work on ParrotOS, Kali and others, until we have Legion packaged and placed into the repos for each of these distros 
+it's musical chairs with regards to platform updates changing and breaking dependencies.
 
 ### DOCKER METHOD
 ------
 
 Linux with Local X11:
+
  - Assumes Docker and X11 are installed and setup (including running docker commands as a non-root user)
- - It is crititcal to follow all the instructions for running as a non-root user. Skipping any of them will result in complications getting docker to communicate with the X server
- - See detailed instructions to setup docker [here](#docker-setup) and enable running containers as non-root users and granting docker group ssh rights [here](#docker-setup-non-root)
+ - It is critical to follow all the instructions for running as a non-root user. Skipping any of them will result in 
+ complications getting docker to communicate with the X server
+ - See detailed instructions to setup docker [here](#docker-setup) and enable running containers as non-root users 
+ and granting docker group ssh rights [here](#docker-setup-non-root)
 
  - Within Terminal:
    ```
@@ -75,7 +94,8 @@ Linux with Remote X11:
 
 Windows under WSL using Xming and Docker Desktop:
  - Assumes Xming is installed in Windows
- - Assumes Docker Desktop is installed in Windows, Docker Desktop is running in Linux containers mode and Docker Desktop is connected to WSL
+ - Assumes Docker Desktop is installed in Windows, Docker Desktop is running in Linux containers mode and 
+ Docker Desktop is connected to WSL
  - See detailed instructions [here](#docker-setup-wsl)
  - Replace X.X.X.X with the IP with which Xming has registered itself.
    - Right click Xming in system tray -> View log and see IP next to "XdmcpRegisterConnection: newAddress"
@@ -93,7 +113,8 @@ Windows using Xming and Docker Desktop without WSL:
 
 OSX using XQuartz:
  - Not yet in runIt.sh script.
- - Possible to setup using socat. See instructions here: https://kartoza.com/en/blog/how-to-run-a-linux-gui-application-on-osx-using-docker/
+ - Possible to setup using socat. See instructions here: 
+ https://kartoza.com/en/blog/how-to-run-a-linux-gui-application-on-osx-using-docker/
 
 
 <a name="docker-setup"></a>
@@ -117,7 +138,8 @@ Setup Docker to allow non-root users:
 
 <a name="docker-setup-wsl"></a>
 Setup Hyper-V, Docker Desktop, Xming and WSL:
- - The order is important for port reservation reasons. If you have WSL, HyperV or Docker Desktop installed then please uninstall those features before proceeding.
+ - The order is important for port reservation reasons. If you have WSL, HyperV or Docker Desktop installed then 
+ please uninstall those features before proceeding.
  - Cortana / Search -> cmd -> Right click -> Run as Administrator
  - To reserve the docker port, under CMD, run:
    ```
@@ -147,7 +169,8 @@ Setup Hyper-V, Docker Desktop, Xming and WSL:
  - Open Microsoft Store
  - Install Kali, Ubuntu or one of the other WSL Linux Distributions
  - Open the distribution, let it bootstrap and fill in the user creation details
- - To install docker components typically needed and add setup the environment for docker redirection, under the WSL window, run:
+ - To install docker components typically needed and add setup the environment for docker redirection, 
+ under the WSL window, run:
    ```
    sudo add-apt-repository    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
       $(lsb_release -cs) stable"
@@ -164,7 +187,8 @@ Setup Hyper-V, Docker Desktop, Xming and WSL:
    ```
 
 ### TRADITIONAL METHOD
- - Please use the docker image where possible! It's becoming very difficult to support all the various platforms and their own quirks
+ - Please use the docker image where possible! It's becoming very difficult to support all the various platforms 
+ and their own quirks
  - Assumes Ubuntu, Kali or Parrot Linux is being used with Python 3.6 installed.
  - Within Terminal:
    ```
@@ -175,12 +199,17 @@ Setup Hyper-V, Docker Desktop, Xming and WSL:
    ```
 
 ## LICENSE
-Legion is licensed under the GNU General Public License v3.0. Take a look at the [LICENSE](https://github.com/GoVanguard/legion/blob/master/LICENSE) for more information.
+
+Legion is licensed under the GNU General Public License v3.0. Take a look at the 
+[LICENSE](https://github.com/GoVanguard/legion/blob/master/LICENSE) for more information.
 
 ## ATTRIBUTION
-* Refactored Python 3.6+ codebase, added feature set and ongoing development of Legion is credited to [GoVanguard](https://govanguard.io)
+
+* Refactored Python 3.6+ codebase, added feature set and ongoing development of Legion is credited to 
+[GoVanguard](https://govanguard.io)
 * The initial Sparta Python 2.7 codebase and application design is credited SECFORCE.
 * Several additional PortActions, PortTerminalActions and SchedulerSettings are credited to batmancrew.
 * The nmap XML output parsing engine was largely based on code by yunshu, modified by ketchup and modified SECFORCE.
 * ms08-067_check script used by smbenum.sh is credited to Bernardo Damele A.G.
-* Legion relies heavily on nmap, hydra, python, PyQt, SQLAlchemy and many other tools and technologies so we would like to thank all of the people involved in the creation of those.
+* Legion relies heavily on nmap, hydra, python, PyQt, SQLAlchemy and many other tools and technologies so we 
+would like to thank all of the people involved in the creation of those.
