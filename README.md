@@ -174,6 +174,16 @@ Setup Hyper-V, Docker Desktop, Xming and WSL:
    sudo ./startLegion.sh
    ```
 
+## Development
+
+### Executing test cases
+
+To run all test cases, execute the following in root directory:
+
+```bash
+python -m unittest
+```
+
 ## LICENSE
 Legion is licensed under the GNU General Public License v3.0. Take a look at the [LICENSE](https://github.com/GoVanguard/legion/blob/master/LICENSE) for more information.
 
