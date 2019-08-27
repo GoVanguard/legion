@@ -35,7 +35,7 @@ If you are interested in contributing to Legion, join our [Legion Keybase Team](
 * Supported by a highly active development team
 
 ### GIF DEMO 
-![](https://govanguard.io/wp-content/uploads/2019/02/LegionDemo.gif)
+![](https://govanguard.com/wp-content/uploads/2019/02/LegionDemo.gif)
 
 ## INSTALLATION
 It is preferable to use the docker image over a traditional installation. This is because of all the dependancy requirements and the complications that occur in environments which differ from a clean, non-default installation.
@@ -179,7 +179,7 @@ Setup Hyper-V, Docker Desktop, Xming and WSL:
 Legion is licensed under the GNU General Public License v3.0. Take a look at the [LICENSE](https://github.com/GoVanguard/legion/blob/master/LICENSE) for more information.
 
 ## ATTRIBUTION
-* Refactored Python 3.6+ codebase, added feature set and ongoing development of Legion is credited to [GoVanguard](https://govanguard.io)
+* Refactored Python 3.6+ codebase, added feature set and ongoing development of Legion is credited to [GoVanguard](https://govanguard.com)
 * The initial Sparta Python 2.7 codebase and application design is credited SECFORCE.
 * Several additional PortActions, PortTerminalActions and SchedulerSettings are credited to batmancrew.
 * The nmap XML output parsing engine was largely based on code by yunshu, modified by ketchup and modified SECFORCE.
