@@ -28,13 +28,13 @@ class Controller():
     def __init__(self, view, logic):
         self.name = "LEGION"
         self.version = '0.3.5'
-        self.build = '1560405090'
+        self.build = '1565621036'
         self.author = 'GoVanguard'
         self.copyright = '2019'
         self.links = ['http://github.com/GoVanguard/legion/issues', 'https://GoVanguard.io/legion']
         self.emails = []
 
-        self.update = '06/13/2019'
+        self.update = '08/12/2019'
 
         self.license = "GPL v3"
         self.desc = "Legion is a fork of SECFORCE's Sparta, Legion is an open source, easy-to-use, \nsuper-extensible and semi-automated network penetration testing tool that aids in discovery, \nreconnaissance and exploitation of information systems."

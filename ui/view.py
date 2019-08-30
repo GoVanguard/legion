@@ -351,9 +351,9 @@ class View(QtCore.QObject):
                 if not str(filename).endswith('.legion'):
                     filename = str(filename) + '.legion'
                 msgBox = QtWidgets.QMessageBox()
-                reply = msgBox.question(self.ui.centralwidget, 'Confirm', "A file named \""+ntpath.basename(str(filename))+"\" already exists.  Do you want to replace it?", "Abort", "Replace", "", 0)
+                reply = msgBox.question(self.ui.centralwidget, 'Confirm', "A file named \""+ntpath.basename(str(filename))+"\" already exists.  Do you want to replace it?", QtWidgets.QMessageBox.Abort | QtWidgets.QMessageBox.Save)
             
-                if reply == 1:
+                if reply == QtWidgets.QMessageBox.Save:
                     self.controller.saveProjectAs(filename, 1)          # replace
                     break
 
@@ -1553,10 +1553,10 @@ class View(QtCore.QObject):
 
     def findFinishedServiceTab(self, pid):
         for i in range(0, self.ui.ServicesTabWidget.count()):
-            if self.ui.ServicesTabWidget.widget(i) == pid:
-                #self.bruteProcessFinished(self.ui.BruteTabWidget.widget(i))
-                print("Close Tab: {0}".format(str(i)))
-                return
+            #if str(self.ui.ServicesTabWidget.widget(i).pid) == pid:
+            #    #self.bruteProcessFinished(self.ui.BruteTabWidget.widget(i))
+            print("Close Tab: {0}".format(str(i)))
+            return
 
     def blinkBruteTab(self, bWidget):
         self.ui.MainTabWidget.tabBar().setTabTextColor(1, QtGui.QColor('red'))
