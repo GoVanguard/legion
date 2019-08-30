@@ -18,6 +18,7 @@ install:
 
 script:
   - python ./test.py
+  - python -m unittest
 
 after_success:
   - cd ./docker/
