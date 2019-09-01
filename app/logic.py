@@ -11,20 +11,21 @@ Copyright (c) 2018 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import os, tempfile, ntpath, shutil                                     # for creation of temp files and file operations
-import logging      # test
-import subprocess   # for CWD
-from parsers.Parser import *
-from db.database import *
-from app.auxiliary import *
-from ui.ancillaryDialog import *
-from six import u as unicode
-from pyShodan import PyShodan
-from scripts.python import pyShodan
+import ntpath  # for creation of temp files and file operations
+import shutil
+import tempfile
 
-class Logic():
-    def __init__(self):     
-        self.cwd = str(subprocess.check_output("echo $PWD", shell=True)[:-1].decode()) + '/'
+from app.shell.Shell import Shell
+from db.database import *
+from parsers.Parser import *
+from scripts.python import pyShodan
+from ui.ancillaryDialog import *
+
+
+class Logic:
+    def __init__(self, shell: Shell):
+        self.shell = shell
+        self.cwd = shell.get_current_working_directory()
         self.createTemporaryFiles()                                     # creates temporary files/folders used by SPARTA
 
     def createTemporaryFiles(self):
@@ -32,15 +33,21 @@ class Logic():
             log.info('Creating temporary files..')
             self.istemp = True                                          # indicates that file is temporary and can be deleted if user exits without saving
             log.info(self.cwd)
-            tf = tempfile.NamedTemporaryFile(suffix=".legion",prefix="legion-", delete=False, dir="./tmp/")         # to store the database file
-            self.outputfolder = tempfile.mkdtemp(suffix="-tool-output",prefix="legion-", dir="./tmp/")            # to store tool output of finished processes
-            self.runningfolder = tempfile.mkdtemp(suffix="-running",prefix="legion-", dir="./tmp/")               # to store tool output of running processes
-            os.makedirs(self.outputfolder+'/screenshots')                                           # to store screenshots
-            os.makedirs(self.runningfolder+'/nmap')                                                 # to store nmap output
-            os.makedirs(self.runningfolder+'/hydra')                                                # to store hydra output     
-            os.makedirs(self.runningfolder+'/dnsmap')                                               # to store dnsmap output
-            self.usernamesWordlist = Wordlist(self.outputfolder + '/legion-usernames.txt')          # to store found usernames
-            self.passwordsWordlist = Wordlist(self.outputfolder + '/legion-passwords.txt')          # to store found passwords
+
+            tf = self.shell.create_named_temporary_file(
+                suffix=".legion", prefix="legion-", directory="./tmp/", delete_on_close=False)  # to store the database file
+            self.outputfolder = self.shell.create_temporary_directory(
+                prefix="legion-", suffix="-tool-output", directory="./tmp/")  # to store tool output of finished processes
+            self.runningfolder = self.shell.create_temporary_directory(
+                prefix="legion-", suffix="-running", directory="./tmp/")  # to store tool output of running processes
+
+            self.shell.create_directory_recursively(f"{self.outputfolder}/screenshots")  # to store screenshots
+            self.shell.create_directory_recursively(f"{self.runningfolder}/nmap")  # to store nmap output
+            self.shell.create_directory_recursively(f"{self.runningfolder}/hydra")  # to store hydra output
+            self.shell.create_directory_recursively(f"{self.runningfolder}/dnsmap")  # to store dnsmap output
+
+            self.usernamesWordlist = Wordlist(self.outputfolder + '/legion-usernames.txt')  # to store found usernames
+            self.passwordsWordlist = Wordlist(self.outputfolder + '/legion-passwords.txt')  # to store found passwords
             self.projectname = tf.name
             log.info(tf.name)
             self.db = Database(self.projectname)
@@ -49,30 +56,26 @@ class Logic():
             log.info('Something went wrong creating the temporary files..')
             log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
 
-    def removeTemporaryFiles(self, doCleanup = False):
-        if doCleanup == True:
-            log.info('Removing temporary files and folders..')
-            try:
-                if not self.istemp:                                         # if current project is not temporary
-                    if not self.storeWordlists:                             # delete wordlists if necessary
-                        log.info('Removing wordlist files.')
-                        os.remove(self.usernamesWordlist.filename)
-                        os.remove(self.passwordsWordlist.filename)
-                
-                else:
-                    os.remove(self.projectname)
-                    shutil.rmtree(self.outputfolder)
-            
-                shutil.rmtree(self.runningfolder)
+    def removeTemporaryFiles(self):
+        log.info('Removing temporary files and folders..')
+        try:
+            # if current project is not temporary & delete wordlists if necessary
+            if not self.istemp and not self.storeWordlists:
+                log.info('Removing wordlist files.')
+                self.shell.remove_file(self.usernamesWordlist.filename)
+                self.shell.remove_file(self.passwordsWordlist.filename)
+            else:
+                self.shell.remove_file(self.projectname)
+                self.shell.remove_directory(self.outputfolder)
 
-            except:
-                log.info('Something went wrong removing temporary files and folders..')
-                log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
-        return
+            self.shell.remove_directory(self.runningfolder)
+        except:
+            log.info('Something went wrong removing temporary files and folders..')
+            log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
 
     def createFolderForTool(self, tool):
         if 'nmap' in tool:
-            tool = 'nmap'       
+            tool = 'nmap'
         path = self.runningfolder+'/'+re.sub("[^0-9a-zA-Z]", "", str(tool))
         if not os.path.exists(path):
             os.makedirs(path)
@@ -432,24 +435,28 @@ class Logic():
         session.add(p)
         session.commit()
         return p.id
-        
-    # is not actually a toggle function. it sets all the non-running processes display flag to false to ensure they aren't shown in the process table 
+
+    # is not actually a toggle function. it sets all the non-running processes display flag to false to ensure they aren't shown in the process table
     # but they need to be shown as tool tabs. this function is called when a user clears the processes or when a project is being closed.
     def toggleProcessDisplayStatus(self, resetAll=False):
         session = self.db.session()
         proc = session.query(process).filter_by(display='True').all()
-        if resetAll == True:
-            for p in proc:
-                if p.status != 'Running':
-                    p.display = 'False'
-                    session.add(p)
-        else:
-            for p in proc:
-                if p.status != 'Running' and p.status != 'Waiting':
-                    p.display = 'False'
-                    session.add(p)
+        for p in proc:
+            session.add(self.toggle_process_status_field(p, resetAll))
         self.db.commit()
-        
+
+    def toggle_process_status_field(self, p, reset_all):
+        not_running = p.status != 'Running'
+        not_waiting = p.status != 'Waiting'
+
+        if reset_all and not_running:
+            p.display = 'False'
+        else:
+            if not_running and not_waiting:
+                p.display = 'False'
+
+        return p
+
     # this function updates the status of a process if it is killed
     def storeProcessKillStatusInDB(self, procId):
         session = self.db.session()
