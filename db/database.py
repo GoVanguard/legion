@@ -346,7 +346,7 @@ class Database:
 
     def commit(self):
         self.dbsemaphore.acquire()
-        log.info("DB lock aquired")
+        log.info("DB lock acquired")
         try:
             session = self.session()
             rnd = float(randint(1,99)) / 100.00
