@@ -1,32 +1,50 @@
 #!/usr/bin/env python
 
-'''
+"""
 LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+    You should have received a copy of the GNU General Public License along with this program.
+    If not, see <http://www.gnu.org/licenses/>.
+"""
 
-import ntpath  # for creation of temp files and file operations
+import ntpath
 import shutil
 import tempfile
 
 from app.shell.Shell import Shell
 from db.database import *
+from db.repositories.CVERepository import CVERepository
+from db.repositories.HostRepository import HostRepository
+from db.repositories.PortRepository import PortRepository
+from db.repositories.ProcessRepository import ProcessRepository
+from db.repositories.ServiceRepository import ServiceRepository
 from parsers.Parser import *
 from scripts.python import pyShodan
 from ui.ancillaryDialog import *
 
 
 class Logic:
-    def __init__(self, shell: Shell):
+    def __init__(self, project_name: str, db: Database, shell: Shell):
         self.shell = shell
+        self.db = db
         self.cwd = shell.get_current_working_directory()
-        self.createTemporaryFiles()                                     # creates temporary files/folders used by SPARTA
+        self.projectname = project_name
+        log.info(project_name)
+        self.createTemporaryFiles()  # creates temporary files/folders used by SPARTA
+        self.service_repository: ServiceRepository = ServiceRepository(self.db)
+        self.process_repository: ProcessRepository = ProcessRepository(self.db, log)
+        self.host_repository: HostRepository = HostRepository(self.db)
+        self.port_repository: PortRepository = PortRepository(self.db)
+        self.cve_repository: CVERepository = CVERepository(self.db)
 
     def createTemporaryFiles(self):
         try:
@@ -34,8 +52,6 @@ class Logic:
             self.istemp = True                                          # indicates that file is temporary and can be deleted if user exits without saving
             log.info(self.cwd)
 
-            tf = self.shell.create_named_temporary_file(
-                suffix=".legion", prefix="legion-", directory="./tmp/", delete_on_close=False)  # to store the database file
             self.outputfolder = self.shell.create_temporary_directory(
                 prefix="legion-", suffix="-tool-output", directory="./tmp/")  # to store tool output of finished processes
             self.runningfolder = self.shell.create_temporary_directory(
@@ -48,10 +64,6 @@ class Logic:
 
             self.usernamesWordlist = Wordlist(self.outputfolder + '/legion-usernames.txt')  # to store found usernames
             self.passwordsWordlist = Wordlist(self.outputfolder + '/legion-passwords.txt')  # to store found passwords
-            self.projectname = tf.name
-            log.info(tf.name)
-            self.db = Database(self.projectname)
-
         except:
             log.info('Something went wrong creating the temporary files..')
             log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
@@ -190,57 +202,6 @@ class Logic:
             log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
             return False
 
-    def isHostInDB(self, host):                                         # used we don't run tools on hosts out of scope
-        query = 'SELECT host.ip FROM hostObj AS host WHERE host.ip == ? OR host.hostname == ?'
-        result = self.db.metadata.bind.execute(query, str(host), str(host)).fetchall()
-        if result:
-            return True
-        return False
-
-    def getHostsFromDB(self, filters):
-        query = 'SELECT * FROM hostObj AS hosts WHERE 1=1'
-
-        if filters.down == False:
-            query += ' AND hosts.status!=\'down\''
-        if filters.up == False:
-            query += ' AND hosts.status!=\'up\''
-        if filters.checked == False:
-            query += ' AND hosts.checked!=\'True\''
-        for word in filters.keywords:
-            query += ' AND (hosts.ip LIKE \'%'+sanitise(word)+'%\' OR hosts.osMatch LIKE \'%'+sanitise(word)+'%\' OR hosts.hostname LIKE \'%'+sanitise(word)+'%\')'
-
-        return self.db.metadata.bind.execute(query).fetchall()
-
-    # get distinct service names from DB
-    def getServiceNamesFromDB(self, filters):
-        query = ('SELECT DISTINCT service.name FROM serviceObj as service ' +
-                    'INNER JOIN portObj as ports ' +
-                    'INNER JOIN hostObj AS hosts ' + 
-                    'ON hosts.id = ports.hostId AND service.id=ports.serviceId WHERE 1=1')
-                    
-        if filters.down == False:
-            query += ' AND hosts.status!=\'down\''
-        if filters.up == False:
-            query += ' AND hosts.status!=\'up\''
-        if filters.checked == False:
-            query += ' AND hosts.checked!=\'True\''
-        for word in filters.keywords:
-            query += ' AND (hosts.ip LIKE \'%'+sanitise(word)+'%\' OR hosts.osMatch LIKE \'%'+sanitise(word)+'%\' OR hosts.hostname LIKE \'%'+sanitise(word)+'%\')'
-        if filters.portopen == False:
-            query += ' AND ports.state!=\'open\' AND ports.state!=\'open|filtered\''
-        if filters.portclosed == False:
-            query += ' AND ports.state!=\'closed\''
-        if filters.portfiltered == False:
-            query += ' AND ports.state!=\'filtered\' AND ports.state!=\'open|filtered\''
-        if filters.tcp == False:
-            query += ' AND ports.protocol!=\'tcp\''
-        if filters.udp == False:
-            query += ' AND ports.protocol!=\'udp\''             
-                    
-        query += ' ORDER BY service.name ASC'
-                            
-        return self.db.metadata.bind.execute(query).fetchall()
-
     # get notes for given host IP
     def getNoteFromDB(self, hostId):
         session = self.db.session()
@@ -254,53 +215,10 @@ class Logic:
                  'WHERE hosts.ip=?')
 
         return self.db.metadata.bind.execute(query, str(hostIP)).fetchall()
-
-    def getCvesFromDB(self, hostIP):
-        query = ('SELECT cves.name, cves.severity, cves.product, cves.version, cves.url, cves.source, cves.exploitId, cves.exploit, cves.exploitUrl FROM cve AS cves ' +
-                 'INNER JOIN hostObj AS hosts ON hosts.id = cves.hostId ' +
-                 'WHERE hosts.ip = ?')
-        return self.db.metadata.bind.execute(query, str(hostIP)).fetchall()
         
     def getScriptOutputFromDB(self, scriptDBId):
         query = ('SELECT script.output FROM l1ScriptObj as script WHERE script.id = ?')
         return self.db.metadata.bind.execute(query, str(scriptDBId)).fetchall()
-
-    # get port and service info for given host IP
-    def getPortsAndServicesForHostFromDB(self, hostIP, filters):
-        query = ('SELECT hosts.ip, ports.portId, ports.protocol, ports.state, ports.hostId, ports.serviceId, services.name, services.product, services.version, services.extrainfo, services.fingerprint FROM portObj AS ports ' +
-                 'INNER JOIN hostObj AS hosts ON hosts.id = ports.hostId ' +
-                 'LEFT OUTER JOIN serviceObj AS services ON services.id = ports.serviceId ' +
-                 'WHERE hosts.ip = ?')
-        
-        if filters.portopen == False:
-            query += ' AND ports.state!=\'open\' AND ports.state!=\'open|filtered\''
-        if filters.portclosed == False:
-            query += ' AND ports.state!=\'closed\''
-        if filters.portfiltered == False:
-            query += ' AND ports.state!=\'filtered\' AND ports.state!=\'open|filtered\''
-        if filters.tcp == False:
-            query += ' AND ports.protocol!=\'tcp\''
-        if filters.udp == False:
-            query += ' AND ports.protocol!=\'udp\''
-
-        return self.db.metadata.bind.execute(query, str(hostIP)).fetchall()
-
-    # used to check if there are any ports of a specific protocol for a given host
-    def getPortsForHostFromDB(self, hostIP, protocol):
-        query = ('SELECT ports.portId FROM portObj AS ports ' +
-            'INNER JOIN hostObj AS hosts ON hosts.id = ports.hostId ' +
-            'WHERE hosts.ip = ? and ports.protocol = ?')
-        results = self.db.metadata.bind.execute(query, str(hostIP), str(protocol)).first()
-        return results
-
-    # used to get the service name given a host ip and a port when we are in tools tab (left) and right click on a host
-    def getServiceNameForHostAndPort(self, hostIP, port):
-        query = ('SELECT services.name FROM serviceObj AS services ' +
-            'INNER JOIN hostObj AS hosts ON hosts.id = ports.hostId ' +
-            'INNER JOIN portObj AS ports ON services.id=ports.serviceId ' +
-            'WHERE hosts.ip=? and ports.portId = ?')
-        results = self.db.metadata.bind.execute(query, str(hostIP), str(port)).first()
-        return results
 
     # used to delete all port/script data related to a host - to overwrite portscan info with the latest scan   
     def deleteAllPortsAndScriptsForHostFromDB(self, hostID, protocol):
@@ -315,49 +233,12 @@ class Logic:
         session.commit()
         return
 
-    def getHostInformation(self, hostIP):
-        session = self.db.session()
-        results = session.query(hostObj).filter_by(ip=str(hostIP)).first()
-        return results
-
     def deleteHost(self, hostIP):
         session = self.db.session()
         h = session.query(hostObj).filter_by(ip=str(hostIP)).first()
         session.delete(h)
         session.commit()
         return
-
-    def getPortStatesForHost(self, hostID):
-        query = ('SELECT port.state FROM portObj as port WHERE port.hostId = ?')
-        results = self.db.metadata.bind.execute(query, str(hostID)).fetchall()
-        return results
-
-    def getHostsAndPortsForServiceFromDB(self, serviceName, filters):
-        query = ('SELECT hosts.ip,ports.portId,ports.protocol,ports.state,ports.hostId,ports.serviceId,services.name,services.product,services.version,services.extrainfo,services.fingerprint FROM portObj AS ports ' +
-            'INNER JOIN hostObj AS hosts ON hosts.id = ports.hostId ' +
-            'LEFT OUTER JOIN serviceObj AS services ON services.id=ports.serviceId ' +
-            'WHERE services.name=?')
-
-        if filters.down == False:
-            query += ' AND hosts.status!=\'down\''
-        if filters.up == False:
-            query += ' AND hosts.status!=\'up\''
-        if filters.checked == False:
-            query += ' AND hosts.checked!=\'True\''
-        if filters.portopen == False:
-            query += ' AND ports.state!=\'open\' AND ports.state!=\'open|filtered\''
-        if filters.portclosed == False:
-            query += ' AND ports.state!=\'closed\''
-        if filters.portfiltered == False:
-            query += ' AND ports.state!=\'filtered\' AND ports.state!=\'open|filtered\''
-        if filters.tcp == False:
-            query += ' AND ports.protocol!=\'tcp\''
-        if filters.udp == False:
-            query += ' AND ports.protocol!=\'udp\'' 
-        for word in filters.keywords:
-            query += ' AND (hosts.ip LIKE \'%'+sanitise(word)+'%\' OR hosts.osMatch LIKE \'%'+sanitise(word)+'%\' OR hosts.hostname LIKE \'%'+sanitise(word)+'%\')'
-
-        return self.db.metadata.bind.execute(query, str(serviceName)).fetchall()
 
     # this function returns all the processes from the DB
     # the showProcesses flag is used to ensure we don't display processes in the process table after we have cleared them or when an existing project is opened.
@@ -390,20 +271,6 @@ class Logic:
             query = ('SELECT process.id, "0", "0", "0", "0", "0", "0", process.hostIp, process.port, process.protocol, "0", "0", process.outputfile, "0", "0", "0" FROM process AS process WHERE process.name=? and process.closed="False"')
             
         return self.db.metadata.bind.execute(query, str(toolname)).fetchall()
-
-    def getProcessStatusForDBId(self, dbid):
-        query = ('SELECT process.status FROM process AS process WHERE process.id=?')
-        p = self.db.metadata.bind.execute(query, str(dbid)).fetchall()
-        if p:
-            return p[0][0]
-        return -1
-        
-    def getPidForProcess(self, procid):
-        query = ('SELECT process.pid FROM process AS process WHERE process.id=?')
-        p = self.db.metadata.bind.execute(query, str(procid)).fetchall()        
-        if p:
-            return p[0][0]
-        return -1
 
     def toggleHostCheckStatus(self, ipaddr):
         session = self.db.session()
@@ -522,27 +389,6 @@ class Logic:
             proc.elapsed = elapsed
             session.add(proc)
             self.db.commit()
-    
-    # this function stores a finished process' output to the DB and updates it status
-    def storeProcessOutputInDB(self, procId, output):
-        session = self.db.session()
-        proc = session.query(process).filter_by(id=procId).first()
-        if proc:
-            proc_output = session.query(process_output).filter_by(id=procId).first()
-            if proc_output:
-                log.info("Storing process output into db: {0}".format(str(proc_output)))
-                proc_output.output=unicode(output)
-                session.add(proc_output)
-
-            proc.endTime = getTimestamp(True)   # store end time
-
-            if proc.status == "Killed" or proc.status == "Cancelled" or proc.status == "Crashed":   # if the process has been killed don't change the status to "Finished"
-                self.db.commit()                                        # new: this was missing but maybe this is important here to ensure that we save the process output no matter what
-                return True                         
-            else:
-                proc.status = 'Finished'
-                session.add(proc)
-                self.db.commit()
 
     def storeNotesInDB(self, hostId, notes):
         if len(notes) == 0:
@@ -556,20 +402,7 @@ class Logic:
         session = self.db.session()
         session.add(t_note)
         self.db.commit()
-        
-    def isKilledProcess(self, procId):
-        query = ('SELECT process.status FROM process AS process WHERE process.id=?')
-        proc = self.db.metadata.bind.execute(query, str(procId)).fetchall()
-        if not proc or str(proc[0][0]) == "Killed":
-            return True
-        return False
-        
-    def isCanceledProcess(self, procId):
-        query = ('SELECT process.status FROM process AS process WHERE process.id=?')
-        proc = self.db.metadata.bind.execute(query, str(procId)).fetchall()
-        if not proc or str(proc[0][0]) == "Cancelled":
-            return True
-        return False
+
 
 class PythonImporter(QtCore.QThread):
     tick = QtCore.pyqtSignal(int, name="changed")                       # New style signal
@@ -620,6 +453,7 @@ class PythonImporter(QtCore.QThread):
             raise
             self.done.emit()
 
+
 class NmapImporter(QtCore.QThread):
     tick = QtCore.pyqtSignal(int, name="changed")                       # New style signal
     done = QtCore.pyqtSignal(name="done")                               # New style signal
@@ -643,7 +477,7 @@ class NmapImporter(QtCore.QThread):
     def setOutput(self, output):
         self.output = output
 
-    def run(self):                                                      # it is necessary to get the qprocess because we need to send it back to the scheduler when we're done importing
+    def run(self):  # it is necessary to get the qprocess because we need to send it back to the scheduler when we're done importing
         try:
             self.importProgressWidget.show()
             session = self.db.session()
