@@ -28,18 +28,17 @@ def build_mock_process(status: str, display: str) -> MagicMock:
 
 
 class LogicTest(unittest.TestCase):
-    def setUp(self) -> None:
+    @patch('utilities.stenoLogging.get_logger')
+    def setUp(self, get_logger) -> None:
         self.shell = MagicMock()
         self.mock_db_session = MagicMock()
 
-    @patch('utilities.stenoLogging.get_logger')
-    def test_init_ShouldLoadInitialVariablesSuccessfully(self, get_logger):
-        get_logger.return_value = MagicMock()
+    def test_init_ShouldLoadInitialVariablesSuccessfully(self):
         from app.logic import Logic
 
         self.shell.get_current_working_directory.return_value = "./some/path/"
         self.shell.create_temporary_directory.side_effect = ["./output/folder", "./running/folder"]
-        logic = Logic(self.shell)
+        logic = Logic("test-session", self.mock_db_session, self.shell)
 
         self.assertEqual("./some/path/", logic.cwd)
         self.assertTrue(logic.istemp)
@@ -50,12 +49,10 @@ class LogicTest(unittest.TestCase):
             mock.call("./running/folder/dnsmap"),
         ])
 
-    @patch('utilities.stenoLogging.get_logger')
     def test_removeTemporaryFiles_whenProjectIsNotTemporaryAndNotStoringWordlists_shouldRemoveWordListsAndRunningFolder(
-            self, get_logger):
-        get_logger.return_value = MagicMock()
+            self):
         from app.logic import Logic
-        logic = Logic(self.shell)
+        logic = Logic("test-session", self.mock_db_session, self.shell)
         logic.setStoreWordlistsOnExit(False)
         logic.istemp = False
         logic.runningfolder = "./running/folder"
@@ -68,12 +65,10 @@ class LogicTest(unittest.TestCase):
         self.shell.remove_file.assert_has_calls([mock.call("UsernamesList.txt"), mock.call("PasswordsList.txt")])
         self.shell.remove_directory.assert_called_once_with("./running/folder")
 
-    @patch('utilities.stenoLogging.get_logger')
     def test_removeTemporaryFiles_whenProjectIsTemporary_shouldRemoveProjectAndOutputFolderAndRunningFolder(
-            self, get_logger):
-        get_logger.return_value = MagicMock()
+            self):
         from app.logic import Logic
-        logic = Logic(self.shell)
+        logic = Logic("test-session", self.mock_db_session, self.shell)
         logic.istemp = True
         logic.projectname = "project-name"
         logic.runningfolder = "./running/folder"
@@ -83,12 +78,10 @@ class LogicTest(unittest.TestCase):
         self.shell.remove_file.assert_called_once_with("project-name")
         self.shell.remove_directory.assert_has_calls([mock.call("./output/folder"), mock.call("./running/folder")])
 
-    @patch('utilities.stenoLogging.get_logger')
     def test_toggleProcessDisplayStatus_whenResetAllIsTrue_setDisplayToFalseForAllProcessesThatAreNotRunning(
-            self, get_logger):
-        get_logger.return_value = MagicMock()
+            self):
         from app.logic import Logic
-        logic = Logic(self.shell)
+        logic = Logic("test-session", self.mock_db_session, self.shell)
 
         process1 = build_mock_process(status="Waiting", display="True")
         process2 = build_mock_process(status="Waiting", display="True")
@@ -109,12 +102,10 @@ class LogicTest(unittest.TestCase):
         ])
         logic.db.commit.assert_called_once()
 
-    @patch('utilities.stenoLogging.get_logger')
     def test_toggleProcessDisplayStatus_whenResetAllIFalse_setDisplayToFalseForAllProcessesThatAreNotRunningOrWaiting(
-            self, get_logger):
-        get_logger.return_value = MagicMock()
+            self):
         from app.logic import Logic
-        logic = Logic(self.shell)
+        logic = Logic("test-session", self.mock_db_session, self.shell)
 
         process1 = build_mock_process(status="Random Status", display="True")
         process2 = build_mock_process(status="Another Random Status", display="True")
