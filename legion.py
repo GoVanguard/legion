@@ -10,7 +10,9 @@ Copyright (c) 2018 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 from app.shell.DefaultShell import DefaultShell
+from db.repositories.ServiceRepository import ServiceRepository
 from ui.eventfilter import MyEventFilter
+from ui.gui import Ui_MainWindow
 from utilities.stenoLogging import *
 log = get_logger('legion', path="./log/legion-startup.log")
 log.setLevel(logging.INFO)
@@ -54,7 +56,6 @@ from controller.controller import *
 
 # Main application declaration and loop
 if __name__ == "__main__":
-
     cprint(figlet_format('LEGION', font='starwars'), 'yellow', 'on_red', attrs=['bold'])
 
     app = QApplication(sys.argv)
@@ -76,7 +77,12 @@ if __name__ == "__main__":
     MainWindow.setStyleSheet(qss_file)
 
     shell = DefaultShell()
-    logic = Logic(shell)                            # Model prep (logic, db and models)
+    tf = shell.create_named_temporary_file(suffix=".legion",
+                                           prefix="legion-",
+                                           directory="./tmp/",
+                                           delete_on_close=False)  # to store the db file
+    db = Database(tf.name)
+    logic = Logic(project_name=tf.name, db=db, shell=shell)   # Model prep (logic, db and models)
     view = View(ui, MainWindow)                     # View prep (gui)
     controller = Controller(view, logic)            # Controller prep (communication between model and view)
     view.qss = qss_file
