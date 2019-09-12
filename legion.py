@@ -9,6 +9,7 @@ Copyright (c) 2018 GoVanguard
 
     You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
+from app.shell.DefaultShell import DefaultShell
 from ui.eventfilter import MyEventFilter
 from utilities.stenoLogging import *
 log = get_logger('legion', path="./log/legion-startup.log")
@@ -74,7 +75,8 @@ if __name__ == "__main__":
 
     MainWindow.setStyleSheet(qss_file)
 
-    logic = Logic()                                 # Model prep (logic, db and models)
+    shell = DefaultShell()
+    logic = Logic(shell)                            # Model prep (logic, db and models)
     view = View(ui, MainWindow)                     # View prep (gui)
     controller = Controller(view, logic)            # Controller prep (communication between model and view)
     view.qss = qss_file
