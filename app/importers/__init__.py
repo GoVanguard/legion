@@ -15,16 +15,3 @@ Copyright (c) 2018 GoVanguard
 
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
-from db.database import Database
-
-
-class CVERepository:
-    def __init__(self, dbAdapter: Database):
-        self.dbAdapter = dbAdapter
-
-    def getCVEsByHostIP(self, hostIP):
-        query = ('SELECT cves.name, cves.severity, cves.product, cves.version, cves.url, cves.source, '
-                 'cves.exploitId, cves.exploit, cves.exploitUrl FROM cve AS cves '
-                 'INNER JOIN hostObj AS hosts ON hosts.id = cves.hostId '
-                 'WHERE hosts.ip = ?')
-        return self.dbAdapter.metadata.bind.execute(query, str(hostIP)).fetchall()

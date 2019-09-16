@@ -15,16 +15,27 @@ Copyright (c) 2018 GoVanguard
 
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
-from db.database import Database
+from db.database import Database, note
+from six import u as unicode
 
 
-class CVERepository:
-    def __init__(self, dbAdapter: Database):
+class NoteRepository:
+    def __init__(self, dbAdapter: Database, log):
         self.dbAdapter = dbAdapter
+        self.log = log
 
-    def getCVEsByHostIP(self, hostIP):
-        query = ('SELECT cves.name, cves.severity, cves.product, cves.version, cves.url, cves.source, '
-                 'cves.exploitId, cves.exploit, cves.exploitUrl FROM cve AS cves '
-                 'INNER JOIN hostObj AS hosts ON hosts.id = cves.hostId '
-                 'WHERE hosts.ip = ?')
-        return self.dbAdapter.metadata.bind.execute(query, str(hostIP)).fetchall()
+    def getNoteByHostId(self, hostId):
+        return self.dbAdapter.session().query(note).filter_by(hostId=str(hostId)).first()
+
+    def storeNotes(self, hostId, notes):
+        if len(notes) == 0:
+            notes = unicode("".format(hostId=hostId))
+        self.log.debug("Storing notes for {hostId}, Notes {notes}".format(hostId=hostId, notes=notes))
+        t_note = self.getNoteByHostId(hostId)
+        if t_note:
+            t_note.text = unicode(notes)
+        else:
+            t_note = note(hostId, unicode(notes))
+        session = self.dbAdapter.session()
+        session.add(t_note)
+        self.dbAdapter.commit()

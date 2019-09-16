@@ -124,3 +124,5 @@ scripts/CloudFail
 docker/runLocal.sh
 docker/cleanupUntagged.sh
 docker/cleanupExited.sh
+
+log/*.log
