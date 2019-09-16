@@ -18,13 +18,17 @@ Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 from db.database import Database
 
 
-class CVERepository:
+class ScriptRepository:
     def __init__(self, dbAdapter: Database):
         self.dbAdapter = dbAdapter
 
-    def getCVEsByHostIP(self, hostIP):
-        query = ('SELECT cves.name, cves.severity, cves.product, cves.version, cves.url, cves.source, '
-                 'cves.exploitId, cves.exploit, cves.exploitUrl FROM cve AS cves '
-                 'INNER JOIN hostObj AS hosts ON hosts.id = cves.hostId '
-                 'WHERE hosts.ip = ?')
+    def getScriptsByHostIP(self, hostIP):
+        query = ("SELECT host.id, host.scriptId, port.portId, port.protocol FROM l1ScriptObj AS host "
+                 "INNER JOIN hostObj AS hosts ON hosts.id = host.hostId "
+                 "LEFT OUTER JOIN portObj AS port ON port.id = host.portId WHERE hosts.ip=?")
+
         return self.dbAdapter.metadata.bind.execute(query, str(hostIP)).fetchall()
+
+    def getScriptOutputById(self, scriptDBId):
+        query = "SELECT script.output FROM l1ScriptObj as script WHERE script.id = ?"
+        return self.dbAdapter.metadata.bind.execute(query, str(scriptDBId)).fetchall()
