@@ -20,13 +20,6 @@ from unittest import mock
 from unittest.mock import MagicMock, patch
 
 
-def build_mock_process(status: str, display: str) -> MagicMock:
-    process = MagicMock()
-    process.status = status
-    process.display = display
-    return process
-
-
 class LogicTest(unittest.TestCase):
     @patch('utilities.stenoLogging.get_logger')
     def setUp(self, get_logger) -> None:
@@ -77,53 +70,3 @@ class LogicTest(unittest.TestCase):
 
         self.shell.remove_file.assert_called_once_with("project-name")
         self.shell.remove_directory.assert_has_calls([mock.call("./output/folder"), mock.call("./running/folder")])
-
-    def test_toggleProcessDisplayStatus_whenResetAllIsTrue_setDisplayToFalseForAllProcessesThatAreNotRunning(
-            self):
-        from app.logic import Logic
-        logic = Logic("test-session", self.mock_db_session, self.shell)
-
-        process1 = build_mock_process(status="Waiting", display="True")
-        process2 = build_mock_process(status="Waiting", display="True")
-        logic.db = MagicMock()
-        logic.db.session.return_value = self.mock_db_session
-        mock_query_response = MagicMock()
-        mock_filtered_response = MagicMock()
-        mock_filtered_response.all.return_value = [process1, process2]
-        mock_query_response.filter_by.return_value = mock_filtered_response
-        self.mock_db_session.query.return_value = mock_query_response
-        logic.toggleProcessDisplayStatus(resetAll=True)
-
-        self.assertEqual("False", process1.display)
-        self.assertEqual("False", process2.display)
-        self.mock_db_session.add.assert_has_calls([
-            mock.call(process1),
-            mock.call(process2),
-        ])
-        logic.db.commit.assert_called_once()
-
-    def test_toggleProcessDisplayStatus_whenResetAllIFalse_setDisplayToFalseForAllProcessesThatAreNotRunningOrWaiting(
-            self):
-        from app.logic import Logic
-        logic = Logic("test-session", self.mock_db_session, self.shell)
-
-        process1 = build_mock_process(status="Random Status", display="True")
-        process2 = build_mock_process(status="Another Random Status", display="True")
-        process3 = build_mock_process(status="Running", display="True")
-        logic.db = MagicMock()
-        logic.db.session.return_value = self.mock_db_session
-        mock_query_response = MagicMock()
-        mock_filtered_response = MagicMock()
-        mock_filtered_response.all.return_value = [process1, process2]
-        mock_query_response.filter_by.return_value = mock_filtered_response
-        self.mock_db_session.query.return_value = mock_query_response
-        logic.toggleProcessDisplayStatus()
-
-        self.assertEqual("False", process1.display)
-        self.assertEqual("False", process2.display)
-        self.assertEqual("True", process3.display)
-        self.mock_db_session.add.assert_has_calls([
-            mock.call(process1),
-            mock.call(process2),
-        ])
-        logic.db.commit.assert_called_once()
