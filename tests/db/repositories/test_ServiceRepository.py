@@ -18,63 +18,58 @@ Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 import unittest
 from unittest.mock import MagicMock, patch
 
-from tests.db.helpers.db_helpers import mock_execute_fetchall, mock_first_by_return_value, mock_query_with_filter_by
+from tests.db.helpers.db_helpers import mockExecuteFetchAll, mockFirstByReturnValue, mockQueryWithFilterBy
 
 
 class ServiceRepositoryTest(unittest.TestCase):
     @patch('utilities.stenoLogging.get_logger')
     def setUp(self, get_logger) -> None:
-        self.mock_db_adapter = MagicMock()
-
-    def get_service_names_test_case(self, filters, expected_query):
         from db.repositories.ServiceRepository import ServiceRepository
+        self.mockDbAdapter = MagicMock()
+        self.repository = ServiceRepository(self.mockDbAdapter)
 
-        repository = ServiceRepository(self.mock_db_adapter)
-
-        self.mock_db_adapter.metadata.bind.execute.return_value = mock_execute_fetchall(
+    def getServiceNamesTestCase(self, filters, expectedQuery):
+        self.mockDbAdapter.metadata.bind.execute.return_value = mockExecuteFetchAll(
             [{'name': 'service_name1'}, {'name': 'service_name2'}])
-        service_names = repository.get_service_names(filters)
+        service_names = self.repository.getServiceNames(filters)
 
-        self.mock_db_adapter.metadata.bind.execute.assert_called_once_with(expected_query)
+        self.mockDbAdapter.metadata.bind.execute.assert_called_once_with(expectedQuery)
         self.assertEqual([{'name': 'service_name1'}, {'name': 'service_name2'}], service_names)
 
-    def test_get_service_names_InvokedWithNoFilters_FetchesAllServiceNames(self):
+    def test_getServiceNames_InvokedWithNoFilters_FetchesAllServiceNames(self):
         from app.auxiliary import Filters
 
-        expected_query = query = ("SELECT DISTINCT service.name FROM serviceObj as service "
-                                  "INNER JOIN portObj as ports "
-                                  "INNER JOIN hostObj AS hosts "
-                                  "ON hosts.id = ports.hostId AND service.id=ports.serviceId WHERE 1=1 "
-                                  "ORDER BY service.name ASC")
+        expectedQuery = query = ("SELECT DISTINCT service.name FROM serviceObj as service "
+                                 "INNER JOIN portObj as ports "
+                                 "INNER JOIN hostObj AS hosts "
+                                 "ON hosts.id = ports.hostId AND service.id=ports.serviceId WHERE 1=1 "
+                                 "ORDER BY service.name ASC")
         filters: Filters = Filters()
         filters.apply(up=True, down=True, checked=True, portopen=True, portfiltered=True, portclosed=True,
                       tcp=True, udp=True)
-        self.get_service_names_test_case(filters=filters, expected_query=expected_query)
+        self.getServiceNamesTestCase(filters=filters, expectedQuery=expectedQuery)
 
-    def test_get_service_names_InvokedWithFewFilters_FetchesAllServiceNamesWithFiltersApplied(self):
+    def test_getServiceNames_InvokedWithFewFilters_FetchesAllServiceNamesWithFiltersApplied(self):
         from app.auxiliary import Filters
 
-        expected_query = ("SELECT DISTINCT service.name FROM serviceObj as service "
-                          "INNER JOIN portObj as ports "
-                          "INNER JOIN hostObj AS hosts "
-                          "ON hosts.id = ports.hostId AND service.id=ports.serviceId WHERE 1=1 "
-                          "AND hosts.status != 'down' AND ports.protocol != 'udp' "
-                          "ORDER BY service.name ASC")
+        expectedQuery = ("SELECT DISTINCT service.name FROM serviceObj as service "
+                         "INNER JOIN portObj as ports "
+                         "INNER JOIN hostObj AS hosts "
+                         "ON hosts.id = ports.hostId AND service.id=ports.serviceId WHERE 1=1 "
+                         "AND hosts.status != 'down' AND ports.protocol != 'udp' "
+                         "ORDER BY service.name ASC")
         filters: Filters = Filters()
         filters.apply(up=True, down=False, checked=True, portopen=True, portfiltered=True, portclosed=True,
                       tcp=True, udp=False)
-        self.get_service_names_test_case(filters=filters, expected_query=expected_query)
+        self.getServiceNamesTestCase(filters=filters, expectedQuery=expectedQuery)
 
-    def test_get_service_names_by_host_ip_and_port_WhenProvidedWithHostIpAndPort_ReturnsServiceNames(self):
-        from db.repositories.ServiceRepository import ServiceRepository
-        self.mock_db_adapter.metadata.bind.execute.return_value = mock_first_by_return_value(
+    def test_getServiceNamesByHostIPAndPort_WhenProvidedWithHostIpAndPort_ReturnsServiceNames(self):
+        self.mockDbAdapter.metadata.bind.execute.return_value = mockFirstByReturnValue(
             [['service-name1'], ['service-name2']])
-
-        expected_query = ("SELECT services.name FROM serviceObj AS services "
-                          "INNER JOIN hostObj AS hosts ON hosts.id = ports.hostId "
-                          "INNER JOIN portObj AS ports ON services.id=ports.serviceId "
-                          "WHERE hosts.ip=? and ports.portId = ?")
-        service_repository = ServiceRepository(self.mock_db_adapter)
-        result = service_repository.get_service_names_by_host_ip_and_port("some_host", "1234")
+        expectedQuery = ("SELECT services.name FROM serviceObj AS services "
+                         "INNER JOIN hostObj AS hosts ON hosts.id = ports.hostId "
+                         "INNER JOIN portObj AS ports ON services.id=ports.serviceId "
+                         "WHERE hosts.ip=? and ports.portId = ?")
+        result = self.repository.getServiceNamesByHostIPAndPort("some_host", "1234")
         self.assertEqual([['service-name1'], ['service-name2']], result)
-        self.mock_db_adapter.metadata.bind.execute.assert_called_once_with(expected_query, "some_host", "1234")
+        self.mockDbAdapter.metadata.bind.execute.assert_called_once_with(expectedQuery, "some_host", "1234")

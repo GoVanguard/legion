@@ -17,23 +17,23 @@ Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
 from app.auxiliary import sanitise, Filters
 from db.database import hostObj
-from db.filters import apply_filters
+from db.filters import applyFilters
 
 
 class ServiceRepository:
     def __init__(self, db_adapter):
         self.db_adapter = db_adapter
 
-    def get_service_names(self, filters: Filters):
+    def getServiceNames(self, filters: Filters):
         query = ("SELECT DISTINCT service.name FROM serviceObj as service "
                  "INNER JOIN portObj as ports "
                  "INNER JOIN hostObj AS hosts "
                  "ON hosts.id = ports.hostId AND service.id=ports.serviceId WHERE 1=1")
-        query += apply_filters(filters)
+        query += applyFilters(filters)
         query += ' ORDER BY service.name ASC'
         return self.db_adapter.metadata.bind.execute(query).fetchall()
 
-    def get_service_names_by_host_ip_and_port(self, host_ip, port):
+    def getServiceNamesByHostIPAndPort(self, host_ip, port):
         query = ("SELECT services.name FROM serviceObj AS services "
                  "INNER JOIN hostObj AS hosts ON hosts.id = ports.hostId "
                  "INNER JOIN portObj AS ports ON services.id=ports.serviceId "

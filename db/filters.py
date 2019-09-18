@@ -18,14 +18,14 @@ Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 from app.auxiliary import sanitise
 
 
-def apply_filters(filters):
+def applyFilters(filters):
     query_filter = ""
-    query_filter += apply_hosts_filters(filters)
-    query_filter += apply_port_filters(filters)
+    query_filter += applyHostsFilters(filters)
+    query_filter += applyPortFilters(filters)
     return query_filter
 
 
-def apply_hosts_filters(filters):
+def applyHostsFilters(filters):
     query_filter = ""
     if not filters.down:
         query_filter += " AND hosts.status != 'down'"
@@ -40,7 +40,7 @@ def apply_hosts_filters(filters):
     return query_filter
 
 
-def apply_port_filters(filters):
+def applyPortFilters(filters):
     query_filter = ""
     if not filters.portopen:
         query_filter += " AND ports.state != 'open' AND ports.state != 'open|filtered'"

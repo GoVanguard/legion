@@ -18,7 +18,7 @@ Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 import unittest
 from unittest.mock import patch, MagicMock
 
-from tests.db.helpers.db_helpers import mock_execute_fetchall
+from tests.db.helpers.db_helpers import mockExecuteFetchAll
 
 
 class CVERepositoryTest(unittest.TestCase):
@@ -26,16 +26,14 @@ class CVERepositoryTest(unittest.TestCase):
     def setUp(self, get_logger) -> None:
         self.mock_db_adapter = MagicMock()
 
-    def test_get_cves_by_host_ip_WhenProvidedAHostIp_ReturnsCVEs(self):
+    def test_getCVEsByHostIP_WhenProvidedAHostIp_ReturnsCVEs(self):
         from db.repositories.CVERepository import CVERepository
-        self.mock_db_adapter.metadata.bind.execute.return_value = mock_execute_fetchall([['cve1'], ['cve2']])
-        expected_query = (
-            'SELECT cves.name, cves.severity, cves.product, cves.version, cves.url, cves.source, '
-            'cves.exploitId, cves.exploit, cves.exploitUrl FROM cve AS cves '
-            'INNER JOIN hostObj AS hosts ON hosts.id = cves.hostId '
-            'WHERE hosts.ip = ?'
-        )
-        cve_repository = CVERepository(self.mock_db_adapter)
-        result = cve_repository.get_cves_by_host_ip("some_host")
+        self.mock_db_adapter.metadata.bind.execute.return_value = mockExecuteFetchAll([['cve1'], ['cve2']])
+        expected_query = ("SELECT cves.name, cves.severity, cves.product, cves.version, cves.url, cves.source, "
+                          "cves.exploitId, cves.exploit, cves.exploitUrl FROM cve AS cves "
+                          "INNER JOIN hostObj AS hosts ON hosts.id = cves.hostId "
+                          "WHERE hosts.ip = ?")
+        cveRepository = CVERepository(self.mock_db_adapter)
+        result = cveRepository.getCVEsByHostIP("some_host")
         self.assertEqual([['cve1'], ['cve2']], result)
         self.mock_db_adapter.metadata.bind.execute.assert_called_once_with(expected_query, "some_host")
