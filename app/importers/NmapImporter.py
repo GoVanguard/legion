@@ -19,7 +19,8 @@ import sys
 
 from PyQt5 import QtCore
 
-from db.database import nmapSessionObj, hostObj, note, osObj, serviceObj, portObj, l1ScriptObj
+from db.database import hostObj, note, osObj, serviceObj, portObj, l1ScriptObj
+from db.entities.nmapSession import nmapSessionObj
 from parsers.Parser import Parser
 from ui.ancillaryDialog import ProgressWidget, time
 
