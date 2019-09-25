@@ -10,7 +10,6 @@ Copyright (c) 2018 GoVanguard
 
     You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-
 from utilities.stenoLogging import *
 log = get_logger('legion', path="./log/legion-db.log", console=False)
 log.setLevel(logging.INFO)
@@ -20,7 +19,7 @@ import time
 from random import randint
 
 from sqlalchemy import Column, String, Integer, ForeignKey, create_engine
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -28,70 +27,6 @@ from six import u as unicode
  
 Base = declarative_base()
 
-
-class osObj(Base):
-    __tablename__ = 'osObj'
-    id = Column(Integer, primary_key = True)
-    name = Column(String)
-    family = Column(String)
-    generation = Column(String)
-    osType = Column(String)
-    vendor = Column(String)
-    accuracy = Column(String)
-    hostId = Column(String, ForeignKey('hostObj.id'))
-
-    def __init__(self, name, *args):
-        self.name = name
-        self.family = args[0]
-        self.generation = args[1]
-        self.osType = args[2]
-        self.vendor = args[3]
-        self.accuracy = args[4]
-        self.hostId = args[5]
-
-class portObj(Base):
-    __tablename__ = 'portObj'
-    portId = Column(String)
-    id = Column(Integer, primary_key = True)
-    protocol = Column(String)
-    state = Column(String)
-    hostId = Column(String, ForeignKey('hostObj.id'))
-    serviceId = Column(String, ForeignKey('serviceObj.id'))
-    scriptId = Column(String, ForeignKey('l1ScriptObj.id'))
-
-    def __init__(self, portId, protocol, state, host, service = ''):
-        self.portId = portId
-        self.protocol = protocol
-        self.state = state
-        self.serviceId = service
-        self.hostId = host
-
-class cve(Base):
-    __tablename__ = 'cve'
-    name = Column(String)
-    id = Column(Integer, primary_key = True)
-    url = Column(String)
-    product = Column(String)
-    severity = Column(String)
-    source = Column(String)
-    version = Column(String)
-    exploitId = Column(Integer)
-    exploit = Column(String)
-    exploitUrl = Column(String)
-    serviceId = Column(String, ForeignKey('serviceObj.id'))
-    hostId = Column(String, ForeignKey('hostObj.id'))
-
-    def __init__(self, name, url, product, hostId, severity = '', source = '', version = '', exploitId = 0, exploit = '', exploitUrl = ''):
-        self.url = url
-        self.name = name
-        self.product = product
-        self.severity = severity
-        self.source = source
-        self.version = version
-        self.exploitId = exploitId
-        self.exploit = exploit
-        self.exploitUrl = exploitUrl
-        self.hostId = hostId
 
 class appObj(Base):
     __tablename__ = 'appObj'
@@ -111,25 +46,6 @@ class appObj(Base):
         self.extrainfo = extrainfo
         self.fingerprint = fingerprint
         self.cpe = cpe
-
-class serviceObj(Base):
-    __tablename__ = 'serviceObj'
-    name = Column(String)
-    id = Column(Integer, primary_key = True)
-    product = Column(String)
-    version = Column(String)
-    extrainfo = Column(String)
-    fingerprint = Column(String)
-    port = relationship(portObj)
-    cves = relationship(cve)
-    application = relationship(appObj)
-
-    def __init__(self, name = '', product = '', version = '', extrainfo = '', fingerprint = ''):
-        self.name = name
-        self.product = product
-        self.version = version
-        self.extrainfo = extrainfo
-        self.fingerprint = fingerprint
 
 class l1ScriptObj(Base):
     __tablename__ = 'l1ScriptObj'
@@ -158,80 +74,6 @@ class l2ScriptObj(Base):
         self.output = unicode(output)
         self.portId = portId
         self.hostId = hostId
-
-
-class hostObj(Base):
-    __tablename__ = 'hostObj'
-    # State
-    state = Column(String)
-    count = Column(String)
-    checked = Column(String)
-
-    # OS
-    osMatch = Column(String)
-    osAccuracy = Column(String)
-    vendor = Column(String)
-    uptime = Column(String)
-    lastboot = Column(String)
-
-    # Network
-    isp = Column(String)
-    asn = Column(String)
-    ip = Column(String)
-    ipv4 = Column(String)
-    ipv6 = Column(String)
-    macaddr = Column(String)
-    status = Column(String)
-    hostname = Column(String)
-
-    # ID
-    hostId = Column(String)
-    id = Column(Integer, primary_key = True)
-    count = Column(String)
-
-    # Location
-    city = Column(String)
-    countryCode = Column(String)
-    postalCode = Column(String)
-    longitude = Column(String)
-    latitude = Column(String)
-    distance = Column(String)
-
-    # Network
-    isp = Column(String)
-    asn = Column(String)
-
-    # host relationships
-    os = relationship(osObj)
-    ports = relationship(portObj)
-    cves = relationship(cve)
-
-    def __init__(self, **kwargs):
-        self.checked = kwargs.get('checked') or 'False'
-        self.osMatch = kwargs.get('osMatch') or 'unknown'
-        self.osAccuracy = kwargs.get('osAccuracy') or 'NaN'
-        self.ip = kwargs.get('ip') or 'unknown'
-        self.ipv4 = kwargs.get('ipv4') or 'unknown'
-        self.ipv6 = kwargs.get('ipv6') or 'unknown'
-        self.macaddr = kwargs.get('macaddr') or 'unknown'
-        self.status = kwargs.get('status') or 'unknown'
-        self.hostname = kwargs.get('hostname') or 'unknown'
-        self.hostId = kwargs.get('hostname') or 'unknown'
-        self.vendor = kwargs.get('vendor') or 'unknown'
-        self.uptime = kwargs.get('uptime') or 'unknown'
-        self.lastboot = kwargs.get('lastboot') or 'unknown'
-        self.distance = kwargs.get('distance') or 'unknown'
-        self.state = kwargs.get('state') or 'unknown'
-        self.count = kwargs.get('count') or 'unknown'
-        self.city = kwargs.get('city') or 'unknown'
-        self.countryCode = kwargs.get('countryCode') or 'unknown'
-        self.postalCode = kwargs.get('postalCode') or 'unknown'
-        self.longitude = kwargs.get('longitude') or 'unknown'
-        self.latitude = kwargs.get('latitude') or 'unknown'
-        self.isp = kwargs.get('isp') or 'unknown'
-        self.asn = kwargs.get('asn') or 'unknown'
-
-
 
 class note(Base):
     __tablename__ = 'note'
