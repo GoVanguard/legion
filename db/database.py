@@ -66,15 +66,6 @@ class note(Base):
         self.text = unicode(text)
         self.hostId = hostId
 
-class process_output(Base):
-    __tablename__ = 'process_output'
-    processId = Column(Integer, ForeignKey('process.id'))
-    id = Column(Integer, primary_key = True)
-    output = Column(String)
-
-    def __init__(self):
-        self.output = unicode('')
-
 
 class Database:
     def __init__(self, dbfilename):
