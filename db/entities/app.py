@@ -15,30 +15,26 @@ Copyright (c) 2018 GoVanguard
 
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
-from sqlalchemy import String, Column, Integer
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String, ForeignKey, Integer
 
 from db.database import Base
-from db.entities.app import appObj
-from db.entities.cve import cve
-from db.entities.port import portObj
 
 
-class serviceObj(Base):
-    __tablename__ = 'serviceObj'
+class appObj(Base):
+    __tablename__ = 'appObj'
     name = Column(String)
     id = Column(Integer, primary_key=True)
     product = Column(String)
     version = Column(String)
     extrainfo = Column(String)
     fingerprint = Column(String)
-    port = relationship(portObj)
-    cves = relationship(cve)
-    application = relationship(appObj)
+    cpe = Column(String)
+    serviceId = Column(String, ForeignKey('serviceObj.id'))
 
-    def __init__(self, name='', product='', version='', extrainfo='', fingerprint=''):
+    def __init__(self, name='', product='', version='', extrainfo='', fingerprint='', cpe=''):
         self.name = name
         self.product = product
         self.version = version
         self.extrainfo = extrainfo
         self.fingerprint = fingerprint
+        self.cpe = cpe

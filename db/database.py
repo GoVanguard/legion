@@ -28,25 +28,6 @@ from six import u as unicode
 Base = declarative_base()
 
 
-class appObj(Base):
-    __tablename__ = 'appObj'
-    name = Column(String)
-    id = Column(Integer, primary_key = True)
-    product = Column(String)
-    version = Column(String)
-    extrainfo = Column(String)
-    fingerprint = Column(String)
-    cpe = Column(String)
-    serviceId = Column(String, ForeignKey('serviceObj.id'))
-
-    def __init__(self, name = '', product = '', version = '', extrainfo = '', fingerprint = '', cpe = ''):
-        self.name = name
-        self.product = product
-        self.version = version
-        self.extrainfo = extrainfo
-        self.fingerprint = fingerprint
-        self.cpe = cpe
-
 class l1ScriptObj(Base):
     __tablename__ = 'l1ScriptObj'
     scriptId = Column(String)
