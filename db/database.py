@@ -11,6 +11,7 @@ Copyright (c) 2018 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 from utilities.stenoLogging import *
+
 log = get_logger('legion', path="./log/legion-db.log", console=False)
 log.setLevel(logging.INFO)
 
@@ -18,53 +19,23 @@ from PyQt5.QtCore import QSemaphore
 import time
 from random import randint
 
-from sqlalchemy import Column, String, Integer, ForeignKey, create_engine
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
-from six import u as unicode
- 
 Base = declarative_base()
-
-
-class l1ScriptObj(Base):
-    __tablename__ = 'l1ScriptObj'
-    scriptId = Column(String)
-    id = Column(Integer, primary_key = True)
-    output = Column(String)
-    portId = Column(String, ForeignKey('portObj.id'))
-    hostId = Column(String, ForeignKey('hostObj.id'))
-
-    def __init__(self, scriptId, output, portId, hostId):
-        self.scriptId = scriptId
-        self.output = unicode(output)
-        self.portId = portId
-        self.hostId = hostId
-
-class l2ScriptObj(Base):
-    __tablename__ = 'l2ScriptObj'
-    scriptId = Column(String)
-    id = Column(Integer, primary_key = True)
-    output = Column(String)
-    portId = Column(String, ForeignKey('portObj.id'))
-    hostId = Column(String, ForeignKey('hostObj.id'))
-
-    def __init__(self, scriptId, output, portId, hostId):
-        self.scriptId = scriptId
-        self.output = unicode(output)
-        self.portId = portId
-        self.hostId = hostId
 
 
 class Database:
     def __init__(self, dbfilename):
         try:
             self.name = dbfilename
-            self.dbsemaphore = QSemaphore(1)                            # to control concurrent write access to db
-            self.engine = create_engine('sqlite:///{dbFileName}'.format(dbFileName = dbfilename)) #, poolclass=SingletonThreadPool)
+            self.dbsemaphore = QSemaphore(1)  # to control concurrent write access to db
+            self.engine = create_engine(
+                'sqlite:///{dbFileName}'.format(dbFileName=dbfilename))  # , poolclass=SingletonThreadPool)
             self.session = scoped_session(sessionmaker())
-            self.session.configure(bind = self.engine, autoflush=False)
+            self.session.configure(bind=self.engine, autoflush=False)
             self.metadata = Base.metadata
             self.metadata.create_all(self.engine)
             self.metadata.echo = True
@@ -76,10 +47,11 @@ class Database:
     def openDB(self, dbfilename):
         try:
             self.name = dbfilename
-            self.dbsemaphore = QSemaphore(1)                            # to control concurrent write access to db
-            self.engine = create_engine('sqlite:///{dbFileName}'.format(dbFileName = dbfilename)) #, poolclass=SingletonThreadPool)
+            self.dbsemaphore = QSemaphore(1)  # to control concurrent write access to db
+            self.engine = create_engine(
+                'sqlite:///{dbFileName}'.format(dbFileName=dbfilename))  # , poolclass=SingletonThreadPool)
             self.session = scoped_session(sessionmaker())
-            self.session.configure(bind = self.engine, autoflush=False)
+            self.session.configure(bind=self.engine, autoflush=False)
             self.metadata = Base.metadata
             self.metadata.create_all(self.engine)
             self.metadata.echo = True
@@ -92,7 +64,7 @@ class Database:
         log.info("DB lock acquired")
         try:
             session = self.session()
-            rnd = float(randint(1,99)) / 100.00
+            rnd = float(randint(1, 99)) / 100.00
             log.info("Waiting {0}s before commit...".format(str(rnd)))
             time.sleep(rnd)
             session.commit()
@@ -100,7 +72,7 @@ class Database:
             log.error("DB Commit issue")
             log.error(str(e))
             try:
-                rnd = float(randint(1,99)) / 100.00
+                rnd = float(randint(1, 99)) / 100.00
                 time.sleep(rnd)
                 log.info("Waiting {0}s before commit...".format(str(rnd)))
                 session.commit()
