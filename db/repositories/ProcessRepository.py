@@ -18,7 +18,8 @@ Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 from app.auxiliary import getTimestamp
 from six import u as unicode
 
-from db.database import process, process_output, Database
+from db.database import process_output, Database
+from db.entities.process import process
 
 
 class ProcessRepository:
