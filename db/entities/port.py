@@ -15,20 +15,24 @@ Copyright (c) 2018 GoVanguard
 
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
-from db.database import Database
+from sqlalchemy import Integer, Column, String, ForeignKey
+
+from db.database import Base
 
 
-class ScriptRepository:
-    def __init__(self, dbAdapter: Database):
-        self.dbAdapter = dbAdapter
+class portObj(Base):
+    __tablename__ = 'portObj'
+    portId = Column(String)
+    id = Column(Integer, primary_key=True)
+    protocol = Column(String)
+    state = Column(String)
+    hostId = Column(String, ForeignKey('hostObj.id'))
+    serviceId = Column(String, ForeignKey('serviceObj.id'))
+    scriptId = Column(String, ForeignKey('l1ScriptObj.id'))
 
-    def getScriptsByHostIP(self, hostIP):
-        query = ("SELECT host.id, host.scriptId, port.portId, port.protocol FROM l1ScriptObj AS host "
-                 "INNER JOIN hostObj AS hosts ON hosts.id = host.hostId "
-                 "LEFT OUTER JOIN portObj AS port ON port.id = host.portId WHERE hosts.ip=?")
-
-        return self.dbAdapter.metadata.bind.execute(query, str(hostIP)).fetchall()
-
-    def getScriptOutputById(self, scriptDBId):
-        query = "SELECT script.output FROM l1ScriptObj as script WHERE script.id = ?"
-        return self.dbAdapter.metadata.bind.execute(query, str(scriptDBId)).fetchall()
+    def __init__(self, portId, protocol, state, host, service=''):
+        self.portId = portId
+        self.protocol = protocol
+        self.state = state
+        self.serviceId = service
+        self.hostId = host

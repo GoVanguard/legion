@@ -18,7 +18,7 @@ Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 import unittest
 from unittest.mock import MagicMock, patch
 
-from tests.db.helpers.db_helpers import mockExecuteFetchAll, mockFirstByReturnValue, mockQueryWithFilterBy
+from tests.db.helpers.db_helpers import mockExecuteFetchAll, mockFirstByReturnValue
 
 
 class ServiceRepositoryTest(unittest.TestCase):
@@ -39,11 +39,11 @@ class ServiceRepositoryTest(unittest.TestCase):
     def test_getServiceNames_InvokedWithNoFilters_FetchesAllServiceNames(self):
         from app.auxiliary import Filters
 
-        expectedQuery = query = ("SELECT DISTINCT service.name FROM serviceObj as service "
-                                 "INNER JOIN portObj as ports "
-                                 "INNER JOIN hostObj AS hosts "
-                                 "ON hosts.id = ports.hostId AND service.id=ports.serviceId WHERE 1=1 "
-                                 "ORDER BY service.name ASC")
+        expectedQuery = ("SELECT DISTINCT service.name FROM serviceObj as service "
+                         "INNER JOIN portObj as ports "
+                         "INNER JOIN hostObj AS hosts "
+                         "ON hosts.id = ports.hostId AND service.id=ports.serviceId WHERE 1=1 "
+                         "ORDER BY service.name ASC")
         filters: Filters = Filters()
         filters.apply(up=True, down=True, checked=True, portopen=True, portfiltered=True, portclosed=True,
                       tcp=True, udp=True)
