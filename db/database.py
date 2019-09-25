@@ -56,16 +56,6 @@ class l2ScriptObj(Base):
         self.portId = portId
         self.hostId = hostId
 
-class note(Base):
-    __tablename__ = 'note'
-    hostId = Column(Integer, ForeignKey('hostObj.id'))
-    id = Column(Integer, primary_key = True)
-    text = Column(String)
-
-    def __init__(self, hostId, text):
-        self.text = unicode(text)
-        self.hostId = hostId
-
 
 class Database:
     def __init__(self, dbfilename):
