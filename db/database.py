@@ -1,15 +1,19 @@
-#!/usr/bin/env python
-
-'''
+"""
 LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+    You should have received a copy of the GNU General Public License along with this program.
+    If not, see <http://www.gnu.org/licenses/>.
+
+"""
 from utilities.stenoLogging import *
 
 log = get_logger('legion', path="./log/legion-db.log", console=False)
@@ -30,34 +34,28 @@ Base = declarative_base()
 class Database:
     def __init__(self, dbfilename):
         try:
-            self.name = dbfilename
-            self.dbsemaphore = QSemaphore(1)  # to control concurrent write access to db
-            self.engine = create_engine(
-                'sqlite:///{dbFileName}'.format(dbFileName=dbfilename))  # , poolclass=SingletonThreadPool)
-            self.session = scoped_session(sessionmaker())
-            self.session.configure(bind=self.engine, autoflush=False)
-            self.metadata = Base.metadata
-            self.metadata.create_all(self.engine)
-            self.metadata.echo = True
-            self.metadata.bind = self.engine
+            self.establishSqliteConnection(dbfilename)
         except Exception as e:
             log.info('Could not create database. Please try again.')
             log.info(e)
 
     def openDB(self, dbfilename):
         try:
-            self.name = dbfilename
-            self.dbsemaphore = QSemaphore(1)  # to control concurrent write access to db
-            self.engine = create_engine(
-                'sqlite:///{dbFileName}'.format(dbFileName=dbfilename))  # , poolclass=SingletonThreadPool)
-            self.session = scoped_session(sessionmaker())
-            self.session.configure(bind=self.engine, autoflush=False)
-            self.metadata = Base.metadata
-            self.metadata.create_all(self.engine)
-            self.metadata.echo = True
-            self.metadata.bind = self.engine
+            self.establishSqliteConnection(dbfilename)
         except:
             log.info('Could not open database file. Is the file corrupted?')
+
+    def establishSqliteConnection(self, dbFileName: str):
+        self.name = dbFileName
+        self.dbsemaphore = QSemaphore(1)  # to control concurrent write access to db
+        self.engine = create_engine(
+            'sqlite:///{dbFileName}'.format(dbFileName=dbFileName))
+        self.session = scoped_session(sessionmaker())
+        self.session.configure(bind=self.engine, autoflush=False)
+        self.metadata = Base.metadata
+        self.metadata.create_all(self.engine)
+        self.metadata.echo = True
+        self.metadata.bind = self.engine
 
     def commit(self):
         self.dbsemaphore.acquire()
