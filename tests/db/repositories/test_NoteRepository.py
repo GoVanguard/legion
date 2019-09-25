@@ -25,7 +25,7 @@ from tests.db.helpers.db_helpers import mockQueryWithFilterBy, mockFirstByReturn
 class NoteRepositoryTest(unittest.TestCase):
     @patch('utilities.stenoLogging.get_logger')
     def setUp(self, get_logger) -> None:
-        from db.database import note
+        from db.entities.note import note
         self.mockDbAdapter = MagicMock()
         self.mockDbSession = MagicMock()
         self.someNote: note = MagicMock()

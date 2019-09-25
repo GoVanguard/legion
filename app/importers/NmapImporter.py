@@ -19,9 +19,10 @@ import sys
 
 from PyQt5 import QtCore
 
-from db.database import note, l1ScriptObj
+from db.database import l1ScriptObj
 from db.entities.host import hostObj
 from db.entities.nmapSession import nmapSessionObj
+from db.entities.note import note
 from db.entities.os import osObj
 from db.entities.port import portObj
 from db.entities.service import serviceObj
