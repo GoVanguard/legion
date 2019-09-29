@@ -13,3 +13,8 @@ exclude_patterns:
   - "log/"
   - "tmp/"
   - "images/"
+  - "**/__init__.py"
+  - "**/*.conf"
+  - "**/*.sh"
+  - "**/*.qss"
+  - "**/*.txt"
