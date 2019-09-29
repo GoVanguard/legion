@@ -25,3 +25,11 @@ class Shell(ABC):
     @abstractmethod
     def create_named_temporary_file(self, prefix: str, suffix: str, directory: str, delete_on_close: bool):
         pass
+
+    @abstractmethod
+    def isDirectory(self, name: str) -> bool:
+        pass
+
+    @abstractmethod
+    def isFile(self, name: str) -> bool:
+        pass

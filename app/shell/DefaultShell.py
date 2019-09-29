@@ -24,3 +24,9 @@ class DefaultShell(Shell):
 
     def create_named_temporary_file(self, prefix: str, suffix: str, directory: str, delete_on_close: bool):
         return tempfile.NamedTemporaryFile(prefix=prefix, suffix=suffix, dir=directory, delete=delete_on_close)
+
+    def isDirectory(self, name: str) -> bool:
+        return os.path.isdir(name)
+
+    def isFile(self, name: str) -> bool:
+        return os.path.isfile(name)
