@@ -33,7 +33,7 @@ from ui.ancillaryDialog import *
 
 
 class Logic:
-    def __init__(self, project_name: str, db: Database, shell: Shell):
+    def __init__(self, project_name: str, db: Database, shell: Shell, hostRepository: HostRepository):
         self.shell = shell
         self.db = db
         self.cwd = shell.get_current_working_directory()
@@ -42,7 +42,7 @@ class Logic:
         self.createTemporaryFiles()  # creates temporary files/folders used by SPARTA
         self.serviceRepository: ServiceRepository = ServiceRepository(self.db)
         self.processRepository: ProcessRepository = ProcessRepository(self.db, log)
-        self.hostRepository: HostRepository = HostRepository(self.db)
+        self.hostRepository: HostRepository = hostRepository
         self.portRepository: PortRepository = PortRepository(self.db)
         self.cveRepository: CVERepository = CVERepository(self.db)
         self.noteRepository: NoteRepository = NoteRepository(self.db, log)

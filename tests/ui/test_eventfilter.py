@@ -19,7 +19,7 @@ import unittest
 from unittest import mock
 from unittest.mock import MagicMock, Mock, patch
 
-from PyQt5.QtCore import QEvent, Qt, QObject, QVariant
+from PyQt5.QtCore import QEvent, Qt, QObject
 from PyQt5.QtWidgets import QApplication
 
 from ui.eventfilter import MyEventFilter

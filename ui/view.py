@@ -17,6 +17,7 @@ from PyQt5.QtCore import *                                              # for fi
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets, QtGui, QtCore
 
+from app.shell.Shell import Shell
 from ui.gui import *
 from ui.dialogs import *
 from ui.settingsDialog import *
@@ -38,7 +39,7 @@ import pandas as pd
 class View(QtCore.QObject):
     tick = QtCore.pyqtSignal(int, name="changed")                       # signal used to update the progress bar
     
-    def __init__(self, ui, ui_mainwindow):
+    def __init__(self, ui, ui_mainwindow, shell: Shell):
         QtCore.QObject.__init__(self)
         self.ui = ui
         self.ui_mainwindow = ui_mainwindow                              # TODO: retrieve window dimensions/location from settings
@@ -52,6 +53,7 @@ class View(QtCore.QObject):
         self.processesTableViewSortColumn = 'status'
         self.toolsTableViewSort = 'desc'
         self.toolsTableViewSortColumn = 'id'
+        self.shell = shell
 
     def setController(self, controller):                                # the view needs access to controller methods to link gui actions with real actions
         self.controller = controller
@@ -62,7 +64,7 @@ class View(QtCore.QObject):
         self.filterdialog = FiltersDialog(self.ui.centralwidget)
         self.importProgressWidget = ProgressWidget('Importing nmap..', self.ui.centralwidget)
         self.adddialog = AddHostsDialog(self.ui.centralwidget)      
-        self.settingsWidget = AddSettingsDialog(self.ui.centralwidget)
+        self.settingsWidget = AddSettingsDialog(self.shell, self.ui.centralwidget)
         self.helpDialog = HelpDialog(self.controller.name, self.controller.author, self.controller.copyright, self.controller.links, self.controller.emails, self.controller.version, self.controller.build, self.controller.update, self.controller.license, self.controller.desc, self.controller.smallIcon, self.controller.bigIcon, qss = self.qss, parent = self.ui.centralwidget)
         self.configDialog = ConfigDialog(controller = self.controller, qss = self.qss, parent = self.ui.centralwidget)
 
@@ -1484,7 +1486,7 @@ class View(QtCore.QObject):
 
     # TODO: show udp in tabTitle when udp service
     def callHydra(self, bWidget):
-        if validateNmapInput(bWidget.ipTextinput.text()) and validateNmapInput(bWidget.portTextinput.text()) and validateCredentials(bWidget.usersTextinput.text()) and validateCredentials(bWidget.passwordsTextinput.text()):
+        if validateNmapInput(bWidget.ipTextinput.text()) and validateNmapInput(bWidget.portTextinput.text()):
                                                                         # check if host is already in scope
             if not self.controller.isHostInDB(bWidget.ipTextinput.text()):
                 message = "This host is not in scope. Add it to scope and continue?"
