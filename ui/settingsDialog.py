@@ -16,6 +16,8 @@ from PyQt5.QtGui import *                                               # for fi
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtWidgets
 from app.auxiliary import *                                             # for timestamps
+from app.shell.Shell import Shell
+
 
 class Validate(QtCore.QObject):                                         # used to validate user input on focusOut - more specifically only called to validate tool name in host/port/terminal commands tabs
     def eventFilter(self, widget, event):
@@ -48,7 +50,7 @@ class SettingsTabBarWidget(QtWidgets.QTabBar):
         return self.tabSize
 
 class AddSettingsDialog(QtWidgets.QDialog):                                 # dialog shown when the user selects settings menu
-    def __init__(self, parent=None):
+    def __init__(self, shell: Shell, parent=None):
         QtWidgets.QDialog.__init__(self, parent)
 
         self.setupLayout()
@@ -64,6 +66,7 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
         self.hostTableRow = -1
         self.portTableRow = -1
         self.terminalTableRow = -1
+        self.shell = shell
         
         # TODO: maybe these shouldn't be hardcoded because the user can change them... rethink this?
         self.defaultServicesList = ["mysql-default","mssql-default","ftp-default","postgres-default","oracle-default"]
@@ -415,7 +418,7 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
             return True
 
     def validatePath(self, widget):
-        if not validatePath(str(widget.text())):
+        if not self.shell.isDirectory(str(widget.text())):
             self.toggleRedBorder(widget, True)
             return False
         else:
@@ -423,7 +426,7 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
             return True
 
     def validateFile(self, widget):
-        if not validateFile(str(widget.text())):
+        if not self.shell.isFile(str(widget.text())):
             self.toggleRedBorder(widget, True)
             return False
         else:
