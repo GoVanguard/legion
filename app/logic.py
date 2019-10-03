@@ -34,11 +34,14 @@ from ui.ancillaryDialog import *
 
 class Logic:
     def __init__(self, project_name: str, db: Database, shell: Shell):
+        self.reinitialize(project_name, db, shell)
+
+    def reinitialize(self, projectName: str, db: Database, shell: Shell):
         self.shell = shell
         self.db = db
         self.cwd = shell.get_current_working_directory()
-        self.projectname = project_name
-        log.info(project_name)
+        self.projectname = projectName
+        log.info(projectName)
         self.createTemporaryFiles()  # creates temporary files/folders used by SPARTA
         self.serviceRepository: ServiceRepository = ServiceRepository(self.db)
         self.processRepository: ProcessRepository = ProcessRepository(self.db, log)
