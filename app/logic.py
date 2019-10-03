@@ -40,12 +40,12 @@ class Logic:
         self.projectname = project_name
         self.createTemporaryFiles()  # creates temporary files/folders used by SPARTA
         log.info(project_name)
-        self.reinitialize(db)
+        self.reinitialize(db, hostRepository)
 
-    def reinitialize(self, db: Database):
+    def reinitialize(self, db: Database, hostRepository: HostRepository):
         self.serviceRepository: ServiceRepository = ServiceRepository(db)
         self.processRepository: ProcessRepository = ProcessRepository(db, log)
-        self.hostRepository: HostRepository = HostRepository(db)
+        self.hostRepository: HostRepository = hostRepository
         self.portRepository: PortRepository = PortRepository(db)
         self.cveRepository: CVERepository = CVERepository(db)
         self.noteRepository: NoteRepository = NoteRepository(db, log)
@@ -77,10 +77,11 @@ class Logic:
         log.info('Removing temporary files and folders..')
         try:
             # if current project is not temporary & delete wordlists if necessary
-            if not self.istemp and not self.storeWordlists:
-                log.info('Removing wordlist files.')
-                self.shell.remove_file(self.usernamesWordlist.filename)
-                self.shell.remove_file(self.passwordsWordlist.filename)
+            if not self.istemp:
+                if not self.storeWordlists:
+                    log.info('Removing wordlist files.')
+                    self.shell.remove_file(self.usernamesWordlist.filename)
+                    self.shell.remove_file(self.passwordsWordlist.filename)
             else:
                 self.shell.remove_file(self.projectname)
                 self.shell.remove_directory(self.outputfolder)
@@ -161,7 +162,7 @@ class Logic:
             
             self.runningfolder = tempfile.mkdtemp(suffix = "-running", prefix = projectType + '-')               # to store tool output of running processes
             self.db = Database(self.projectname)                        # use the new db
-            self.reinitialize(self.db)
+            self.reinitialize(self.db, HostRepository(self.db))
             self.cwd = ntpath.dirname(str(self.projectname))+'/'        # update cwd so it appears nicely in the window title
         
         except:
