@@ -15,8 +15,10 @@ Copyright (c) 2018 GoVanguard
 
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
-from db.database import Database, note
+from db.database import Database
 from six import u as unicode
+
+from db.entities.note import note
 
 
 class NoteRepository:

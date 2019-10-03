@@ -15,8 +15,7 @@ Copyright (c) 2018 GoVanguard
 
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
-from app.auxiliary import sanitise, Filters
-from db.database import hostObj
+from app.auxiliary import Filters
 from db.filters import applyFilters
 
 

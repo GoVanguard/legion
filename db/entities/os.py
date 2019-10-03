@@ -15,20 +15,27 @@ Copyright (c) 2018 GoVanguard
 
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
-from db.database import Database
+from sqlalchemy import Integer, Column, String, ForeignKey
+
+from db.database import Base
 
 
-class ScriptRepository:
-    def __init__(self, dbAdapter: Database):
-        self.dbAdapter = dbAdapter
+class osObj(Base):
+    __tablename__ = 'osObj'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    family = Column(String)
+    generation = Column(String)
+    osType = Column(String)
+    vendor = Column(String)
+    accuracy = Column(String)
+    hostId = Column(String, ForeignKey('hostObj.id'))
 
-    def getScriptsByHostIP(self, hostIP):
-        query = ("SELECT host.id, host.scriptId, port.portId, port.protocol FROM l1ScriptObj AS host "
-                 "INNER JOIN hostObj AS hosts ON hosts.id = host.hostId "
-                 "LEFT OUTER JOIN portObj AS port ON port.id = host.portId WHERE hosts.ip=?")
-
-        return self.dbAdapter.metadata.bind.execute(query, str(hostIP)).fetchall()
-
-    def getScriptOutputById(self, scriptDBId):
-        query = "SELECT script.output FROM l1ScriptObj as script WHERE script.id = ?"
-        return self.dbAdapter.metadata.bind.execute(query, str(scriptDBId)).fetchall()
+    def __init__(self, name, *args):
+        self.name = name
+        self.family = args[0]
+        self.generation = args[1]
+        self.osType = args[2]
+        self.vendor = args[3]
+        self.accuracy = args[4]
+        self.hostId = args[5]
