@@ -18,7 +18,7 @@ from app.actions.updateProgress.UpdateProgressObservable import UpdateProgressOb
 from db.repositories.HostRepository import HostRepository
 from app.importers.NmapImporter import NmapImporter
 from app.importers.PythonImporter import PythonImporter
-from ui.observers.QtUpdateProgressObserver import QtUpdateProgressObserver
+from app.shell.DefaultShell import DefaultShell
 
 try:
     import queue
@@ -192,7 +192,15 @@ class Controller:
 
     def createNewProject(self):
         self.view.closeProject()                                        # removes temp folder (if any)
-        self.logic.createTemporaryFiles()                               # creates new temp files and folders
+        tf = self.logic.shell.create_named_temporary_file(suffix=".legion",
+                                               prefix="legion-",
+                                               directory="./tmp/",
+                                               delete_on_close=False)  # to store the db file
+        db = Database(tf.name)
+        self.logic.projectname = tf.name
+        self.logic.db = db
+        self.logic.reinitialize(db)
+        self.logic.createTemporaryFiles()
         self.start()                                                    # initialisations (globals, etc)
 
     def openExistingProject(self, filename, projectType='legion'):
