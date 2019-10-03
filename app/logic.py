@@ -33,7 +33,7 @@ from ui.ancillaryDialog import *
 
 
 class Logic:
-    def __init__(self, project_name: str, db: Database, shell: Shell):
+    def __init__(self, project_name: str, db: Database, shell: Shell, hostRepository: HostRepository):
         self.shell = shell
         self.db = db
         self.cwd = shell.get_current_working_directory()
