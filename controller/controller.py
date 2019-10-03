@@ -13,6 +13,9 @@ Copyright (c) 2018 GoVanguard
 
 import signal  # for file operations, to kill processes, for regex, for subprocesses
 
+from app.Screenshooter import Screenshooter
+from app.actions.updateProgress.UpdateProgressObservable import UpdateProgressObservable
+from db.repositories.HostRepository import HostRepository
 from app.importers.NmapImporter import NmapImporter
 from app.importers.PythonImporter import PythonImporter
 from app.shell.DefaultShell import DefaultShell
@@ -25,11 +28,11 @@ from app.logic import *
 from app.settings import *
 
 
-class Controller():
+class Controller:
 
     # initialisations that will happen once - when the program is launched
     @timing
-    def __init__(self, view, logic):
+    def __init__(self, view, logic, hostRepository: HostRepository):
         self.name = "LEGION"
         self.version = '0.3.5'
         self.build = '1565621036'
@@ -44,6 +47,7 @@ class Controller():
         self.desc = "Legion is a fork of SECFORCE's Sparta, Legion is an open source, easy-to-use, \nsuper-extensible and semi-automated network penetration testing tool that aids in discovery, \nreconnaissance and exploitation of information systems."
         self.smallIcon = './images/icons/Legion-N_128x128.svg'
         self.bigIcon = './images/icons/Legion-N_128x128.svg'
+        self.hostRepository: HostRepository = hostRepository
 
         self.logic = logic
         self.view = view
@@ -73,7 +77,11 @@ class Controller():
         self.view.start(title)
 
     def initNmapImporter(self):
-        self.nmapImporter = NmapImporter()
+        updateProgressObservable = UpdateProgressObservable()
+        updateProgressObserver = QtUpdateProgressObserver(ProgressWidget('Importing nmap..'))
+        updateProgressObservable.attach(updateProgressObserver)
+
+        self.nmapImporter = NmapImporter(updateProgressObservable, self.hostRepository)
         self.nmapImporter.done.connect(self.importFinished)
         self.nmapImporter.schedule.connect(self.scheduler)              # run automated attacks
         self.nmapImporter.log.connect(self.view.ui.LogOutputTextView.append)

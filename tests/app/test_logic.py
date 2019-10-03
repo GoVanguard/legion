@@ -22,8 +22,10 @@ from unittest.mock import MagicMock, patch
 
 class LogicTest(unittest.TestCase):
     @patch('utilities.stenoLogging.get_logger')
-    def setUp(self, get_logger) -> None:
+    @patch('db.repositories.HostRepository')
+    def setUp(self, get_logger, hostRepository) -> None:
         self.shell = MagicMock()
+        self.hostRepository = hostRepository
         self.mock_db_session = MagicMock()
 
     def test_init_ShouldLoadInitialVariablesSuccessfully(self):
@@ -31,7 +33,7 @@ class LogicTest(unittest.TestCase):
 
         self.shell.get_current_working_directory.return_value = "./some/path/"
         self.shell.create_temporary_directory.side_effect = ["./output/folder", "./running/folder"]
-        logic = Logic("test-session", self.mock_db_session, self.shell)
+        logic = Logic("test-session", self.mock_db_session, self.shell, self.hostRepository)
 
         self.assertEqual("./some/path/", logic.cwd)
         self.assertTrue(logic.istemp)
@@ -45,7 +47,7 @@ class LogicTest(unittest.TestCase):
     def test_removeTemporaryFiles_whenProjectIsNotTemporaryAndNotStoringWordlists_shouldRemoveWordListsAndRunningFolder(
             self):
         from app.logic import Logic
-        logic = Logic("test-session", self.mock_db_session, self.shell)
+        logic = Logic("test-session", self.mock_db_session, self.shell, self.hostRepository)
         logic.setStoreWordlistsOnExit(False)
         logic.istemp = False
         logic.runningfolder = "./running/folder"
@@ -61,7 +63,7 @@ class LogicTest(unittest.TestCase):
     def test_removeTemporaryFiles_whenProjectIsTemporary_shouldRemoveProjectAndOutputFolderAndRunningFolder(
             self):
         from app.logic import Logic
-        logic = Logic("test-session", self.mock_db_session, self.shell)
+        logic = Logic("test-session", self.mock_db_session, self.shell, self.hostRepository)
         logic.istemp = True
         logic.projectname = "project-name"
         logic.runningfolder = "./running/folder"
