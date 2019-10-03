@@ -189,7 +189,10 @@ class Controller():
                                                directory="./tmp/",
                                                delete_on_close=False)  # to store the db file
         db = Database(tf.name)
-        self.logic.reinitialize(tf.name, db, DefaultShell())
+        self.logic.projectname = tf.name
+        self.logic.db = db
+        self.logic.reinitialize(db)
+        self.logic.createTemporaryFiles()
         self.start()                                                    # initialisations (globals, etc)
 
     def openExistingProject(self, filename, projectType='legion'):

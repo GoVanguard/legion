@@ -34,22 +34,22 @@ from ui.ancillaryDialog import *
 
 class Logic:
     def __init__(self, project_name: str, db: Database, shell: Shell):
-        self.reinitialize(project_name, db, shell)
-
-    def reinitialize(self, projectName: str, db: Database, shell: Shell):
         self.shell = shell
         self.db = db
         self.cwd = shell.get_current_working_directory()
-        self.projectname = projectName
-        log.info(projectName)
+        self.projectname = project_name
         self.createTemporaryFiles()  # creates temporary files/folders used by SPARTA
-        self.serviceRepository: ServiceRepository = ServiceRepository(self.db)
-        self.processRepository: ProcessRepository = ProcessRepository(self.db, log)
-        self.hostRepository: HostRepository = HostRepository(self.db)
-        self.portRepository: PortRepository = PortRepository(self.db)
-        self.cveRepository: CVERepository = CVERepository(self.db)
-        self.noteRepository: NoteRepository = NoteRepository(self.db, log)
-        self.scriptRepository: ScriptRepository = ScriptRepository(self.db)
+        log.info(project_name)
+        self.reinitialize(db)
+
+    def reinitialize(self, db: Database):
+        self.serviceRepository: ServiceRepository = ServiceRepository(db)
+        self.processRepository: ProcessRepository = ProcessRepository(db, log)
+        self.hostRepository: HostRepository = HostRepository(db)
+        self.portRepository: PortRepository = PortRepository(db)
+        self.cveRepository: CVERepository = CVERepository(db)
+        self.noteRepository: NoteRepository = NoteRepository(db, log)
+        self.scriptRepository: ScriptRepository = ScriptRepository(db)
 
     def createTemporaryFiles(self):
         try:
@@ -161,6 +161,7 @@ class Logic:
             
             self.runningfolder = tempfile.mkdtemp(suffix = "-running", prefix = projectType + '-')               # to store tool output of running processes
             self.db = Database(self.projectname)                        # use the new db
+            self.reinitialize(self.db)
             self.cwd = ntpath.dirname(str(self.projectname))+'/'        # update cwd so it appears nicely in the window title
         
         except:
