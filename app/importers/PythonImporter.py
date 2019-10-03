@@ -19,7 +19,7 @@ from PyQt5 import QtCore
 
 from db.entities.host import hostObj
 from scripts.python import pyShodan
-from ui.ancillaryDialog import ProgressWidget, time
+from ui.ancillaryDialog import time
 
 
 class PythonImporter(QtCore.QThread):
@@ -34,7 +34,6 @@ class PythonImporter(QtCore.QThread):
         self.hostIp = ''
         self.pythonScriptDispatch = {'pyShodan': pyShodan.PyShodanScript()}
         self.pythonScriptObj = None
-        self.importProgressWidget = ProgressWidget('Importing shodan data..')
 
     def tsLog(self, msg):
         self.log.emit(str(msg))
