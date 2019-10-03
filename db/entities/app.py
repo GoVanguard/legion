@@ -15,20 +15,26 @@ Copyright (c) 2018 GoVanguard
 
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
-from db.database import Database
+from sqlalchemy import Column, String, ForeignKey, Integer
+
+from db.database import Base
 
 
-class ScriptRepository:
-    def __init__(self, dbAdapter: Database):
-        self.dbAdapter = dbAdapter
+class appObj(Base):
+    __tablename__ = 'appObj'
+    name = Column(String)
+    id = Column(Integer, primary_key=True)
+    product = Column(String)
+    version = Column(String)
+    extrainfo = Column(String)
+    fingerprint = Column(String)
+    cpe = Column(String)
+    serviceId = Column(String, ForeignKey('serviceObj.id'))
 
-    def getScriptsByHostIP(self, hostIP):
-        query = ("SELECT host.id, host.scriptId, port.portId, port.protocol FROM l1ScriptObj AS host "
-                 "INNER JOIN hostObj AS hosts ON hosts.id = host.hostId "
-                 "LEFT OUTER JOIN portObj AS port ON port.id = host.portId WHERE hosts.ip=?")
-
-        return self.dbAdapter.metadata.bind.execute(query, str(hostIP)).fetchall()
-
-    def getScriptOutputById(self, scriptDBId):
-        query = "SELECT script.output FROM l1ScriptObj as script WHERE script.id = ?"
-        return self.dbAdapter.metadata.bind.execute(query, str(scriptDBId)).fetchall()
+    def __init__(self, name='', product='', version='', extrainfo='', fingerprint='', cpe=''):
+        self.name = name
+        self.product = product
+        self.version = version
+        self.extrainfo = extrainfo
+        self.fingerprint = fingerprint
+        self.cpe = cpe

@@ -15,20 +15,17 @@ Copyright (c) 2018 GoVanguard
 
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
-from db.database import Database
+from sqlalchemy import Column, Integer, ForeignKey, String
+
+from db.database import Base
+from six import u as unicode
 
 
-class ScriptRepository:
-    def __init__(self, dbAdapter: Database):
-        self.dbAdapter = dbAdapter
+class process_output(Base):
+    __tablename__ = 'process_output'
+    processId = Column(Integer, ForeignKey('process.id'))
+    id = Column(Integer, primary_key=True)
+    output = Column(String)
 
-    def getScriptsByHostIP(self, hostIP):
-        query = ("SELECT host.id, host.scriptId, port.portId, port.protocol FROM l1ScriptObj AS host "
-                 "INNER JOIN hostObj AS hosts ON hosts.id = host.hostId "
-                 "LEFT OUTER JOIN portObj AS port ON port.id = host.portId WHERE hosts.ip=?")
-
-        return self.dbAdapter.metadata.bind.execute(query, str(hostIP)).fetchall()
-
-    def getScriptOutputById(self, scriptDBId):
-        query = "SELECT script.output FROM l1ScriptObj as script WHERE script.id = ?"
-        return self.dbAdapter.metadata.bind.execute(query, str(scriptDBId)).fetchall()
+    def __init__(self):
+        self.output = unicode('')

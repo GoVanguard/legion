@@ -17,7 +17,7 @@ Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
 from PyQt5 import QtCore
 
-from db.database import hostObj
+from db.entities.host import hostObj
 from scripts.python import pyShodan
 from ui.ancillaryDialog import ProgressWidget, time
 
