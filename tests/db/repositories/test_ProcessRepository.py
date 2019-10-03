@@ -77,7 +77,8 @@ class ProcessRepositoryTest(unittest.TestCase):
         self.mockDbAdapter.commit.assert_called_once()
 
     def test_storeProcessOutput_WhenProvidedExistingProcessIdAndOutput_StoresProcessOutput(self):
-        from db.database import process, process_output
+        from db.entities.process import process
+        from db.entities.processOutput import process_output
 
         expected_process: process = MagicMock()
         process.status = 'Running'
@@ -292,7 +293,8 @@ class ProcessRepositoryTest(unittest.TestCase):
         self.mockDbAdapter.commit.assert_called_once()
 
     def whenProcessDoesNotFinishGracefully(self, process_status: str):
-        from db.database import process, process_output
+        from db.entities.process import process
+        from db.entities.processOutput import process_output
 
         expected_process: process = MagicMock()
         expected_process.status = process_status

@@ -16,7 +16,8 @@ Copyright (c) 2018 GoVanguard
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
 from app.auxiliary import Filters
-from db.database import Database, hostObj
+from db.database import Database
+from db.entities.host import hostObj
 from db.filters import applyFilters, applyHostsFilters
 
 

@@ -87,7 +87,7 @@ class HostRepositoryTest(unittest.TestCase):
         self.mockDbAdapter.metadata.bind.execute.assert_called_once_with(expectedQuery)
 
     def test_getHostInfo_WhenProvidedHostIpAddress_FetchesHostInformation(self):
-        from db.database import hostObj
+        from db.entities.host import hostObj
 
         expected_host_info: hostObj = MagicMock()
         self.mockDbSession.query.return_value = mockQueryWithFilterBy(mockFirstByReturnValue(expected_host_info))
