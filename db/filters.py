@@ -15,7 +15,7 @@ Copyright (c) 2018 GoVanguard
 
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
-from app.auxiliary import sanitise
+from db.validation import sanitise
 
 
 def applyFilters(filters):
