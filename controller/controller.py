@@ -15,6 +15,7 @@ import signal  # for file operations, to kill processes, for regex, for subproce
 
 from app.importers.NmapImporter import NmapImporter
 from app.importers.PythonImporter import PythonImporter
+from app.shell.DefaultShell import DefaultShell
 
 try:
     import queue
@@ -183,7 +184,12 @@ class Controller():
 
     def createNewProject(self):
         self.view.closeProject()                                        # removes temp folder (if any)
-        self.logic.createTemporaryFiles()                               # creates new temp files and folders
+        tf = self.logic.shell.create_named_temporary_file(suffix=".legion",
+                                               prefix="legion-",
+                                               directory="./tmp/",
+                                               delete_on_close=False)  # to store the db file
+        db = Database(tf.name)
+        self.logic.reinitialize(tf.name, db, DefaultShell())
         self.start()                                                    # initialisations (globals, etc)
 
     def openExistingProject(self, filename, projectType='legion'):
