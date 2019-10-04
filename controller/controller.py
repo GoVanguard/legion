@@ -19,6 +19,7 @@ from db.repositories.HostRepository import HostRepository
 from app.importers.NmapImporter import NmapImporter
 from app.importers.PythonImporter import PythonImporter
 from app.shell.DefaultShell import DefaultShell
+from ui.observers.QtUpdateProgressObserver import QtUpdateProgressObserver
 
 try:
     import queue
@@ -72,6 +73,7 @@ class Controller:
         self.fastProcessesRunning = 0                                   # counts the number of fast processes currently running
         self.slowProcessesRunning = 0                                   # counts the number of slow processes currently running
         self.nmapImporter.setDB(self.logic.db)                          # tell nmap importer which db to use
+        self.nmapImporter.setHostRepository(HostRepository(self.logic.db))
         self.pythonImporter.setDB(self.logic.db)
         self.updateOutputFolder()                                       # tell screenshooter where the output folder is
         self.view.start(title)
@@ -199,7 +201,8 @@ class Controller:
         db = Database(tf.name)
         self.logic.projectname = tf.name
         self.logic.db = db
-        self.logic.reinitialize(db)
+        self.logic.cwd = self.logic.shell.get_current_working_directory()
+        self.logic.reinitialize(db, HostRepository(db))
         self.logic.createTemporaryFiles()
         self.start()                                                    # initialisations (globals, etc)
 
