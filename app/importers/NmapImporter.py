@@ -50,6 +50,9 @@ class NmapImporter(QtCore.QThread):
     def setDB(self, db):
         self.db = db
 
+    def setHostRepository(self, hostRepository: HostRepository):
+        self.hostRepository = hostRepository
+
     def setFilename(self, filename):
         self.filename = filename
 

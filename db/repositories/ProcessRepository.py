@@ -15,6 +15,8 @@ Copyright (c) 2018 GoVanguard
 
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
+from typing import Union
+
 from app.auxiliary import getTimestamp
 from six import u as unicode
 
@@ -32,14 +34,14 @@ class ProcessRepository:
     # them or when an existing project is opened.
     # to speed up the queries we replace the columns we don't need by zeros (the reason we need all the columns is
     # we are using the same model to display process information everywhere)
-    def getProcesses(self, filters, showProcesses: str = 'noNmap', sort: str = 'desc', ncol: str = 'id'):
+    def getProcesses(self, filters, showProcesses: Union[str, bool] = 'noNmap', sort: str = 'desc', ncol: str = 'id'):
         # we do not fetch nmap processes because these are not displayed in the host tool tabs / tools
         if showProcesses == 'noNmap':
             query = ('SELECT "0", "0", "0", process.name, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0" '
                      'FROM process AS process WHERE process.closed = "False" AND process.name != "nmap" '
                      'GROUP BY process.name')
             result = self.dbAdapter.metadata.bind.execute(query).fetchall()
-        elif showProcesses == 'False':
+        elif not showProcesses:
             query = ('SELECT process.id, process.hostIp, process.tabTitle, process.outputfile, output.output '
                      'FROM process AS process INNER JOIN process_output AS output ON process.id = output.processId '
                      'WHERE process.display = ? AND process.closed = "False" order by process.id desc')
