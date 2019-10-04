@@ -58,7 +58,7 @@ class ProcessRepositoryTest(unittest.TestCase):
                          'WHERE process.display = ? AND process.closed = "False" order by process.id desc')
         self.mockDbAdapter.metadata.bind.execute.return_value = mockExecuteFetchAll(
             [['some-process'], ['some-process2']])
-        processes = self.processRepository.getProcesses(self.mockFilters, showProcesses='False')
+        processes = self.processRepository.getProcesses(self.mockFilters, showProcesses=False)
         self.assertEqual(processes, [['some-process'], ['some-process2']])
         self.mockDbAdapter.metadata.bind.execute.assert_called_once_with(expectedQuery, 'False')
 
@@ -71,7 +71,7 @@ class ProcessRepositoryTest(unittest.TestCase):
         self.mockDbAdapter.metadata.bind.execute.assert_called_once_with(expectedQuery, 'True')
 
     def test_storeProcess_WhenProvidedAProcess_StoreProcess(self):
-        processId = self.processRepository.storeProcess(self.mockProcess)
+        self.processRepository.storeProcess(self.mockProcess)
 
         self.mockDbSession.add.assert_called_once()
         self.mockDbAdapter.commit.assert_called_once()

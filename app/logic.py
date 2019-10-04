@@ -161,10 +161,10 @@ class Logic:
             self.passwordsWordlist = Wordlist(self.outputfolder + '/' + projectType + '-passwords.txt')          # to store found passwords          
             
             self.runningfolder = tempfile.mkdtemp(suffix = "-running", prefix = projectType + '-')               # to store tool output of running processes
+            self.cwd = ntpath.dirname(str(self.projectname))+'/'        # update cwd so it appears nicely in the window title
             self.db = Database(self.projectname)                        # use the new db
             self.reinitialize(self.db, HostRepository(self.db))
-            self.cwd = ntpath.dirname(str(self.projectname))+'/'        # update cwd so it appears nicely in the window title
-        
+
         except:
             log.info('Something went wrong while opening the project..')
             log.info("Unexpected error: {0}".format(sys.exc_info()[0]))

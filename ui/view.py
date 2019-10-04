@@ -1394,14 +1394,13 @@ class View(QtCore.QObject):
 
     # this function restores the tool tabs based on the DB content (should be called when opening an existing project).
     def restoreToolTabs(self):
-        tools = self.controller.getProcessesFromDB(self.filters, showProcesses = False) # false means we are fetching processes with display flag=False, which is the case for every process once a project is closed.
+        tools = self.controller.getProcessesFromDB(self.filters, showProcesses=False) # false means we are fetching processes with display flag=False, which is the case for every process once a project is closed.
         nbr = len(tools)                                                # show a progress bar because this could take long
         if nbr==0:                                          
             nbr=1
         progress = 100.0 / nbr
         totalprogress = 0
         self.tick.emit(int(totalprogress))
-
         for t in tools:
             if not t.tabTitle == '':
                 if 'screenshot' in str(t.tabTitle):
