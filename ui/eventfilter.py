@@ -38,33 +38,31 @@ class MyEventFilter(QObject):
     def eventFilter(self, receiver, event):
         # catch up/down arrow key presses in hosts table
         if event.type() == QEvent.KeyPress and receiver in self.hosts_table_views:
-            key = event.key()
-            if not receiver.selectionModel().selectedRows():
-                return True
-            index = receiver.selectionModel().selectedRows()[0].row()
-
-            if key == Qt.Key_Down:
-                new_index = index + 1
-                receiver.selectRow(new_index)
-                receiver.clicked.emit(receiver.selectionModel().selectedRows()[0])
-
-            elif key == Qt.Key_Up:
-                new_index = index - 1
-                receiver.selectRow(new_index)
-                receiver.clicked.emit(receiver.selectionModel().selectedRows()[0])
-
-            elif QApplication.keyboardModifiers() == Qt.ControlModifier and key == Qt.Key_C:
-                selected = receiver.selectionModel().currentIndex()
-                clipboard = QApplication.clipboard()
-                clipboard.setText(selected.data().toString())
-
-            return True
-
+            return self.filterKeyPressInHostsTableView(event.key(), receiver)
         elif event.type() == QEvent.Close and receiver == self.main_window:
             event.ignore()
             self.view.appExit()
             return True
-
         else:
             parent = super(MyEventFilter, self)
             return parent.eventFilter(receiver, event)  # normal event processing
+
+    def filterKeyPressInHostsTableView(self, key, receiver):
+        if not receiver.selectionModel().selectedRows():
+            return True
+
+        index = receiver.selectionModel().selectedRows()[0].row()
+
+        if key == Qt.Key_Down:
+            new_index = index + 1
+            receiver.selectRow(new_index)
+            receiver.clicked.emit(receiver.selectionModel().selectedRows()[0])
+        elif key == Qt.Key_Up:
+            new_index = index - 1
+            receiver.selectRow(new_index)
+            receiver.clicked.emit(receiver.selectionModel().selectedRows()[0])
+        elif QApplication.keyboardModifiers() == Qt.ControlModifier and key == Qt.Key_C:
+            selected = receiver.selectionModel().currentIndex()
+            clipboard = QApplication.clipboard()
+            clipboard.setText(selected.data().toString())
+        return True

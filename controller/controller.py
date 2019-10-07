@@ -11,21 +11,29 @@ Copyright (c) 2018 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import sys, os, ntpath, signal, re, subprocess                          # for file operations, to kill processes, for regex, for subprocesses
+import signal  # for file operations, to kill processes, for regex, for subprocesses
+
+from app.Screenshooter import Screenshooter
+from app.actions.updateProgress.UpdateProgressObservable import UpdateProgressObservable
+from db.repositories.HostRepository import HostRepository
+from app.importers.NmapImporter import NmapImporter
+from app.importers.PythonImporter import PythonImporter
+from app.shell.DefaultShell import DefaultShell
+from ui.observers.QtUpdateProgressObserver import QtUpdateProgressObserver
+
 try:
     import queue
 except:
     import Queue as queue
-from PyQt5.QtGui import *                                               # for filters dialog
 from app.logic import *
-from app.auxiliary import *
 from app.settings import *
 
-class Controller():
+
+class Controller:
 
     # initialisations that will happen once - when the program is launched
     @timing
-    def __init__(self, view, logic):
+    def __init__(self, view, logic, hostRepository: HostRepository):
         self.name = "LEGION"
         self.version = '0.3.5'
         self.build = '1565621036'
@@ -40,6 +48,7 @@ class Controller():
         self.desc = "Legion is a fork of SECFORCE's Sparta, Legion is an open source, easy-to-use, \nsuper-extensible and semi-automated network penetration testing tool that aids in discovery, \nreconnaissance and exploitation of information systems."
         self.smallIcon = './images/icons/Legion-N_128x128.svg'
         self.bigIcon = './images/icons/Legion-N_128x128.svg'
+        self.hostRepository: HostRepository = hostRepository
 
         self.logic = logic
         self.view = view
@@ -56,7 +65,7 @@ class Controller():
         self.initTimers()
         self.processTimers = {}
         self.processMeasurements = {}
-        
+
     # initialisations that will happen everytime we create/open a project - can happen several times in the program's lifetime
     def start(self, title='*untitled'):
         self.processes = []                                             # to store all the processes we run (nmaps, niktos, etc)
@@ -64,12 +73,17 @@ class Controller():
         self.fastProcessesRunning = 0                                   # counts the number of fast processes currently running
         self.slowProcessesRunning = 0                                   # counts the number of slow processes currently running
         self.nmapImporter.setDB(self.logic.db)                          # tell nmap importer which db to use
+        self.nmapImporter.setHostRepository(HostRepository(self.logic.db))
         self.pythonImporter.setDB(self.logic.db)
         self.updateOutputFolder()                                       # tell screenshooter where the output folder is
         self.view.start(title)
-        
+
     def initNmapImporter(self):
-        self.nmapImporter = NmapImporter()
+        updateProgressObservable = UpdateProgressObservable()
+        updateProgressObserver = QtUpdateProgressObserver(ProgressWidget('Importing nmap..'))
+        updateProgressObservable.attach(updateProgressObserver)
+
+        self.nmapImporter = NmapImporter(updateProgressObservable, self.hostRepository)
         self.nmapImporter.done.connect(self.importFinished)
         self.nmapImporter.schedule.connect(self.scheduler)              # run automated attacks
         self.nmapImporter.log.connect(self.view.ui.LogOutputTextView.append)
@@ -79,7 +93,7 @@ class Controller():
         self.pythonImporter.done.connect(self.importFinished)
         self.pythonImporter.schedule.connect(self.scheduler)              # run automated attacks
         self.pythonImporter.log.connect(self.view.ui.LogOutputTextView.append)
-    
+
     def initScreenshooter(self):
         self.screenshooter = Screenshooter(self.settings.general_screenshooter_timeout)         # screenshot taker object (different thread)
         self.screenshooter.done.connect(self.screenshotFinished)
@@ -180,7 +194,16 @@ class Controller():
 
     def createNewProject(self):
         self.view.closeProject()                                        # removes temp folder (if any)
-        self.logic.createTemporaryFiles()                               # creates new temp files and folders
+        tf = self.logic.shell.create_named_temporary_file(suffix=".legion",
+                                               prefix="legion-",
+                                               directory="./tmp/",
+                                               delete_on_close=False)  # to store the db file
+        db = Database(tf.name)
+        self.logic.projectname = tf.name
+        self.logic.db = db
+        self.logic.cwd = self.logic.shell.get_current_working_directory()
+        self.logic.reinitialize(db, HostRepository(db))
+        self.logic.createTemporaryFiles()
         self.start()                                                    # initialisations (globals, etc)
 
     def openExistingProject(self, filename, projectType='legion'):
@@ -195,7 +218,7 @@ class Controller():
 
     def saveProject(self, lastHostIdClicked, notes):
         if not lastHostIdClicked == '':
-            self.logic.storeNotesInDB(lastHostIdClicked, notes)
+            self.logic.noteRepository.storeNotes(lastHostIdClicked, notes)
 
     def saveProjectAs(self, filename, replace=0):
         success = self.logic.saveProjectAs(filename, replace)
@@ -207,7 +230,7 @@ class Controller():
         self.saveSettings()                                             # backup and save config file, if necessary
         self.screenshooter.terminate()
         self.initScreenshooter()
-        self.logic.toggleProcessDisplayStatus(True)
+        self.logic.processRepository.toggleProcessDisplayStatus(True)
         self.view.updateProcessesTableView()                            # clear process table
         self.logic.removeTemporaryFiles()
 
@@ -224,7 +247,7 @@ class Controller():
                 outputfile = self.logic.runningfolder + "/nmap/" + getTimestamp() + '-host-discover'
                 command = "nmap -n -sV -O --version-light -T" + str(nmapSpeed) + " " + targetHosts + " -oA "+outputfile
                 log.info("Running {command}".format(command=command))
-                self.runCommand('nmap', 'nmap (discovery)', targetHosts, '','', command, getTimestamp(True), outputfile, self.view.createNewTabForHost(str(targetHosts), 'nmap (discovery)', True))               
+                self.runCommand('nmap', 'nmap (discovery)', targetHosts, '','', command, getTimestamp(True), outputfile, self.view.createNewTabForHost(str(targetHosts), 'nmap (discovery)', True))
             else:
                 outputfile = self.logic.runningfolder + "/nmap/" + getTimestamp() + '-nmap-list'
                 command = "nmap -n -sL -T" + str(nmapSpeed) + " " + targetHosts + " -oA " + outputfile
@@ -271,16 +294,16 @@ class Controller():
     def handleHostAction(self, ip, hostid, actions, action):
         
         if action.text() == 'Mark as checked' or action.text() == 'Mark as unchecked':
-            self.logic.toggleHostCheckStatus(ip)
+            self.logic.hostRepository.toggleHostCheckStatus(ip)
             self.view.updateInterface()
             return
             
         if action.text() == 'Run nmap (staged)':
             log.info('Purging previous portscan data for ' + str(ip))  # if we are running nmap we need to purge previous portscan results
-            if self.logic.getPortsForHostFromDB(ip, 'tcp'):
-                self.logic.deleteAllPortsAndScriptsForHostFromDB(hostid, 'tcp')
-            if self.logic.getPortsForHostFromDB(ip, 'udp'):
-                self.logic.deleteAllPortsAndScriptsForHostFromDB(hostid, 'udp')
+            if self.logic.portRepository.getPortsByIPAndProtocol(ip, 'tcp'):
+                self.logic.portRepository.deleteAllPortsAndScriptsByHostId(hostid, 'tcp')
+            if self.logic.portRepository.getPortsByIPAndProtocol(ip, 'udp'):
+                self.logic.portRepository.deleteAllPortsAndScriptsByHostId(hostid, 'udp')
             self.view.updateInterface()
             self.runStagedNmap(ip, False)
             return
@@ -292,20 +315,20 @@ class Controller():
 
         if action.text() == 'Purge Results':
             log.info('Purging previous portscan data for host {0}'.format(str(ip)))
-            if self.logic.getPortsForHostFromDB(ip, 'tcp'):
-                self.logic.deleteAllPortsAndScriptsForHostFromDB(hostid, 'tcp')
-            if self.logic.getPortsForHostFromDB(ip, 'udp'):
-                self.logic.deleteAllPortsAndScriptsForHostFromDB(hostid, 'udp')
+            if self.logic.portRepository.getPortsByIPAndProtocol(ip, 'tcp'):
+                self.logic.portRepository.deleteAllPortsAndScriptsByHostId(hostid, 'tcp')
+            if self.logic.portRepository.getPortsByIPAndProtocol(ip, 'udp'):
+                self.logic.portRepository.deleteAllPortsAndScriptsByHostId(hostid, 'udp')
             self.view.updateInterface()
             return
 
         if action.text() == 'Delete':
             log.info('Purging previous portscan data for host {0}'.format(str(ip)))
-            if self.logic.getPortsForHostFromDB(ip, 'tcp'):
-                self.logic.deleteAllPortsAndScriptsForHostFromDB(hostid, 'tcp')
-            if self.logic.getPortsForHostFromDB(ip, 'udp'):
-                self.logic.deleteAllPortsAndScriptsForHostFromDB(hostid, 'udp')
-            self.logic.deleteHost(ip)
+            if self.logic.portRepository.getPortsByIPAndProtocol(ip, 'tcp'):
+                self.logic.portRepository.deleteAllPortsAndScriptsByHostId(hostid, 'tcp')
+            if self.logic.portRepository.getPortsByIPAndProtocol(ip, 'udp'):
+                self.logic.portRepository.deleteAllPortsAndScriptsByHostId(hostid, 'udp')
+            self.logic.hostRepository.deleteHost(ip)
             self.view.updateInterface()
             return
             
@@ -328,8 +351,8 @@ class Controller():
                     if '-sU' in command:
                         proto = 'udp'
 
-                    if self.logic.getPortsForHostFromDB(ip, proto):     # if we are running nmap we need to purge previous portscan results (of the same protocol)
-                        self.logic.deleteAllPortsAndScriptsForHostFromDB(hostid, proto)
+                    if self.logic.portRepository.getPortsByIPAndProtocol(ip, proto):     # if we are running nmap we need to purge previous portscan results (of the same protocol)
+                        self.logic.portRepository.deleteAllPortsAndScriptsByHostId(hostid, proto)
 
                 tabTitle = self.settings.hostActions[i][1]
                 self.runCommand(name, tabTitle, ip, '','', command, getTimestamp(True), outputfile, self.view.createNewTabForHost(ip, tabTitle, invisibleTab))
@@ -460,9 +483,9 @@ class Controller():
                 for p in selectedProcesses:
                     if p[1]!="Running":
                         if p[1]=="Waiting":
-                            if str(self.logic.getProcessStatusForDBId(p[2])) == 'Running':
+                            if str(self.logic.processRepository.getStatusByProcessId(p[2])) == 'Running':
                                 self.killProcess(self.view.ProcessesTableModel.getProcessPidForId(p[2]), p[2])
-                            self.logic.storeProcessCancelStatusInDB(str(p[2]))
+                            self.logic.processRepository.storeProcessCancelStatus(str(p[2]))
                         else:
                             log.info("This process has already been terminated. Skipping.")
                     else:
@@ -471,65 +494,65 @@ class Controller():
             return
                         
         if action.text() == 'Clear':                                    # h.ide all the processes that are not running
-            self.logic.toggleProcessDisplayStatus()
+            self.logic.processRepository.toggleProcessDisplayStatus()
             self.view.updateProcessesTableView()
 
     #################### LEFT PANEL INTERFACE UPDATE FUNCTIONS ####################
 
     def isHostInDB(self, host):
-        return self.logic.isHostInDB(host)
+        return self.logic.hostRepository.exists(host)
 
     def getHostsFromDB(self, filters):
-        return self.logic.getHostsFromDB(filters)
+        return self.logic.hostRepository.getHosts(filters)
         
     def getServiceNamesFromDB(self, filters):
-        return self.logic.getServiceNamesFromDB(filters)
+        return self.logic.serviceRepository.getServiceNames(filters)
 
     def getProcessStatusForDBId(self, dbId):
-        return self.logic.getProcessStatusForDBId(dbId)
+        return self.logic.processRepository.getStatusByProcessId(dbId)
     
     def getPidForProcess(self,dbId):
-        return self.logic.getPidForProcess(dbId)
+        return self.logic.processRepository.getPIDByProcessId(dbId)
 
     def storeCloseTabStatusInDB(self,pid):
-        return self.logic.storeCloseTabStatusInDB(pid)
+        return self.logic.processRepository.storeCloseStatus(pid)
 
     def getServiceNameForHostAndPort(self, hostIP, port):
-        return self.logic.getServiceNameForHostAndPort(hostIP, port)
+        return self.logic.serviceRepository.getServiceNamesByHostIPAndPort(hostIP, port)
                 
     #################### RIGHT PANEL INTERFACE UPDATE FUNCTIONS ####################
     
     def getPortsAndServicesForHostFromDB(self, hostIP, filters):
-        return self.logic.getPortsAndServicesForHostFromDB(hostIP, filters)
+        return self.logic.portRepository.getPortsAndServicesByHostIP(hostIP, filters)
 
     def getHostsAndPortsForServiceFromDB(self, serviceName, filters):
-        return self.logic.getHostsAndPortsForServiceFromDB(serviceName, filters)
+        return self.logic.hostRepository.getHostsAndPortsByServiceName(serviceName, filters)
         
     def getHostInformation(self, hostIP):
-        return self.logic.getHostInformation(hostIP)
+        return self.logic.hostRepository.getHostInformation(hostIP)
         
     def getPortStatesForHost(self, hostid):
-        return self.logic.getPortStatesForHost(hostid)
+        return self.logic.portRepository.getPortStatesByHostId(hostid)
 
     def getScriptsFromDB(self, hostIP):
-        return self.logic.getScriptsFromDB(hostIP)
+        return self.logic.scriptRepository.getScriptsByHostIP(hostIP)
 
     def getCvesFromDB(self, hostIP):
-        return self.logic.getCvesFromDB(hostIP)
+        return self.logic.cveRepository.getCVEsByHostIP(hostIP)
 
-    def getScriptOutputFromDB(self,scriptDBId):
-        return self.logic.getScriptOutputFromDB(scriptDBId)
+    def getScriptOutputFromDB(self, scriptDBId):
+        return self.logic.scriptRepository.getScriptOutputById(scriptDBId)
 
     def getNoteFromDB(self, hostid):
-        return self.logic.getNoteFromDB(hostid)
+        return self.logic.noteRepository.getNoteByHostId(hostid)
 
-    def getHostsForTool(self, toolname, closed = 'False'):
-        return self.logic.getHostsForTool(toolname, closed)
+    def getHostsForTool(self, toolName, closed='False'):
+        return self.logic.processRepository.getHostsByToolName(toolName, closed)
     
     #################### BOTTOM PANEL INTERFACE UPDATE FUNCTIONS ####################       
 
-    def getProcessesFromDB(self, filters, showProcesses = 'noNmap', sort = 'desc', ncol = 'id'):
-        return self.logic.getProcessesFromDB(filters, showProcesses, sort, ncol)
+    def getProcessesFromDB(self, filters, showProcesses='noNmap', sort='desc', ncol='id'):
+        return self.logic.processRepository.getProcesses(filters, showProcesses, sort, ncol)
                     
     #################### PROCESSES ####################
 
@@ -542,7 +565,7 @@ class Controller():
             self.processTableUiUpdateTimer.start(1000)
             if (self.fastProcessesRunning <= int(self.settings.general_max_fast_processes)):
                 next_proc = self.fastProcessQueue.get()
-                if not self.logic.isCanceledProcess(str(next_proc.id)):
+                if not self.logic.processRepository.isCancelledProcess(str(next_proc.id)):
                     log.debug('Running: '+ str(next_proc.command))
                     next_proc.display.clear()
                     self.processes.append(next_proc)
@@ -550,7 +573,7 @@ class Controller():
                     # Add Timeout 
                     next_proc.waitForFinished(10)
                     next_proc.start(next_proc.command)
-                    self.logic.storeProcessRunningStatusInDB(next_proc.id, next_proc.pid())
+                    self.logic.processRepository.storeProcessRunningStatus(next_proc.id, next_proc.pid())
                 elif not self.fastProcessQueue.empty():
                     log.debug('> next process was canceled, checking queue again..')
                     self.checkProcessQueue()
@@ -560,13 +583,13 @@ class Controller():
             
     def cancelProcess(self, dbId):
         log.info('Canceling process: ' + str(dbId))
-        self.logic.storeProcessCancelStatusInDB(str(dbId))              # mark it as cancelled
+        self.logic.processRepository.storeProcessCancelStatus(str(dbId))              # mark it as cancelled
         self.updateUITimer.stop()
         self.updateUITimer.start(1500)                                  # update the interface soon
 
     def killProcess(self, pid, dbId):
         log.info('Killing process: ' + str(pid))
-        self.logic.storeProcessKillStatusInDB(str(dbId))                # mark it as killed
+        self.logic.processRepository.storeProcessKillStatus(str(dbId))
         try:
             os.kill(int(pid), signal.SIGTERM)
         except OSError:
@@ -588,7 +611,7 @@ class Controller():
             self.processTimers[qProcess.id] = None
             procTime = timer.elapsed() / 1000
             qProcess.elapsed = procTime
-            self.logic.storeProcessRunningElapsedInDB(qProcess.id, procTime)
+            self.logic.processRepository.storeProcessRunningElapsedTime(qProcess.id, procTime)
 
         def handleProcUpdate(*vargs):
             procTime = timer.elapsed() / 1000
@@ -612,7 +635,7 @@ class Controller():
         qProcess.finished.connect(handleProcStop)
         updateElapsed.timeout.connect(handleProcUpdate)
 
-        textbox.setProperty('dbId', str(self.logic.addProcessToDB(qProcess)))
+        textbox.setProperty('dbId', str(self.logic.processRepository.storeProcess(qProcess)))
         updateElapsed.start(1000)
         self.processTimers[qProcess.id] = updateElapsed
         self.processMeasurements[qProcess.pid()] = 0
@@ -633,12 +656,14 @@ class Controller():
         qProcess.error.connect(lambda: self.processCrashed(qProcess))
         log.info("runCommand called for stage {0}".format(str(stage)))
 
-        if stage > 0 and stage < 6:                                     # if this is a staged nmap, launch the next stage
+        if stage > 0 and stage < 6:  # if this is a staged nmap, launch the next stage
             log.info("runCommand connected for stage {0}".format(str(stage)))
             nextStage = stage + 1
-            qProcess.finished.connect(lambda: self.runStagedNmap(str(hostIp), discovery = discovery, stage = nextStage, stop = self.logic.isKilledProcess(str(qProcess.id))))
+            qProcess.finished.connect(
+                lambda: self.runStagedNmap(str(hostIp), discovery=discovery, stage=nextStage,
+                                           stop=self.logic.processRepository.isKilledProcess(str(qProcess.id))))
 
-        return qProcess.pid()                                           # return the pid so that we can kill the process if needed
+        return qProcess.pid()  # return the pid so that we can kill the process if needed
 
     def runPython(self):
         textbox = self.view.createNewConsole("python")
@@ -652,7 +677,7 @@ class Controller():
         outputfile = '/tmp/a'
         qProcess = MyQProcess(name, tabTitle, hostIp, port, protocol, command, startTime, outputfile, textbox)
 
-        textbox.setProperty('dbId', str(self.logic.addProcessToDB(qProcess)))
+        textbox.setProperty('dbId', str(self.logic.processRepository.storeProcess(qProcess)))
 
         log.info('Queuing: ' + str(command))
         self.fastProcessQueue.put(qProcess)
@@ -678,8 +703,8 @@ class Controller():
         log.info("runStagedNmap called for stage {0}".format(str(stage)))
         if not stop:
             textbox = self.view.createNewTabForHost(str(targetHosts), 'nmap (stage '+str(stage)+')', True)
-            outputfile = self.logic.runningfolder+"/nmap/"+getTimestamp()+'-nmapstage'+str(stage)       
-            
+            outputfile = self.logic.runningfolder+"/nmap/"+getTimestamp()+'-nmapstage'+str(stage)
+
             if stage == 1:                                              # webservers/proxies
                 ports = self.settings.tools_nmap_stage1_ports
             elif stage == 2:                                            # juicy stuff that we could enumerate + db
@@ -716,7 +741,7 @@ class Controller():
         self.view.displayAddHostsOverlay(False)                         # if nmap import was the first action, we need to hide the overlay (note: we shouldn't need to do this everytime. this can be improved)
 
     def screenshotFinished(self, ip, port, filename):
-        dbId = self.logic.addScreenshotToDB(str(ip),str(port),str(filename))
+        dbId = self.logic.processRepository.storeScreenshot(str(ip), str(port), str(filename))
         imageviewer = self.view.createNewTabForHost(ip, 'screenshot ('+port+'/tcp)', True, '', str(self.logic.outputfolder)+'/screenshots/'+str(filename))
         imageviewer.setProperty('dbId', QVariant(str(dbId)))
         self.view.switchTabClick()                                      # to make sure the screenshot tab appears when it is launched from the host services tab
@@ -724,21 +749,21 @@ class Controller():
         self.updateUITimer.start(900)
 
     def processCrashed(self, proc):
-        self.logic.storeProcessCrashStatusInDB(str(proc.id))
+        self.logic.processRepository.storeProcessCrashStatus(str(proc.id))
         log.info('Process {qProcessId} Crashed!'.format(qProcessId=str(proc.id)))
         qProcessOutput = "\n\t" + str(proc.display.toPlainText()).replace('\n','').replace("b'","")
         #self.view.closeHostToolTab(self, index))
-        self.view.findFinishedServiceTab(str(self.logic.getPidForProcess(str(proc.id))))
+        self.view.findFinishedServiceTab(str(self.logic.processRepository.getPIDByProcessId(str(proc.id))))
         log.info('Process {qProcessId} Output: {qProcessOutput}'.format(qProcessId=str(proc.id), qProcessOutput=qProcessOutput))
 
     # this function handles everything after a process ends
     #def processFinished(self, qProcess, crashed=False):
     def processFinished(self, qProcess):
         try:
-            if not self.logic.isKilledProcess(str(qProcess.id)):        # if process was not killed
+            if not self.logic.processRepository.isKilledProcess(str(qProcess.id)):        # if process was not killed
                 if not qProcess.outputfile == '':
                     self.logic.moveToolOutput(qProcess.outputfile)      # move tool output from runningfolder to output folder if there was an output file
-                    print(qProcess.command) 
+                    print(qProcess.command)
                     if 'nmap' in qProcess.command :                         # if the process was nmap, use the parser to store it
                         if qProcess.exitCode() == 0:                    # if the process finished successfully
                             newoutputfile = qProcess.outputfile.replace(self.logic.runningfolder, self.logic.outputfolder)
@@ -759,12 +784,11 @@ class Controller():
                     self.processCrashed(qProcess)
                 
                 log.info("Process {qProcessId} is done!".format(qProcessId=qProcess.id))
- 
-            
-            self.logic.storeProcessOutputInDB(str(qProcess.id), qProcess.display.toPlainText())
+
+            self.logic.processRepository.storeProcessOutput(str(qProcess.id), qProcess.display.toPlainText())
             
             if 'hydra' in qProcess.name:                                # find the corresponding widget and tell it to update its UI
-                self.view.findFinishedBruteTab(str(self.logic.getPidForProcess(str(qProcess.id))))
+                self.view.findFinishedBruteTab(str(self.logic.processRepository.getPIDByProcessId(str(qProcess.id))))
 
             try:
                 self.fastProcessesRunning =- 1
