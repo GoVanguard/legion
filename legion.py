@@ -1,16 +1,25 @@
 #!/usr/bin/env python
-'''
+"""
 LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+    You should have received a copy of the GNU General Public License along with this program.
+    If not, see <http://www.gnu.org/licenses/>.
+"""
+
+from app.shell.DefaultShell import DefaultShell
 from ui.eventfilter import MyEventFilter
+from ui.gui import Ui_MainWindow
 from utilities.stenoLogging import *
+
 log = get_logger('legion', path="./log/legion-startup.log")
 log.setLevel(logging.INFO)
 
@@ -18,7 +27,8 @@ log.setLevel(logging.INFO)
 try:
     from sqlalchemy.orm.scoping import ScopedSession as scoped_session
 except ImportError as e:
-    log.info("Import failed. SQL Alchemy library not found. If on Ubuntu or similar try: apt-get install python3-sqlalchemy*")
+    log.info(
+        "Import failed. SQL Alchemy library not found. If on Ubuntu or similar try: apt-get install python3-sqlalchemy*")
     log.info(e)
     exit(1)
 
@@ -40,6 +50,7 @@ except ImportError as e:
 try:
     import sys
     from colorama import init
+
     init(strip=not sys.stdout.isatty())
     from termcolor import cprint
     from pyfiglet import figlet_format
@@ -53,7 +64,6 @@ from controller.controller import *
 
 # Main application declaration and loop
 if __name__ == "__main__":
-
     cprint(figlet_format('LEGION', font='starwars'), 'yellow', 'on_red', attrs=['bold'])
 
     app = QApplication(sys.argv)
@@ -69,23 +79,34 @@ if __name__ == "__main__":
     try:
         qss_file = open('./ui/legion.qss').read()
     except IOError as e:
-        log.info("The legion.qss file is missing. Your installation seems to be corrupted. Try downloading the latest version.")
+        log.info(
+            "The legion.qss file is missing. Your installation seems to be corrupted. Try downloading the latest version.")
         exit(0)
 
     MainWindow.setStyleSheet(qss_file)
 
-    logic = Logic()                                 # Model prep (logic, db and models)
-    view = View(ui, MainWindow)                     # View prep (gui)
-    controller = Controller(view, logic)            # Controller prep (communication between model and view)
+    shell = DefaultShell()
+    tf = shell.create_named_temporary_file(suffix=".legion",
+                                           prefix="legion-",
+                                           directory="./tmp/",
+                                           delete_on_close=False)  # to store the db file
+
+    db = Database(tf.name)
+    hostRepository = HostRepository(db)
+
+    # Model prep (logic, db and models)
+    logic = Logic(project_name=tf.name, db=db, shell=shell, hostRepository=hostRepository)
+    view = View(ui, MainWindow, shell)  # View prep (gui)
+    controller = Controller(view, logic, hostRepository)  # Controller prep (communication between model and view)
     view.qss = qss_file
 
-    myFilter = MyEventFilter(view, MainWindow)                    # to capture events
+    myFilter = MyEventFilter(view, MainWindow)  # to capture events
     app.installEventFilter(myFilter)
 
     # Center the application in screen
     x = app.desktop().screenGeometry().center().x()
     y = app.desktop().screenGeometry().center().y()
-    MainWindow.move(x - MainWindow.geometry().width()/2, y - MainWindow.geometry().height()/2)
+    MainWindow.move(x - MainWindow.geometry().width() / 2, y - MainWindow.geometry().height() / 2)
 
     # Show main window
     MainWindow.show()

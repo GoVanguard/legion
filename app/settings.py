@@ -13,7 +13,8 @@ Copyright (c) 2018 GoVanguard
 
 import sys, os
 from PyQt5 import QtWidgets, QtGui, QtCore
-from app.auxiliary import *                                             # for timestamp
+from app.auxiliary import *  # for timestamp
+
 
 # this class reads and writes application settings
 class AppSettings():
@@ -27,108 +28,78 @@ class AppSettings():
             self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
 
     def getGeneralSettings(self):
-        settings = dict()
-        self.actions.beginGroup('GeneralSettings')
-        keys = self.actions.childKeys()
-        for k in keys:
-            settings.update({str(k):str(self.actions.value(k))})
-        self.actions.endGroup()
-        return settings
-        
+        return self.getSettingsByGroup("GeneralSettings")
+
     def getBruteSettings(self):
-        settings = dict()
-        self.actions.beginGroup('BruteSettings')
-        keys = self.actions.childKeys()
-        for k in keys:
-            settings.update({str(k):str(self.actions.value(k))})
-        self.actions.endGroup()
-        return settings
+        return self.getSettingsByGroup("BruteSettings")
 
     def getStagedNmapSettings(self):
-        settings = dict()
-        self.actions.beginGroup('StagedNmapSettings')
-        keys = self.actions.childKeys()
-        for k in keys:
-            settings.update({str(k):str(self.actions.value(k))})
-        self.actions.endGroup()
-        return settings
+        return self.getSettingsByGroup('StagedNmapSettings')
 
     def getToolSettings(self):
-        settings = dict()
-        self.actions.beginGroup('ToolSettings')
-        keys = self.actions.childKeys()
-        for k in keys:
-            settings.update({str(k):str(self.actions.value(k))})
-        self.actions.endGroup()
-        return settings
+        return self.getSettingsByGroup('ToolSettings')
 
     def getGUISettings(self):
-        settings = dict()
-        self.actions.beginGroup('GUISettings')
-        keys = self.actions.childKeys()
-        for k in keys:
-            settings.update({str(k):str(self.actions.value(k))})
-        self.actions.endGroup()
-        return settings
+        return self.getSettingsByGroup('GUISettings')
 
-    # this function fetches all the host actions from the settings file 
     def getHostActions(self):
+        self.actions.beginGroup('HostActions')
         hostactions = []
         sortArray = []
-        self.actions.beginGroup('HostActions')
         keys = self.actions.childKeys()
         for k in keys:
             hostactions.append([self.actions.value(k)[0], str(k), self.actions.value(k)[1]])
             sortArray.append(self.actions.value(k)[0])
         self.actions.endGroup()
-        sortArrayWithArray(sortArray, hostactions)                      # sort by label so that it appears nicely in the context menu
+        sortArrayWithArray(sortArray, hostactions)  # sort by label so that it appears nicely in the context menu
         return hostactions
 
-    # this function fetches all the port actions from the settings file 
+    # this function fetches all the host actions from the settings file 
     def getPortActions(self):
-        portactions = []
-        sortArray = []
         self.actions.beginGroup('PortActions')
-        keys = self.actions.childKeys()
-        for k in keys:
-            portactions.append([self.actions.value(k)[0], str(k), self.actions.value(k)[1], self.actions.value(k)[2]])
-            sortArray.append(self.actions.value(k)[0])
-        self.actions.endGroup()             
-        sortArrayWithArray(sortArray, portactions)                      # sort by label so that it appears nicely in the context menu       
-        return portactions
-
-    # this function fetches all the port actions that will be run as terminal commands from the settings file   
-    def getPortTerminalActions(self):
         portactions = []
         sortArray = []
-        self.actions.beginGroup('PortTerminalActions')
         keys = self.actions.childKeys()
         for k in keys:
             portactions.append([self.actions.value(k)[0], str(k), self.actions.value(k)[1], self.actions.value(k)[2]])
             sortArray.append(self.actions.value(k)[0])
         self.actions.endGroup()
-        sortArrayWithArray(sortArray, portactions)                      # sort by label so that it appears nicely in the context menu
+        sortArrayWithArray(sortArray, portactions)  # sort by label so that it appears nicely in the context menu
         return portactions
 
+    # this function fetches all the port actions from the settings file 
+    def getPortTerminalActions(self):
+        self.actions.beginGroup('PortTerminalActions')
+        portactions = []
+        sortArray = []
+        keys = self.actions.childKeys()
+        for k in keys:
+            portactions.append([self.actions.value(k)[0], str(k), self.actions.value(k)[1], self.actions.value(k)[2]])
+            sortArray.append(self.actions.value(k)[0])
+        self.actions.endGroup()
+        sortArrayWithArray(sortArray, portactions)  # sort by label so that it appears nicely in the context menu
+        return portactions
+
+    # this function fetches all the port actions that will be run as terminal commands from the settings file   
     def getSchedulerSettings(self):
         settings = []
         self.actions.beginGroup('SchedulerSettings')
         keys = self.actions.childKeys()
         for k in keys:
-            settings.append([str(k),self.actions.value(k)[0],self.actions.value(k)[1]])
+            settings.append([str(k), self.actions.value(k)[0], self.actions.value(k)[1]])
         self.actions.endGroup()
         return settings
 
-    def getSchedulerSettings_old(self):
+    def getSettingsByGroup(self, name: str) -> dict:
+        self.actions.beginGroup(name)
         settings = dict()
-        self.actions.beginGroup('SchedulerSettings')
         keys = self.actions.childKeys()
         for k in keys:
-            settings.update({str(k):str(self.actions.value(k))})
+            settings.update({str(k): str(self.actions.value(k))})
         self.actions.endGroup()
         return settings
-        
-    def backupAndSave(self, newSettings, saveBackup = True):
+
+    def backupAndSave(self, newSettings, saveBackup=True):
         # Backup and save
         if saveBackup:
             log.info('Backing up old settings and saving new settings...')
@@ -139,22 +110,22 @@ class AppSettings():
         self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
 
         self.actions.beginGroup('GeneralSettings')
-        self.actions.setValue('default-terminal',newSettings.general_default_terminal)
-        self.actions.setValue('tool-output-black-background',newSettings.general_tool_output_black_background)
-        self.actions.setValue('screenshooter-timeout',newSettings.general_screenshooter_timeout)
-        self.actions.setValue('web-services',newSettings.general_web_services)
-        self.actions.setValue('enable-scheduler',newSettings.general_enable_scheduler)
-        self.actions.setValue('enable-scheduler-on-import',newSettings.general_enable_scheduler_on_import)
+        self.actions.setValue('default-terminal', newSettings.general_default_terminal)
+        self.actions.setValue('tool-output-black-background', newSettings.general_tool_output_black_background)
+        self.actions.setValue('screenshooter-timeout', newSettings.general_screenshooter_timeout)
+        self.actions.setValue('web-services', newSettings.general_web_services)
+        self.actions.setValue('enable-scheduler', newSettings.general_enable_scheduler)
+        self.actions.setValue('enable-scheduler-on-import', newSettings.general_enable_scheduler_on_import)
         self.actions.setValue('max-fast-processes', newSettings.general_max_fast_processes)
         self.actions.setValue('max-slow-processes', newSettings.general_max_slow_processes)
         self.actions.endGroup()
-        
+
         self.actions.beginGroup('BruteSettings')
-        self.actions.setValue('store-cleartext-passwords-on-exit',newSettings.brute_store_cleartext_passwords_on_exit)
-        self.actions.setValue('username-wordlist-path',newSettings.brute_username_wordlist_path)
-        self.actions.setValue('password-wordlist-path',newSettings.brute_password_wordlist_path)
-        self.actions.setValue('default-username',newSettings.brute_default_username)
-        self.actions.setValue('default-password',newSettings.brute_default_password)
+        self.actions.setValue('store-cleartext-passwords-on-exit', newSettings.brute_store_cleartext_passwords_on_exit)
+        self.actions.setValue('username-wordlist-path', newSettings.brute_username_wordlist_path)
+        self.actions.setValue('password-wordlist-path', newSettings.brute_password_wordlist_path)
+        self.actions.setValue('default-username', newSettings.brute_default_username)
+        self.actions.setValue('default-password', newSettings.brute_default_password)
         self.actions.setValue('services', newSettings.brute_services)
         self.actions.setValue('no-username-services', newSettings.brute_no_username_services)
         self.actions.setValue('no-password-services', newSettings.brute_no_password_services)
@@ -200,8 +171,9 @@ class AppSettings():
         for tool in newSettings.automatedAttacks:
             self.actions.setValue(tool[0], [tool[1], tool[2]])
         self.actions.endGroup()
-        
+
         self.actions.sync()
+
 
 # This class first sets all the default settings and then overwrites them with the settings found in the configuration file
 class Settings():
@@ -248,7 +220,7 @@ class Settings():
         self.portTerminalActions = []
         self.stagedNmapSettings = []
         self.automatedAttacks = []
-        
+
         # now that all defaults are set, overwrite with whatever was in the .conf file (stored in appSettings)
         if appSettings:
             try:
@@ -261,7 +233,7 @@ class Settings():
                 self.portActions = appSettings.getPortActions()
                 self.portTerminalActions = appSettings.getPortTerminalActions()
                 self.automatedAttacks = appSettings.getSchedulerSettings()
-        
+
                 # general
                 self.general_default_terminal = self.generalSettings['default-terminal']
                 self.general_tool_output_black_background = self.generalSettings['tool-output-black-background']
@@ -300,14 +272,16 @@ class Settings():
                 self.gui_process_tab_detail = self.guiSettings['process-tab-detail']
 
             except KeyError as e:
-                log.info('Something went wrong while loading the configuration file. Falling back to default settings for some settings.')
+                log.info(
+                    'Something went wrong while loading the configuration file. Falling back to default settings for some settings.')
                 log.info('Go to the settings menu to fix the issues!')
                 log.error(str(e))
 
-    def __eq__(self, other):                                            # returns false if settings objects are different
+    def __eq__(self, other):  # returns false if settings objects are different
         if type(other) is type(self):
             return self.__dict__ == other.__dict__
         return False
+
 
 if __name__ == "__main__":
     settings = AppSettings()

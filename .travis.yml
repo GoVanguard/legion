@@ -9,8 +9,7 @@ language: python
 sudo: true
 
 python:
-
-- 3.6
+  - "3.6"
 
 install:
   - cp ./requirements.txt ./deps/
@@ -21,6 +20,7 @@ script:
   - python -m unittest
 
 after_success:
+  - (test $TRAVIS_BRANCH != "master" && test $TRAVIS_BRANCH != "development") && exit 0
   - cd ./docker/
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
   - export REPO=gvit/legion

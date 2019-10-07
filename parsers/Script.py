@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from db.entities.cve import cve
 
 __author__ =  'ketchup'
 __version__=  '0.1'
