@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from app.logging.legionLog import log
 
 __author__ =  'yunshu(wustyunshu@hotmail.com)'
 __version__=  '0.2'
