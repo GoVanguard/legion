@@ -163,7 +163,8 @@ class MyQProcess(QProcess):
         output = str(self.readAllStandardOutput())
         self.display.appendPlainText(unicode(output).strip())
 
-        if self.name == 'hydra':  # check if any usernames/passwords were found (if so emit a signal so that the gui can tell the user about it)
+        # check if any usernames/passwords were found (if so emit a signal so that the gui can tell the user about it)
+        if self.name == 'hydra':
             found, userlist, passlist = checkHydraResults(output)
             if found:  # send the brutewidget object along with lists of found usernames/passwords
                 self.sigHydra.emit(self.display.parentWidget(), userlist, passlist)
@@ -204,8 +205,9 @@ class BrowserOpener(QtCore.QThread):
                 else:
                     webbrowser.open_new_tab('http://' + url)
                 if i == 0:
-                    self.sleep(
-                        3)  # fixes bug in Kali. have to sleep on first url so the next ones don't open a new browser instead of adding a new tab
+                    # fixes bug in Kali. have to sleep on first url so the next ones don't open a new browser
+                    # instead of adding a new tab
+                    self.sleep(3)
                 else:
                     self.sleep(1)  # fixes bug when several calls to urllib occur too fast (interrupted system call)
 

@@ -1,0 +1,4 @@
+[flake8]
+select=E501
+exclude=.git,.idea,tmp,backup
+max-line-length: 120

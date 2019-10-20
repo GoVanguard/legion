@@ -1,15 +1,21 @@
 #!/usr/bin/env python
 
-'''
+"""
 LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+    You should have received a copy of the GNU General Public License along with this program.
+    If not, see <http://www.gnu.org/licenses/>.
+
+"""
 
 import os
 from PyQt5.QtGui import *                                               # for filters dialog
@@ -19,16 +25,19 @@ from app.auxiliary import *                                             # for ti
 from app.shell.Shell import Shell
 
 
-class Validate(QtCore.QObject):                                         # used to validate user input on focusOut - more specifically only called to validate tool name in host/port/terminal commands tabs
+# used to validate user input on focusOut - more specifically only called to validate tool name in host/port/terminal
+# commands tabs
+class Validate(QtCore.QObject):
     def eventFilter(self, widget, event):
-        if event.type() == QtCore.QEvent.FocusOut:                      # this horrible line is to avoid making the 'AddSettingsDialog' class visible from here
+        # this horrible line is to avoid making the 'AddSettingsDialog' class visible from here
+        if event.type() == QtCore.QEvent.FocusOut:
             widget.parent().parent().parent().parent().parent().parent().validateToolName()
             return False
         else:
             return False    # TODO: check this
 
 # Borrowed this class from https://gist.github.com/LegoStormtroopr/5075267
-# Credit and thanks to LegoStormtoopr (http://www.twitter.com/legostormtroopr)
+# Credit and thanks to LegoStormtroopr (http://www.twitter.com/legostormtroopr)
 class SettingsTabBarWidget(QtWidgets.QTabBar):
     def __init__(self, parent=None, *args, **kwargs):
         self.tabSize = QtCore.QSize(kwargs.pop('width',100), kwargs.pop('height',25))
@@ -49,7 +58,7 @@ class SettingsTabBarWidget(QtWidgets.QTabBar):
     def tabSizeHint(self,index):
         return self.tabSize
 
-class AddSettingsDialog(QtWidgets.QDialog):                                 # dialog shown when the user selects settings menu
+class AddSettingsDialog(QtWidgets.QDialog):  # dialog shown when the user selects settings menu
     def __init__(self, shell: Shell, parent=None):
         QtWidgets.QDialog.__init__(self, parent)
 
@@ -82,18 +91,25 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
         self.addToolForTerminalButton.clicked.connect(self.addToolForTerminal)
         self.removeToolForTerminalButton.clicked.connect(self.removeToolForTerminal)
 
-        self.addServicesButton.clicked.connect(lambda: self.moveService(self.servicesAllTableWidget, self.servicesActiveTableWidget))
-        self.removeServicesButton.clicked.connect(lambda: self.moveService(self.servicesActiveTableWidget, self.servicesAllTableWidget))
-        self.addTerminalServiceButton.clicked.connect(lambda: self.moveService(self.terminalServicesAllTable, self.terminalServicesActiveTable))
-        self.removeTerminalServiceButton.clicked.connect(lambda: self.moveService(self.terminalServicesActiveTable, self.terminalServicesAllTable))
+        self.addServicesButton.clicked.connect(lambda: self.moveService(self.servicesAllTableWidget,
+                                                                        self.servicesActiveTableWidget))
+        self.removeServicesButton.clicked.connect(lambda: self.moveService(self.servicesActiveTableWidget,
+                                                                           self.servicesAllTableWidget))
+        self.addTerminalServiceButton.clicked.connect(lambda: self.moveService(self.terminalServicesAllTable,
+                                                                               self.terminalServicesActiveTable))
+        self.removeTerminalServiceButton.clicked.connect(lambda: self.moveService(self.terminalServicesActiveTable,
+                                                                                  self.terminalServicesAllTable))
         
         self.toolForHostsTableWidget.clicked.connect(self.updateToolForHostInformation)
         self.toolForServiceTableWidget.clicked.connect(self.updateToolForServiceInformation)
         self.toolForTerminalTableWidget.clicked.connect(self.updateToolForTerminalInformation)
 
-        self.hostActionNameText.textChanged.connect(lambda: self.realTimeToolNameUpdate(self.toolForHostsTableWidget, self.hostActionNameText.text()))
-        self.portActionNameText.textChanged.connect(lambda: self.realTimeToolNameUpdate(self.toolForServiceTableWidget, self.portActionNameText.text()))
-        self.terminalActionNameText.textChanged.connect(lambda: self.realTimeToolNameUpdate(self.toolForTerminalTableWidget, self.terminalActionNameText.text()))
+        self.hostActionNameText.textChanged.connect(lambda: self.realTimeToolNameUpdate(self.toolForHostsTableWidget,
+                                                                                        self.hostActionNameText.text()))
+        self.portActionNameText.textChanged.connect(lambda: self.realTimeToolNameUpdate(self.toolForServiceTableWidget,
+                                                                                        self.portActionNameText.text()))
+        self.terminalActionNameText.textChanged.connect(lambda: self.realTimeToolNameUpdate(
+            self.toolForTerminalTableWidget, self.terminalActionNameText.text()))
         
         self.enableAutoAttacks.clicked.connect(lambda: self.enableAutoToolsTab())
         self.checkDefaultCred.clicked.connect(self.toggleDefaultServices)
@@ -103,12 +119,16 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
 
     ##################### ACTION FUNCTIONS (apply / cancel related) #####################
 
-    def setSettings(self, settings):                                    # called by the controller once the config file has been read at start time and also when the cancel button is pressed to forget any changes.
+    # called by the controller once the config file has been read at start time and also when the cancel button
+    # is pressed to forget any changes.
+    def setSettings(self, settings):
         self.settings = settings
-        self.resetGui()                                                 # clear any changes the user may have made and canceled.
-        self.populateSettings()                                         # populate the GUI with the new settings
+        self.resetGui()  # clear any changes the user may have made and canceled.
+        self.populateSettings()   # populate the GUI with the new settings
 
-        self.hostActionsNumber = 1                                      # TODO: this is most likely not the best way to do it. we should check if New_Action_1 exists and if so increase the number until it doesn't exist. no need for a self.variable - can be a local one.
+        # TODO: this is most likely not the best way to do it. we should check if New_Action_1 exists and if so
+        #  increase the number until it doesn't exist. no need for a self.variable - can be a local one.
+        self.hostActionsNumber = 1
         self.portActionsNumber = 1
         self.terminalActionsNumber = 1
 
@@ -117,9 +137,10 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
             self.updateSettings()
             return True
         return False
-    
-    def updateSettings(self):                                           # updates the local settings object (must be called when applying settings and only after validation succeeded)
-                                                                        # LEO: reorganised stuff in a more logical way but no changes were made yet :)
+
+    # updates the local settings object (must be called when applying settings and only after validation succeeded)
+    def updateSettings(self):
+         # LEO: reorganised stuff in a more logical way but no changes were made yet :)
         # update GENERAL tab settings
         self.settings.general_default_terminal = str(self.terminalComboBox.currentText())
         self.settings.general_max_fast_processes = str(self.fastProcessesComboBox.currentText())
@@ -155,10 +176,12 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
         else:
             self.settings.general_enable_scheduler = 'False'
             
-        # TODO: seems like all the other settings should be updated here as well instead of updating them in the validation function.
+        # TODO: seems like all the other settings should be updated here as well instead of
+        #  updating them in the validation function.
 
-    #def initValues(self):                                              # LEO: renamed and changed the previous tabs defaults otherwise validation doesn't work the first time
-    def resetGui(self):                                                 # called when the cancel button is clicked, to initialise everything
+    # LEO: renamed and changed the previous tabs defaults otherwise validation doesn't work the first time
+    #def initValues(self):
+    def resetGui(self):  # called when the cancel button is clicked, to initialise everything
         self.validationPassed = True
         self.previousTab = 'General'
         self.previousToolTab = 'Tool Paths'
@@ -186,8 +209,10 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
         clearLayout(self.defaultBoxVerlayout)
         self.terminalComboBox.clear()
 
-    def populateSettings(self):                                         # called by setSettings at start up or when showing the settings dialog after a cancel action. it populates the GUI with the controller's settings object.
-        self.populateGeneralTab()                                       # LEO: split it in functions so that it's less confusing and easier to refactor later
+    # called by setSettings at start up or when showing the settings dialog after a cancel action.
+    # it populates the GUI with the controller's settings object.
+    def populateSettings(self):
+        self.populateGeneralTab()  # LEO: split it in functions so that it's less confusing and easier to refactor later
         self.populateBruteTab()
         self.populateToolsTab()
         self.populateAutomatedAttacksTab()
@@ -205,9 +230,11 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
         elif self.settings.general_tool_output_black_background == 'False' and self.checkBlackBG.isChecked() == True:
             self.checkBlackBG.toggle()
         
-        if self.settings.brute_store_cleartext_passwords_on_exit == 'True' and self.checkStoreClearPW.isChecked() == False:
+        if self.settings.brute_store_cleartext_passwords_on_exit == 'True' and \
+                self.checkStoreClearPW.isChecked() == False:
             self.checkStoreClearPW.toggle()
-        elif self.settings.brute_store_cleartext_passwords_on_exit == 'False' and self.checkStoreClearPW.isChecked() == True:
+        elif self.settings.brute_store_cleartext_passwords_on_exit == 'False' and \
+                self.checkStoreClearPW.isChecked() == True:
             self.checkStoreClearPW.toggle()     
 
     def populateBruteTab(self):
@@ -259,11 +286,12 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
             self.terminalServicesAllTable.setItem(row, 0, QtWidgets.QTableWidgetItem())
             self.terminalServicesAllTable.item(row, 0).setText(self.settings.portTerminalActions[row][3])
                 
-    def populateAutomatedAttacksTab(self):                              # TODO: this one is still to big and ugly. needs work.
+    def populateAutomatedAttacksTab(self):   # TODO: this one is still to big and ugly. needs work.
         self.typeDic = {}
         for i in range(len(self.settings.portActions)):
             # the dictionary contains the name, the text input and the layout for each tool
-            self.typeDic.update({self.settings.portActions[i][1]:[QtWidgets.QLabel(),QtWidgets.QLineEdit(),QtWidgets.QCheckBox(),QtWidgets.QHBoxLayout()]})
+            self.typeDic.update({self.settings.portActions[i][1]:[QtWidgets.QLabel(),QtWidgets.QLineEdit(),
+                                                                  QtWidgets.QCheckBox(),QtWidgets.QHBoxLayout()]})
 
         for keyNum in range(len(self.settings.portActions)):
             
@@ -277,7 +305,8 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
                 foundToolInAA = False
                 for t in self.settings.automatedAttacks:
                     if self.settings.portActions[keyNum][1] == t[0]:    
-                        #self.typeDic[self.settings.portActions[keyNum][1]][1].setText(self.settings.automatedAttacks[self.settings.portActions[keyNum][1]])
+                        #self.typeDic[self.settings.portActions[keyNum][1]][1].setText(
+                        # self.settings.automatedAttacks[self.settings.portActions[keyNum][1]])
                         self.typeDic[self.settings.portActions[keyNum][1]][1].setText(t[1])
                         self.typeDic[self.settings.portActions[keyNum][1]][2].toggle()
                         foundToolInAA = True
@@ -287,15 +316,21 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
                     self.typeDic[self.settings.portActions[keyNum][1]][1].setText(self.settings.portActions[keyNum][3])
 
                 self.typeDic[self.settings.portActions[keyNum][1]][1].setFixedWidth(300)
-                self.typeDic[self.settings.portActions[keyNum][1]][2].setObjectName(str(self.typeDic[self.settings.portActions[keyNum][1]][2]))
-                self.typeDic[self.settings.portActions[keyNum][1]][3].addWidget(self.typeDic[self.settings.portActions[keyNum][1]][0])
-                self.typeDic[self.settings.portActions[keyNum][1]][3].addWidget(self.typeDic[self.settings.portActions[keyNum][1]][1])
+                self.typeDic[self.settings.portActions[keyNum][1]][2].setObjectName(
+                    str(self.typeDic[self.settings.portActions[keyNum][1]][2]))
+                self.typeDic[self.settings.portActions[keyNum][1]][3].addWidget(
+                    self.typeDic[self.settings.portActions[keyNum][1]][0])
+                self.typeDic[self.settings.portActions[keyNum][1]][3].addWidget(
+                    self.typeDic[self.settings.portActions[keyNum][1]][1])
                 self.typeDic[self.settings.portActions[keyNum][1]][3].addItem(self.enabledSpacer)
-                self.typeDic[self.settings.portActions[keyNum][1]][3].addWidget(self.typeDic[self.settings.portActions[keyNum][1]][2])
+                self.typeDic[self.settings.portActions[keyNum][1]][3].addWidget(
+                    self.typeDic[self.settings.portActions[keyNum][1]][2])
                 self.scrollVerLayout.addLayout(self.typeDic[self.settings.portActions[keyNum][1]][3])
 
-            else:                                                       # populate the automated attacks tools tab with every tool that IS a default creds check
-                # TODO: i get the feeling we shouldn't be doing this in the else. the else could just skip the default ones and outside of the loop we can go through self.defaultServicesList and take care of these separately.
+            else:  # populate the automated attacks tools tab with every tool that IS a default creds check
+                # TODO: i get the feeling we shouldn't be doing this in the else.
+                #  the else could just skip the default ones and outside of the loop we can go through
+                #  self.defaultServicesList and take care of these separately.
                 if self.settings.portActions[keyNum][1] == "mysql-default":
                     self.typeDic[self.settings.portActions[keyNum][1]][0].setText('mysql')
                 elif self.settings.portActions[keyNum][1] == "mssql-default":
@@ -308,10 +343,13 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
                     self.typeDic[self.settings.portActions[keyNum][1]][0].setText('oracle')
 
                 self.typeDic[self.settings.portActions[keyNum][1]][0].setFixedWidth(150)
-                self.typeDic[self.settings.portActions[keyNum][1]][2].setObjectName(str(self.typeDic[self.settings.portActions[keyNum][1]][2]))
-                self.typeDic[self.settings.portActions[keyNum][1]][3].addWidget(self.typeDic[self.settings.portActions[keyNum][1]][0])
+                self.typeDic[self.settings.portActions[keyNum][1]][2].setObjectName(
+                    str(self.typeDic[self.settings.portActions[keyNum][1]][2]))
+                self.typeDic[self.settings.portActions[keyNum][1]][3].addWidget(
+                    self.typeDic[self.settings.portActions[keyNum][1]][0])
                 self.typeDic[self.settings.portActions[keyNum][1]][3].addItem(self.enabledSpacer)
-                self.typeDic[self.settings.portActions[keyNum][1]][3].addWidget(self.typeDic[self.settings.portActions[keyNum][1]][2])
+                self.typeDic[self.settings.portActions[keyNum][1]][3].addWidget(
+                    self.typeDic[self.settings.portActions[keyNum][1]][2])
 
                 self.defaultBoxVerlayout.addLayout(self.typeDic[self.settings.portActions[keyNum][1]][3])
 
@@ -319,15 +357,19 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
         self.globVerAutoToolsLayout.addWidget(self.scrollArea)      
         
     ##################### SWITCH TAB FUNCTIONS #####################
-        
-    def switchTabClick(self):                                           # LEO: this function had duplicate code with validateCurrentTab(). so now we call that one.
+
+    # LEO: this function had duplicate code with validateCurrentTab(). so now we call that one.
+    def switchTabClick(self):
         if self.settingsTabWidget.tabText(self.settingsTabWidget.currentIndex()) == 'Tools':
             self.previousToolTab = self.ToolSettingsTab.tabText(self.ToolSettingsTab.currentIndex())
 
         log.info('previous tab is: ' + str(self.previousTab))
-        if self.validateCurrentTab(self.previousTab):                   # LEO: we don't care about the return value in this case. it's just for debug.
+        # LEO: we don't care about the return value in this case. it's just for debug.
+        if self.validateCurrentTab(self.previousTab):
             log.info('validation succeeded! switching tab! yay!')
-                                                                        # save the previous tab for the next time we switch tabs. TODO: not sure this should be inside the IF but makes sense to me. no point in saving the previous if there is no change..
+            # save the previous tab for the next time we switch tabs.
+            # TODO: not sure this should be inside the IF but makes sense to me. no point in saving
+            #  the previous if there is no change..
             self.previousTab = self.settingsTabWidget.tabText(self.settingsTabWidget.currentIndex())            
         else:
             log.info('nope! cannot let you switch tab! you fucked up!')
@@ -345,7 +387,8 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
             self.toolForTerminalTableWidget.selectRow(0)
             self.updateToolForTerminalInformation(False)
 
-        # LEO: I get the feeling the validation part could go into a validateCurrentToolTab() just like in the other switch tab function.
+        # LEO: I get the feeling the validation part could go into a validateCurrentToolTab()
+        # just like in the other switch tab function.
         if self.previousToolTab == 'Tool Paths':
             if not self.toolPathsValidate():
                 self.ToolSettingsTab.setCurrentIndex(0)
@@ -363,7 +406,8 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
                 self.updatePortActions()
                 
         elif self.previousToolTab == 'Terminal Commands':
-            if not self.validateCommandTabs(self.terminalActionNameText, self.terminalLabelText, self.terminalCommandText):
+            if not self.validateCommandTabs(self.terminalActionNameText, self.terminalLabelText,
+                                            self.terminalCommandText):
                 self.ToolSettingsTab.setCurrentIndex(3)
             else:
                 self.updateTerminalActions()
@@ -372,25 +416,33 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
             if not self.validateStagedNmapTab():
                 self.ToolSettingsTab.setCurrentIndex(4)
 #           else:
-#               self.updateTerminalActions()                            # LEO: commented out because it didn't look right, please check!
+                # LEO: commented out because it didn't look right, please check!
+#               self.updateTerminalActions()
  
         self.previousToolTab = self.ToolSettingsTab.tabText(self.ToolSettingsTab.currentIndex())
 
     ##################### AUXILIARY FUNCTIONS #####################
 
-    #def confInitState(self):                                           # LEO: renamed. i get the feeling this function is not necessary if we put this code somewhere else - eg: right before we apply/cancel. we'll see.
-    def resetTabIndexes(self):                                          # called when the settings dialog is opened so that we always show the same tabs.
+    # LEO: renamed. i get the feeling this function is not necessary if we put this code somewhere else
+    # - eg: right before we apply/cancel. we'll see.
+    #def confInitState(self):
+    # called when the settings dialog is opened so that we always show the same tabs.
+    def resetTabIndexes(self):
         self.settingsTabWidget.setCurrentIndex(0)
         self.ToolSettingsTab.setCurrentIndex(0)
 
-    def toggleRedBorder(self, widget, red=True):                        # called by validation functions to display (or not) a red border around a text input widget when input is (in)valid. easier to change stylesheets in one place only.
+    # called by validation functions to display (or not) a red border around a text input widget when input is
+    # (in)valid. easier to change stylesheets in one place only.
+    def toggleRedBorder(self, widget, red=True):
         if red:
             widget.setStyleSheet("border: 1px solid red;")
         else:
             widget.setStyleSheet("border: 1px solid grey;")
 
-    # LEO: I moved the really generic validation functions to the end of auxiliary.py and those are used by these slightly-less-generic ones.
-    # .. the difference is that these ones also take care of the IF/ELSE which was being duplicated all over the code. everything should be simpler now.
+    # LEO: I moved the really generic validation functions to the end of auxiliary.py and those are used by
+    # these slightly-less-generic ones.
+    # .. the difference is that these ones also take care of the IF/ELSE which was being duplicated all over the code.
+    # everything should be simpler now.
     # note that I didn't use these everywhere because sometimes the IF/ELSE are not so straight-forward.
     
     def validateNumeric(self, widget):
@@ -450,9 +502,14 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
             return True
         
     ##################### VALIDATION FUNCTIONS (per tab) #####################
-    # LEO: the functions are more or less in the same order as the tabs in the GUI (top-down and left-to-right) except for generic functions
+    # LEO: the functions are more or less in the same order as the tabs in the GUI (top-down and left-to-right) except
+    # for generic functions
 
-    def validateCurrentTab(self, tab):                                  # LEO: your updateSettings() was split in 2. validateCurrentTab() and updateSettings() since they have different functionality. also, we now have a 'tab' parameter so that we can reuse the code in switchTabClick and avoid duplicate code. the tab parameter will either be the current or the previous tab depending where we call this from.
+    # LEO: your updateSettings() was split in 2. validateCurrentTab() and updateSettings() since they have
+    # different functionality. also, we now have a 'tab' parameter so that we can reuse the code in switchTabClick
+    # and avoid duplicate code. the tab parameter will either be the current or the previous tab depending where we
+    # call this from.
+    def validateCurrentTab(self, tab):
         validationPassed = True
         if tab == 'General':
             if not self.validateGeneralTab():
@@ -490,7 +547,8 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
                     self.updatePortActions()
                     
             elif currentToolsTab == 'Terminal Commands':
-                if not self.validateCommandTabs(self.terminalActionNameText, self.terminalLabelText, self.terminalCommandText):
+                if not self.validateCommandTabs(self.terminalActionNameText, self.terminalLabelText,
+                                                self.terminalCommandText):
                     self.settingsTabWidget.setCurrentIndex(2)
                     self.ToolSettingsTab.setCurrentIndex(3)
                     validationPassed = False
@@ -504,7 +562,8 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
                     validationPassed = False
             
             else:
-                log.info('>>>> we should never be here. potential bug. 1')  # LEO: added this just to help when testing. we'll remove it later.
+                # LEO: added this just to help when testing. we'll remove it later.
+                log.info('>>>> we should never be here. potential bug. 1')
         
         elif tab == 'Wordlists':
             log.info('Coming back from wordlists.')
@@ -513,7 +572,8 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
             log.info('Coming back from automated attacks.')
         
         else:
-            log.info('>>>> we should never be here. potential bug. 2')      # LEO: added this just to help when testing. we'll remove it later.
+            # LEO: added this just to help when testing. we'll remove it later.
+            log.info('>>>> we should never be here. potential bug. 2')
         
         log.info('DEBUG: current tab is valid: ' + str(validationPassed))
         return validationPassed
@@ -523,7 +583,9 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
         validationPassed = self.validateNumeric(self.screenshotTextinput)
         
         self.toggleRedBorder(self.webServicesTextinput, False)
-        for service in str(self.webServicesTextinput.text()).split(','):# TODO: this is too strict! no spaces or comma allowed? we can clean up for the user in some simple cases. actually, i'm not sure we even need to split.
+        # TODO: this is too strict! no spaces or comma allowed? we can clean up for the user in some simple cases.
+        #  actually, i'm not sure we even need to split.
+        for service in str(self.webServicesTextinput.text()).split(','):
             if not validateString(service):
                 self.toggleRedBorder(self.webServicesTextinput, True)
                 validationPassed = False
@@ -532,7 +594,9 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
         return validationPassed
 
     #def bruteTabValidate(self):
-    def validateBruteTab(self):                                         # LEO: do NOT change the order of the AND statements otherwise validation may not take place if first condition is False
+    # LEO: do NOT change the order of the AND statements otherwise validation may not take place
+    # if first condition is False
+    def validateBruteTab(self):
         validationPassed = self.validatePath(self.userlistPath)
         validationPassed = self.validatePath(self.passwordlistPath) and validationPassed
         validationPassed = self.validateString(self.defaultUserText) and validationPassed
@@ -546,12 +610,15 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
         validationPassed = self.validateFile(self.textEditorPathInput) and validationPassed
         return validationPassed
 
-#   def commandTabsValidate(self):                                      # LEO: renamed and refactored
-    def validateCommandTabs(self, nameInput, labelInput, commandInput): # only validates the tool name, label and command fields for host/port/terminal tabs
+#   def commandTabsValidate(self):
+    # only validates the tool name, label and command fields for host/port/terminal tabs
+    def validateCommandTabs(self, nameInput, labelInput, commandInput):
         validationPassed = True
 
-        if self.validationPassed == False:                              # the self.validationPassed comes from the focus out event
-            self.toggleRedBorder(nameInput, True)                       # TODO: this seems like a dodgy way to do it - functions should not depend on hope :) . maybe it's better to simply validate again. code will be clearer too.
+        if self.validationPassed == False:           # the self.validationPassed comes from the focus out event
+            # TODO: this seems like a dodgy way to do it - functions should not depend on hope :).
+            #  maybe it's better to simply validate again. code will be clearer too.
+            self.toggleRedBorder(nameInput, True)
             validationPassed = False
         else:
             self.toggleRedBorder(nameInput, False)
@@ -560,7 +627,8 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
         validationPassed = self.validateCommandFormat(commandInput) and validationPassed            
         return validationPassed
 
-    # avoid using the same code for the selected tab. returns the fields for the current visible tab (host/ports/terminal)
+    # avoid using the same code for the selected tab. returns the fields for the current visible tab
+    # (host/ports/terminal)
     # TODO: don't like this too much. seems like we could just use parameters in the validate tool name function
     def selectGroup(self):      
         tabSelected = -1
@@ -596,8 +664,9 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
             
         return tmpWidget, tmpActionLineEdit, tmpLabelLineEdit, tmpCommandLineEdit, actions, tableRow
 
-#   def validateInput(self):                                            # LEO: renamed
-    def validateToolName(self):                                         # called when there is a focus out event. only validates the tool name (key) for host/port/terminal tabs
+#   def validateInput(self):
+    # called when there is a focus out event. only validates the tool name (key) for host/port/terminal tabs
+    def validateToolName(self):
         selectGroup = self.selectGroup()
         tmpWidget = selectGroup[0]
         tmplineEdit = selectGroup[1]
@@ -607,8 +676,11 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
         if tmplineEdit:
             row = tmpWidget.currentRow()
 
-            if row != -1:                                               # LEO: when the first condition is True the validateUniqueToolName is never called (bad if we want to show a nice error message for the unique key)
-                if not validateString(str(tmplineEdit.text())) or not self.validateUniqueToolName(tmpWidget, row, str(tmplineEdit.text())):
+            # LEO: when the first condition is True the validateUniqueToolName is never called (bad if we want to
+            # show a nice error message for the unique key)
+            if row != -1:
+                if not validateString(str(tmplineEdit.text())) or not self.validateUniqueToolName(
+                        tmpWidget, row, str(tmplineEdit.text())):
                     tmplineEdit.setStyleSheet("border: 1px solid red;")
                     tmpWidget.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
                     self.validationPassed = False
@@ -624,8 +696,8 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
                         actions[row][1] = tmpWidget.item(row,0).text()
                     return self.validationPassed                
 
-    #def validateUniqueKey(self, widget, tablerow, text):               # LEO: renamed. +the function that calls this one already knows the selectGroup stuff so no need to duplicate.
-    def validateUniqueToolName(self, widget, tablerow, text):               # LEO: the function that calls this one already knows the selectGroup stuff so no need to duplicate.
+    #def validateUniqueKey(self, widget, tablerow, text):
+    def validateUniqueToolName(self, widget, tablerow, text):
         if tablerow != -1:
             for row in [i for i in range(widget.rowCount()) if i not in [tablerow]]:
                 if widget.item(row,0).text() == text:
@@ -633,7 +705,9 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
         return True
 
     #def nmapValidate(self):
-    def validateStagedNmapTab(self):                                    # LEO: renamed and fixed bugs. TODO: this function is being called way too often. something seems wrong in the overall logic
+    # LEO: renamed and fixed bugs.
+    # TODO: this function is being called way too often. something seems wrong in the overall logic
+    def validateStagedNmapTab(self):
         validationPassed = self.validateNmapPorts(self.stage1Input)
         validationPassed = self.validateNmapPorts(self.stage2Input) and validationPassed
         validationPassed = self.validateNmapPorts(self.stage3Input) and validationPassed
@@ -650,7 +724,8 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
             self.toolForHostsTableWidget.setRowCount(currentRows + 1)
 
             self.toolForHostsTableWidget.setItem(currentRows, 0, QtWidgets.QTableWidgetItem())
-            self.toolForHostsTableWidget.item(self.toolForHostsTableWidget.rowCount()-1, 0).setText('New_Action_'+str(self.hostActionsNumber))
+            self.toolForHostsTableWidget.item(
+                self.toolForHostsTableWidget.rowCount()-1, 0).setText('New_Action_'+str(self.hostActionsNumber))
             self.toolForHostsTableWidget.selectRow(currentRows)
             self.settings.hostActions.append(['', 'New_Action_'+str(self.hostActionsNumber), ''])
             self.hostActionsNumber +=1
@@ -706,9 +781,10 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
         else:
             self.toolForHostsTableWidget.selectRow(self.hostTableRow)
 
-    # this function is used to REAL TIME update the tool table when a user enters a edit a tool name in the HOST/PORT/TERMINAL commands tabs
+    # this function is used to REAL TIME update the tool table when a user enters a edit a tool name in the
+    # HOST/PORT/TERMINAL commands tabs
     # LEO: this one replaces updateToolForHostTable + updateToolForServicesTable + updateToolForTerminalTable
-    def realTimeToolNameUpdate(self, tablewidget, text):                # the name still sucks, sorry. at least it's refactored
+    def realTimeToolNameUpdate(self, tablewidget, text):
         row = tablewidget.currentRow()
         if row != -1:
             tablewidget.item(row, 0).setText(str(text))
@@ -721,7 +797,8 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
             currentRows = self.toolForServiceTableWidget.rowCount()
             self.toolForServiceTableWidget.setRowCount(currentRows + 1)
             self.toolForServiceTableWidget.setItem(currentRows, 0, QtWidgets.QTableWidgetItem())
-            self.toolForServiceTableWidget.item(self.toolForServiceTableWidget.rowCount()-1, 0).setText('New_Action_'+str(self.portActionsNumber))
+            self.toolForServiceTableWidget.item(
+                self.toolForServiceTableWidget.rowCount()-1, 0).setText('New_Action_'+str(self.portActionsNumber))
             self.toolForServiceTableWidget.selectRow(currentRows)
             self.settings.portActions.append(['', 'New_Action_'+str(self.portActionsNumber), ''])
             self.portActionsNumber +=1
@@ -785,7 +862,8 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
             currentRows = self.toolForTerminalTableWidget.rowCount()
             self.toolForTerminalTableWidget.setRowCount(currentRows + 1)
             self.toolForTerminalTableWidget.setItem(currentRows, 0, QtWidgets.QTableWidgetItem())
-            self.toolForTerminalTableWidget.item(self.toolForTerminalTableWidget.rowCount()-1, 0).setText('New_Action_'+str(self.terminalActionsNumber))
+            self.toolForTerminalTableWidget.item(
+                self.toolForTerminalTableWidget.rowCount()-1, 0).setText('New_Action_'+str(self.terminalActionsNumber))
             self.toolForTerminalTableWidget.selectRow(currentRows)
             self.settings.portTerminalActions.append(['', 'New_Action_'+str(self.terminalActionsNumber), ''])
             self.terminalActionsNumber +=1
@@ -842,20 +920,22 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
 
     ##################### TOOLS / AUTOMATED ATTACKS FUNCTIONS #####################
 
-    def enableAutoToolsTab(self):                                       # when 'Run automated attacks' is checked this function is called
+    # when 'Run automated attacks' is checked this function is called
+    def enableAutoToolsTab(self):
         if self.enableAutoAttacks.isChecked():
             self.AutoAttacksSettingsTab.setTabEnabled(1,True)
         else:
             self.AutoAttacksSettingsTab.setTabEnabled(1,False)
 
-    #def selectDefaultServices(self):                                   # toggles select/deselect all default creds checkboxes
-    def toggleDefaultServices(self):                                    # toggles select/deselect all default creds checkboxes  
+    #def selectDefaultServices(self):  # toggles select/deselect all default creds checkboxes
+    def toggleDefaultServices(self):   # toggles select/deselect all default creds checkboxes
         for service in self.defaultServicesList:
             if not self.typeDic[service][2].isChecked() == self.checkDefaultCred.isChecked():
                 self.typeDic[service][2].toggle()
 
     #def addRemoveServices(self, add=True):
-    def moveService(self, src, dst):                                    # in the multiple choice widget (port/terminal commands tabs) it transfers services bidirectionally
+    # in the multiple choice widget (port/terminal commands tabs) it transfers services bidirectionally
+    def moveService(self, src, dst):
         if src.selectionModel().selectedRows():
             row = src.currentRow()
             dst.setRowCount(dst.rowCount() + 1)
@@ -1538,7 +1618,8 @@ class AddSettingsDialog(QtWidgets.QDialog):                                 # di
     # for all the browse buttons
     def wordlistDialog(self, title='Choose username path'):
         if title == 'Choose username path':
-            path = QtWidgets.QFileDialog.getExistingDirectory(self, title, '/',  QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
+            path = QtWidgets.QFileDialog\
+                .getExistingDirectory(self, title, '/',  QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
             self.userlistPath.setText(str(path))
         else:
             path = QtWidgets.QFileDialog.getExistingDirectory(self, title, '/')

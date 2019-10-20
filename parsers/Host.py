@@ -79,7 +79,8 @@ class Host:
         open_ports = []
 
         for portNode in self.hostNode.getElementsByTagName('port'):
-            if portNode.getAttribute('protocol') == protocol and portNode.getElementsByTagName('state')[0].getAttribute('state') == state:
+            if portNode.getAttribute('protocol') == protocol and portNode.getElementsByTagName('state')[0]\
+                    .getAttribute('state') == state:
                 open_ports.append( portNode.getAttribute('portid') )
 
         return open_ports
@@ -109,7 +110,8 @@ class Host:
         '''return a Service object'''
 
         for portNode in self.hostNode.getElementsByTagName('port'):
-            if portNode.getAttribute('protocol') == protocol and portNode.getAttribute('portid') == port and len(portNode.getElementsByTagName('service')) > 0:
+            if portNode.getAttribute('protocol') == protocol and portNode.getAttribute('portid') == port and \
+                    len(portNode.getElementsByTagName('service')) > 0:
                 service_node = portNode.getElementsByTagName('service')[0]
                 service = Service.Service( service_node )
                 return service

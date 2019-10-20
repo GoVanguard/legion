@@ -16,7 +16,7 @@ install:
   - bash ./deps/installPythonLibs.sh
 
 script:
-  - python ./test.py
+  - flake8
   - python -m unittest
 
 after_success:

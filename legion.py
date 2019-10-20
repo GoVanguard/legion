@@ -29,7 +29,8 @@ try:
     from sqlalchemy.orm.scoping import ScopedSession as scoped_session
 except ImportError as e:
     log.info(
-        "Import failed. SQL Alchemy library not found. If on Ubuntu or similar try: apt-get install python3-sqlalchemy*")
+        "Import failed. SQL Alchemy library not found. If on Ubuntu or similar try: apt-get install python3-sqlalchemy*"
+    )
     log.info(e)
     exit(1)
 
@@ -81,7 +82,8 @@ if __name__ == "__main__":
         qss_file = open('./ui/legion.qss').read()
     except IOError as e:
         log.info(
-            "The legion.qss file is missing. Your installation seems to be corrupted. Try downloading the latest version.")
+            "The legion.qss file is missing. Your installation seems to be corrupted. " +
+            "Try downloading the latest version.")
         exit(0)
 
     MainWindow.setStyleSheet(qss_file)
