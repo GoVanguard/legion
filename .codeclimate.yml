@@ -18,3 +18,5 @@ exclude_patterns:
   - "**/*.sh"
   - "**/*.qss"
   - "**/*.txt"
+  - "**/*.yml"
+  - "**/*.md"
