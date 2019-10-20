@@ -7,6 +7,15 @@ from app.shell.Shell import Shell
 
 
 class DefaultShell(Shell):
+    def copy(self, source: str, destination: str) -> None:
+        shutil.copyfile(source, destination)
+
+    def move(self, source: str, destination: str) -> None:
+        shutil.move(source, destination)
+
+    def directoryOrFileExists(self, path: str) -> bool:
+        return os.path.exists(path)
+
     def get_current_working_directory(self) -> str:
         return str(subprocess.check_output("echo $PWD", shell=True)[:-1].decode()) + '/'
 

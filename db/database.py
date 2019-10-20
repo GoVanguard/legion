@@ -59,11 +59,11 @@ class Database:
 
     def commit(self):
         self.dbsemaphore.acquire()
-        log.info("DB lock acquired")
+        log.debug("DB lock acquired")
         try:
             session = self.session()
             rnd = float(randint(1, 99)) / 100.00
-            log.info("Waiting {0}s before commit...".format(str(rnd)))
+            log.debug("Waiting {0}s before commit...".format(str(rnd)))
             time.sleep(rnd)
             session.commit()
         except Exception as e:
@@ -72,11 +72,11 @@ class Database:
             try:
                 rnd = float(randint(1, 99)) / 100.00
                 time.sleep(rnd)
-                log.info("Waiting {0}s before commit...".format(str(rnd)))
+                log.debug("Waiting {0}s before commit...".format(str(rnd)))
                 session.commit()
             except Exception as e:
                 log.error("DB Commit issue on retry")
                 log.error(str(e))
                 pass
         self.dbsemaphore.release()
-        log.info("DB lock released")
+        log.debug("DB lock released")

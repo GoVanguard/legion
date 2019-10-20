@@ -11,8 +11,6 @@ Copyright (c) 2018 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import sys, os
-from PyQt5 import QtWidgets, QtGui, QtCore
 from app.auxiliary import *  # for timestamp
 
 
