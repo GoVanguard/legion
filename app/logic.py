@@ -48,7 +48,7 @@ class Logic:
     def copyNmapXMLToOutputFolder(self, file):
         try:
             path = self.activeProject.properties.outputFolder + "/nmap"
-            filename = ntpath.basename(str(file))
+            ntpath.basename(str(file))
             if not os.path.exists(str(path)):
                 os.makedirs(str(path))
 

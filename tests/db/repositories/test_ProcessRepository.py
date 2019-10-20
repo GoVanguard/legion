@@ -238,8 +238,7 @@ class ProcessRepositoryTest(unittest.TestCase):
         self.mockDbAdapter.commit.assert_called_once()
 
     def test_storeScreenshot_WhenProvidedIPAndPortAndFileName_StoresScreenshot(self):
-        processId = self.processRepository.storeScreenshot("some-ip", "some-port", "some-filename")
-
+        self.processRepository.storeScreenshot("some-ip", "some-port", "some-filename")
         self.mockDbSession.add.assert_called_once()
         self.mockDbSession.commit.assert_called_once()
 
