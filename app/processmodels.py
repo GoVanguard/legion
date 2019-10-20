@@ -97,7 +97,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
                     except:
                         value = "Missing data c #{0} - {1}".format(int(column), processColumns.get(int(column)))
                         pass
-            except Exception as e:
+            except Exception:
                 value = "Missing data c #{0} - {1}".format(int(column), processColumns.get(int(column)))
                 pass
             return value            

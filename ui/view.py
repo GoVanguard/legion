@@ -93,7 +93,7 @@ class View(QtCore.QObject):
         self.viewState = ViewState()
         self.ui.keywordTextInput.setText('')                            # clear keyword filter
 
-        self.ProcessesTableModel = None                                 # fixes bug when sorting processes for the first time
+        self.ProcessesTableModel = None  # fixes bug when sorting processes for the first time
         self.ToolsTableModel = None
         self.setupProcessesTableView()
         self.setupToolsTableView()
@@ -314,7 +314,7 @@ class View(QtCore.QObject):
             if not filename == '':                                      # check for permissions
                 if not os.access(filename, os.R_OK) or not os.access(filename, os.W_OK):
                     log.info('Insufficient permissions to open this file.')
-                    reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning',
+                    QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning',
                                                           "You don't have the necessary permissions on this file.",
                                                           "Ok")
                     return
@@ -325,7 +325,7 @@ class View(QtCore.QObject):
                     projectType = 'sparta'
                                 
                 self.controller.openExistingProject(filename, projectType)
-                self.viewState.firstSave = False              # overwrite this variable because we are opening an existing file
+                self.viewState.firstSave = False  # overwrite this variable because we are opening an existing file
                 # do not show the overlay because the hosttableview is already populated
                 self.displayAddHostsOverlay(False)
             else:
@@ -490,7 +490,7 @@ class View(QtCore.QObject):
         if not filename == '':
             if not os.access(filename, os.R_OK):                        # check for read permissions on the xml file
                 log.info('Insufficient permissions to read this file.')
-                reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning',
+                QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning',
                                                       "You don't have the necessary permissions to read this file.",
                                                       "Ok")
                 return
@@ -1084,8 +1084,6 @@ class View(QtCore.QObject):
     def updateToolsTableView(self):
         if self.ui.MainTabWidget.tabText(self.ui.MainTabWidget.currentIndex()) == 'Scan' and \
                 self.ui.HostsTabWidget.tabText(self.ui.HostsTabWidget.currentIndex()) == 'Tools':
-            headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port",
-                       "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
             self.ToolsTableModel.setDataList(
                 self.controller.getProcessesFromDB(self.viewState.filters,
                                                    showProcesses = 'noNmap',
@@ -1325,10 +1323,9 @@ class View(QtCore.QObject):
         self.ProcessesTableModel.sort(15, Qt.DescendingOrder)
         
     def updateProcessesTableView(self):
-        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port",
-                   "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
         self.ProcessesTableModel.setDataList(
-            self.controller.getProcessesFromDB(self.viewState.filters, showProcesses = True, sort = self.processesTableViewSort,
+            self.controller.getProcessesFromDB(self.viewState.filters, showProcesses = True,
+                                               sort = self.processesTableViewSort,
                                                ncol = self.processesTableViewSortColumn))
         self.ui.ProcessesTableView.repaint()
         self.ui.ProcessesTableView.update()
@@ -1424,7 +1421,7 @@ class View(QtCore.QObject):
 
         # if restoring tabs (after opening a project) don't show the tab in the ui
         if restoring == False:
-            tabindex = self.ui.ServicesTabWidget.addTab(tempWidget, str(tabTitle))
+            self.ui.ServicesTabWidget.addTab(tempWidget, str(tabTitle))
     
         hosttabs = []                                                   # fetch tab list for this host (if any)
         if str(ip) in self.viewState.hostTabs:
@@ -1549,7 +1546,7 @@ class View(QtCore.QObject):
             for tab in tabs:
                 # do not display hydra and nmap tabs when restoring for that host
                 if not 'hydra' in tab.objectName() and not 'nmap' in tab.objectName():                  
-                    tabindex = self.ui.ServicesTabWidget.addTab(tab, tab.objectName())
+                    self.ui.ServicesTabWidget.addTab(tab, tab.objectName())
 
     # this function restores the textview widget (now in the tools display widget) to its original tool tab
     # (under the correct host)
