@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
     try:
         qss_file = open('./ui/legion.qss').read()
-    except IOError as e:
+    except IOError:
         log.info(
             "The legion.qss file is missing. Your installation seems to be corrupted. " +
             "Try downloading the latest version.")

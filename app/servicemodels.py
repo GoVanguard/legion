@@ -199,7 +199,6 @@ class ServiceNamesTableModel(QtCore.QAbstractTableModel):
     def data(self, index, role):   # This method takes care of how the information is displayed
 
         if role == QtCore.Qt.DisplayRole:                               # how to display each cell
-            value = ''
             row = index.row()
             column = index.column()
             if column == 0:

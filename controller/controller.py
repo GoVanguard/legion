@@ -221,7 +221,8 @@ class Controller:
         self.view.importProgressWidget.reset('Opening project..')
         self.view.importProgressWidget.show()                           # show the progress widget
         self.logic.openExistingProject(filename, projectType)
-        self.start(ntpath.basename(self.logic.activeProject.properties.projectName))  # initialisations (globals, signals, etc)
+        # initialisations (globals, signals, etc)
+        self.start(ntpath.basename(self.logic.activeProject.properties.projectName))
         self.view.restoreToolTabs()                                     # restores the tool tabs for each host
         self.view.hostTableClick()                                 # click on first host to restore his host tool tabs
         self.view.importProgressWidget.hide()                           # hide the progress widget
@@ -256,7 +257,7 @@ class Controller:
                 self.runStagedNmap(targetHosts, runHostDiscovery)
             elif runHostDiscovery:
                 outputfile = runningFolder + "/nmap/" + getTimestamp() + '-host-discover'
-                command = "nmap -n -sV -O --version-light -T" + str(nmapSpeed) + " " + targetHosts + " -oA " + outputfile
+                command = f"nmap -n -sV -O --version-light -T{str(nmapSpeed)} {targetHosts} -oA {outputfile}"
                 log.info("Running {command}".format(command=command))
                 self.runCommand('nmap', 'nmap (discovery)', targetHosts, '', '', command, getTimestamp(True),
                                 outputfile, self.view.createNewTabForHost(str(targetHosts), 'nmap (discovery)', True))
@@ -505,8 +506,8 @@ class Controller:
 
     def getContextMenuForProcess(self):
         menu = QMenu()
-        killAction = menu.addAction("Kill")
-        clearAction = menu.addAction("Clear")
+        menu.addAction("Kill")
+        menu.addAction("Clear")
         return menu
 
     # selectedProcesses is a list of tuples (pid, status, procId)
@@ -677,8 +678,8 @@ class Controller:
         qProcess.finished.connect(handleProcStop)
         updateElapsed.timeout.connect(handleProcUpdate)
 
-        textbox.setProperty('dbId',
-                            str(self.logic.activeProject.repositoryContainer.processRepository.storeProcess(qProcess)))
+        processRepository = self.logic.activeProject.repositoryContainer.processRepository
+        textbox.setProperty('dbId', str(processRepository.storeProcess(qProcess)))
         updateElapsed.start(1000)
         self.processTimers[qProcess.id] = updateElapsed
         self.processMeasurements[qProcess.pid()] = 0
@@ -707,8 +708,7 @@ class Controller:
             nextStage = stage + 1
             qProcess.finished.connect(
                 lambda: self.runStagedNmap(str(hostIp), discovery=discovery, stage=nextStage,
-                                           stop=self.logic.activeProject.repositoryContainer.processRepository.isKilledProcess(
-                                               str(qProcess.id))))
+                                           stop=processRepository.isKilledProcess(str(qProcess.id))))
 
         return qProcess.pid()  # return the pid so that we can kill the process if needed
 
@@ -724,7 +724,8 @@ class Controller:
         outputfile = '/tmp/a'
         qProcess = MyQProcess(name, tabTitle, hostIp, port, protocol, command, startTime, outputfile, textbox)
 
-        textbox.setProperty('dbId', str(self.logic.activeProject.repositoryContainer.processRepository.storeProcess(qProcess)))
+        processRepository = self.logic.activeProject.repositoryContainer.processRepository
+        textbox.setProperty('dbId', str(processRepository.storeProcess(qProcess)))
 
         log.info('Queuing: ' + str(command))
         self.fastProcessQueue.put(qProcess)
@@ -750,10 +751,10 @@ class Controller:
     # recursive function used to run nmap in different stages for quick results
     def runStagedNmap(self, targetHosts, discovery = True, stage = 1, stop = False):
         log.info("runStagedNmap called for stage {0}".format(str(stage)))
+        runningFolder = self.logic.activeProject.properties.runningFolder
         if not stop:
             textbox = self.view.createNewTabForHost(str(targetHosts), 'nmap (stage ' + str(stage) + ')', True)
-            outputfile = self.logic.activeProject.properties.runningFolder + "/nmap/" + getTimestamp() + '-nmapstage' + str(
-                stage)
+            outputfile = runningFolder + "/nmap/" + getTimestamp() + '-nmapstage' + str(stage)
 
             if stage == 1:                                              # webservers/proxies
                 ports = self.settings.tools_nmap_stage1_ports
@@ -909,7 +910,6 @@ class Controller:
                 else:
                     for a in self.settings.portActions:
                         if tool[0] == a[1]:
-                            restoring = False
                             tabTitle = a[1] + " (" + port + "/" + protocol + ")"
                             outputfile = self.logic.activeProject.properties.runningFolder + "/" + \
                                          re.sub("[^0-9a-zA-Z]", "", str(tool[0])) + \
@@ -920,15 +920,9 @@ class Controller:
                                                                                                   outputfile)
                             log.debug("Running tool command " + str(command))
 
-                            if 'nmap' in tabTitle:                          # we don't want to show nmap tabs
-                                restoring = True
-                            elif 'python-script' in tabTitle:
-                                restoring = True
-
                             tab = self.view.ui.HostsTabWidget.tabText(self.view.ui.HostsTabWidget.currentIndex())
                             self.runCommand(tool[0], tabTitle, ip, port, protocol, command,
                                             getTimestamp(True),
                                             outputfile,
                                             self.view.createNewTabForHost(ip, tabTitle, not (tab == 'Hosts')))
                             break
-
