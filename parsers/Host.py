@@ -5,13 +5,10 @@ __author__ =  'yunshu(wustyunshu@hotmail.com)'
 __version__=  '0.2'
 __modified_by = 'ketchup'
 
-import sys
-import pprint
 import parsers.Service as Service
 import parsers.Script as Script
 import parsers.OS as OS
 import parsers.Port as Port
-import xml.dom.minidom
 
 class Host:
     ipv4 = ''
@@ -116,38 +113,3 @@ class Host:
                 service = Service.Service( service_node )
                 return service
         return None
-
-if __name__ == '__main__':
-
-    dom = xml.dom.minidom.parse('/tmp/test_pwn01.xml')
-    hostNodes = dom.getElementsByTagName('host')
-
-    if len(hostNodes) == 0:
-        sys.exit( )
-
-    hostNode = dom.getElementsByTagName('host')[0]
-
-    h = Host( hostNode )
-    log.info('host status: ' + h.status)
-    log.info('host ip: ' + h.ip)
-
-    for port in h.getPorts( 'tcp', 'open' ):
-        log.info(port + " is open")
-
-    log.info("script output:")
-    for scr in h.getScripts():
-        log.info("script id:" + scr.scriptId)
-        log.info("Output:")
-        log.info(scr.output)
-
-    log.info("service of tcp port 80:")
-    s = h.getService( 'tcp', '80' )
-    if s == None:
-        log.info("\tno service")
-
-    else:
-        log.info("\t" + s.name)
-        log.info("\t" + s.product)
-        log.info("\t" + s.version)
-        log.info("\t" + s.extrainfo)
-        log.info("\t" + s.fingerprint)
