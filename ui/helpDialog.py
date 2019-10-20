@@ -1,15 +1,21 @@
 #!/usr/bin/env python
 
-'''
+"""
 LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+    You should have received a copy of the GNU General Public License along with this program.
+    If not, see <http://www.gnu.org/licenses/>.
+
+"""
 
 import os
 from PyQt5.QtGui import *                                               # for filters dialog
@@ -43,7 +49,8 @@ class ChangeLog(QtWidgets.QPlainTextEdit):
         self.setReadOnly(True)
 
 class HelpDialog(QtWidgets.QDialog):
-    def __init__(self, name, author, copyright, links, emails, version, build, update, license, desc, smallIcon, bigIcon, qss, parent = None):
+    def __init__(self, name, author, copyright, links, emails, version, build, update, license, desc, smallIcon,
+                 bigIcon, qss, parent = None):
         super(HelpDialog, self).__init__(parent)
         self.name = name
         self.author = author
@@ -76,7 +83,8 @@ class HelpDialog(QtWidgets.QDialog):
         self.logoapp.setPixmap(QtGui.QPixmap(self.smallIcon).scaled(64,64))
         self.form = QtWidgets.QFormLayout()
         self.form2 = QtWidgets.QVBoxLayout()
-        self.form.addRow(self.logoapp,QtWidgets.QLabel('<h2>{0} {1}-{2}</h2>'.format(self.name, self.version, self.build)))
+        self.form.addRow(self.logoapp,QtWidgets.QLabel('<h2>{0} {1}-{2}</h2>'.format(self.name,
+                                                                                     self.version, self.build)))
         self.tabwid = QtWidgets.QTabWidget(self)
         self.TabAbout = QtWidgets.QWidget(self)
         self.TabVersion = QtWidgets.QWidget(self)
@@ -108,7 +116,8 @@ class HelpDialog(QtWidgets.QDialog):
         self.TabAbout.setLayout(self.formAbout)
 
         # Version Section
-        self.formVersion.addRow(QtWidgets.QLabel('<strong>Version: {0}-{1}</strong><br>'.format(self.version, self.build)))
+        self.formVersion.addRow(QtWidgets.QLabel('<strong>Version: {0}-{1}</strong><br>'.format(self.version,
+                                                                                                self.build)))
         self.formVersion.addRow(QtWidgets.QLabel('Using:'))
         import platform
         python_version = platform.python_version()

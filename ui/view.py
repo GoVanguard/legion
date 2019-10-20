@@ -1,17 +1,22 @@
 #!/usr/bin/env python
 
-'''
+"""
 LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+    You should have received a copy of the GNU General Public License along with this program.
+    If not, see <http://www.gnu.org/licenses/>.
+"""
 
-import sys, os, ntpath, signal, re                                      # for file operations, to kill processes and for regex
+import sys, os, ntpath, signal, re  # for file operations, to kill processes and for regex
 
 from PyQt5.QtCore import *                                              # for filters dialog
 from PyQt5 import QtCore
@@ -43,12 +48,12 @@ class View(QtCore.QObject):
     def __init__(self, viewState: ViewState, ui, ui_mainwindow, shell: Shell):
         QtCore.QObject.__init__(self)
         self.ui = ui
-        self.ui_mainwindow = ui_mainwindow                              # TODO: retrieve window dimensions/location from settings
+        self.ui_mainwindow = ui_mainwindow  # TODO: retrieve window dimensions/location from settings
 
         self.bottomWindowSize = 100
         self.leftPanelSize = 300
 
-        self.ui.splitter_2.setSizes([250, self.bottomWindowSize])                           # set better default size for bottom panel
+        self.ui.splitter_2.setSizes([250, self.bottomWindowSize])  # set better default size for bottom panel
         self.qss = None
         self.processesTableViewSort = 'desc'
         self.processesTableViewSortColumn = 'status'
@@ -57,17 +62,23 @@ class View(QtCore.QObject):
         self.shell = shell
         self.viewState = viewState
 
-    def setController(self, controller):                                # the view needs access to controller methods to link gui actions with real actions
+    # the view needs access to controller methods to link gui actions with real actions
+    def setController(self, controller):
         self.controller = controller
 
     def startOnce(self):
-        self.fixedTabsCount = self.ui.ServicesTabWidget.count()         # the number of fixed host tabs (services, scripts, information, notes)
+        # the number of fixed host tabs (services, scripts, information, notes)
+        self.fixedTabsCount = self.ui.ServicesTabWidget.count()
         self.hostInfoWidget = HostInformationWidget(self.ui.InformationTab)
         self.filterdialog = FiltersDialog(self.ui.centralwidget)
         self.importProgressWidget = ProgressWidget('Importing nmap..', self.ui.centralwidget)
         self.adddialog = AddHostsDialog(self.ui.centralwidget)      
         self.settingsWidget = AddSettingsDialog(self.shell, self.ui.centralwidget)
-        self.helpDialog = HelpDialog(self.controller.name, self.controller.author, self.controller.copyright, self.controller.links, self.controller.emails, self.controller.version, self.controller.build, self.controller.update, self.controller.license, self.controller.desc, self.controller.smallIcon, self.controller.bigIcon, qss = self.qss, parent = self.ui.centralwidget)
+        self.helpDialog = HelpDialog(self.controller.name, self.controller.author, self.controller.copyright,
+                                     self.controller.links, self.controller.emails, self.controller.version,
+                                     self.controller.build, self.controller.update, self.controller.license,
+                                     self.controller.desc, self.controller.smallIcon, self.controller.bigIcon,
+                                     qss = self.qss, parent = self.ui.centralwidget)
         self.configDialog = ConfigDialog(controller = self.controller, qss = self.qss, parent = self.ui.centralwidget)
 
         self.ui.HostsTableView.setSelectionMode(3)
@@ -93,7 +104,7 @@ class View(QtCore.QObject):
         self.initTables()                                               # initialise all tables
 
         self.updateInterface()
-        self.restoreToolTabWidget(True)                                 # True means we want to show the original textedit
+        self.restoreToolTabWidget(True)                  # True means we want to show the original textedit
         self.updateScriptsOutputView('')                                # update the script output panel (right) 
         self.updateToolHostsTableView('')
         self.ui.MainTabWidget.setCurrentIndex(0)                        # display scan tab by default
@@ -102,7 +113,7 @@ class View(QtCore.QObject):
         self.ui.BottomTabWidget.setCurrentIndex(0)                      # display Log tab by default
         self.ui.BruteTabWidget.setTabsClosable(True)                    # sets all tabs as closable in bruteforcer
 
-        self.ui.ServicesTabWidget.setTabsClosable(True)                 # hide the close button (cross) from the fixed tabs
+        self.ui.ServicesTabWidget.setTabsClosable(True)  # hide the close button (cross) from the fixed tabs
 
         self.ui.ServicesTabWidget.tabBar().setTabButton(0, QTabBar.RightSide, None)
         self.ui.ServicesTabWidget.tabBar().setTabButton(1, QTabBar.RightSide, None)
@@ -110,12 +121,13 @@ class View(QtCore.QObject):
         self.ui.ServicesTabWidget.tabBar().setTabButton(3, QTabBar.RightSide, None)
         self.ui.ServicesTabWidget.tabBar().setTabButton(4, QTabBar.RightSide, None)
 
-        self.resetBruteTabs()                                           # clear brute tabs (if any) and create default brute tab
+        self.resetBruteTabs()  # clear brute tabs (if any) and create default brute tab
         self.displayToolPanel(False)
         self.displayScreenshots(False)
-        self.displayAddHostsOverlay(True)                               # displays an overlay over the hosttableview saying 'click here to add host(s) to scope'
+        # displays an overlay over the hosttableview saying 'click here to add host(s) to scope'
+        self.displayAddHostsOverlay(True)
 
-    def startConnections(self):                                         # signal initialisations (signals/slots, actions, etc)
+    def startConnections(self):  # signal initialisations (signals/slots, actions, etc)
         ### MENU ACTIONS ###
         self.connectCreateNewProject()
         self.connectOpenExistingProject()
@@ -138,7 +150,7 @@ class View(QtCore.QObject):
         self.connectAddHostClick()
         self.connectSwitchTabClick()                                    # to detect changing tabs (on left panel)
         self.connectSwitchMainTabClick()                                # to detect changing top level tabs
-        self.connectTableDoubleClick()                                  # for double clicking on host (it redirects to the host view)
+        self.connectTableDoubleClick()   # for double clicking on host (it redirects to the host view)
         self.connectProcessTableHeaderResize()
         ### CONTEXT MENUS ###
         self.connectHostsTableContextMenu()
@@ -161,10 +173,12 @@ class View(QtCore.QObject):
 
     #################### AUXILIARY ####################
 
-    def initTables(self):                                               # this function prepares the default settings for each table
+    def initTables(self):  # this function prepares the default settings for each table
         # hosts table (left)
-        headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime", "Lastboot", "Distance", "CheckedHost", "State", "Count", "Closed"]
-        setTableProperties(self.ui.HostsTableView, len(headers), [0, 2, 4, 5, 6, 7, 8, 9, 10 , 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24])
+        headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime",
+                   "Lastboot", "Distance", "CheckedHost", "State", "Count", "Closed"]
+        setTableProperties(self.ui.HostsTableView, len(headers), [0, 2, 4, 5, 6, 7, 8, 9, 10 , 11, 12, 13, 14, 15, 16,
+                                                                  17, 18, 19, 20, 21, 22, 23, 24])
         self.ui.HostsTableView.horizontalHeader().resizeSection(1, 30)
 
         # service names table (left)
@@ -172,20 +186,24 @@ class View(QtCore.QObject):
         setTableProperties(self.ui.ServiceNamesTableView, len(headers))
 
         # cves table (right)
-        headers = ["CVE Id", "Severity", "Product", "Version", "CVE URL", "Source", "ExploitDb ID", "ExploitDb", "ExploitDb URL"]
+        headers = ["CVE Id", "Severity", "Product", "Version", "CVE URL", "Source", "ExploitDb ID", "ExploitDb",
+                   "ExploitDb URL"]
         setTableProperties(self.ui.CvesTableView, len(headers))
         self.ui.CvesTableView.setSortingEnabled(True)
 
         # tools table (left)
-        headers = ["Progress", "Display", "Pid", "Tool", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "OutputFile", "Output", "Status"]
+        headers = ["Progress", "Display", "Pid", "Tool", "Tool", "Host", "Port", "Protocol", "Command", "Start time",
+                   "OutputFile", "Output", "Status"]
         setTableProperties(self.ui.ToolsTableView, len(headers), [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
 
         # service table (right)
-        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version", "Extrainfo", "Fingerprint"]
+        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version",
+                   "Extrainfo", "Fingerprint"]
         setTableProperties(self.ui.ServicesTableView, len(headers), [0, 1, 5, 6, 8, 10, 11])      
 
         # ports by service (right)
-        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version", "Extrainfo", "Fingerprint"]
+        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version",
+                   "Extrainfo", "Fingerprint"]
         setTableProperties(self.ui.ServicesTableView, len(headers), [2, 5, 6, 8, 10, 11])
         self.ui.ServicesTableView.horizontalHeader().resizeSection(0, 130)       # resize IP 
 
@@ -194,12 +212,14 @@ class View(QtCore.QObject):
         setTableProperties(self.ui.ScriptsTableView, len(headers), [0, 3])
 
         # tool hosts table (right)
-        headers = ["Progress", "Display", "Pid", "Name", "Action", "Target", "Port", "Protocol", "Command", "Start time", "OutputFile", "Output", "Status"]
+        headers = ["Progress", "Display", "Pid", "Name", "Action", "Target", "Port", "Protocol", "Command",
+                   "Start time", "OutputFile", "Output", "Status"]
         setTableProperties(self.ui.ToolHostsTableView, len(headers), [0, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12])
         self.ui.ToolHostsTableView.horizontalHeader().resizeSection(5,150)      # default width for Host column
     
         # process table
-        headers = ["Progress", "Elapsed", "Est. Remaining", "Display", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "OutputFile", "Output", "Status"]
+        headers = ["Progress", "Elapsed", "Est. Remaining", "Display", "Pid", "Name", "Tool", "Host", "Port",
+                   "Protocol", "Command", "Start time", "OutputFile", "Output", "Status"]
         setTableProperties(self.ui.ProcessesTableView, len(headers), [1, 2, 3, 4, 5, 8, 9, 10, 13, 14, 16])
         self.ui.ProcessesTableView.setSortingEnabled(True)
 
@@ -207,10 +227,12 @@ class View(QtCore.QObject):
         self.ui_mainwindow.setWindowTitle(str(title))
 
     def yesNoDialog(self, message, title):
-        dialog = QtWidgets.QMessageBox.question(self.ui.centralwidget, title, message, QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+        dialog = QtWidgets.QMessageBox.question(self.ui.centralwidget, title, message,
+                                                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                                                QtWidgets.QMessageBox.No)
         return dialog
         
-    def setDirty(self, status=True):                                    # this function is called for example when the user edits notes
+    def setDirty(self, status=True):   # this function is called for example when the user edits notes
         self.viewState.dirty = status
         title = ''
         
@@ -221,7 +243,8 @@ class View(QtCore.QObject):
         else:
             title += ntpath.basename(str(self.controller.getProjectName()))
         
-        self.setMainWindowTitle(self.controller.name + ' ' + self.controller.getVersion() + ' - ' + title + ' - ' + self.controller.getCWD())
+        self.setMainWindowTitle(self.controller.name + ' ' + self.controller.getVersion() + ' - ' + title + ' - ' +
+                                self.controller.getCWD())
         
     #################### ACTIONS ####################
 
@@ -238,7 +261,8 @@ class View(QtCore.QObject):
 
     def dealWithRunningProcesses(self, exiting=False):
         if len(self.controller.getRunningProcesses()) > 0:
-            message = "There are still processes running. If you continue, every process will be terminated. Are you sure you want to continue?"
+            message = "There are still processes running. If you continue, every process will be terminated. " + \
+                      "Are you sure you want to continue?"
             reply = self.yesNoDialog(message, 'Confirm')
                     
             if not reply == QtWidgets.QMessageBox.Yes:
@@ -250,8 +274,9 @@ class View(QtCore.QObject):
         
         return True
 
-    def dealWithCurrentProject(self, exiting=False):                    # returns True if we can proceed with: creating/opening a project or exiting
-        if self.viewState.dirty:                                                  # if there are unsaved changes, show save dialog first
+    # returns True if we can proceed with: creating/opening a project or exiting
+    def dealWithCurrentProject(self, exiting=False):
+        if self.viewState.dirty:   # if there are unsaved changes, show save dialog first
             if not self.saveOrDiscard():                                # if the user canceled, stop
                 return False
         
@@ -282,12 +307,16 @@ class View(QtCore.QObject):
 
     def openExistingProject(self):      
         if self.dealWithCurrentProject():
-            filename = QtWidgets.QFileDialog.getOpenFileName(self.ui.centralwidget, 'Open project', self.controller.getCWD(), filter='Legion session (*.legion);; Sparta session (*.sprt)')[0]
+            filename = QtWidgets.QFileDialog.getOpenFileName(
+                self.ui.centralwidget, 'Open project', self.controller.getCWD(),
+                filter='Legion session (*.legion);; Sparta session (*.sprt)')[0]
         
             if not filename == '':                                      # check for permissions
                 if not os.access(filename, os.R_OK) or not os.access(filename, os.W_OK):
                     log.info('Insufficient permissions to open this file.')
-                    reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions on this file.", "Ok")
+                    reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning',
+                                                          "You don't have the necessary permissions on this file.",
+                                                          "Ok")
                     return
 
                 if '.legion' in str(filename):
@@ -296,8 +325,9 @@ class View(QtCore.QObject):
                     projectType = 'sparta'
                                 
                 self.controller.openExistingProject(filename, projectType)
-                self.viewState.firstSave = False                        # overwrite this variable because we are opening an existing file
-                self.displayAddHostsOverlay(False)                      # do not show the overlay because the hosttableview is already populated
+                self.viewState.firstSave = False              # overwrite this variable because we are opening an existing file
+                # do not show the overlay because the hosttableview is already populated
+                self.displayAddHostsOverlay(False)
             else:
                 log.info('No file chosen..')
 
@@ -325,12 +355,16 @@ class View(QtCore.QObject):
 
         self.controller.saveProject(self.viewState.lastHostIdClicked, self.ui.NotesTextEdit.toPlainText())
 
-        filename = QtWidgets.QFileDialog.getSaveFileName(self.ui.centralwidget, 'Save project as', self.controller.getCWD(), filter='Legion session (*.legion)', options=QtWidgets.QFileDialog.DontConfirmOverwrite)[0]
+        filename = QtWidgets.QFileDialog.getSaveFileName(self.ui.centralwidget, 'Save project as',
+                                                         self.controller.getCWD(), filter='Legion session (*.legion)',
+                                                         options=QtWidgets.QFileDialog.DontConfirmOverwrite)[0]
             
         while not filename =='':
-            if not os.access(ntpath.dirname(str(filename)), os.R_OK) or not os.access(ntpath.dirname(str(filename)), os.W_OK):
+            if not os.access(ntpath.dirname(str(filename)), os.R_OK) or not os.access(
+                    ntpath.dirname(str(filename)), os.W_OK):
                 log.info('Insufficient permissions on this folder.')
-                reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions on this folder.")
+                reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning',
+                                                      "You don't have the necessary permissions on this folder.")
                 
             else:
                 if self.controller.saveProjectAs(filename):
@@ -339,13 +373,18 @@ class View(QtCore.QObject):
                 if not str(filename).endswith('.legion'):
                     filename = str(filename) + '.legion'
                 msgBox = QtWidgets.QMessageBox()
-                reply = msgBox.question(self.ui.centralwidget, 'Confirm', "A file named \""+ntpath.basename(str(filename))+"\" already exists.  Do you want to replace it?", QtWidgets.QMessageBox.Abort | QtWidgets.QMessageBox.Save)
+                reply = msgBox.question(self.ui.centralwidget, 'Confirm',
+                                        "A file named \""+ntpath.basename(str(filename))+"\" already exists.  " +
+                                        "Do you want to replace it?",
+                                        QtWidgets.QMessageBox.Abort | QtWidgets.QMessageBox.Save)
             
                 if reply == QtWidgets.QMessageBox.Save:
                     self.controller.saveProjectAs(filename, 1)          # replace
                     break
 
-            filename = QtWidgets.QFileDialog.getSaveFileName(self.ui.centralwidget, 'Save project as', '.', filter='Legion session (*.legion)', options=QtWidgets.QFileDialog.DontConfirmOverwrite)[0]
+            filename = QtWidgets.QFileDialog.getSaveFileName(self.ui.centralwidget, 'Save project as', '.',
+                                                             filter='Legion session (*.legion)',
+                                                             options=QtWidgets.QFileDialog.DontConfirmOverwrite)[0]
 
         if not filename == '':          
             self.setDirty(False)
@@ -357,7 +396,10 @@ class View(QtCore.QObject):
             log.info('No file chosen..')
 
     def saveOrDiscard(self):
-        reply = QtWidgets.QMessageBox.question(self.ui.centralwidget, 'Confirm', "The project has been modified. Do you want to save your changes?", QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Save)
+        reply = QtWidgets.QMessageBox.question(
+            self.ui.centralwidget, 'Confirm', "The project has been modified. Do you want to save your changes?",
+            QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel,
+            QtWidgets.QMessageBox.Save)
         
         if reply == QtWidgets.QMessageBox.Save:
             self.saveProject()
@@ -400,7 +442,13 @@ class View(QtCore.QObject):
             hostList = hostListStr.split(';')
             hostList = [hostEntry for hostEntry in hostList if len(hostEntry) > 0]
 
-            hostAddOptionControls = [self.adddialog.rdoScanOptTcpConnect, self.adddialog.rdoScanOptSynStealth, self.adddialog.rdoScanOptFin, self.adddialog.rdoScanOptNull, self.adddialog.rdoScanOptXmas, self.adddialog.rdoScanOptPingTcp, self.adddialog.rdoScanOptPingUdp, self.adddialog.rdoScanOptPingDisable, self.adddialog.rdoScanOptPingRegular, self.adddialog.rdoScanOptPingSyn, self.adddialog.rdoScanOptPingAck, self.adddialog.rdoScanOptPingTimeStamp, self.adddialog.rdoScanOptPingNetmask, self.adddialog.chkScanOptFragmentation]
+            hostAddOptionControls = [self.adddialog.rdoScanOptTcpConnect, self.adddialog.rdoScanOptSynStealth,
+                                     self.adddialog.rdoScanOptFin, self.adddialog.rdoScanOptNull,
+                                     self.adddialog.rdoScanOptXmas, self.adddialog.rdoScanOptPingTcp,
+                                     self.adddialog.rdoScanOptPingUdp, self.adddialog.rdoScanOptPingDisable,
+                                     self.adddialog.rdoScanOptPingRegular, self.adddialog.rdoScanOptPingSyn,
+                                     self.adddialog.rdoScanOptPingAck, self.adddialog.rdoScanOptPingTimeStamp,
+                                     self.adddialog.rdoScanOptPingNetmask, self.adddialog.chkScanOptFragmentation]
             nmapOptions = []
 
             if self.adddialog.rdoModeOptEasy.isChecked():
@@ -416,12 +464,17 @@ class View(QtCore.QObject):
                            nmapOptions.append(nmapOptionValue)
                 nmapOptions.append(str(self.adddialog.txtCustomOptList.text()))
             for hostListEntry in hostList:
-                self.controller.addHosts(targetHosts = hostListEntry, runHostDiscovery = self.adddialog.chkDiscovery.isChecked(), runStagedNmap = self.adddialog.chkNmapStaging.isChecked(), nmapSpeed = self.adddialog.sldScanTimingSlider.value(), scanMode = scanMode, nmapOptions = nmapOptions)
-            self.adddialog.cmdAddButton.clicked.disconnect()                   # disconnect all the signals from that button
+                self.controller.addHosts(targetHosts=hostListEntry,
+                                         runHostDiscovery=self.adddialog.chkDiscovery.isChecked(),
+                                         runStagedNmap=self.adddialog.chkNmapStaging.isChecked(),
+                                         nmapSpeed=self.adddialog.sldScanTimingSlider.value(),
+                                         scanMode=scanMode,
+                                         nmapOptions=nmapOptions)
+            self.adddialog.cmdAddButton.clicked.disconnect()   # disconnect all the signals from that button
         else:       
             self.adddialog.spacer.changeSize(0,0)
             self.adddialog.validationLabel.show()
-            self.adddialog.cmdAddButton.clicked.disconnect()                   # disconnect all the signals from that button
+            self.adddialog.cmdAddButton.clicked.disconnect()  # disconnect all the signals from that button
             self.adddialog.cmdAddButton.clicked.connect(self.callAddHosts)
 
     ###
@@ -431,12 +484,15 @@ class View(QtCore.QObject):
 
     def importNmap(self):
         self.ui.statusbar.showMessage('Importing nmap xml..', msecs=1000)
-        filename = QtWidgets.QFileDialog.getOpenFileName(self.ui.centralwidget, 'Choose nmap file', self.controller.getCWD(), filter='XML file (*.xml)')[0]
+        filename = QtWidgets.QFileDialog.getOpenFileName(self.ui.centralwidget, 'Choose nmap file',
+                                                         self.controller.getCWD(), filter='XML file (*.xml)')[0]
         log.info('Importing nmap xml from {0}...'.format(str(filename)))
         if not filename == '':
             if not os.access(filename, os.R_OK):                        # check for read permissions on the xml file
                 log.info('Insufficient permissions to read this file.')
-                reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning', "You don't have the necessary permissions to read this file.", "Ok")
+                reply = QtWidgets.QMessageBox.warning(self.ui.centralwidget, 'Warning',
+                                                      "You don't have the necessary permissions to read this file.",
+                                                      "Ok")
                 return
 
             self.importProgressWidget.reset('Importing nmap..') 
@@ -463,7 +519,7 @@ class View(QtCore.QObject):
             self.settingsWidget.hide()
 
     def cancelSettings(self):
-        log.info('DEBUG: cancel button pressed')                            # LEO: we can use this later to test ESC button once implemented.
+        log.info('DEBUG: cancel button pressed')  # LEO: we can use this later to test ESC button once implemented.
         self.settingsWidget.hide()
         self.controller.cancelSettings()
 
@@ -477,7 +533,7 @@ class View(QtCore.QObject):
         self.ui.actionExit.triggered.connect(self.appExit)  
 
     def appExit(self):
-        if self.dealWithCurrentProject(True):                           # the parameter indicates that we are exiting the application
+        if self.dealWithCurrentProject(True):   # the parameter indicates that we are exiting the application
             self.closeProject()
             log.info('Exiting application..')
             sys.exit(0)
@@ -492,15 +548,17 @@ class View(QtCore.QObject):
 
     # TODO: review - especially what tab is selected when coming from another host
     def hostTableClick(self):
-        if self.ui.HostsTableView.selectionModel().selectedRows():      # get the IP address of the selected host (if any)
-            row = self.ui.HostsTableView.selectionModel().selectedRows()[len(self.ui.HostsTableView.selectionModel().selectedRows())-1].row()
+        if self.ui.HostsTableView.selectionModel().selectedRows():  # get the IP address of the selected host (if any)
+            row = self.ui.HostsTableView.selectionModel().selectedRows()[len(self.ui.HostsTableView.
+                                                                             selectionModel().selectedRows())-1].row()
             print(row)
             ip = self.HostsTableModel.getHostIPForRow(row)
             self.viewState.ip_clicked = ip
             save = self.ui.ServicesTabWidget.currentIndex()
             self.removeToolTabs()
             self.restoreToolTabsForHost(self.viewState.ip_clicked)
-            self.ui.ServicesTabWidget.setCurrentIndex(save)             # display services tab if we are coming from a dynamic tab (non-fixed)
+            # display services tab if we are coming from a dynamic tab (non-fixed)
+            self.ui.ServicesTabWidget.setCurrentIndex(save)
             self.updateRightPanel(self.viewState.ip_clicked)
         else:
             self.removeToolTabs()               
@@ -513,7 +571,8 @@ class View(QtCore.QObject):
         
     def serviceNamesTableClick(self):
         if self.ui.ServiceNamesTableView.selectionModel().selectedRows():
-            row = self.ui.ServiceNamesTableView.selectionModel().selectedRows()[len(self.ui.ServiceNamesTableView.selectionModel().selectedRows())-1].row()
+            row = self.ui.ServiceNamesTableView.selectionModel().selectedRows()[len(
+                self.ui.ServiceNamesTableView.selectionModel().selectedRows())-1].row()
             print(row)
             self.viewState.service_clicked = self.ServiceNamesTableModel.getServiceNameForRow(row)
             self.updatePortsByServiceTableView(self.viewState.service_clicked)
@@ -525,11 +584,13 @@ class View(QtCore.QObject):
         
     def toolsTableClick(self):
         if self.ui.ToolsTableView.selectionModel().selectedRows():
-            row = self.ui.ToolsTableView.selectionModel().selectedRows()[len(self.ui.ToolsTableView.selectionModel().selectedRows())-1].row()
+            row = self.ui.ToolsTableView.selectionModel().selectedRows()[len(
+                self.ui.ToolsTableView.selectionModel().selectedRows())-1].row()
             print(row)
             self.viewState.tool_clicked = self.ToolsTableModel.getToolNameForRow(row)
             self.updateToolHostsTableView(self.viewState.tool_clicked)
-            self.displayScreenshots(self.viewState.tool_clicked == 'screenshooter')   # if we clicked on the screenshooter we need to display the screenshot widget
+            # if we clicked on the screenshooter we need to display the screenshot widget
+            self.displayScreenshots(self.viewState.tool_clicked == 'screenshooter')
 
         # update the updateToolHostsTableView when the user closes all the host tabs
         # TODO: this doesn't seem right
@@ -544,7 +605,8 @@ class View(QtCore.QObject):
         
     def scriptTableClick(self):
         if self.ui.ScriptsTableView.selectionModel().selectedRows():
-            row = self.ui.ScriptsTableView.selectionModel().selectedRows()[len(self.ui.ScriptsTableView.selectionModel().selectedRows())-1].row()
+            row = self.ui.ScriptsTableView.selectionModel().selectedRows()[len(
+                self.ui.ScriptsTableView.selectionModel().selectedRows())-1].row()
             print(row)
             self.viewState.script_clicked = self.ScriptsTableModel.getScriptDBIdForRow(row)
             self.updateScriptsOutputView(self.viewState.script_clicked)
@@ -557,7 +619,8 @@ class View(QtCore.QObject):
     # TODO: review / duplicate code
     def toolHostsClick(self):
         if self.ui.ToolHostsTableView.selectionModel().selectedRows():
-            row = self.ui.ToolHostsTableView.selectionModel().selectedRows()[len(self.ui.ToolHostsTableView.selectionModel().selectedRows())-1].row()
+            row = self.ui.ToolHostsTableView.selectionModel().selectedRows()[len(
+                self.ui.ToolHostsTableView.selectionModel().selectedRows())-1].row()
             print(row)
             self.viewState.tool_host_clicked = self.ToolHostsTableModel.getProcessIdForRow(row)
             ip = self.ToolHostsTableModel.getIpForRow(row)
@@ -567,17 +630,21 @@ class View(QtCore.QObject):
                 self.ui.ScreenshotWidget.open(str(self.controller.getOutputFolder())+'/screenshots/'+str(filename))
             
             else:
-                self.restoreToolTabWidget()                             # restore the tool output textview now showing in the tools display panel to its original host tool tab
-                
-                if self.ui.DisplayWidget.findChild(QtWidgets.QPlainTextEdit):   # remove the tool output currently in the tools display panel (if any)
+                # restore the tool output textview now showing in the tools display panel to its original host tool tab
+                self.restoreToolTabWidget()
+
+                # remove the tool output currently in the tools display panel (if any)
+                if self.ui.DisplayWidget.findChild(QtWidgets.QPlainTextEdit):
                     self.ui.DisplayWidget.findChild(QtWidgets.QPlainTextEdit).setParent(None)
 
                 tabs = []                                               # fetch tab list for this host (if any)
                 if str(ip) in self.viewState.hostTabs:
                     tabs = self.viewState.hostTabs[str(ip)]
                 
-                for tab in tabs:                                        # place the tool output textview in the tools display panel
-                    if tab.findChild(QtWidgets.QPlainTextEdit) and str(tab.findChild(QtWidgets.QPlainTextEdit).property('dbId')) == str(self.viewState.tool_host_clicked):
+                for tab in tabs: # place the tool output textview in the tools display panel
+                    if tab.findChild(QtWidgets.QPlainTextEdit) and \
+                            str(tab.findChild(QtWidgets.QPlainTextEdit).property('dbId')) == \
+                            str(self.viewState.tool_host_clicked):
                         self.ui.DisplayWidgetLayout.addWidget(tab.findChild(QtWidgets.QPlainTextEdit))
                         break
 
@@ -590,7 +657,8 @@ class View(QtCore.QObject):
         self.ui.FilterAdvancedButton.clicked.connect(self.advancedFilterClick)
 
     def advancedFilterClick(self, current):
-        self.filterdialog.setCurrentFilters(self.viewState.filters.getFilters())  # to make sure we don't show filters than have been clicked but cancelled
+        # to make sure we don't show filters than have been clicked but cancelled
+        self.filterdialog.setCurrentFilters(self.viewState.filters.getFilters())
         self.filterdialog.show()
 
     def updateFilter(self):
@@ -620,7 +688,8 @@ class View(QtCore.QObject):
         index = signal.sibling(row, 0)
         index_dict = model.itemData(index)
         index_value = index_dict.get(0)
-        log.info('Row {}, Column {} clicked - value: {}\nColumn 1 contents: {}'.format(row, column, cell_value, index_value))
+        log.info('Row {}, Column {} clicked - value: {}\nColumn 1 contents: {}'
+                 .format(row, column, cell_value, index_value))
 
         ## Does not work under WSL!
         df = pd.DataFrame([cell_value])
@@ -632,10 +701,12 @@ class View(QtCore.QObject):
         print(tab)
 
         if tab == 'Services':
-            row = self.ui.ServicesTableView.selectionModel().selectedRows()[len(self.ui.ServicesTableView.selectionModel().selectedRows())-1].row()
+            row = self.ui.ServicesTableView.selectionModel().selectedRows()[len(
+                self.ui.ServicesTableView.selectionModel().selectedRows())-1].row()
             ip = self.PortsByServiceTableModel.getIpForRow(row)
         elif tab == 'Tools':
-            row = self.ui.ToolHostsTableView.selectionModel().selectedRows()[len(self.ui.ToolHostsTableView.selectionModel().selectedRows())-1].row()
+            row = self.ui.ToolHostsTableView.selectionModel().selectedRows()[len(
+                self.ui.ToolHostsTableView.selectionModel().selectedRows())-1].row()
             ip = self.ToolHostsTableModel.getIpForRow(row)
         else:
             return
@@ -692,7 +763,8 @@ class View(QtCore.QObject):
             elif selectedTab == 'Tools':
                 self.updateToolsTableView()
 
-            self.displayToolPanel(selectedTab == 'Tools')               # display tool panel if we are in tools tab, hide it otherwise
+            # display tool panel if we are in tools tab, hide it otherwise
+            self.displayToolPanel(selectedTab == 'Tools')
     
     ###
 
@@ -708,14 +780,17 @@ class View(QtCore.QObject):
         elif selectedTab == 'Brute':
             self.ui.BruteTabWidget.currentWidget().runButton.setFocus()
             self.restoreToolTabWidget()
-        
-        self.ui.MainTabWidget.tabBar().setTabTextColor(1, QtGui.QColor())       # in case the Brute tab was red because hydra found stuff, change it back to black
+
+        # in case the Brute tab was red because hydra found stuff, change it back to black
+        self.ui.MainTabWidget.tabBar().setTabTextColor(1, QtGui.QColor())
 
     ###
-    def setVisible(self):                                               # indicates that a context menu is showing so that the ui doesn't get updated disrupting the user
+    # indicates that a context menu is showing so that the ui doesn't get updated disrupting the user
+    def setVisible(self):
         self.viewState.menuVisible = True
 
-    def setInvisible(self):                                             # indicates that a context menu has now closed and any pending ui updates can take place now
+    # indicates that a context menu has now closed and any pending ui updates can take place now
+    def setInvisible(self):
         self.viewState.menuVisible = False
     ###
     
@@ -724,12 +799,15 @@ class View(QtCore.QObject):
 
     def contextMenuHostsTableView(self, pos):
         if len(self.ui.HostsTableView.selectionModel().selectedRows()) > 0:
-            row = self.ui.HostsTableView.selectionModel().selectedRows()[len(self.ui.HostsTableView.selectionModel().selectedRows())-1].row()
-            self.viewState.ip_clicked = self.HostsTableModel.getHostIPForRow(row) # because when we right click on a different host, we need to select it
+            row = self.ui.HostsTableView.selectionModel().selectedRows()[
+                len(self.ui.HostsTableView.selectionModel().selectedRows())-1].row()
+            # because when we right click on a different host, we need to select it
+            self.viewState.ip_clicked = self.HostsTableModel.getHostIPForRow(row)
             self.ui.HostsTableView.selectRow(row)                       # select host when right-clicked
-            self.hostTableClick()           
-            
-            menu, actions = self.controller.getContextMenuForHost(str(self.HostsTableModel.getHostCheckStatusForRow(row)))          
+            self.hostTableClick()
+
+            menu, actions = self.controller.getContextMenuForHost(
+                str(self.HostsTableModel.getHostCheckStatusForRow(row)))
             menu.aboutToShow.connect(self.setVisible)
             menu.aboutToHide.connect(self.setInvisible)
             hostid = self.HostsTableModel.getHostIdForRow(row)
@@ -737,7 +815,7 @@ class View(QtCore.QObject):
 
             if action:
                 self.controller.handleHostAction(self.viewState.ip_clicked, hostid, actions, action)
-    
+
     ###
 
     def connectServiceNamesTableContextMenu(self):
@@ -745,7 +823,8 @@ class View(QtCore.QObject):
 
     def contextMenuServiceNamesTableView(self, pos):
         if len(self.ui.ServiceNamesTableView.selectionModel().selectedRows()) > 0:
-            row = self.ui.ServiceNamesTableView.selectionModel().selectedRows()[len(self.ui.ServiceNamesTableView.selectionModel().selectedRows())-1].row()
+            row = self.ui.ServiceNamesTableView.selectionModel().selectedRows()[len(
+                self.ui.ServiceNamesTableView.selectionModel().selectedRows())-1].row()
             self.viewState.service_clicked = self.ServiceNamesTableModel.getServiceNameForRow(row)
             self.ui.ServiceNamesTableView.selectRow(row)                # select service when right-clicked
             self.serviceNamesTableClick()
@@ -755,9 +834,10 @@ class View(QtCore.QObject):
             menu.aboutToHide.connect(self.setInvisible)
             action = menu.exec_(self.ui.ServiceNamesTableView.viewport().mapToGlobal(pos))
 
-            if action:                                                                  
-                self.serviceNamesTableClick()                           # because we will need to populate the right-side panel in order to select those rows
-                                                                        # we must only fetch the targets on which we haven't run the tool yet               
+            if action:
+                # because we will need to populate the right-side panel in order to select those rows
+                self.serviceNamesTableClick()
+                # we must only fetch the targets on which we haven't run the tool yet
                 tool = None
                 for i in range(0,len(actions)):                         # fetch the tool name
                     if action == actions[i][1]:
@@ -768,20 +848,26 @@ class View(QtCore.QObject):
                 if action.text() == 'Take screenshot':
                     tool = 'screenshooter'
                         
-                targets = []                                            # get (IP,port,protocol) combinations for this service
+                targets = []  # get (IP,port,protocol) combinations for this service
                 for row in range(self.PortsByServiceTableModel.rowCount("")):
-                    targets.append([self.PortsByServiceTableModel.getIpForRow(row), self.PortsByServiceTableModel.getPortForRow(row), self.PortsByServiceTableModel.getProtocolForRow(row)])
+                    targets.append([self.PortsByServiceTableModel.getIpForRow(row),
+                                    self.PortsByServiceTableModel.getPortForRow(row),
+                                    self.PortsByServiceTableModel.getProtocolForRow(row)])
 
-                if shiftPressed:                                        # if the user pressed SHIFT+Right-click, ignore the rule of only running the tool on targets on which we haven't ran it yet
+                # if the user pressed SHIFT+Right-click, ignore the rule of only running the tool on targets on
+                # which we haven't ran it yet
+                if shiftPressed:
                     tool=None
 
                 if tool:
-                    hosts=self.controller.getHostsForTool(tool, 'FetchAll') # fetch the hosts that we already ran the tool on
+                    # fetch the hosts that we already ran the tool on
+                    hosts=self.controller.getHostsForTool(tool, 'FetchAll')
                     oldTargets = []
                     for i in range(0,len(hosts)):
                         oldTargets.append([hosts[i][5], hosts[i][6], hosts[i][7]])
-                        
-                    for host in oldTargets:                             # remove from the targets the hosts:ports we have already run the tool on
+
+                    # remove from the targets the hosts:ports we have already run the tool on
+                    for host in oldTargets:
                         if host in targets:
                             targets.remove(host)
                 
@@ -795,7 +881,8 @@ class View(QtCore.QObject):
     def contextToolHostsTableContextMenu(self, pos):
         if len(self.ui.ToolHostsTableView.selectionModel().selectedRows()) > 0:
             
-            row = self.ui.ToolHostsTableView.selectionModel().selectedRows()[len(self.ui.ToolHostsTableView.selectionModel().selectedRows())-1].row()
+            row = self.ui.ToolHostsTableView.selectionModel().selectedRows()[len(
+                self.ui.ToolHostsTableView.selectionModel().selectedRows())-1].row()
             ip = self.ToolHostsTableModel.getIpForRow(row)
             port = self.ToolHostsTableModel.getPortForRow(row)
             
@@ -806,10 +893,16 @@ class View(QtCore.QObject):
                 menu.aboutToShow.connect(self.setVisible)
                 menu.aboutToHide.connect(self.setInvisible)
      
-                                                                        # this can handle multiple host selection if we apply it in the future
-                targets = []                                            # get (IP,port,protocol,serviceName) combinations for each selected row                                 # context menu when the left services tab is selected
+                 # this can handle multiple host selection if we apply it in the future
+                targets = []  # get (IP,port,protocol,serviceName) combinations for each selected row
+                # context menu when the left services tab is selected
                 for row in self.ui.ToolHostsTableView.selectionModel().selectedRows():
-                    targets.append([self.ToolHostsTableModel.getIpForRow(row.row()),self.ToolHostsTableModel.getPortForRow(row.row()),self.ToolHostsTableModel.getProtocolForRow(row.row()),self.controller.getServiceNameForHostAndPort(self.ToolHostsTableModel.getIpForRow(row.row()), self.ToolHostsTableModel.getPortForRow(row.row()))[0]])
+                    targets.append([self.ToolHostsTableModel.getIpForRow(row.row()),
+                                    self.ToolHostsTableModel.getPortForRow(row.row()),
+                                    self.ToolHostsTableModel.getProtocolForRow(row.row()),
+                                    self.controller.getServiceNameForHostAndPort(
+                                        self.ToolHostsTableModel.getIpForRow(row.row()),
+                                        self.ToolHostsTableModel.getPortForRow(row.row()))[0]])
                     restore = True
 
                 action = menu.exec_(self.ui.ToolHostsTableView.viewport().mapToGlobal(pos))
@@ -817,8 +910,9 @@ class View(QtCore.QObject):
                 if action:                  
                     self.controller.handlePortAction(targets, actions, terminalActions, action, restore)    
             
-            else:                                                       # in case there was no port, we show the host menu (without the portscan / mark as checked)
-                menu, actions = self.controller.getContextMenuForHost(str(self.HostsTableModel.getHostCheckStatusForRow(self.HostsTableModel.getRowForIp(ip))), False)
+            else:   # in case there was no port, we show the host menu (without the portscan / mark as checked)
+                menu, actions = self.controller.getContextMenuForHost(str(
+                    self.HostsTableModel.getHostCheckStatusForRow(self.HostsTableModel.getRowForIp(ip))), False)
                 menu.aboutToShow.connect(self.setVisible)
                 menu.aboutToHide.connect(self.setInvisible)
                 hostid = self.HostsTableModel.getHostIdForRow(self.HostsTableModel.getRowForIp(ip))
@@ -833,15 +927,17 @@ class View(QtCore.QObject):
     def connectServicesTableContextMenu(self):
         self.ui.ServicesTableView.customContextMenuRequested.connect(self.contextMenuServicesTableView)
 
-    def contextMenuServicesTableView(self, pos):                        # this function is longer because there are two cases we are in the services table
+    # this function is longer because there are two cases we are in the services table
+    def contextMenuServicesTableView(self, pos):
         if len(self.ui.ServicesTableView.selectionModel().selectedRows()) > 0:
-            
-            if len(self.ui.ServicesTableView.selectionModel().selectedRows()) == 1:     # if there is only one row selected, get service name
-                row = self.ui.ServicesTableView.selectionModel().selectedRows()[len(self.ui.ServicesTableView.selectionModel().selectedRows())-1].row()
+            # if there is only one row selected, get service name
+            if len(self.ui.ServicesTableView.selectionModel().selectedRows()) == 1:
+                row = self.ui.ServicesTableView.selectionModel().selectedRows()[len(
+                    self.ui.ServicesTableView.selectionModel().selectedRows())-1].row()
                 
-                if self.ui.ServicesTableView.isColumnHidden(0):         # if we are in the services tab of the hosts view
+                if self.ui.ServicesTableView.isColumnHidden(0):   # if we are in the services tab of the hosts view
                     serviceName = self.ServicesTableModel.getServiceNameForRow(row)
-                else:                                                   # if we are in the services tab of the services view
+                else:   # if we are in the services tab of the services view
                     serviceName = self.PortsByServiceTableModel.getServiceNameForRow(row)
                     
             else:
@@ -851,15 +947,21 @@ class View(QtCore.QObject):
             menu.aboutToShow.connect(self.setVisible)
             menu.aboutToHide.connect(self.setInvisible)
 
-            targets = []                                                # get (IP,port,protocol,serviceName) combinations for each selected row
+            targets = []   # get (IP,port,protocol,serviceName) combinations for each selected row
             if self.ui.ServicesTableView.isColumnHidden(0):
                 for row in self.ui.ServicesTableView.selectionModel().selectedRows():
-                    targets.append([self.ServicesTableModel.getIpForRow(row.row()),self.ServicesTableModel.getPortForRow(row.row()),self.ServicesTableModel.getProtocolForRow(row.row()),self.ServicesTableModel.getServiceNameForRow(row.row())])
+                    targets.append([self.ServicesTableModel.getIpForRow(row.row()),
+                                    self.ServicesTableModel.getPortForRow(row.row()),
+                                    self.ServicesTableModel.getProtocolForRow(row.row()),
+                                    self.ServicesTableModel.getServiceNameForRow(row.row())])
                     restore = False
             
-            else:                                                       # context menu when the left services tab is selected
+            else:   # context menu when the left services tab is selected
                 for row in self.ui.ServicesTableView.selectionModel().selectedRows():
-                    targets.append([self.PortsByServiceTableModel.getIpForRow(row.row()),self.PortsByServiceTableModel.getPortForRow(row.row()),self.PortsByServiceTableModel.getProtocolForRow(row.row()),self.PortsByServiceTableModel.getServiceNameForRow(row.row())])
+                    targets.append([self.PortsByServiceTableModel.getIpForRow(row.row()),
+                                    self.PortsByServiceTableModel.getPortForRow(row.row()),
+                                    self.PortsByServiceTableModel.getProtocolForRow(row.row()),
+                                    self.PortsByServiceTableModel.getServiceNameForRow(row.row())])
                     restore = True
 
             action = menu.exec_(self.ui.ServicesTableView.viewport().mapToGlobal(pos))
@@ -882,7 +984,8 @@ class View(QtCore.QObject):
             selectedProcesses = []                                  # list of tuples (pid, status, procId)
             for row in self.ui.ProcessesTableView.selectionModel().selectedRows():
                 pid = self.ProcessesTableModel.getProcessPidForRow(row.row())
-                selectedProcesses.append([int(pid), self.ProcessesTableModel.getProcessStatusForRow(row.row()), self.ProcessesTableModel.getProcessIdForRow(row.row())])
+                selectedProcesses.append([int(pid), self.ProcessesTableModel.getProcessStatusForRow(row.row()),
+                                          self.ProcessesTableModel.getProcessIdForRow(row.row())])
 
             action = menu.exec_(self.ui.ProcessesTableView.viewport().mapToGlobal(pos))
 
@@ -919,23 +1022,26 @@ class View(QtCore.QObject):
     #################### LEFT PANEL INTERFACE UPDATE FUNCTIONS ####################
 
     def updateHostsTableView(self): 
-        headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime", "Lastboot", "Distance", "CheckedHost", "State", "Count", "Closed"]
+        headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime",
+                   "Lastboot", "Distance", "CheckedHost", "State", "Count", "Closed"]
         self.HostsTableModel = HostsTableModel(self.controller.getHostsFromDB(self.viewState.filters), headers)
         self.ui.HostsTableView.setModel(self.HostsTableModel)
 
-        self.viewState.lazy_update_hosts = False                                  # to indicate that it doesn't need to be updated anymore
+        self.viewState.lazy_update_hosts = False  # to indicate that it doesn't need to be updated anymore
 
-        for i in [0, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]:                   # hide some columns
+        # hide some columns
+        for i in [0, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]:
             self.ui.HostsTableView.setColumnHidden(i, True)
 
         self.ui.HostsTableView.horizontalHeader().resizeSection(1, 30)
         self.HostsTableModel.sort(3, Qt.DescendingOrder)
 
-        ips = []                                                        # ensure that there is always something selected
+        ips = []   # ensure that there is always something selected
         for row in range(self.HostsTableModel.rowCount("")):
             ips.append(self.HostsTableModel.getHostIPForRow(row))
 
-        if self.viewState.ip_clicked in ips:                                      # the ip we previously clicked may not be visible anymore (eg: due to filters)
+        # the ip we previously clicked may not be visible anymore (eg: due to filters)
+        if self.viewState.ip_clicked in ips:
             row = self.HostsTableModel.getRowForIp(self.viewState.ip_clicked)
         else:
             row = 0                                                     # or select the first row
@@ -946,16 +1052,18 @@ class View(QtCore.QObject):
 
     def updateServiceNamesTableView(self):
         headers = ["Name"]
-        self.ServiceNamesTableModel = ServiceNamesTableModel(self.controller.getServiceNamesFromDB(self.viewState.filters), headers)
+        self.ServiceNamesTableModel = ServiceNamesTableModel(
+            self.controller.getServiceNamesFromDB(self.viewState.filters), headers)
         self.ui.ServiceNamesTableView.setModel(self.ServiceNamesTableModel)
 
-        self.viewState.lazy_update_services = False                               # to indicate that it doesn't need to be updated anymore
+        self.viewState.lazy_update_services = False   # to indicate that it doesn't need to be updated anymore
 
         services = []                                                   # ensure that there is always something selected
         for row in range(self.ServiceNamesTableModel.rowCount("")):
             services.append(self.ServiceNamesTableModel.getServiceNameForRow(row))
-        
-        if self.viewState.service_clicked in services:                            # the service we previously clicked may not be visible anymore (eg: due to filters)
+
+        # the service we previously clicked may not be visible anymore (eg: due to filters)
+        if self.viewState.service_clicked in services:
             row = self.ServiceNamesTableModel.getRowForServiceName(self.viewState.service_clicked)
         else:
             row = 0                                                     # or select the first row
@@ -965,28 +1073,39 @@ class View(QtCore.QObject):
             self.serviceNamesTableClick()
 
     def setupToolsTableView(self):
-        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
-        self.ToolsTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.viewState.filters, showProcesses = 'noNmap', sort = self.toolsTableViewSort, ncol = self.toolsTableViewSortColumn), headers)
+        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port",
+                   "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
+        self.ToolsTableModel = ProcessesTableModel(self, self.controller.getProcessesFromDB(
+            self.viewState.filters, showProcesses='noNmap',
+            sort=self.toolsTableViewSort,
+            ncol=self.toolsTableViewSortColumn), headers)
         self.ui.ToolsTableView.setModel(self.ToolsTableModel)
 
     def updateToolsTableView(self):
-        if self.ui.MainTabWidget.tabText(self.ui.MainTabWidget.currentIndex()) == 'Scan' and self.ui.HostsTabWidget.tabText(self.ui.HostsTabWidget.currentIndex()) == 'Tools':
-            headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
-            self.ToolsTableModel.setDataList(self.controller.getProcessesFromDB(self.viewState.filters, showProcesses = 'noNmap', sort = self.toolsTableViewSort, ncol = self.toolsTableViewSortColumn))
+        if self.ui.MainTabWidget.tabText(self.ui.MainTabWidget.currentIndex()) == 'Scan' and \
+                self.ui.HostsTabWidget.tabText(self.ui.HostsTabWidget.currentIndex()) == 'Tools':
+            headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port",
+                       "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
+            self.ToolsTableModel.setDataList(
+                self.controller.getProcessesFromDB(self.viewState.filters,
+                                                   showProcesses = 'noNmap',
+                                                   sort = self.toolsTableViewSort,
+                                                   ncol = self.toolsTableViewSortColumn))
             self.ui.ToolsTableView.repaint()
             self.ui.ToolsTableView.update()
 
-            self.viewState.lazy_update_tools = False                              # to indicate that it doesn't need to be updated anymore
+            self.viewState.lazy_update_tools = False  # to indicate that it doesn't need to be updated anymore
 
             # Hides columns we don't want to see
-            for i in [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]:                # hide some columns
+            for i in [0, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]:  # hide some columns
                 self.ui.ToolsTableView.setColumnHidden(i, True)
                     
             tools = []                                                  # ensure that there is always something selected
             for row in range(self.ToolsTableModel.rowCount("")):
                 tools.append(self.ToolsTableModel.getToolNameForRow(row))
 
-            if self.viewState.tool_clicked in tools:                              # the tool we previously clicked may not be visible anymore (eg: due to filters)
+            # the tool we previously clicked may not be visible anymore (eg: due to filters)
+            if self.viewState.tool_clicked in tools:
                 row = self.ToolsTableModel.getRowForToolName(self.viewState.tool_clicked)
             else:
                 row = 0                                                 # or select the first row
@@ -998,8 +1117,10 @@ class View(QtCore.QObject):
     #################### RIGHT PANEL INTERFACE UPDATE FUNCTIONS ####################
     
     def updateServiceTableView(self, hostIP):
-        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version", "Extrainfo", "Fingerprint"]
-        self.ServicesTableModel = ServicesTableModel(self.controller.getPortsAndServicesForHostFromDB(hostIP, self.viewState.filters), headers)
+        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version",
+                   "Extrainfo", "Fingerprint"]
+        self.ServicesTableModel = ServicesTableModel(
+            self.controller.getPortsAndServicesForHostFromDB(hostIP, self.viewState.filters), headers)
         self.ui.ServicesTableView.setModel(self.ServicesTableModel)
 
         for i in range(0, len(headers)):                                # reset all the hidden columns
@@ -1011,8 +1132,10 @@ class View(QtCore.QObject):
         self.ServicesTableModel.sort(2, Qt.DescendingOrder)             # sort by port by default (override default)
 
     def updatePortsByServiceTableView(self, serviceName):
-        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version", "Extrainfo", "Fingerprint"]
-        self.PortsByServiceTableModel = ServicesTableModel(self.controller.getHostsAndPortsForServiceFromDB(serviceName, self.viewState.filters), headers)
+        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version",
+                   "Extrainfo", "Fingerprint"]
+        self.PortsByServiceTableModel = ServicesTableModel(
+            self.controller.getHostsAndPortsForServiceFromDB(serviceName, self.viewState.filters), headers)
         self.ui.ServicesTableView.setModel(self.PortsByServiceTableModel)
 
         for i in range(0, len(headers)):                                # reset all the hidden columns
@@ -1048,7 +1171,10 @@ class View(QtCore.QObject):
                 else:
                     counterFiltered = 65535 - counterOpen - counterClosed
 
-                self.hostInfoWidget.updateFields(status=host.status, openPorts=counterOpen, closedPorts=counterClosed, filteredPorts=counterFiltered, ipv4=host.ipv4, ipv6=host.ipv6, macaddr=host.macaddr, osMatch=host.osMatch, osAccuracy=host.osAccuracy, asn=host.asn, isp=host.isp)
+                self.hostInfoWidget.updateFields(status=host.status, openPorts=counterOpen, closedPorts=counterClosed,
+                                                 filteredPorts=counterFiltered, ipv4=host.ipv4, ipv6=host.ipv6,
+                                                 macaddr=host.macaddr, osMatch=host.osMatch, osAccuracy=host.osAccuracy,
+                                                 asn=host.asn, isp=host.isp)
 
     def updateScriptsView(self, hostIP):
         headers = ["Id", "Script", "Port", "Protocol"]
@@ -1062,7 +1188,8 @@ class View(QtCore.QObject):
         for row in range(self.ScriptsTableModel.rowCount("")):
             scripts.append(self.ScriptsTableModel.getScriptDBIdForRow(row))
 
-        if self.viewState.script_clicked in scripts:                              # the script we previously clicked may not be visible anymore (eg: due to filters)
+        # the script we previously clicked may not be visible anymore (eg: due to filters)
+        if self.viewState.script_clicked in scripts:
             row = self.ScriptsTableModel.getRowForDBId(self.viewState.script_clicked)
 
         else:
@@ -1076,7 +1203,8 @@ class View(QtCore.QObject):
         self.ui.ScriptsTableView.update()
 
     def updateCvesByHostView(self, hostIP):
-        headers = ["CVE Id", "CVSS Score", "Product", "Version", "CVE URL", "Source", "ExploitDb ID", "ExploitDb", "ExploitDb URL"]
+        headers = ["CVE Id", "CVSS Score", "Product", "Version", "CVE URL", "Source", "ExploitDb ID", "ExploitDb",
+                   "ExploitDb URL"]
         cves = self.controller.getCvesFromDB(hostIP)
         self.CvesTableModel = CvesTableModel(self, cves, headers)
 
@@ -1099,7 +1227,7 @@ class View(QtCore.QObject):
         self.viewState.lastHostIdClicked = str(hostid)
         note = self.controller.getNoteFromDB(hostid)
         
-        saved_dirty = self.viewState.dirty                                        # save the status so we can restore it after we update the note panel
+        saved_dirty = self.viewState.dirty  # save the status so we can restore it after we update the note panel
         self.ui.NotesTextEdit.clear()                                   # clear the text box from the previous notes
             
         if note:
@@ -1109,7 +1237,8 @@ class View(QtCore.QObject):
             self.setDirty(False)
 
     def updateToolHostsTableView(self, toolname):
-        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
+        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port",
+                   "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
         self.ToolHostsTableModel = ProcessesTableModel(self, self.controller.getHostsForTool(toolname), headers)
         self.ui.ToolHostsTableView.setModel(self.ToolHostsTableModel)
 
@@ -1122,11 +1251,12 @@ class View(QtCore.QObject):
         for row in range(self.ToolHostsTableModel.rowCount("")):
             ids.append(self.ToolHostsTableModel.getProcessIdForRow(row))
 
-        if self.viewState.tool_host_clicked in ids:                               # the host we previously clicked may not be visible anymore (eg: due to filters)
+        # the host we previously clicked may not be visible anymore (eg: due to filters)
+        if self.viewState.tool_host_clicked in ids:
             row = self.ToolHostsTableModel.getRowForDBId(self.viewState.tool_host_clicked)
 
         else:
-            row = 0                                                     # or select the first row
+            row = 0  # or select the first row
 
         if not row == None and self.ui.HostsTabWidget.tabText(self.ui.HostsTabWidget.currentIndex()) == 'Tools':
             self.ui.ToolHostsTableView.selectRow(row)
@@ -1186,14 +1316,20 @@ class View(QtCore.QObject):
     #################### BOTTOM PANEL INTERFACE UPDATE FUNCTIONS ####################       
 
     def setupProcessesTableView(self):
-        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
-        self.ProcessesTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(self.viewState.filters, showProcesses = True, sort = self.processesTableViewSort, ncol = self.processesTableViewSortColumn), headers)
+        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port",
+                   "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
+        self.ProcessesTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(
+            self.viewState.filters, showProcesses = True, sort = self.processesTableViewSort,
+            ncol = self.processesTableViewSortColumn), headers)
         self.ui.ProcessesTableView.setModel(self.ProcessesTableModel)
         self.ProcessesTableModel.sort(15, Qt.DescendingOrder)
         
     def updateProcessesTableView(self):
-        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port", "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
-        self.ProcessesTableModel.setDataList(self.controller.getProcessesFromDB(self.viewState.filters, showProcesses = True, sort = self.processesTableViewSort, ncol = self.processesTableViewSortColumn))
+        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port",
+                   "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
+        self.ProcessesTableModel.setDataList(
+            self.controller.getProcessesFromDB(self.viewState.filters, showProcesses = True, sort = self.processesTableViewSort,
+                                               ncol = self.processesTableViewSortColumn))
         self.ui.ProcessesTableView.repaint()
         self.ui.ProcessesTableView.update()
 
@@ -1231,7 +1367,8 @@ class View(QtCore.QObject):
                 processIcon = './images/{processIconName}.gif'.format(processIconName=processIconName)
 
                 self.runningWidget = ImagePlayer(processIcon)
-                self.ui.ProcessesTableView.setIndexWidget(self.ui.ProcessesTableView.model().index(row,0), self.runningWidget)
+                self.ui.ProcessesTableView.setIndexWidget(self.ui.ProcessesTableView.model().index(row,0),
+                                                          self.runningWidget)
 
     #################### GLOBAL INTERFACE UPDATE FUNCTION ####################
     
@@ -1260,8 +1397,8 @@ class View(QtCore.QObject):
     # TODO: refactor/review, especially the restoring part. we should not check if toolname=nmap everywhere in the code
     # ..maybe we should do it here. rethink
     def createNewTabForHost(self, ip, tabTitle, restoring=False, content='', filename=''):
-    
-        if 'screenshot' in str(tabTitle):       # TODO: use regex otherwise tools with 'screenshot' in the name are screwed.    
+        # TODO: use regex otherwise tools with 'screenshot' in the name are screwed.
+        if 'screenshot' in str(tabTitle):
             tempWidget = ImageViewer()
             tempWidget.setObjectName(str(tabTitle))
             tempWidget.open(str(filename))
@@ -1277,14 +1414,16 @@ class View(QtCore.QObject):
                 p.setColor(QtGui.QPalette.Base, Qt.black)               # black background
                 p.setColor(QtGui.QPalette.Text, Qt.white)               # white font
                 tempTextView.setPalette(p)
-                tempTextView.setStyleSheet("QMenu { color:black;}")     #font-size:18px; width: 150px; color:red; left: 20px;}"); # set the menu font color: black
+                # font-size:18px; width: 150px; color:red; left: 20px;}"); # set the menu font color: black
+                tempTextView.setStyleSheet("QMenu { color:black;}")
             tempLayout = QtWidgets.QHBoxLayout(tempWidget)
             tempLayout.addWidget(tempTextView)
         
             if not content == '':                                       # if there is any content to display
                 tempTextView.appendPlainText(content)
 
-        if restoring == False:                                          # if restoring tabs (after opening a project) don't show the tab in the ui
+        # if restoring tabs (after opening a project) don't show the tab in the ui
+        if restoring == False:
             tabindex = self.ui.ServicesTabWidget.addTab(tempWidget, str(tabTitle))
     
         hosttabs = []                                                   # fetch tab list for this host (if any)
@@ -1312,7 +1451,8 @@ class View(QtCore.QObject):
             p.setColor(QtGui.QPalette.Base, Qt.black)               # black background
             p.setColor(QtGui.QPalette.Text, Qt.white)               # white font
             tempTextView.setPalette(p)
-            tempTextView.setStyleSheet("QMenu { color:black;}")     #font-size:18px; width: 150px; color:red; left: 20px;}"); # set the menu font color: black
+            # font-size:18px; width: 150px; color:red; left: 20px;}"); # set the menu font color: black
+            tempTextView.setStyleSheet("QMenu { color:black;}")
         tempLayout = QtWidgets.QHBoxLayout(tempWidget)
         tempLayout.addWidget(tempTextView)
         self.ui.PythonTabLayout.addWidget(tempWidget)
@@ -1325,7 +1465,7 @@ class View(QtCore.QObject):
 
     def closeHostToolTab(self, index):      
         currentTabIndex = self.ui.ServicesTabWidget.currentIndex()      # remember the currently selected tab
-        self.ui.ServicesTabWidget.setCurrentIndex(index)                # select the tab for which the cross button was clicked
+        self.ui.ServicesTabWidget.setCurrentIndex(index) # select the tab for which the cross button was clicked
 
         currentWidget = self.ui.ServicesTabWidget.currentWidget()
         if 'screenshot' in str(self.ui.ServicesTabWidget.currentWidget().objectName()):
@@ -1361,11 +1501,12 @@ class View(QtCore.QObject):
                 self.viewState.hostTabs.update({ip:hosttabs})
                 break
 
-        self.controller.storeCloseTabStatusInDB(dbId)                   # update the closed status in the db - getting the dbid 
+        self.controller.storeCloseTabStatusInDB(dbId)   # update the closed status in the db - getting the dbid
         self.ui.ServicesTabWidget.removeTab(index)                      # remove the tab
         
         if currentTabIndex >= self.ui.ServicesTabWidget.currentIndex():     # select the initially selected tab
-            self.ui.ServicesTabWidget.setCurrentIndex(currentTabIndex - 1)  # all the tab indexes shift if we remove a tab index smaller than the current tab index
+            # all the tab indexes shift if we remove a tab index smaller than the current tab index
+            self.ui.ServicesTabWidget.setCurrentIndex(currentTabIndex - 1)
         else:
             self.ui.ServicesTabWidget.setCurrentIndex(currentTabIndex)  
 
@@ -1378,8 +1519,10 @@ class View(QtCore.QObject):
 
     # this function restores the tool tabs based on the DB content (should be called when opening an existing project).
     def restoreToolTabs(self):
-        tools = self.controller.getProcessesFromDB(self.viewState.filters, showProcesses=False) # false means we are fetching processes with display flag=False, which is the case for every process once a project is closed.
-        nbr = len(tools)                                                # show a progress bar because this could take long
+        # false means we are fetching processes with display flag=False, which is the case for every process once
+        # a project is closed.
+        tools = self.controller.getProcessesFromDB(self.viewState.filters, showProcesses=False)
+        nbr = len(tools)  # show a progress bar because this could take long
         if nbr==0:                                          
             nbr=1
         progress = 100.0 / nbr
@@ -1388,11 +1531,14 @@ class View(QtCore.QObject):
         for t in tools:
             if not t.tabTitle == '':
                 if 'screenshot' in str(t.tabTitle):
-                    imageviewer = self.createNewTabForHost(t.hostIp, t.tabTitle, True, '', str(self.controller.getOutputFolder())+'/screenshots/'+str(t.outputfile))
+                    imageviewer = self.createNewTabForHost(
+                        t.hostIp, t.tabTitle, True, '',
+                        str(self.controller.getOutputFolder())+'/screenshots/'+str(t.outputfile))
                     imageviewer.setObjectName(str(t.tabTitle))
                     imageviewer.setProperty('dbId', str(t.id))
                 else:
-                    self.createNewTabForHost(t.hostIp, t.tabTitle, True, t.output).setProperty('dbId', str(t.id))     # True means we are restoring tabs. Set the widget's object name to the DB id of the process
+                    # True means we are restoring tabs. Set the widget's object name to the DB id of the process
+                    self.createNewTabForHost(t.hostIp, t.tabTitle, True, t.output).setProperty('dbId', str(t.id))
 
             totalprogress += progress                                   # update the progress bar
             self.tick.emit(int(totalprogress))
@@ -1405,7 +1551,8 @@ class View(QtCore.QObject):
                 if not 'hydra' in tab.objectName() and not 'nmap' in tab.objectName():                  
                     tabindex = self.ui.ServicesTabWidget.addTab(tab, tab.objectName())
 
-    # this function restores the textview widget (now in the tools display widget) to its original tool tab (under the correct host)
+    # this function restores the textview widget (now in the tools display widget) to its original tool tab
+    # (under the correct host)
     def restoreToolTabWidget(self, clear=False):
         if self.ui.DisplayWidget.findChild(QtWidgets.QPlainTextEdit) == self.ui.toolOutputTextView:
             return
@@ -1418,7 +1565,8 @@ class View(QtCore.QObject):
                     break
 
         if clear:
-            if self.ui.DisplayWidget.findChild(QtWidgets.QPlainTextEdit):   # remove the tool output currently in the tools display panel
+            # remove the tool output currently in the tools display panel
+            if self.ui.DisplayWidget.findChild(QtWidgets.QPlainTextEdit):
                 self.ui.DisplayWidget.findChild(QtWidgets.QPlainTextEdit).setParent(None)
                 
             self.ui.DisplayWidgetLayout.addWidget(self.ui.toolOutputTextView)
@@ -1431,11 +1579,13 @@ class View(QtCore.QObject):
         bWidget.runButton.clicked.connect(lambda: self.callHydra(bWidget))
         self.ui.BruteTabWidget.addTab(bWidget, str(self.viewState.bruteTabCount))
         self.viewState.bruteTabCount += 1                                                     # update tab count
-        self.ui.BruteTabWidget.setCurrentIndex(self.ui.BruteTabWidget.count()-1)    # show the last added tab in the brute widget
+        # show the last added tab in the brute widget
+        self.ui.BruteTabWidget.setCurrentIndex(self.ui.BruteTabWidget.count()-1)
 
     def closeBruteTab(self, index):
-        currentTabIndex = self.ui.BruteTabWidget.currentIndex()         # remember the currently selected tab       
-        self.ui.BruteTabWidget.setCurrentIndex(index)                   # select the tab for which the cross button was clicked
+        currentTabIndex = self.ui.BruteTabWidget.currentIndex()         # remember the currently selected tab
+        # select the tab for which the cross button was clicked
+        self.ui.BruteTabWidget.setCurrentIndex(index)
         
         if not self.ui.BruteTabWidget.currentWidget().pid == -1:        # if process is running
             if self.ProcessesTableModel.getProcessStatusForPid(self.ui.BruteTabWidget.currentWidget().pid)=="Running":
@@ -1454,7 +1604,8 @@ class View(QtCore.QObject):
         self.ui.BruteTabWidget.removeTab(index)                         # remove the tab
         
         if currentTabIndex >= self.ui.BruteTabWidget.currentIndex():    # select the initially selected tab
-            self.ui.BruteTabWidget.setCurrentIndex(currentTabIndex - 1) # all the tab indexes shift if we remove a tab index smaller than the current tab index
+            # all the tab indexes shift if we remove a tab index smaller than the current tab index
+            self.ui.BruteTabWidget.setCurrentIndex(currentTabIndex - 1)
         else:
             self.ui.BruteTabWidget.setCurrentIndex(currentTabIndex)
             
@@ -1478,23 +1629,28 @@ class View(QtCore.QObject):
                     return
                 else:
                     log.info('Adding host to scope here!!')
-                    self.controller.addHosts(str(bWidget.ipTextinput.text()).replace(';',' '), False, False, "unset", "unset")
+                    self.controller.addHosts(str(bWidget.ipTextinput.text()).replace(';',' '), False, False,
+                                             "unset", "unset")
             
             bWidget.validationLabel.hide()
             bWidget.toggleRunButton()
             bWidget.resetDisplay()                                      # fixes tab bug
             
-            hydraCommand = bWidget.buildHydraCommand(self.controller.getRunningFolder(), self.controller.getUserlistPath(), self.controller.getPasslistPath())      
+            hydraCommand = bWidget.buildHydraCommand(self.controller.getRunningFolder(),
+                                                     self.controller.getUserlistPath(),
+                                                     self.controller.getPasslistPath())
             bWidget.setObjectName(str("hydra"+" ("+bWidget.getPort()+"/tcp)"))
             
-            hosttabs = []                                               # add widget to host tabs (needed to be able to move the widget between brute/tools tabs)
+            hosttabs = []  # add widget to host tabs (needed to be able to move the widget between brute/tools tabs)
             if str(bWidget.ip) in self.viewState.hostTabs:
                 hosttabs = self.viewState.hostTabs[str(bWidget.ip)]
                 
             hosttabs.append(bWidget)
             self.viewState.hostTabs.update({str(bWidget.ip):hosttabs})
             
-            bWidget.pid = self.controller.runCommand("hydra", bWidget.objectName(), bWidget.ip, bWidget.getPort(), 'tcp', unicode(hydraCommand), getTimestamp(True), bWidget.outputfile, bWidget.display)
+            bWidget.pid = self.controller.runCommand("hydra", bWidget.objectName(), bWidget.ip, bWidget.getPort(),
+                                                     'tcp', unicode(hydraCommand), getTimestamp(True),
+                                                     bWidget.outputfile, bWidget.display)
             bWidget.runButton.clicked.disconnect()
             bWidget.runButton.clicked.connect(lambda: self.killBruteProcess(bWidget))
             
@@ -1516,9 +1672,11 @@ class View(QtCore.QObject):
         bWidget.pid = -1
         
         # disassociate textview from bWidget (create new textview for bWidget) and replace it with a new host tab
-        self.createNewTabForHost(str(bWidget.ip), str(bWidget.objectName()), restoring=True, content=unicode(bWidget.display.toPlainText())).setProperty('dbId', str(bWidget.display.property('dbId')))
+        self.createNewTabForHost(
+            str(bWidget.ip), str(bWidget.objectName()), restoring=True,
+            content=unicode(bWidget.display.toPlainText())).setProperty('dbId', str(bWidget.display.property('dbId')))
         
-        hosttabs = []                                                   # go through host tabs and find the correct bWidget
+        hosttabs = []  # go through host tabs and find the correct bWidget
         if str(bWidget.ip) in self.viewState.hostTabs:
             hosttabs = self.viewState.hostTabs[str(bWidget.ip)]
 
