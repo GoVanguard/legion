@@ -142,7 +142,8 @@ def extractParams(f, args, kwargs, matchParam):
                 dIndex = pIndex - len(argspec.args) + len(argspec.defaults)
                 if 0 <= defaults_index < len(argspec.defaults):
                     return argspec.defaults[dIndex]
-            raise LoggerBadCallerParametersException("Caller didn't provide a required positional parameter '%s' at index %d", matchParam, pIndex)
+            raise LoggerBadCallerParametersException(
+                "Caller didn't provide a required positional parameter '%s' at index %d", matchParam, pIndex)
         else:
             raise LoggerUnknownParamException("Unknown param %s(%r) on %s", type(matchParam), matchParam, f.__name__)
 
@@ -184,7 +185,9 @@ def logEventDecorator(evt, evtSev='info', evtSevIssue='critical', logger=None, o
                 evtObjIds = extractParams(f, args, kwargs, objIdParam)
             else:
                 evtObjIds = None
-            eventToLog = "event: {evt}, input parameter values: {evtObjIds}, result values: {value}, exec time: {execTime}s".format(evt=evt, evtObjIds=evtObjIds, value=value, execTime=execTime)
+            eventToLog = "event: {evt}, input parameter values: {evtObjIds}, " + \
+                         "result values: {value}, exec time: {execTime}s".\
+                             format(evt=evt, evtObjIds=evtObjIds, value=value, execTime=execTime)
             logger.log(evtSevObj, eventToLog)
             return value
         return decorator

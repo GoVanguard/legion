@@ -22,7 +22,10 @@ if __name__ == '__main__':
     dom = xml.dom.minidom.parse('i.xml')
     dom.getElementsByTagName('finished')[0].getAttribute('timestr')
 
-    MySession = { 'finish_time': dom.getElementsByTagName('finished')[0].getAttribute('timestr'), 'nmapVersion' : '4.79', 'scanArgs' : '-sS -sV -A -T4', 'startTime' : dom.getElementsByTagName('nmaprun')[0].getAttribute('startstr'), 'totalHosts' : '1', 'upHosts' : '1', 'downHosts' : '0' }
+    MySession = { 'finish_time': dom.getElementsByTagName('finished')[0].getAttribute('timestr'),
+                  'nmapVersion' : '4.79', 'scanArgs' : '-sS -sV -A -T4',
+                  'startTime' : dom.getElementsByTagName('nmaprun')[0].getAttribute('startstr'),
+                  'totalHosts' : '1', 'upHosts' : '1', 'downHosts' : '0' }
 
     s = Session( MySession )
 

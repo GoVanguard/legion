@@ -50,11 +50,12 @@ class PythonImporter(QtCore.QThread):
     def setOutput(self, output):
         self.output = output
 
-    def run(self): # it is necessary to get the qprocess because we need to send it back to the scheduler when we're done importing
+    # it is necessary to get the qprocess because we need to send it back to the scheduler when we're done importing
+    def run(self):
         try:
             session = self.db.session()
             startTime = time()
-            self.db.dbsemaphore.acquire() # ensure that while this thread is running, no one else can write to the DB
+            self.db.dbsemaphore.acquire()  # ensure that while this thread is running, no one else can write to the DB
             #self.setPythonScript(self.pythonScript)
             db_host = session.query(hostObj).filter_by(ip = self.hostIp).first()
             self.pythonScriptObj.setDbHost(db_host)
