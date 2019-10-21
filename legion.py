@@ -96,7 +96,8 @@ if __name__ == "__main__":
 
     # Model prep (logic, db and models)
     logic = Logic(project_name=tf.name, db=db, shell=shell, hostRepository=hostRepository)
-    view = View(ui, MainWindow, shell)  # View prep (gui)
+    viewState = ViewState()
+    view = View(viewState, ui, MainWindow, shell)  # View prep (gui)
     controller = Controller(view, logic, hostRepository)  # Controller prep (communication between model and view)
     view.qss = qss_file
 
