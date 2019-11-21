@@ -432,7 +432,7 @@ class View(QtCore.QObject):
     def importNmap(self):
         self.ui.statusbar.showMessage('Importing nmap xml..', msecs=1000)
         filename = QtWidgets.QFileDialog.getOpenFileName(self.ui.centralwidget, 'Choose nmap file', self.controller.getCWD(), filter='XML file (*.xml)')[0]
-        log.info('Importing nmap xml from {0}...'.format(str(filename))) 
+        log.info('Importing nmap xml from {0}...'.format(str(filename)))
         if not filename == '':
             if not os.access(filename, os.R_OK):                        # check for read permissions on the xml file
                 log.info('Insufficient permissions to read this file.')

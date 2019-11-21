@@ -13,10 +13,11 @@ Copyright (c) 2018 GoVanguard
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtGui import QColor
+
+from app.logging.legionLog import log
 from ui.dialogs import *                                                # for the screenshots (image viewer)
 from ui.ancillaryDialog import *
 from utilities.qtLogging import *
-import logging
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8

@@ -27,9 +27,21 @@ class Shell(ABC):
         pass
 
     @abstractmethod
+    def move(self, source: str, destination: str) -> None:
+        pass
+
+    @abstractmethod
+    def copy(self, source: str, destination: str) -> None:
+        pass
+
+    @abstractmethod
     def isDirectory(self, name: str) -> bool:
         pass
 
     @abstractmethod
     def isFile(self, name: str) -> bool:
+        pass
+
+    @abstractmethod
+    def directoryOrFileExists(self, path: str) -> bool:
         pass
