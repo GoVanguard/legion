@@ -20,37 +20,14 @@ import os, sys, socket, locale, webbrowser, \
     re  # for webrequests, screenshot timeouts, timestamps, browser stuff and regex
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import *  # for QProcess
-from PyQt5.QtWidgets import *
-import subprocess  # for screenshots with cutycapt
-import string  # for input validation
 from six import u as unicode
-import asyncio, aioredis, aiohttp
 from datetime import datetime
-import hashlib, json
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from app.http.isHttps import isHttps
+from app.logging.legionLog import log
+from app.timing import timing
 from utilities.stenoLogging import *
-from functools import wraps
 from time import time
-import io
-
-log = get_logger('legion', path="./log/legion.log", console=False)
-log.setLevel(logging.INFO)
-
-
-def timing(f):
-    @wraps(f)
-    def wrap(*args, **kw):
-        ts = time()
-        result = f(*args, **kw)
-        te = time()
-        tr = te - ts
-        log.debug('Function:%r args:[%r, %r] took: %2.4f sec' % (f.__name__, args, kw, tr))
-        return result
-
-    return wrap
-
 
 # bubble sort algorithm that sorts an array (in place) based on the values in another array
 # the values in the array must be comparable and in the corresponding positions
@@ -140,17 +117,6 @@ def checkHydraResults(output):
                 passwords.append(password.group(2))
         return True, usernames, passwords  # returns the lists of found usernames and passwords
     return False, [], []
-
-
-@timing
-def exportNmapToHTML(filename):
-    try:
-        command = 'xsltproc -o ' + str(filename) + '.html ' + str(filename) + '.xml'
-        p = subprocess.Popen(command, shell=True)
-        p.wait()
-
-    except:
-        log.info('Could not convert nmap XML to HTML. Try: apt-get install xsltproc')
 
 
 # this class is used for example to store found usernames/passwords

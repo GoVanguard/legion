@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
 '''this module used to parse nmap xml report'''
+from app.logging.legionLog import log
+
 __author__ =  'yunshu(wustyunshu@hotmail.com)'
 __version__=  '0.2'
 __modified_by = 'ketchup'

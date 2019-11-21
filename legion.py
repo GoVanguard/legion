@@ -14,10 +14,11 @@ Copyright (c) 2018 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.
     If not, see <http://www.gnu.org/licenses/>.
 """
-
+from app.ProjectManager import ProjectManager
 from app.shell.DefaultShell import DefaultShell
+from app.tools.nmap.DefaultNmapExporter import DefaultNmapExporter
+from db.RepositoryFactory import RepositoryFactory
 from ui.eventfilter import MyEventFilter
-from ui.gui import Ui_MainWindow
 from utilities.stenoLogging import *
 
 log = get_logger('legion', path="./log/legion-startup.log")
@@ -86,19 +87,20 @@ if __name__ == "__main__":
     MainWindow.setStyleSheet(qss_file)
 
     shell = DefaultShell()
-    tf = shell.create_named_temporary_file(suffix=".legion",
-                                           prefix="legion-",
-                                           directory="./tmp/",
-                                           delete_on_close=False)  # to store the db file
 
-    db = Database(tf.name)
-    hostRepository = HostRepository(db)
-
+    repositoryFactory = RepositoryFactory(log)
+    projectManager = ProjectManager(shell, repositoryFactory, log)
+    nmapExporter = DefaultNmapExporter(shell)
+    toolCoordinator = ToolCoordinator(shell, nmapExporter)
     # Model prep (logic, db and models)
-    logic = Logic(project_name=tf.name, db=db, shell=shell, hostRepository=hostRepository)
+    logic = Logic(shell, projectManager, toolCoordinator)
+
+    log.info("Creating temporary project at application start...")
+    logic.createNewTemporaryProject()
+
     viewState = ViewState()
     view = View(viewState, ui, MainWindow, shell)  # View prep (gui)
-    controller = Controller(view, logic, hostRepository)  # Controller prep (communication between model and view)
+    controller = Controller(view, logic)  # Controller prep (communication between model and view)
     view.qss = qss_file
 
     myFilter = MyEventFilter(view, MainWindow)  # to capture events

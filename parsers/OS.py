@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from app.logging.legionLog import log
 
 __author__ =  'ketchup'
 __version__=  '0.1'
