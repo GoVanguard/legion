@@ -19,7 +19,7 @@ from PyQt5 import QtCore
 
 from db.entities.host import hostObj
 from scripts.python import pyShodan
-from ui.ancillaryDialog import time
+from time import time
 
 
 class PythonImporter(QtCore.QThread):
