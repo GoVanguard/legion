@@ -1,15 +1,21 @@
 #!/usr/bin/env python
 
-'''
+"""
 LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+    You should have received a copy of the GNU General Public License along with this program.
+    If not, see <http://www.gnu.org/licenses/>.
+
+"""
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import pyqtSignal, QObject 
@@ -41,8 +47,8 @@ class ServicesTableModel(QtCore.QAbstractTableModel):                   # needs 
                 else:
                     return "not implemented"
 
-    def data(self, index, role):                                        # this method takes care of how the information is displayed
-
+    # this method takes care of how the information is displayed
+    def data(self, index, role):
         if role == QtCore.Qt.DecorationRole:                            # to show the open/closed/filtered icons
             if index.column() == 0 or index.column() == 2:
                 tmp_state = self.__services[index.row()]['state']
@@ -59,12 +65,14 @@ class ServicesTableModel(QtCore.QAbstractTableModel):                   # needs 
             row = index.row()
             column = index.column()
 
-            if column == 0:             
-                value = '   ' + self.__services[row]['ip']              # the spaces are needed for spacing with the icon that precedes the text
+            if column == 0:
+                # the spaces are needed for spacing with the icon that precedes the text
+                value = '   ' + self.__services[row]['ip']
             elif column == 1:
                 value = self.__services[row]['portId']
             elif column == 2:
-                value = '   ' + self.__services[row]['portId']         # the spaces are needed for spacing with the icon that precedes the text
+                # the spaces are needed for spacing with the icon that precedes the text
+                value = '   ' + self.__services[row]['portId']
             elif column == 3:
                 value = self.__services[row]['protocol']
             elif column == 4:
@@ -92,10 +100,12 @@ class ServicesTableModel(QtCore.QAbstractTableModel):                   # needs 
                 value = self.__services[row]['fingerprint']
             return value
 
-    def flags(self, index):                                             # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
+    # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
+    def flags(self, index):
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
 
-    def sort(self, Ncol, order):                                        # sort function called when the user clicks on a header
+    # sort function called when the user clicks on a header
+    def sort(self, Ncol, order):
         self.layoutAboutToBeChanged.emit()
         array = []
         
@@ -136,7 +146,8 @@ class ServicesTableModel(QtCore.QAbstractTableModel):                   # needs 
                     value = value + ' (' + self.__services[i]['extrainfo'] + ')'
                 array.append(value)
 
-        sortArrayWithArray(array, self.__services)                      # sort the services based on the values in the array
+        # sort the services based on the values in the array
+        sortArrayWithArray(array, self.__services)
         
         if order == Qt.AscendingOrder:                                  # reverse if needed
             self.__services.reverse()   
@@ -185,28 +196,30 @@ class ServiceNamesTableModel(QtCore.QAbstractTableModel):
                 else:
                     return "not implemented"
 
-    def data(self, index, role):                                        # This method takes care of how the information is displayed
+    def data(self, index, role):   # This method takes care of how the information is displayed
 
         if role == QtCore.Qt.DisplayRole:                               # how to display each cell
-            value = ''
             row = index.row()
             column = index.column()
             if column == 0:
                 return self.__serviceNames[row]['name']
 
-    def flags(self, index):                                             # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
+    # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
+    def flags(self, index):
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
 
-    def sort(self, Ncol, order):                                        # sort function called when the user clicks on a header
+    # sort function called when the user clicks on a header
+    def sort(self, Ncol, order):
         
         self.layoutAboutToBeChanged.emit()
         array = []
         
-        if Ncol == 0:                                                   # if sorting by service name (and by default)
+        if Ncol == 0:  # if sorting by service name (and by default)
             for i in range(len(self.__serviceNames)):
                 array.append(self.__serviceNames[i]['name'])
 
-        sortArrayWithArray(array, self.__serviceNames)                  # sort the services based on the values in the array
+        # sort the services based on the values in the array
+        sortArrayWithArray(array, self.__serviceNames)
 
         if order == Qt.AscendingOrder:                                  # reverse if needed
             self.__serviceNames.reverse()   

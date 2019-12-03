@@ -1,15 +1,21 @@
 #!/usr/bin/env python
 
-'''
+"""
 LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+    You should have received a copy of the GNU General Public License along with this program.
+    If not, see <http://www.gnu.org/licenses/>.
+
+"""
 
 import os
 from PyQt5.QtGui import *                                               # for filters dialog
@@ -33,7 +39,8 @@ class AddHostsDialog(QtWidgets.QDialog):
     def setupLayout(self):
         self.setModal(True)
         self.setWindowTitle('Add host(s) to scan seperated by semicolons')
-        flags = Qt.Window | Qt.WindowSystemMenuHint | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint | Qt.WindowCloseButtonHint
+        flags = Qt.Window | Qt.WindowSystemMenuHint | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint | \
+                Qt.WindowCloseButtonHint
         self.setWindowFlags(flags)
 
         self.resize(700, 700)
@@ -109,17 +116,26 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.lblScanTimingLabel4 = QtWidgets.QLabel()
         self.lblScanTimingLabel5 = QtWidgets.QLabel()
         self.lblScanTimingLabel0.setText("Paranoid")
-        self.lblScanTimingLabel0.setToolTip('Serialize every scan operation with a 5 minute wait between each. Useful for evading IDS detection [-T0]')
+        self.lblScanTimingLabel0.setToolTip(
+            'Serialize every scan operation with a 5 minute wait between each. Useful for evading IDS detection [-T0]')
         self.lblScanTimingLabel1.setText("Sneaky")
-        self.lblScanTimingLabel1.setToolTip('Serialize every scan operation with a 15 second wait between each. Useful for evading IDS detection [-T1]')
+        self.lblScanTimingLabel1.setToolTip(
+            'Serialize every scan operation with a 15 second wait between each. Useful for evading IDS detection [-T1]')
         self.lblScanTimingLabel2.setText("Polite")
-        self.lblScanTimingLabel2.setToolTip('Serialize every scan operation with a 0.4 second wait between each. Useful for evading IDS detection [-T2]')
+        self.lblScanTimingLabel2.setToolTip(
+            'Serialize every scan operation with a 0.4 second wait between each. Useful for evading IDS detection [-T2]'
+        )
         self.lblScanTimingLabel3.setText("Normal")
         self.lblScanTimingLabel3.setToolTip('NMAP defaults including parallelization [-T3]')
         self.lblScanTimingLabel4.setText("Aggressive")
-        self.lblScanTimingLabel4.setToolTip('Sets the following options: --max-rtt-timeout 1250ms --min-rtt-timeout 100ms --initial-rtt-timeout 500ms --max-retries 6 with a 10ms delay between operations [-T4]')
+        self.lblScanTimingLabel4.setToolTip(
+            'Sets the following options: --max-rtt-timeout 1250ms --min-rtt-timeout 100ms ' +
+            '--initial-rtt-timeout 500ms --max-retries 6 with a 10ms delay between operations [-T4]')
         self.lblScanTimingLabel5.setText("Insane")
-        self.lblScanTimingLabel5.setToolTip('Sets the following options: --max-rtt-timeout 300ms --min-rtt-timeout 50ms --initial-rtt-timeout 250ms --max-retries 2 --host-timeout 15m --script-timeout 10m with a 5ms delay between operations [-T5]')
+        self.lblScanTimingLabel5.setToolTip('Sets the following options: --max-rtt-timeout 300ms ' +
+                                            '--min-rtt-timeout 50ms --initial-rtt-timeout 250ms --max-retries 2 ' +
+                                            '--host-timeout 15m --script-timeout 10m with a 5ms delay between ' +
+                                            'operations [-T5]')
         self.sldScanTimingSlider = QtWidgets.QSlider(Qt.Horizontal)
         self.sldScanTimingSlider.setRange(0, 5)
         self.sldScanTimingSlider.setSingleStep(1)
@@ -157,10 +173,13 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.rdoScanOptXmas.setToolTip('Xmas Tree scanning sets the FIN, URG and PUSH flags [-sX]')
         self.rdoScanOptPingTcp = QtWidgets.QRadioButton(self)
         self.rdoScanOptPingTcp.setText('TCP Ping')
-        self.rdoScanOptPingTcp.setToolTip('TCP Ping scanning sends either a SYN or an ACK packet to any port (80 is the default) on the remote system [-sP]')
+        self.rdoScanOptPingTcp.setToolTip('TCP Ping scanning sends either a SYN or an ACK packet to any port '+
+                                          '(80 is the default) on the remote system [-sP]')
         self.rdoScanOptPingUdp = QtWidgets.QRadioButton(self)
         self.rdoScanOptPingUdp.setText('UDP Ping')
-        self.rdoScanOptPingUdp.setToolTip('UDP Ping scanning sends 0-byte UDP packets to each target port on the victim. Receipt of an ICMP Port Unreachable message signifies the port is closed, otherwise it is assumed open [-sU]')
+        self.rdoScanOptPingUdp.setToolTip('UDP Ping scanning sends 0-byte UDP packets to each target port on the '+
+                                          'victim. Receipt of an ICMP Port Unreachable message signifies the port '+
+                                          'is closed, otherwise it is assumed open [-sU]')
 
         # Fragmentation option
         self.chkScanOptFragmentation = QtWidgets.QCheckBox(self)
@@ -246,7 +265,8 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.cmdCancelButton = QPushButton('Cancel', self)
         self.cmdCancelButton.setMaximumSize(110, 30)
         self.cancelIcon = QtGui.QIcon()
-        self.cancelIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/minus-black.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.cancelIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/minus-black.png")), QtGui.QIcon.Normal,
+                                  QtGui.QIcon.Off)
         self.cmdCancelButton.setIconSize(QtCore.QSize(19, 19))
         self.cmdCancelButton.setIcon(self.cancelIcon)
 
@@ -279,5 +299,9 @@ class AddHostsDialog(QtWidgets.QDialog):
         easyModeControls = [self.grpEasyMode]
         hardModeControls = [self.grpScanOpt, self.grpScanOptPing, self.scanOptCustomGroup]
 
-        self.rdoModeOptHard.clicked.connect(lambda: flipState(targetState = self.rdoModeOptHard.isChecked(), widgetsToFlipOn = hardModeControls, widgetsToFlipOff = easyModeControls))
-        self.rdoModeOptEasy.clicked.connect(lambda: flipState(targetState = self.rdoModeOptEasy.isChecked(), widgetsToFlipOn = easyModeControls, widgetsToFlipOff = hardModeControls))
+        self.rdoModeOptHard.clicked.connect(lambda: flipState(targetState = self.rdoModeOptHard.isChecked(),
+                                                              widgetsToFlipOn = hardModeControls,
+                                                              widgetsToFlipOff = easyModeControls))
+        self.rdoModeOptEasy.clicked.connect(lambda: flipState(targetState = self.rdoModeOptEasy.isChecked(),
+                                                              widgetsToFlipOn = easyModeControls,
+                                                              widgetsToFlipOff = hardModeControls))

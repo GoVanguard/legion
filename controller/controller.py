@@ -1,15 +1,21 @@
 #!/usr/bin/env python
 
-'''
+"""
 LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+    You should have received a copy of the GNU General Public License along with this program.
+    If not, see <http://www.gnu.org/licenses/>.
+
+"""
 
 import signal  # for file operations, to kill processes, for regex, for subprocesses
 import subprocess
@@ -44,7 +50,9 @@ class Controller:
         self.update = '08/12/2019'
 
         self.license = "GPL v3"
-        self.desc = "Legion is a fork of SECFORCE's Sparta, Legion is an open source, easy-to-use, \nsuper-extensible and semi-automated network penetration testing tool that aids in discovery, \nreconnaissance and exploitation of information systems."
+        self.desc = "Legion is a fork of SECFORCE's Sparta, Legion is an open source, easy-to-use, \n" + \
+                    "super-extensible and semi-automated network penetration testing tool that aids in " + \
+                    "discovery, \nreconnaissance and exploitation of information systems."
         self.smallIcon = './images/icons/Legion-N_128x128.svg'
         self.bigIcon = './images/icons/Legion-N_128x128.svg'
 
@@ -54,7 +62,7 @@ class Controller:
         self.view.startOnce()
         self.view.startConnections()
 
-        self.loadSettings()                                             # creation of context menu actions from settings file and set up of various settings
+        self.loadSettings()  # creation of context menu actions from settings file and set up of various settings
         self.initNmapImporter()
         self.initPythonImporter()
         self.initScreenshooter()
@@ -64,12 +72,13 @@ class Controller:
         self.processTimers = {}
         self.processMeasurements = {}
 
-    # initialisations that will happen everytime we create/open a project - can happen several times in the program's lifetime
+    # initialisations that will happen everytime we create/open a project - can happen several times in the
+    # program's lifetime
     def start(self, title='*untitled'):
-        self.processes = []                                             # to store all the processes we run (nmaps, niktos, etc)
-        self.fastProcessQueue = queue.Queue()                           # to manage fast processes (banner, snmpenum, etc)
-        self.fastProcessesRunning = 0                                   # counts the number of fast processes currently running
-        self.slowProcessesRunning = 0                                   # counts the number of slow processes currently running
+        self.processes = []                    # to store all the processes we run (nmaps, niktos, etc)
+        self.fastProcessQueue = queue.Queue()  # to manage fast processes (banner, snmpenum, etc)
+        self.fastProcessesRunning = 0          # counts the number of fast processes currently running
+        self.slowProcessesRunning = 0          # counts the number of slow processes currently running
         activeProject = self.logic.activeProject
         self.nmapImporter.setDB(activeProject.database)  # tell nmap importer which db to use
         self.nmapImporter.setHostRepository(activeProject.repositoryContainer.hostRepository)
@@ -95,7 +104,8 @@ class Controller:
         self.pythonImporter.log.connect(self.view.ui.LogOutputTextView.append)
 
     def initScreenshooter(self):
-        self.screenshooter = Screenshooter(self.settings.general_screenshooter_timeout)         # screenshot taker object (different thread)
+        # screenshot taker object (different thread)
+        self.screenshooter = Screenshooter(self.settings.general_screenshooter_timeout)
         self.screenshooter.done.connect(self.screenshotFinished)
         self.screenshooter.log.connect(self.view.ui.LogOutputTextView.append)
 
@@ -103,7 +113,9 @@ class Controller:
         self.browser = BrowserOpener()                                  # browser opener object (different thread)
         self.browser.log.connect(self.view.ui.LogOutputTextView.append)
 
-    def initTimers(self):                                               # these timers are used to prevent from updating the UI several times within a short time period - which freezes the UI
+    # these timers are used to prevent from updating the UI several times within a short time period -
+    # which freezes the UI
+    def initTimers(self):
         self.updateUITimer = QTimer()
         self.updateUITimer.setSingleShot(True)
         self.updateUITimer.timeout.connect(self.view.updateProcessesTableView)
@@ -118,22 +130,25 @@ class Controller:
         # Update only when queue > 0
         self.processTableUiUpdateTimer.start(1000) # Faster than this doesn't make anything smoother
 
-    # this function fetches all the settings from the conf file. Among other things it populates the actions lists that will be used in the context menus.
+    # this function fetches all the settings from the conf file. Among other things it populates the actions lists
+    # that will be used in the context menus.
     def loadSettings(self):
         self.settingsFile = AppSettings()
-        self.settings = Settings(
-            self.settingsFile)  # load settings from conf file (create conf file first if necessary)
-        self.originalSettings = Settings(
-            self.settingsFile)  # save the original state so that we can know if something has changed when we exit LEGION
+        # load settings from conf file (create conf file first if necessary)
+        self.settings = Settings(self.settingsFile)
+        # save the original state so that we can know if something has changed when we exit LEGION
+        self.originalSettings = Settings(self.settingsFile)
         self.logic.projectManager.setStoreWordListsOnExit(self.logic.activeProject,
             self.settings.brute_store_cleartext_passwords_on_exit == 'True')
         self.view.settingsWidget.setSettings(Settings(self.settingsFile))
 
-    def applySettings(self, newSettings):                               # call this function when clicking 'apply' in the settings menu (after validation)
+    # call this function when clicking 'apply' in the settings menu (after validation)
+    def applySettings(self, newSettings):
         self.settings = newSettings
 
-    def cancelSettings(self):                                           # called when the user presses cancel in the Settings dialog
-        self.view.settingsWidget.setSettings(self.settings)             # resets the dialog's settings to the current application settings to forget any changes made by the user
+    def cancelSettings(self):  # called when the user presses cancel in the Settings dialog
+        # resets the dialog's settings to the current application settings to forget any changes made by the user
+        self.view.settingsWidget.setSettings(self.settings)
 
     @timing
     def saveSettings(self, saveBackup = True):
@@ -206,9 +221,10 @@ class Controller:
         self.view.importProgressWidget.reset('Opening project..')
         self.view.importProgressWidget.show()                           # show the progress widget
         self.logic.openExistingProject(filename, projectType)
-        self.start(ntpath.basename(self.logic.activeProject.properties.projectName))  # initialisations (globals, signals, etc)
+        # initialisations (globals, signals, etc)
+        self.start(ntpath.basename(self.logic.activeProject.properties.projectName))
         self.view.restoreToolTabs()                                     # restores the tool tabs for each host
-        self.view.hostTableClick()                                      # click on first host to restore his host tool tabs
+        self.view.hostTableClick()                                 # click on first host to restore his host tool tabs
         self.view.importProgressWidget.hide()                           # hide the progress widget
 
     def saveProject(self, lastHostIdClicked, notes):
@@ -235,35 +251,38 @@ class Controller:
             log.info('No hosts entered..')
             return
 
+        runningFolder = self.logic.activeProject.properties.runningFolder
         if scanMode == 'Easy':
             if runStagedNmap:
                 self.runStagedNmap(targetHosts, runHostDiscovery)
             elif runHostDiscovery:
-                outputfile = self.logic.activeProject.properties.runningFolder + "/nmap/" + getTimestamp() + '-host-discover'
-                command = "nmap -n -sV -O --version-light -T" + str(nmapSpeed) + " " + targetHosts + " -oA " + outputfile
+                outputfile = runningFolder + "/nmap/" + getTimestamp() + '-host-discover'
+                command = f"nmap -n -sV -O --version-light -T{str(nmapSpeed)} {targetHosts} -oA {outputfile}"
                 log.info("Running {command}".format(command=command))
                 self.runCommand('nmap', 'nmap (discovery)', targetHosts, '', '', command, getTimestamp(True),
                                 outputfile, self.view.createNewTabForHost(str(targetHosts), 'nmap (discovery)', True))
             else:
-                outputfile = self.logic.activeProject.properties.runningFolder + "/nmap/" + getTimestamp() + '-nmap-list'
+                outputfile = runningFolder + "/nmap/" + getTimestamp() + '-nmap-list'
                 command = "nmap -n -sL -T" + str(nmapSpeed) + " " + targetHosts + " -oA " + outputfile
-                self.runCommand('nmap', 'nmap (list)', targetHosts, '', '', command, getTimestamp(True), outputfile,
+                self.runCommand('nmap', 'nmap (list)', targetHosts, '', '', command, getTimestamp(True),
+                                outputfile,
                                 self.view.createNewTabForHost(str(targetHosts), 'nmap (list)', True))
         elif scanMode == 'Hard':
-            outputfile = self.logic.activeProject.properties.runningFolder + "/nmap/" + getTimestamp() + '-nmap-custom'
+            outputfile = runningFolder + "/nmap/" + getTimestamp() + '-nmap-custom'
             nmapOptionsString = ' '.join(nmapOptions)
             nmapOptionsString = nmapOptionsString + " -T" + str(nmapSpeed)
             command = "nmap " + nmapOptionsString + " " + targetHosts + " -oA " + outputfile
             self.runCommand('nmap', 'nmap (custom ' + nmapOptionsString + ')', targetHosts, '', '', command,
                             getTimestamp(True), outputfile,
-                            self.view.createNewTabForHost(str(targetHosts), 'nmap (custom ' + nmapOptionsString + ')',
+                            self.view.createNewTabForHost(
+                                str(targetHosts), 'nmap (custom ' + nmapOptionsString + ')',
                                                           True))
 
     #################### CONTEXT MENUS ####################
 
+    # showAll exists because in some cases we only want to show host tools excluding portscans and 'mark as checked'
     @timing
-    def getContextMenuForHost(self, isChecked, showAll=True):           # showAll exists because in some cases we only want to show host tools excluding portscans and 'mark as checked'
-
+    def getContextMenuForHost(self, isChecked, showAll=True):
         menu = QMenu()
         self.nmapSubMenu = QMenu('Portscan')
         actions = []
@@ -300,7 +319,8 @@ class Controller:
             return
 
         if action.text() == 'Run nmap (staged)':
-            log.info('Purging previous portscan data for ' + str(ip))  # if we are running nmap we need to purge previous portscan results
+            # if we are running nmap we need to purge previous portscan results
+            log.info('Purging previous portscan data for ' + str(ip))
             if repositoryContainer.portRepository.getPortsByIPAndProtocol(ip, 'tcp'):
                 repositoryContainer.portRepository.deleteAllPortsAndScriptsByHostId(hostid, 'tcp')
             if repositoryContainer.portRepository.getPortsByIPAndProtocol(ip, 'udp'):
@@ -337,24 +357,26 @@ class Controller:
             if action == actions[i]:
                 name = self.settings.hostActions[i][1]
                 invisibleTab = False
-                if 'nmap' in name:                                      # to make sure different nmap scans appear under the same tool name
+                # to make sure different nmap scans appear under the same tool name
+                if 'nmap' in name:
                     name = 'nmap'
                     invisibleTab = True
                 elif 'python-script' in name:
                     invisibleTab = True
-                                                                        # remove all chars that are not alphanumeric from tool name (used in the outputfile's name)
-                outputfile = self.logic.activeProject.properties.runningFolder + "/" + re.sub("[^0-9a-zA-Z]", "", str(
-                    name)) + "/" + getTimestamp() + "-" + re.sub("[^0-9a-zA-Z]", "",
-                                                                 str(self.settings.hostActions[i][1])) + "-" + ip
+                # remove all chars that are not alphanumeric from tool name (used in the outputfile's name)
+                outputfile = self.logic.activeProject.properties.runningFolder + "/" + \
+                             re.sub("[^0-9a-zA-Z]", "", str(name)) + "/" + getTimestamp() + "-" + \
+                             re.sub("[^0-9a-zA-Z]", "", str(self.settings.hostActions[i][1])) + "-" + ip
                 command = str(self.settings.hostActions[i][2])
                 command = command.replace('[IP]', ip).replace('[OUTPUT]', outputfile)
-                                                                        # check if same type of nmap scan has already been made and purge results before scanning
+
+                # check if same type of nmap scan has already been made and purge results before scanning
                 if 'nmap' in command:
                     proto = 'tcp'
                     if '-sU' in command:
                         proto = 'udp'
-
-                    if repositoryContainer.portRepository.getPortsByIPAndProtocol(ip, proto):  # if we are running nmap we need to purge previous portscan results (of the same protocol)
+                    # if we are running nmap we need to purge previous portscan results (of the same protocol)
+                    if repositoryContainer.portRepository.getPortsByIPAndProtocol(ip, proto):
                         repositoryContainer.portRepository.deleteAllPortsAndScriptsByHostId(hostid, proto)
 
                 tabTitle = self.settings.hostActions[i][1]
@@ -364,7 +386,7 @@ class Controller:
 
     @timing
     def getContextMenuForServiceName(self, serviceName='*', menu=None):
-        if menu == None:                                                # if no menu was given, create a new one
+        if menu == None:  # if no menu was given, create a new one
             menu = QMenu()
 
         if serviceName == '*' or serviceName in self.settings.general_web_services.split(","):
@@ -373,10 +395,13 @@ class Controller:
 
         actions = []
         for a in self.settings.portActions:
-            if serviceName is None or serviceName == '*' or serviceName in a[3].split(",") or a[3] == '':  # if the service name exists in the portActions list show the command in the context menu
-                actions.append([self.settings.portActions.index(a), menu.addAction(a[0])])  # in actions list write the service and line number that corresponds to it in portActions
+            # if the service name exists in the portActions list show the command in the context menu
+            if serviceName is None or serviceName == '*' or serviceName in a[3].split(",") or a[3] == '':
+                # in actions list write the service and line number that corresponds to it in portActions
+                actions.append([self.settings.portActions.index(a), menu.addAction(a[0])])
 
-        modifiers = QtWidgets.QApplication.keyboardModifiers()              # if the user pressed SHIFT+Right-click show full menu
+        # if the user pressed SHIFT+Right-click show full menu
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
         if modifiers == QtCore.Qt.ShiftModifier:
             shiftPressed = True
         else:
@@ -406,10 +431,11 @@ class Controller:
                 srvc_num = actions[i][0]
                 for ip in targets:
                     tool = self.settings.portActions[srvc_num][1]
-                    tabTitle = self.settings.portActions[srvc_num][1] + " (" + ip[1] + "/" + ip[2] + ")"
-                    outputfile = self.logic.activeProject.properties.runningFolder + "/" + re.sub("[^0-9a-zA-Z]", "",str(tool)) + "/" + getTimestamp() + '-' + tool + "-" + \
-                                 ip[0] + "-" + ip[1]
-
+                    tabTitle = self.settings.portActions[srvc_num][1]+" ("+ip[1]+"/"+ip[2]+")"
+                    outputfile = self.logic.activeProject.properties.runningFolder + "/" + \
+                                 re.sub("[^0-9a-zA-Z]", "", str(tool)) + \
+                                 "/" + getTimestamp() + '-' + tool + "-" + ip[0] + "-" + ip[1]
+                                        
                     command = str(self.settings.portActions[srvc_num][2])
                     command = command.replace('[IP]', ip[0]).replace('[PORT]', ip[1]).replace('[OUTPUT]', outputfile)
 
@@ -430,12 +456,13 @@ class Controller:
 
         menu = QMenu()
 
-        modifiers = QtWidgets.QApplication.keyboardModifiers()              # if the user pressed SHIFT+Right-click show full menu
+        modifiers = QtWidgets.QApplication.keyboardModifiers()  # if the user pressed SHIFT+Right-click show full menu
         if modifiers == QtCore.Qt.ShiftModifier:
             serviceName='*'
 
-        terminalActions = []                                            # custom terminal actions from settings file
-        for a in self.settings.portTerminalActions:                             # if wildcard or the command is valid for this specific service or if the command is valid for all services
+        terminalActions = []  # custom terminal actions from settings file
+        # if wildcard or the command is valid for this specific service or if the command is valid for all services
+        for a in self.settings.portTerminalActions:
             if serviceName is None or serviceName == '*' or serviceName in a[3].split(",") or a[3] == '':
                 terminalActions.append([self.settings.portTerminalActions.index(a), menu.addAction(a[0])])
 
@@ -457,7 +484,8 @@ class Controller:
 
         if action.text() == 'Send to Brute':
             for ip in targets:
-                self.view.createNewBruteTab(ip[0], ip[1], ip[3])        # ip[0] is the IP, ip[1] is the port number and ip[3] is the service name
+                # ip[0] is the IP, ip[1] is the port number and ip[3] is the service name
+                self.view.createNewBruteTab(ip[0], ip[1], ip[3])
             return
 
         if action.text() == 'Run custom command':
@@ -478,12 +506,12 @@ class Controller:
 
     def getContextMenuForProcess(self):
         menu = QMenu()
-        killAction = menu.addAction("Kill")
-        clearAction = menu.addAction("Clear")
+        menu.addAction("Kill")
+        menu.addAction("Clear")
         return menu
 
-    def handleProcessAction(self, selectedProcesses, action):           # selectedProcesses is a list of tuples (pid, status, procId)
-
+    # selectedProcesses is a list of tuples (pid, status, procId)
+    def handleProcessAction(self, selectedProcesses, action):
         if action.text() == 'Kill':
             if self.view.killProcessConfirmation():
                 for p in selectedProcesses:
@@ -650,8 +678,8 @@ class Controller:
         qProcess.finished.connect(handleProcStop)
         updateElapsed.timeout.connect(handleProcUpdate)
 
-        textbox.setProperty('dbId',
-                            str(self.logic.activeProject.repositoryContainer.processRepository.storeProcess(qProcess)))
+        processRepository = self.logic.activeProject.repositoryContainer.processRepository
+        textbox.setProperty('dbId', str(processRepository.storeProcess(qProcess)))
         updateElapsed.start(1000)
         self.processTimers[qProcess.id] = updateElapsed
         self.processMeasurements[qProcess.pid()] = 0
@@ -661,11 +689,14 @@ class Controller:
 
         self.checkProcessQueue()
 
-        self.updateUITimer.stop()                                       # update the processes table
-        self.updateUITimer.start(900)                                   # while the process is running, when there's output to read, display it in the GUI
+        # update the processes table
+        self.updateUITimer.stop()
+        # while the process is running, when there's output to read, display it in the GUI
+        self.updateUITimer.start(900)
 
         qProcess.setProcessChannelMode(QtCore.QProcess.MergedChannels)
-        qProcess.readyReadStandardOutput.connect(lambda: qProcess.display.appendPlainText(str(qProcess.readAllStandardOutput().data().decode('ISO-8859-1'))))
+        qProcess.readyReadStandardOutput.connect(lambda: qProcess.display.appendPlainText(
+            str(qProcess.readAllStandardOutput().data().decode('ISO-8859-1'))))
 
         qProcess.sigHydra.connect(self.handleHydraFindings)
         qProcess.finished.connect(lambda: self.processFinished(qProcess))
@@ -677,8 +708,7 @@ class Controller:
             nextStage = stage + 1
             qProcess.finished.connect(
                 lambda: self.runStagedNmap(str(hostIp), discovery=discovery, stage=nextStage,
-                                           stop=self.logic.activeProject.repositoryContainer.processRepository.isKilledProcess(
-                                               str(qProcess.id))))
+                                           stop=processRepository.isKilledProcess(str(qProcess.id))))
 
         return qProcess.pid()  # return the pid so that we can kill the process if needed
 
@@ -694,20 +724,23 @@ class Controller:
         outputfile = '/tmp/a'
         qProcess = MyQProcess(name, tabTitle, hostIp, port, protocol, command, startTime, outputfile, textbox)
 
-        textbox.setProperty('dbId', str(self.logic.activeProject.repositoryContainer.processRepository.storeProcess(qProcess)))
+        processRepository = self.logic.activeProject.repositoryContainer.processRepository
+        textbox.setProperty('dbId', str(processRepository.storeProcess(qProcess)))
 
         log.info('Queuing: ' + str(command))
         self.fastProcessQueue.put(qProcess)
 
         self.checkProcessQueue()
 
-        self.updateUI2Timer.stop()                                       # update the processes table
-        self.updateUI2Timer.start(900)                                   # while the process is running, when there's output to read, display it in the GUI
-        self.updateUITimer.stop()                                       # update the processes table
+        self.updateUI2Timer.stop()   # update the processes table
+        # while the process is running, when there's output to read, display it in the GUI
+        self.updateUI2Timer.start(900)
+        self.updateUITimer.stop()   # update the processes table
         self.updateUITimer.start(900)
 
         qProcess.setProcessChannelMode(QtCore.QProcess.MergedChannels)
-        qProcess.readyReadStandardOutput.connect(lambda: qProcess.display.appendPlainText(str(qProcess.readAllStandardOutput().data().decode('ISO-8859-1'))))
+        qProcess.readyReadStandardOutput.connect(lambda: qProcess.display.appendPlainText(
+            str(qProcess.readAllStandardOutput().data().decode('ISO-8859-1'))))
 
         qProcess.sigHydra.connect(self.handleHydraFindings)
         qProcess.finished.connect(lambda: self.processFinished(qProcess))
@@ -718,10 +751,10 @@ class Controller:
     # recursive function used to run nmap in different stages for quick results
     def runStagedNmap(self, targetHosts, discovery = True, stage = 1, stop = False):
         log.info("runStagedNmap called for stage {0}".format(str(stage)))
+        runningFolder = self.logic.activeProject.properties.runningFolder
         if not stop:
             textbox = self.view.createNewTabForHost(str(targetHosts), 'nmap (stage ' + str(stage) + ')', True)
-            outputfile = self.logic.activeProject.properties.runningFolder + "/nmap/" + getTimestamp() + '-nmapstage' + str(
-                stage)
+            outputfile = runningFolder + "/nmap/" + getTimestamp() + '-nmapstage' + str(stage)
 
             if stage == 1:                                              # webservers/proxies
                 ports = self.settings.tools_nmap_stage1_ports
@@ -742,7 +775,7 @@ class Controller:
             if os.geteuid() == 0:                                       # if we are root we can run SYN + UDP scans
                 command += "-sSU "
                 if stage == 2:
-                    command += '-O '                                    # only check for OS once to save time and only if we are root otherwise it fail
+                    command += '-O '  # only check for OS once to save time and only if we are root otherwise it fail
             else:
                 command += '-sT '
 
@@ -751,48 +784,52 @@ class Controller:
             else:
                 command = 'nmap -sV --script=./scripts/nmap/vulners.nse -vvvv ' + targetHosts + ' -oA ' + outputfile
 
-            self.runCommand('nmap','nmap (stage '+str(stage)+')', str(targetHosts), '', '', command, getTimestamp(True), outputfile, textbox, discovery = discovery, stage = stage, stop = stop)
+            self.runCommand('nmap', 'nmap (stage ' + str(stage) + ')', str(targetHosts), '', '', command,
+                            getTimestamp(True), outputfile, textbox, discovery=discovery, stage=stage, stop=stop)
 
     def importFinished(self):
         self.updateUI2Timer.stop()
         self.updateUI2Timer.start(800)
-        self.view.displayAddHostsOverlay(False)                         # if nmap import was the first action, we need to hide the overlay (note: we shouldn't need to do this everytime. this can be improved)
+        # if nmap import was the first action, we need to hide the overlay (note: we shouldn't need to do this
+        # every time. this can be improved)
+        self.view.displayAddHostsOverlay(False)
 
     def screenshotFinished(self, ip, port, filename):
+        outputFolder = self.logic.activeProject.properties.outputFolder
         dbId = self.logic.activeProject.repositoryContainer.processRepository.storeScreenshot(str(ip), str(port),
                                                                                               str(filename))
         imageviewer = self.view.createNewTabForHost(ip, 'screenshot (' + port + '/tcp)', True, '',
-                                                    str(
-                                                        self.logic.activeProject.properties.outputFolder) + '/screenshots/' + str(
-                                                        filename))
+                                                    str(outputFolder) + '/screenshots/' + str(filename))
         imageviewer.setProperty('dbId', QVariant(str(dbId)))
-        self.view.switchTabClick()                                      # to make sure the screenshot tab appears when it is launched from the host services tab
-        self.updateUITimer.stop()                                       # update the processes table
+        # to make sure the screenshot tab appears when it is launched from the host services tab
+        self.view.switchTabClick()
+        self.updateUITimer.stop()  # update the processes table
         self.updateUITimer.start(900)
 
     def processCrashed(self, proc):
-        self.logic.activeProject.repositoryContainer.processRepository.storeProcessCrashStatus(str(proc.id))
+        processRepository = self.logic.activeProject.repositoryContainer.processRepository
+        processRepository.storeProcessCrashStatus(str(proc.id))
         log.info('Process {qProcessId} Crashed!'.format(qProcessId=str(proc.id)))
         qProcessOutput = "\n\t" + str(proc.display.toPlainText()).replace('\n', '').replace("b'", "")
         # self.view.closeHostToolTab(self, index))
-        self.view.findFinishedServiceTab(
-            str(self.logic.activeProject.repositoryContainer.processRepository.getPIDByProcessId(str(proc.id))))
+        self.view.findFinishedServiceTab(str(processRepository.getPIDByProcessId(str(proc.id))))
         log.info('Process {qProcessId} Output: {qProcessOutput}'.format(qProcessId=str(proc.id),
                                                                         qProcessOutput=qProcessOutput))
 
     # this function handles everything after a process ends
     # def processFinished(self, qProcess, crashed=False):
     def processFinished(self, qProcess):
+        processRepository = self.logic.activeProject.repositoryContainer.processRepository
         try:
-            if not self.logic.activeProject.repositoryContainer.processRepository.isKilledProcess(
+            if not processRepository.isKilledProcess(
                     str(qProcess.id)):  # if process was not killed
                 if not qProcess.outputfile == '':
                     # move tool output from runningfolder to output folder if there was an output file
                     self.logic.toolCoordinator.saveToolOutput(self.logic.activeProject.properties.outputFolder,
                                                           qProcess.outputfile)
                     print(qProcess.command)
-                    if 'nmap' in qProcess.command:  # if the process was nmap, use the parser to store it
-                        if qProcess.exitCode() == 0:  # if the process finished successfully
+                    if 'nmap' in qProcess.command: # if the process was nmap, use the parser to store it
+                        if qProcess.exitCode() == 0:                    # if the process finished successfully
                             newoutputfile = qProcess.outputfile.replace(
                                 self.logic.activeProject.properties.runningFolder,
                                 self.logic.activeProject.properties.outputFolder)
@@ -809,32 +846,31 @@ class Controller:
                             self.pythonImporter.start()
                 exitCode = qProcess.exitCode()
                 if exitCode != 0 and exitCode != 255:
-                    log.info("Process {qProcessId} exited with code {qProcessExitCode}".format(qProcessId=qProcess.id, qProcessExitCode=qProcess.exitCode()))
+                    log.info("Process {qProcessId} exited with code {qProcessExitCode}"
+                             .format(qProcessId=qProcess.id, qProcessExitCode=qProcess.exitCode()))
                     self.processCrashed(qProcess)
 
                 log.info("Process {qProcessId} is done!".format(qProcessId=qProcess.id))
 
-            self.logic.activeProject.repositoryContainer.processRepository.storeProcessOutput(str(qProcess.id),
-                                                                                              qProcess.display.toPlainText())
+            processRepository.storeProcessOutput(str(qProcess.id), qProcess.display.toPlainText())
 
             if 'hydra' in qProcess.name:  # find the corresponding widget and tell it to update its UI
-                self.view.findFinishedBruteTab(str(
-                    self.logic.activeProject.repositoryContainer.processRepository.getPIDByProcessId(str(qProcess.id))))
+                self.view.findFinishedBruteTab(str(processRepository.getPIDByProcessId(str(qProcess.id))))
 
             try:
                 self.fastProcessesRunning =- 1
                 self.checkProcessQueue()
                 self.processes.remove(qProcess)
                 self.updateUITimer.stop()
-                self.updateUITimer.start(1000)                          # update the interface soon
-
+                self.updateUITimer.start(1000)  # update the interface soon
             except Exception as e:
                 log.info("Process Finished Cleanup Exception {e}".format(e=e))
-        except Exception as e:                                                         # fixes bug when receiving finished signal when project is no longer open.
+        except Exception as e:  # fixes bug when receiving finished signal when project is no longer open.
             log.info("Process Finished Exception {e}".format(e=e))
             raise
 
-    def handleHydraFindings(self, bWidget, userlist, passlist):         # when hydra finds valid credentials we need to save them and change the brute tab title to red
+    # when hydra finds valid credentials we need to save them and change the brute tab title to red
+    def handleHydraFindings(self, bWidget, userlist, passlist):
         self.view.blinkBruteTab(bWidget)
         for username in userlist:
             self.logic.activeProject.properties.usernamesWordList.add(username)
@@ -861,7 +897,7 @@ class Controller:
     def runToolsFor(self, service, ip, port, protocol='tcp'):
         log.info('Running tools for: ' + service + ' on ' + ip + ':' + port)
 
-        if service.endswith("?"):                                       # when nmap is not sure it will append a ?, so we need to remove it
+        if service.endswith("?"):  # when nmap is not sure it will append a ?, so we need to remove it
             service=service[:-1]
 
         for tool in self.settings.automatedAttacks:
@@ -874,24 +910,19 @@ class Controller:
                 else:
                     for a in self.settings.portActions:
                         if tool[0] == a[1]:
-                            restoring = False
                             tabTitle = a[1] + " (" + port + "/" + protocol + ")"
-                            outputfile = self.logic.activeProject.properties.runningFolder + "/" + re.sub(
-                                "[^0-9a-zA-Z]", "", str(tool[0])) + "/" + getTimestamp() + '-' + a[
-                                             1] + "-" + ip + "-" + port
+                            outputfile = self.logic.activeProject.properties.runningFolder + "/" + \
+                                         re.sub("[^0-9a-zA-Z]", "", str(tool[0])) + \
+                                         "/" + getTimestamp() + '-' + a[1] + "-" + ip + "-" + port
                             command = str(a[2])
-                            command = command.replace('[IP]', ip).replace('[PORT]', port).replace('[OUTPUT]',
+                            command = command.replace('[IP]', ip).replace('[PORT]', port)\
+                                .replace('[OUTPUT]',
                                                                                                   outputfile)
                             log.debug("Running tool command " + str(command))
 
-                            if 'nmap' in tabTitle:                          # we don't want to show nmap tabs
-                                restoring = True
-                            elif 'python-script' in tabTitle:
-                                restoring = True
-
                             tab = self.view.ui.HostsTabWidget.tabText(self.view.ui.HostsTabWidget.currentIndex())
-                            self.runCommand(tool[0], tabTitle, ip, port, protocol, command, getTimestamp(True),
+                            self.runCommand(tool[0], tabTitle, ip, port, protocol, command,
+                                            getTimestamp(True),
                                             outputfile,
                                             self.view.createNewTabForHost(ip, tabTitle, not (tab == 'Hosts')))
                             break
-

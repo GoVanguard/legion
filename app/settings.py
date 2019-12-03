@@ -1,15 +1,21 @@
 #!/usr/bin/env python
 
-'''
+"""
 LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+    You should have received a copy of the GNU General Public License along with this program.
+    If not, see <http://www.gnu.org/licenses/>.
+
+"""
 
 from app.auxiliary import *  # for timestamp
 
@@ -173,7 +179,8 @@ class AppSettings():
         self.actions.sync()
 
 
-# This class first sets all the default settings and then overwrites them with the settings found in the configuration file
+# This class first sets all the default settings and
+# then overwrites them with the settings found in the configuration file
 class Settings():
     def __init__(self, appSettings=None):
 
@@ -192,7 +199,13 @@ class Settings():
         self.brute_password_wordlist_path = "/usr/share/wordlists/"
         self.brute_default_username = "root"
         self.brute_default_password = "password"
-        self.brute_services = "asterisk,afp,cisco,cisco-enable,cvs,firebird,ftp,ftps,http-head,http-get,https-head,https-get,http-get-form,http-post-form,https-get-form,https-post-form,http-proxy,http-proxy-urlenum,icq,imap,imaps,irc,ldap2,ldap2s,ldap3,ldap3s,ldap3-crammd5,ldap3-crammd5s,ldap3-digestmd5,ldap3-digestmd5s,mssql,mysql,ncp,nntp,oracle-listener,oracle-sid,pcanywhere,pcnfs,pop3,pop3s,postgres,rdp,rexec,rlogin,rsh,s7-300,sip,smb,smtp,smtps,smtp-enum,snmp,socks5,ssh,sshkey,svn,teamspeak,telnet,telnets,vmauthd,vnc,xmpp"
+        self.brute_services = "asterisk,afp,cisco,cisco-enable,cvs,firebird,ftp,ftps,http-head,http-get," + \
+                              "https-head,https-get,http-get-form,http-post-form,https-get-form," + \
+                              "https-post-form,http-proxy,http-proxy-urlenum,icq,imap,imaps,irc,ldap2,ldap2s," + \
+                              "ldap3,ldap3s,ldap3-crammd5,ldap3-crammd5s,ldap3-digestmd5,ldap3-digestmd5s," + \
+                              "mssql,mysql,ncp,nntp,oracle-listener,oracle-sid,pcanywhere,pcnfs,pop3,pop3s," + \
+                              "postgres,rdp,rexec,rlogin,rsh,s7-300,sip,smb,smtp,smtps,smtp-enum,snmp,socks5," + \
+                              "ssh,sshkey,svn,teamspeak,telnet,telnets,vmauthd,vnc,xmpp"
         self.brute_no_username_services = "cisco,cisco-enable,oracle-listener,s7-300,snmp,vnc"
         self.brute_no_password_services = "oracle-sid,rsh,smtp-enum"
 
@@ -201,7 +214,8 @@ class Settings():
         self.tools_nmap_stage2_ports = "T:25,135,137,139,445,1433,3306,5432,U:137,161,162,1434"
         self.tools_nmap_stage3_ports = "Vulners,CVE"
         self.tools_nmap_stage4_ports = "T:23,21,22,110,111,2049,3389,8080,U:500,5060"
-        self.tools_nmap_stage5_ports = "T:0-20,24,26-79,81-109,112-134,136,138,140-442,444,446-1432,1434-2048,2050-3305,3307-3388,3390-5431,5433-8079,8081-29999"
+        self.tools_nmap_stage5_ports = "T:0-20,24,26-79,81-109,112-134,136,138,140-442,444,446-1432,1434-2048," + \
+                                       "2050-3305,3307-3388,3390-5431,5433-8079,8081-29999"
         self.tools_nmap_stage6_ports = "T:30000-65535"
 
         self.tools_path_nmap = "/sbin/nmap"
@@ -270,8 +284,8 @@ class Settings():
                 self.gui_process_tab_detail = self.guiSettings['process-tab-detail']
 
             except KeyError as e:
-                log.info(
-                    'Something went wrong while loading the configuration file. Falling back to default settings for some settings.')
+                log.info('Something went wrong while loading the configuration file. Falling back to default ' +
+                         'settings for some settings.')
                 log.info('Go to the settings menu to fix the issues!')
                 log.error(str(e))
 
