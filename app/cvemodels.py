@@ -1,15 +1,20 @@
 #!/usr/bin/env python
 
-'''
+"""
 LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+    You should have received a copy of the GNU General Public License along with this program.
+    If not, see <http://www.gnu.org/licenses/>.
+"""
 
 import re
 from PyQt5 import QtWidgets, QtGui, QtCore
@@ -45,9 +50,9 @@ class CvesTableModel(QtCore.QAbstractTableModel):
                 else:
                     return "not implemented"
                 
-    def data(self, index, role):                                        # this method takes care of how the information is displayed
+    def data(self, index, role):  # this method takes care of how the information is displayed
 
-        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:                               # how to display each cell
+        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:  # how to display each cell
             value = ''
             row = index.row()
             column = index.column()
@@ -70,7 +75,6 @@ class CvesTableModel(QtCore.QAbstractTableModel):
             elif column == 8:
                 value = self.__cves[row]['exploitUrl']
             return value
-                    
 
     def sort(self, Ncol, order):
         self.layoutAboutToBeChanged.emit()
@@ -104,14 +108,15 @@ class CvesTableModel(QtCore.QAbstractTableModel):
             for i in range(len(self.__cves)):
                 array.append(self.__cves[i]['exploitUrl'])
 
-        sortArrayWithArray(array, self.__cves)                       # sort the services based on the values in the array
+        sortArrayWithArray(array, self.__cves)  # sort the services based on the values in the array
 
         if order == Qt.AscendingOrder:                                  # reverse if needed
             self.__cves.reverse()
             
         self.layoutChanged.emit()
 
-    def flags(self, index):                                             # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
+    # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
+    def flags(self, index):
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
 
     ### getter functions ###

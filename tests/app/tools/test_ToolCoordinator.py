@@ -30,11 +30,9 @@ class ToolCoordinatorTest(unittest.TestCase):
         self.outputFolder = "some-output-folder"
         self.toolCoordinator = ToolCoordinator(self.mockShell, self.mockNmapExporter)
 
-    @patch("ntpath.dirname")
     @patch("ntpath.basename")
     def test_saveToolOutput_WhenGivenProjectOutputFolderAndNmapFileNameToSaveOutputIn_SavesOutputSuccessfully(self,
-                                                                                                              basename,
-                                                                                                              dirname):
+                                                                                                              basename):
         fileName = "some-output-nmap-file"
 
         basename.return_value = "nmap"
@@ -50,11 +48,9 @@ class ToolCoordinatorTest(unittest.TestCase):
             mock.call("some-output-nmap-file.gnmap", "some-output-folder/nmap"),
         ])
 
-    @patch("ntpath.dirname")
     @patch("ntpath.basename")
-    def test_saveToolOutput_WhenGivenProjectOutputFolderAndGenericFileNameToSaveOutputIn_SavesOutputSuccessfully(self,
-                                                                                                                 basename,
-                                                                                                                 dirname):
+    def test_saveToolOutput_WhenGivenProjectOutputDirAndGenericFileNameToSaveOutputIn_SavesOutputSuccessfully(self,
+                                                                                                              basename):
         fileName = "some-output-file"
         basename.return_value = "some-tool"
         self.mockShell.directoryOrFileExists.side_effect = [False, True]
@@ -63,11 +59,9 @@ class ToolCoordinatorTest(unittest.TestCase):
         self.toolCoordinator.saveToolOutput(self.outputFolder, fileName)
         self.mockShell.move.assert_called_once_with("some-output-file", "some-output-folder/some-tool")
 
-    @patch("ntpath.dirname")
     @patch("ntpath.basename")
     def test_saveToolOutput_WhenGivenProjectOutputFolderAndXmlFileNameToSaveOutputIn_SavesOutputSuccessfully(self,
-                                                                                                             basename,
-                                                                                                             dirname):
+                                                                                                             basename):
         fileName = "some-output-xml-file"
         basename.return_value = "some-tool"
         self.mockShell.directoryOrFileExists.side_effect = [False, False, False, True]
@@ -76,11 +70,9 @@ class ToolCoordinatorTest(unittest.TestCase):
         self.toolCoordinator.saveToolOutput(self.outputFolder, fileName)
         self.mockShell.move.assert_called_once_with("some-output-xml-file.xml", "some-output-folder/some-tool")
 
-    @patch("ntpath.dirname")
     @patch("ntpath.basename")
     def test_saveToolOutput_WhenGivenProjectOutputFolderAndTxtFileNameToSaveOutputIn_SavesOutputSuccessfully(self,
-                                                                                                             basename,
-                                                                                                             dirname):
+                                                                                                             basename):
         fileName = "some-output-txt-file"
         basename.return_value = "some-tool"
         self.mockShell.directoryOrFileExists.side_effect = [False, False, False, False, True]
