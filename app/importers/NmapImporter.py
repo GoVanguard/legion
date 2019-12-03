@@ -29,7 +29,7 @@ from db.entities.port import portObj
 from db.entities.service import serviceObj
 from db.repositories.HostRepository import HostRepository
 from parsers.Parser import Parser
-from ui.ancillaryDialog import time
+from time import time
 
 
 class NmapImporter(QtCore.QThread):
