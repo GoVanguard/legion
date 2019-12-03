@@ -29,9 +29,8 @@ class Parser:
             for hostNode in self.__dom.getElementsByTagName('host'):
                 __host =  Host.Host(hostNode)
                 self.__hosts[__host.ip] = __host
-        except Exception as ex:
+        except Exception:
             log.info("Parser error! Invalid nmap file!")
-            #logging.error(ex)
             raise
 
     def getSession( self ):
