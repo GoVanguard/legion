@@ -24,6 +24,7 @@ from app.Project import Project, ProjectProperties
 from app.tools.ToolCoordinator import fileExists
 from app.auxiliary import Wordlist
 from app.shell.Shell import Shell
+from app.tools.nmap.NmapPaths import getNmapRunningFolder
 from db.RepositoryFactory import RepositoryFactory
 from db.database import Database
 
@@ -46,7 +47,7 @@ class ProjectManager:
         runningFolder = self.shell.create_temporary_directory(prefix="legion-", suffix="-running", directory="./tmp/")
 
         self.shell.create_directory_recursively(f"{outputFolder}/screenshots")  # to store screenshots
-        self.shell.create_directory_recursively(f"{runningFolder}/nmap")  # to store nmap output
+        self.shell.create_directory_recursively(getNmapRunningFolder(runningFolder))  # to store nmap output
         self.shell.create_directory_recursively(f"{runningFolder}/hydra")  # to store hydra output
         self.shell.create_directory_recursively(f"{runningFolder}/dnsmap")  # to store dnsmap output
 
