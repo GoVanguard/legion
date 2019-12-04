@@ -17,9 +17,9 @@ Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
 from typing import Union
 
-from app.auxiliary import getTimestamp
 from six import u as unicode
 
+from app.timing import getTimestamp
 from db.database import Database
 from db.entities.process import process
 from db.entities.processOutput import process_output
