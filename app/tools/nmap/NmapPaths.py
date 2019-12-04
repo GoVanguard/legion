@@ -15,31 +15,11 @@ Copyright (c) 2018 GoVanguard
 
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
-from datetime import datetime
-from functools import wraps
-from time import time
-
-from app.logging.legionLog import log
-
-timestampFormats = {
-    "HUMAN_FORMAT": "%d %b %Y %H:%M:%S.%f",
-    "STANDARD_TIMESTAMP": '%Y%m%d%H%M%S%f'
-}
 
 
-def timing(f):
-    @wraps(f)
-    def wrap(*args, **kw):
-        ts = time()
-        result = f(*args, **kw)
-        te = time()
-        tr = te - ts
-        log.debug('Function:%r args:[%r, %r] took: %2.4f sec' % (f.__name__, args, kw, tr))
-        return result
-
-    return wrap
+def getNmapRunningFolder(projectRunningFolder: str) -> str:
+    return f"{projectRunningFolder}/nmap"
 
 
-def getTimestamp(human: bool = False) -> str:
-    timeFormat = timestampFormats["HUMAN_FORMAT"] if human else timestampFormats["STANDARD_TIMESTAMP"]
-    return datetime.fromtimestamp(time()).strftime(timeFormat)
+def getNmapOutputFolder(projectOutputFolder: str) -> str:
+    return f"{projectOutputFolder}/nmap"

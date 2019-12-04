@@ -23,6 +23,7 @@ from PyQt5 import QtCore
 from PyQt5 import QtWidgets, QtGui, QtCore
 
 from app.shell.Shell import Shell
+from app.timing import getTimestamp
 from ui.ViewState import ViewState
 from ui.gui import *
 from ui.dialogs import *
@@ -1646,7 +1647,7 @@ class View(QtCore.QObject):
             self.viewState.hostTabs.update({str(bWidget.ip):hosttabs})
             
             bWidget.pid = self.controller.runCommand("hydra", bWidget.objectName(), bWidget.ip, bWidget.getPort(),
-                                                     'tcp', unicode(hydraCommand), getTimestamp(True),
+                                                     'tcp', unicode(hydraCommand), getTimestamp(human=True),
                                                      bWidget.outputfile, bWidget.display)
             bWidget.runButton.clicked.disconnect()
             bWidget.runButton.clicked.connect(lambda: self.killBruteProcess(bWidget))
