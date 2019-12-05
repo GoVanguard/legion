@@ -24,6 +24,7 @@ from app.Screenshooter import Screenshooter
 from app.actions.updateProgress.UpdateProgressObservable import UpdateProgressObservable
 from app.importers.NmapImporter import NmapImporter
 from app.importers.PythonImporter import PythonImporter
+from app.tools.nmap.NmapPaths import getNmapRunningFolder
 from ui.observers.QtUpdateProgressObserver import QtUpdateProgressObserver
 
 try:
@@ -256,19 +257,19 @@ class Controller:
             if runStagedNmap:
                 self.runStagedNmap(targetHosts, runHostDiscovery)
             elif runHostDiscovery:
-                outputfile = runningFolder + "/nmap/" + getTimestamp() + '-host-discover'
+                outputfile = getNmapRunningFolder(runningFolder) + "/" + getTimestamp() + '-host-discover'
                 command = f"nmap -n -sV -O --version-light -T{str(nmapSpeed)} {targetHosts} -oA {outputfile}"
                 log.info("Running {command}".format(command=command))
                 self.runCommand('nmap', 'nmap (discovery)', targetHosts, '', '', command, getTimestamp(True),
                                 outputfile, self.view.createNewTabForHost(str(targetHosts), 'nmap (discovery)', True))
             else:
-                outputfile = runningFolder + "/nmap/" + getTimestamp() + '-nmap-list'
+                outputfile = getNmapRunningFolder(runningFolder) + "/" + getTimestamp() + '-nmap-list'
                 command = "nmap -n -sL -T" + str(nmapSpeed) + " " + targetHosts + " -oA " + outputfile
                 self.runCommand('nmap', 'nmap (list)', targetHosts, '', '', command, getTimestamp(True),
                                 outputfile,
                                 self.view.createNewTabForHost(str(targetHosts), 'nmap (list)', True))
         elif scanMode == 'Hard':
-            outputfile = runningFolder + "/nmap/" + getTimestamp() + '-nmap-custom'
+            outputfile = getNmapRunningFolder(runningFolder) + "/" + getTimestamp() + '-nmap-custom'
             nmapOptionsString = ' '.join(nmapOptions)
             nmapOptionsString = nmapOptionsString + " -T" + str(nmapSpeed)
             command = "nmap " + nmapOptionsString + " " + targetHosts + " -oA " + outputfile
@@ -754,7 +755,7 @@ class Controller:
         runningFolder = self.logic.activeProject.properties.runningFolder
         if not stop:
             textbox = self.view.createNewTabForHost(str(targetHosts), 'nmap (stage ' + str(stage) + ')', True)
-            outputfile = runningFolder + "/nmap/" + getTimestamp() + '-nmapstage' + str(stage)
+            outputfile = getNmapRunningFolder(runningFolder) + "/" + getTimestamp() + '-nmapstage' + str(stage)
 
             if stage == 1:                                              # webservers/proxies
                 ports = self.settings.tools_nmap_stage1_ports

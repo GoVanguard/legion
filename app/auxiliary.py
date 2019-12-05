@@ -21,13 +21,11 @@ import os, sys, socket, locale, webbrowser, \
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import *  # for QProcess
 from six import u as unicode
-from datetime import datetime
 
 from app.http.isHttps import isHttps
 from app.logging.legionLog import log
 from app.timing import timing
 from utilities.stenoLogging import *
-from time import time
 
 # bubble sort algorithm that sorts an array (in place) based on the values in another array
 # the values in the array must be comparable and in the corresponding positions
@@ -51,19 +49,6 @@ def IP2Int(ip):
     o = list(map(int, ip.split('.')))
     res = (16777216 * o[0]) + (65536 * o[1]) + (256 * o[2]) + o[3]
     return res
-
-
-def getTimestamp(human=False, local=False):
-    t = time()
-    if human:
-        if local:
-            timestamp = datetime.datetime.fromtimestamp(t).strftime("%d %b %Y %H:%M:%S.%f").decode(
-                locale.getlocale()[1])
-        else:
-            timestamp = datetime.fromtimestamp(t).strftime("%d %b %Y %H:%M:%S.%f")
-    else:
-        timestamp = datetime.fromtimestamp(t).strftime('%Y%m%d%H%M%S%f')
-    return timestamp
 
 
 # used by the settings dialog when a user cancels and the GUI needs to be reset
