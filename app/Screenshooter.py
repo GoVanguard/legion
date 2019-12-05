@@ -17,8 +17,8 @@ import subprocess
 
 from PyQt5 import QtCore
 
-from app.auxiliary import getTimestamp
 from app.http.isHttps import isHttps
+from app.timing import getTimestamp
 
 
 class Screenshooter(QtCore.QThread):

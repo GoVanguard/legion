@@ -22,6 +22,7 @@ import shutil
 from app.Project import Project
 from app.tools.ToolCoordinator import ToolCoordinator
 from app.shell.Shell import Shell
+from app.tools.nmap.NmapPaths import getNmapOutputFolder
 from db.database import *
 from ui.ancillaryDialog import *
 
@@ -46,13 +47,14 @@ class Logic:
         self.storeWordlists = flag
 
     def copyNmapXMLToOutputFolder(self, file):
+        outputFolder = self.activeProject.properties.outputFolder
         try:
-            path = self.activeProject.properties.outputFolder + "/nmap"
+            path = getNmapOutputFolder(outputFolder)
             ntpath.basename(str(file))
-            if not os.path.exists(str(path)):
-                os.makedirs(str(path))
+            if not os.path.exists(path):
+                os.makedirs(path)
 
-            shutil.copy(str(file), str(path))  # will overwrite if file already exists
+            shutil.copy(str(file), path)  # will overwrite if file already exists
         except:
             log.info('Something went wrong copying the imported XML to the project folder.')
             log.info("Unexpected error: {0}".format(sys.exc_info()[0]))
