@@ -21,6 +21,9 @@ from app.auxiliary import *  # for timestamp
 
 
 # this class reads and writes application settings
+from app.timing import getTimestamp
+
+
 class AppSettings():
     def __init__(self):
         # check if settings file exists and creates it if it doesn't
