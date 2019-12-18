@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-import sys
-import xml.dom.minidom
 
 class CVE:
     name = ''

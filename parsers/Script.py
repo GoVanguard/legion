@@ -5,10 +5,7 @@ __author__ =  'ketchup'
 __version__=  '0.1'
 __modified_by = 'ketchup'
 
-import sys
-import xml.dom.minidom
 import parsers.CVE as CVE
-from db.database import *
 from pyExploitDb import PyExploitDb
 
 class Script:
@@ -137,12 +134,3 @@ class Script:
         else:
             print("-----------------------*{0}".format(scriptId))
             return results
-
-if __name__ == '__main__':
-
-    dom = xml.dom.minidom.parse('a-full.xml')
-
-    for scriptNode in dom.getElementsByTagName('script'):
-        script = Script(scriptNode)
-        log.info(script.scriptId)
-        log.info(script.output)

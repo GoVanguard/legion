@@ -4,6 +4,7 @@ checks:
     config:
       threshold: 50
 exclude_patterns:
+  - "parsers/examples/"
   - "debian/"
   - "deps/"
   - "scripts/"
