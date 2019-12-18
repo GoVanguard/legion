@@ -22,6 +22,7 @@ from PyQt5.QtCore import *                                              # for fi
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets, QtGui, QtCore
 
+from app.ApplicationInfo import applicationInfo, getVersion
 from app.shell.Shell import Shell
 from app.timing import getTimestamp
 from ui.ViewState import ViewState
@@ -75,10 +76,10 @@ class View(QtCore.QObject):
         self.importProgressWidget = ProgressWidget('Importing nmap..', self.ui.centralwidget)
         self.adddialog = AddHostsDialog(self.ui.centralwidget)      
         self.settingsWidget = AddSettingsDialog(self.shell, self.ui.centralwidget)
-        self.helpDialog = HelpDialog(self.controller.name, self.controller.author, self.controller.copyright,
-                                     self.controller.links, self.controller.emails, self.controller.version,
-                                     self.controller.build, self.controller.update, self.controller.license,
-                                     self.controller.desc, self.controller.smallIcon, self.controller.bigIcon,
+        self.helpDialog = HelpDialog(applicationInfo["name"], applicationInfo["author"], applicationInfo["copyright"],
+                                     applicationInfo["links"], applicationInfo["emails"], applicationInfo["version"],
+                                     applicationInfo["build"], applicationInfo["update"], applicationInfo["license"],
+                                     applicationInfo["desc"], applicationInfo["smallIcon"], applicationInfo["bigIcon"],
                                      qss = self.qss, parent = self.ui.centralwidget)
         self.configDialog = ConfigDialog(controller = self.controller, qss = self.qss, parent = self.ui.centralwidget)
 
@@ -244,7 +245,7 @@ class View(QtCore.QObject):
         else:
             title += ntpath.basename(str(self.controller.getProjectName()))
         
-        self.setMainWindowTitle(self.controller.name + ' ' + self.controller.getVersion() + ' - ' + title + ' - ' +
+        self.setMainWindowTitle(applicationInfo["name"] + ' ' + getVersion() + ' - ' + title + ' - ' +
                                 self.controller.getCWD())
         
     #################### ACTIONS ####################
