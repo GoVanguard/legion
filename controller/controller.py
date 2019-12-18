@@ -20,6 +20,7 @@ Copyright (c) 2018 GoVanguard
 import signal  # for file operations, to kill processes, for regex, for subprocesses
 import subprocess
 
+from app.ApplicationInfo import applicationInfo
 from app.Screenshooter import Screenshooter
 from app.actions.updateProgress.UpdateProgressObservable import UpdateProgressObservable
 from app.importers.NmapImporter import NmapImporter
@@ -40,23 +41,6 @@ class Controller:
     # initialisations that will happen once - when the program is launched
     @timing
     def __init__(self, view, logic):
-        self.name = "LEGION"
-        self.version = '0.3.5'
-        self.build = '1565621036'
-        self.author = 'GoVanguard'
-        self.copyright = '2019'
-        self.links = ['http://github.com/GoVanguard/legion/issues', 'https://GoVanguard.io/legion']
-        self.emails = []
-
-        self.update = '08/12/2019'
-
-        self.license = "GPL v3"
-        self.desc = "Legion is a fork of SECFORCE's Sparta, Legion is an open source, easy-to-use, \n" + \
-                    "super-extensible and semi-automated network penetration testing tool that aids in " + \
-                    "discovery, \nreconnaissance and exploitation of information systems."
-        self.smallIcon = './images/icons/Legion-N_128x128.svg'
-        self.bigIcon = './images/icons/Legion-N_128x128.svg'
-
         self.logic = logic
         self.view = view
         self.view.setController(self)
@@ -169,9 +153,6 @@ class Controller:
 
     def getProjectName(self):
         return self.logic.activeProject.properties.projectName
-
-    def getVersion(self):
-        return (self.version + "-" + self.build)
 
     def getRunningFolder(self):
         return self.logic.activeProject.properties.runningFolder
