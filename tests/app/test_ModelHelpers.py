@@ -19,7 +19,7 @@ import unittest
 
 from PyQt5 import QtCore
 
-from app.ModelHelpers import resolveHeaders
+from app.ModelHelpers import resolveHeaders, itemInteractive, itemSelectable
 
 
 class ModelHelpersTest(unittest.TestCase):
@@ -39,3 +39,11 @@ class ModelHelpersTest(unittest.TestCase):
         expectedMessage = "not implemented in view model"
         actualMessage = resolveHeaders(QtCore.Qt.DisplayRole, QtCore.Qt.Horizontal, 100, [])
         self.assertEqual(expectedMessage, actualMessage)
+
+    def test_itemInteractive_ReturnsItemFlagForEnabledSelectableEditableItem(self):
+        expectedFlags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+        self.assertEqual(expectedFlags, itemInteractive())
+
+    def test_itemSelectable_ReturnItemFlagForEnabledSelectableItem(self):
+        expectedFlags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+        self.assertEqual(expectedFlags, itemSelectable())
