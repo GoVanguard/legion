@@ -19,7 +19,7 @@ Copyright (c) 2018 GoVanguard
 import re
 from PyQt5 import QtWidgets, QtGui, QtCore
 
-from app.ModelHelpers import resolveHeaders
+from app.ModelHelpers import resolveHeaders, itemInteractive
 from app.auxiliary import *                                                 # for bubble sort
 
 class ProcessesTableModel(QtCore.QAbstractTableModel):
@@ -138,7 +138,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
 
     # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
     def flags(self, index):
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+        return itemInteractive()
 
     def setDataList(self, processes):
         self.__processes = processes

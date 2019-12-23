@@ -24,3 +24,11 @@ def resolveHeaders(role, orientation, section, headers):
             return headers[section]
         else:
             return "not implemented in view model"
+
+
+def itemInteractive() -> QtCore.Qt.ItemFlag:
+    return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+
+
+def itemSelectable() -> QtCore.Qt.ItemFlag:
+    return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable

@@ -22,7 +22,7 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from app.ModelHelpers import resolveHeaders
+from app.ModelHelpers import resolveHeaders, itemSelectable
 from app.auxiliary import *                                                 # for bubble sort
 
 
@@ -126,7 +126,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
 
     # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
     def flags(self, index):
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable     # add QtCore.Qt.ItemIsEditable to edit item
+        return itemSelectable()
 
     # sort function called when the user clicks on a header
     def sort(self, Ncol, order):

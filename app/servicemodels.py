@@ -20,7 +20,7 @@ Copyright (c) 2018 GoVanguard
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from app.ModelHelpers import resolveHeaders
+from app.ModelHelpers import resolveHeaders, itemInteractive
 from app.auxiliary import *                                                 # for bubble sort
 
 class ServicesTableModel(QtCore.QAbstractTableModel):
@@ -99,7 +99,7 @@ class ServicesTableModel(QtCore.QAbstractTableModel):
 
     # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
     def flags(self, index):
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+        return itemInteractive()
 
     # sort function called when the user clicks on a header
     def sort(self, Ncol, order):

@@ -20,7 +20,7 @@ Copyright (c) 2018 GoVanguard
 import re
 from PyQt5 import QtWidgets, QtGui, QtCore
 
-from app.ModelHelpers import resolveHeaders
+from app.ModelHelpers import resolveHeaders, itemSelectable
 from app.auxiliary import *                                                 # for bubble sort
 
 class ScriptsTableModel(QtCore.QAbstractTableModel):
@@ -90,7 +90,7 @@ class ScriptsTableModel(QtCore.QAbstractTableModel):
 
     # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
     def flags(self, index):
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+        return itemSelectable()
 
     ### getter functions ###
 
