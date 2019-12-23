@@ -21,7 +21,7 @@ from typing import Dict
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 
-from app.ModelHelpers import resolveHeaders
+from app.ModelHelpers import resolveHeaders, itemInteractive
 from app.auxiliary import *                                                 # for bubble sort
 
 class CvesTableModel(QtCore.QAbstractTableModel):
@@ -81,7 +81,7 @@ class CvesTableModel(QtCore.QAbstractTableModel):
 
     # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
     def flags(self, index):
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+        return itemInteractive()
 
     ### getter functions ###
 
