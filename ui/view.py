@@ -16,30 +16,23 @@ Copyright (c) 2020 GoVanguard
     If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys, os, ntpath, signal, re  # for file operations, to kill processes and for regex
-
-from PyQt5.QtCore import *                                              # for filters dialog
-from PyQt5 import QtCore
-from PyQt5 import QtWidgets, QtGui, QtCore
+import ntpath  # for file operations, to kill processes and for regex
 
 from app.ApplicationInfo import applicationInfo, getVersion
-from app.shell.Shell import Shell
 from app.timing import getTimestamp
 from ui.ViewState import ViewState
-from ui.gui import *
 from ui.dialogs import *
 from ui.settingsDialog import *
 from ui.configDialog import *
 from ui.helpDialog import *
 from ui.addHostDialog import *
 from ui.ancillaryDialog import *
-from app.hostmodels import *
-from app.servicemodels import *
-from app.scriptmodels import *
-from app.cvemodels import *
-from app.processmodels import *
+from ui.models.hostmodels import *
+from ui.models.servicemodels import *
+from ui.models.scriptmodels import *
+from ui.models.cvemodels import *
+from ui.models.processmodels import *
 from app.auxiliary import *
-import time #temp
 from six import u as unicode
 import pandas as pd
 
@@ -178,7 +171,8 @@ class View(QtCore.QObject):
     def initTables(self):  # this function prepares the default settings for each table
         # hosts table (left)
         headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime",
-                   "Lastboot", "Distance", "CheckedHost", "Country Code", "State", "City", "Latitude", "Longitude", "Count", "Closed"]
+                   "Lastboot", "Distance", "CheckedHost", "Country Code", "State", "City", "Latitude", "Longitude",
+                   "Count", "Closed"]
         setTableProperties(self.ui.HostsTableView, len(headers), [0, 2, 4, 5, 6, 7, 8, 9, 10 , 11, 12, 13, 14, 15, 16,
                                                                   17, 18, 19, 20, 21, 22, 23, 24])
         self.ui.HostsTableView.horizontalHeader().resizeSection(1, 30)
@@ -201,7 +195,7 @@ class View(QtCore.QObject):
         # service table (right)
         headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version",
                    "Extrainfo", "Fingerprint"]
-        setTableProperties(self.ui.ServicesTableView, len(headers), [0, 1, 5, 6, 8, 10, 11])      
+        setTableProperties(self.ui.ServicesTableView, len(headers), [0, 1, 5, 6, 8, 10, 11])
 
         # ports by service (right)
         headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version",
@@ -1025,7 +1019,8 @@ class View(QtCore.QObject):
 
     def updateHostsTableView(self): 
         headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime",
-                   "Lastboot", "Distance", "CheckedHost", "Country Code", "State", "City", "Latitude", "Longitude", "Count", "Closed"]
+                   "Lastboot", "Distance", "CheckedHost", "Country Code", "State", "City", "Latitude", "Longitude",
+                   "Count", "Closed"]
         self.HostsTableModel = HostsTableModel(self.controller.getHostsFromDB(self.viewState.filters), headers)
         self.ui.HostsTableView.setModel(self.HostsTableModel)
 
@@ -1174,8 +1169,9 @@ class View(QtCore.QObject):
                 self.hostInfoWidget.updateFields(status=host.status, openPorts=counterOpen, closedPorts=counterClosed,
                                                  filteredPorts=counterFiltered, ipv4=host.ipv4, ipv6=host.ipv6,
                                                  macaddr=host.macaddr, osMatch=host.osMatch, osAccuracy=host.osAccuracy,
-                                                 vendor=host.vendor, asn=host.asn, isp=host.isp, countryCode=host.countryCode,
-                                                 city=host.city, latitude=host.latitude, longitude=host.longitude)
+                                                 vendor=host.vendor, asn=host.asn, isp=host.isp,
+                                                 countryCode=host.countryCode, city=host.city, latitude=host.latitude,
+                                                 longitude=host.longitude)
 
     def updateScriptsView(self, hostIP):
         headers = ["Id", "Script", "Port", "Protocol"]
