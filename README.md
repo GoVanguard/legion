@@ -50,6 +50,8 @@ exploit attack vectors on hosts
 It is preferable to use the docker image over a traditional installation. This is because of all the dependancy 
 requirements and the complications that occur in environments which differ from a clean, non-default installation.
 
+NOTE: Docker versions of Legion are *unlikely* to work when run as root or under a root X!
+
 ### Supported Distributions
 #### Docker runIt script
 
@@ -222,3 +224,4 @@ Legion is licensed under the GNU General Public License v3.0. Take a look at the
 * ms08-067_check script used by smbenum.sh is credited to Bernardo Damele A.G.
 * Legion relies heavily on nmap, hydra, python, PyQt, SQLAlchemy and many other tools and technologies so we 
 would like to thank all of the people involved in the creation of those.
+* Special thanks to Dmitriy Dubson for his continued contributions to the project!
