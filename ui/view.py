@@ -25,6 +25,8 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from app.ApplicationInfo import applicationInfo, getVersion
 from app.shell.Shell import Shell
 from app.timing import getTimestamp
+from ui.ViewHeaders import serviceTableHeaders, hostTableHeaders, processTableHeaders, toolHostsTableHeaders, \
+    scriptsTableHeaders, toolsTableHeaders, cvesTableHeaders, serviceNamesTableHeaders
 from ui.ViewState import ViewState
 from ui.gui import *
 from ui.dialogs import *
@@ -177,52 +179,36 @@ class View(QtCore.QObject):
 
     def initTables(self):  # this function prepares the default settings for each table
         # hosts table (left)
-        headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime",
-                   "Lastboot", "Distance", "CheckedHost", "State", "Count", "Closed"]
-        setTableProperties(self.ui.HostsTableView, len(headers), [0, 2, 4, 5, 6, 7, 8, 9, 10 , 11, 12, 13, 14, 15, 16,
-                                                                  17, 18, 19, 20, 21, 22, 23, 24])
+        setTableProperties(self.ui.HostsTableView, len(hostTableHeaders), [0, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+                                                                           15, 16, 17, 18, 19, 20, 21, 22, 23, 24])
         self.ui.HostsTableView.horizontalHeader().resizeSection(1, 30)
 
         # service names table (left)
-        headers = ["Name"]
-        setTableProperties(self.ui.ServiceNamesTableView, len(headers))
+        setTableProperties(self.ui.ServiceNamesTableView, len(serviceNamesTableHeaders))
 
         # cves table (right)
-        headers = ["CVE Id", "Severity", "Product", "Version", "CVE URL", "Source", "ExploitDb ID", "ExploitDb",
-                   "ExploitDb URL"]
-        setTableProperties(self.ui.CvesTableView, len(headers))
+        setTableProperties(self.ui.CvesTableView, len(cvesTableHeaders))
         self.ui.CvesTableView.setSortingEnabled(True)
 
         # tools table (left)
-        headers = ["Progress", "Display", "Pid", "Tool", "Tool", "Host", "Port", "Protocol", "Command", "Start time",
-                   "OutputFile", "Output", "Status"]
-        setTableProperties(self.ui.ToolsTableView, len(headers), [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
+        setTableProperties(self.ui.ToolsTableView, len(toolsTableHeaders), [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
 
         # service table (right)
-        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version",
-                   "Extrainfo", "Fingerprint"]
-        setTableProperties(self.ui.ServicesTableView, len(headers), [0, 1, 5, 6, 8, 10, 11])      
+        setTableProperties(self.ui.ServicesTableView, len(serviceTableHeaders), [0, 1, 5, 6, 8, 10, 11])
 
         # ports by service (right)
-        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version",
-                   "Extrainfo", "Fingerprint"]
-        setTableProperties(self.ui.ServicesTableView, len(headers), [2, 5, 6, 8, 10, 11])
+        setTableProperties(self.ui.ServicesTableView, len(serviceTableHeaders), [2, 5, 6, 8, 10, 11])
         self.ui.ServicesTableView.horizontalHeader().resizeSection(0, 130)       # resize IP 
 
         # scripts table (right)
-        headers = ["Id", "Script", "Port", "Protocol"]
-        setTableProperties(self.ui.ScriptsTableView, len(headers), [0, 3])
+        setTableProperties(self.ui.ScriptsTableView, len(scriptsTableHeaders), [0, 3])
 
         # tool hosts table (right)
-        headers = ["Progress", "Display", "Pid", "Name", "Action", "Target", "Port", "Protocol", "Command",
-                   "Start time", "OutputFile", "Output", "Status"]
-        setTableProperties(self.ui.ToolHostsTableView, len(headers), [0, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12])
-        self.ui.ToolHostsTableView.horizontalHeader().resizeSection(5,150)      # default width for Host column
+        setTableProperties(self.ui.ToolHostsTableView, len(toolHostsTableHeaders), [0, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12])
+        self.ui.ToolHostsTableView.horizontalHeader().resizeSection(5, 150)      # default width for Host column
     
         # process table
-        headers = ["Progress", "Elapsed", "Est. Remaining", "Display", "Pid", "Name", "Tool", "Host", "Port",
-                   "Protocol", "Command", "Start time", "OutputFile", "Output", "Status"]
-        setTableProperties(self.ui.ProcessesTableView, len(headers), [1, 2, 3, 4, 5, 8, 9, 10, 13, 14, 16])
+        setTableProperties(self.ui.ProcessesTableView, len(processTableHeaders), [1, 2, 3, 4, 5, 8, 9, 10, 13, 14, 16])
         self.ui.ProcessesTableView.setSortingEnabled(True)
 
     def setMainWindowTitle(self, title):
@@ -1024,9 +1010,7 @@ class View(QtCore.QObject):
     #################### LEFT PANEL INTERFACE UPDATE FUNCTIONS ####################
 
     def updateHostsTableView(self): 
-        headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime",
-                   "Lastboot", "Distance", "CheckedHost", "State", "Count", "Closed"]
-        self.HostsTableModel = HostsTableModel(self.controller.getHostsFromDB(self.viewState.filters), headers)
+        self.HostsTableModel = HostsTableModel(self.controller.getHostsFromDB(self.viewState.filters), hostTableHeaders)
         self.ui.HostsTableView.setModel(self.HostsTableModel)
 
         self.viewState.lazy_update_hosts = False  # to indicate that it doesn't need to be updated anymore
@@ -1053,9 +1037,8 @@ class View(QtCore.QObject):
             self.hostTableClick()
 
     def updateServiceNamesTableView(self):
-        headers = ["Name"]
         self.ServiceNamesTableModel = ServiceNamesTableModel(
-            self.controller.getServiceNamesFromDB(self.viewState.filters), headers)
+            self.controller.getServiceNamesFromDB(self.viewState.filters), serviceNamesTableHeaders)
         self.ui.ServiceNamesTableView.setModel(self.ServiceNamesTableModel)
 
         self.viewState.lazy_update_services = False   # to indicate that it doesn't need to be updated anymore
@@ -1075,12 +1058,10 @@ class View(QtCore.QObject):
             self.serviceNamesTableClick()
 
     def setupToolsTableView(self):
-        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port",
-                   "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
         self.ToolsTableModel = ProcessesTableModel(self, self.controller.getProcessesFromDB(
             self.viewState.filters, showProcesses='noNmap',
             sort=self.toolsTableViewSort,
-            ncol=self.toolsTableViewSortColumn), headers)
+            ncol=self.toolsTableViewSortColumn), toolsTableHeaders)
         self.ui.ToolsTableView.setModel(self.ToolsTableModel)
 
     def updateToolsTableView(self):
@@ -1117,13 +1098,11 @@ class View(QtCore.QObject):
     #################### RIGHT PANEL INTERFACE UPDATE FUNCTIONS ####################
     
     def updateServiceTableView(self, hostIP):
-        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version",
-                   "Extrainfo", "Fingerprint"]
         self.ServicesTableModel = ServicesTableModel(
-            self.controller.getPortsAndServicesForHostFromDB(hostIP, self.viewState.filters), headers)
+            self.controller.getPortsAndServicesForHostFromDB(hostIP, self.viewState.filters), serviceTableHeaders)
         self.ui.ServicesTableView.setModel(self.ServicesTableModel)
 
-        for i in range(0, len(headers)):                                # reset all the hidden columns
+        for i in range(0, len(serviceTableHeaders)):                                # reset all the hidden columns
                 self.ui.ServicesTableView.setColumnHidden(i, False)
 
         for i in [0,1,5,6,8,10,11]:                                     # hide some columns
@@ -1132,13 +1111,11 @@ class View(QtCore.QObject):
         self.ServicesTableModel.sort(2, Qt.DescendingOrder)             # sort by port by default (override default)
 
     def updatePortsByServiceTableView(self, serviceName):
-        headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version",
-                   "Extrainfo", "Fingerprint"]
         self.PortsByServiceTableModel = ServicesTableModel(
-            self.controller.getHostsAndPortsForServiceFromDB(serviceName, self.viewState.filters), headers)
+            self.controller.getHostsAndPortsForServiceFromDB(serviceName, self.viewState.filters), serviceTableHeaders)
         self.ui.ServicesTableView.setModel(self.PortsByServiceTableModel)
 
-        for i in range(0, len(headers)):                                # reset all the hidden columns
+        for i in range(0, len(serviceTableHeaders)):                                # reset all the hidden columns
                 self.ui.ServicesTableView.setColumnHidden(i, False)
 
         for i in [2,5,6,7,8,10,11]:                                     # hide some columns
@@ -1177,8 +1154,7 @@ class View(QtCore.QObject):
                                                  asn=host.asn, isp=host.isp)
 
     def updateScriptsView(self, hostIP):
-        headers = ["Id", "Script", "Port", "Protocol"]
-        self.ScriptsTableModel = ScriptsTableModel(self,self.controller.getScriptsFromDB(hostIP), headers)
+        self.ScriptsTableModel = ScriptsTableModel(self, self.controller.getScriptsFromDB(hostIP), scriptsTableHeaders)
         self.ui.ScriptsTableView.setModel(self.ScriptsTableModel)
 
         for i in [0,3]:                                                 # hide some columns
@@ -1203,10 +1179,8 @@ class View(QtCore.QObject):
         self.ui.ScriptsTableView.update()
 
     def updateCvesByHostView(self, hostIP):
-        headers = ["CVE Id", "CVSS Score", "Product", "Version", "CVE URL", "Source", "ExploitDb ID", "ExploitDb",
-                   "ExploitDb URL"]
         cves = self.controller.getCvesFromDB(hostIP)
-        self.CvesTableModel = CvesTableModel(self, cves, headers)
+        self.CvesTableModel = CvesTableModel(self, cves, cvesTableHeaders)
 
         self.ui.CvesTableView.horizontalHeader().resizeSection(0,175)
         self.ui.CvesTableView.horizontalHeader().resizeSection(2,175)
@@ -1237,9 +1211,8 @@ class View(QtCore.QObject):
             self.setDirty(False)
 
     def updateToolHostsTableView(self, toolname):
-        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port",
-                   "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
-        self.ToolHostsTableModel = ProcessesTableModel(self, self.controller.getHostsForTool(toolname), headers)
+        self.ToolHostsTableModel = ProcessesTableModel(self, self.controller.getHostsForTool(toolname),
+                                                       toolHostsTableHeaders)
         self.ui.ToolHostsTableView.setModel(self.ToolHostsTableModel)
 
         for i in [0, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14, 15]:                         # hide some columns
@@ -1247,7 +1220,7 @@ class View(QtCore.QObject):
         
         self.ui.ToolHostsTableView.horizontalHeader().resizeSection(7, 150)  # default width for Host column
 
-        ids = []                                                        # ensure that there is always something selected
+        ids = [] # ensure that there is always something selected
         for row in range(self.ToolHostsTableModel.rowCount("")):
             ids.append(self.ToolHostsTableModel.getProcessIdForRow(row))
 
@@ -1316,11 +1289,9 @@ class View(QtCore.QObject):
     #################### BOTTOM PANEL INTERFACE UPDATE FUNCTIONS ####################       
 
     def setupProcessesTableView(self):
-        headers = ["Progress", "Display", "Elapsed", "Est. Remaining", "Pid", "Name", "Tool", "Host", "Port",
-                   "Protocol", "Command", "Start time", "End time", "OutputFile", "Output", "Status", "Closed"]
-        self.ProcessesTableModel = ProcessesTableModel(self,self.controller.getProcessesFromDB(
-            self.viewState.filters, showProcesses = True, sort = self.processesTableViewSort,
-            ncol = self.processesTableViewSortColumn), headers)
+        self.ProcessesTableModel = ProcessesTableModel(self, self.controller.getProcessesFromDB(
+            self.viewState.filters, showProcesses=True, sort=self.processesTableViewSort,
+            ncol=self.processesTableViewSortColumn), processTableHeaders)
         self.ui.ProcessesTableView.setModel(self.ProcessesTableModel)
         self.ProcessesTableModel.sort(15, Qt.DescendingOrder)
         
