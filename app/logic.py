@@ -23,9 +23,9 @@ from app.Project import Project
 from app.tools.ToolCoordinator import ToolCoordinator
 from app.shell.Shell import Shell
 from app.tools.nmap.NmapPaths import getNmapOutputFolder
-from db.database import *
 from ui.ancillaryDialog import *
 
+log = getAppLogger()
 
 class Logic:
     def __init__(self, shell: Shell, projectManager, toolCoordinator: ToolCoordinator):
