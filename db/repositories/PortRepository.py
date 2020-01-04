@@ -15,7 +15,7 @@ Copyright (c) 2020 GoVanguard
 
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
-from db.database import Database
+from db.SqliteDbAdapter import Database
 from db.entities.l1script import l1ScriptObj
 from db.entities.port import portObj
 from db.filters import applyPortFilters

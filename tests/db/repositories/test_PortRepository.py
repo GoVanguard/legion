@@ -19,13 +19,11 @@ import unittest
 from unittest import mock
 from unittest.mock import patch, MagicMock
 
-from tests.db.helpers.db_helpers import mockFirstByReturnValue, mockExecuteFetchAll, mockExecuteAll, \
-    mockQueryWithFilterBy
+from tests.db.helpers.db_helpers import mockFirstByReturnValue, mockExecuteFetchAll
 
 
 class PortRepositoryTest(unittest.TestCase):
-    @patch('utilities.stenoLogging.get_logger')
-    def setUp(self, get_logger) -> None:
+    def setUp(self) -> None:
         from db.repositories.PortRepository import PortRepository
         self.mockDbAdapter = MagicMock()
         self.mockDbSession = MagicMock()

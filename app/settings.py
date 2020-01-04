@@ -23,6 +23,7 @@ from app.auxiliary import *  # for timestamp
 # this class reads and writes application settings
 from app.timing import getTimestamp
 
+log = getAppLogger()
 
 class AppSettings():
     def __init__(self):

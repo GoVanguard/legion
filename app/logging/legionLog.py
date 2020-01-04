@@ -16,8 +16,39 @@ Copyright (c) 2020 GoVanguard
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
 import logging
+from logging import Logger
 
-from utilities.stenoLogging import get_logger
+cachedAppLogger = None
+cachedStartupLogger = None
+cachedDbLogger = None
 
-log = get_logger('legion', path="./log/legion.log", console=False)
-log.setLevel(logging.INFO)
+
+def getStartupLogger() -> Logger:
+    global cachedStartupLogger
+    logger = getOrCreateCachedLogger("legion-startup", "./log/legion-startup.log", True, cachedStartupLogger)
+    cachedStartupLogger = logger
+    return logger
+
+
+def getAppLogger() -> Logger:
+    global cachedAppLogger
+    logger = getOrCreateCachedLogger("legion", "./log/legion.log", True, cachedAppLogger)
+    cachedAppLogger = logger
+    return logger
+
+
+def getDbLogger() -> Logger:
+    global cachedDbLogger
+    logger = getOrCreateCachedLogger("legion-db", "./log/legion-db.log", False, cachedDbLogger)
+    cachedDbLogger = logger
+    return logger
+
+
+def getOrCreateCachedLogger(logName: str, logPath: str, console: bool, cachedLogger):
+    if cachedLogger:
+        return cachedLogger
+
+    from utilities.stenoLogging import get_logger
+    log = get_logger(logName, path=logPath, console=console)
+    log.setLevel(logging.INFO)
+    return log

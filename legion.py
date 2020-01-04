@@ -15,40 +15,41 @@ Copyright (c) 2020 GoVanguard
     If not, see <http://www.gnu.org/licenses/>.
 """
 from app.ProjectManager import ProjectManager
+from app.logging.legionLog import getStartupLogger, getDbLogger
 from app.shell.DefaultShell import DefaultShell
 from app.tools.nmap.DefaultNmapExporter import DefaultNmapExporter
 from db.RepositoryFactory import RepositoryFactory
 from ui.eventfilter import MyEventFilter
 from ui.ViewState import ViewState
 from ui.gui import *
-from utilities.stenoLogging import *
+from ui.gui import Ui_MainWindow
 
-log = get_logger('legion', path="./log/legion-startup.log")
-log.setLevel(logging.INFO)
+startupLog = getStartupLogger()
 
 # check for dependencies first (make sure all non-standard dependencies are checked for here)
 try:
     from sqlalchemy.orm.scoping import ScopedSession as scoped_session
 except ImportError as e:
-    log.info(
+    startupLog.error(
         "Import failed. SQL Alchemy library not found. If on Ubuntu or similar try: apt-get install python3-sqlalchemy*"
     )
-    log.info(e)
+    startupLog.error(e)
     exit(1)
 
 try:
     from PyQt5 import QtWidgets, QtGui, QtCore
 except ImportError as e:
-    log.info("Import failed. PyQt5 library not found. If on Ubuntu or similar try: agt-get install python3-pyqt5")
-    log.info(e)
+    startupLog.error("Import failed. PyQt5 library not found. If on Ubuntu or similar try: "
+                     "apt-get install python3-pyqt5")
+    startupLog.error(e)
     exit(1)
 
 try:
     import quamash
     import asyncio
 except ImportError as e:
-    log.info("Import failed. Quamash or asyncio not found.")
-    log.info(e)
+    startupLog.error("Import failed. Quamash or asyncio not found.")
+    startupLog.error(e)
     exit(1)
 
 try:
@@ -59,8 +60,8 @@ try:
     from termcolor import cprint
     from pyfiglet import figlet_format
 except ImportError as e:
-    log.info("Import failed. One or more of the terminal drawing libraries not found.")
-    log.info(e)
+    startupLog.error("Import failed. One or more of the terminal drawing libraries not found.")
+    startupLog.error(e)
     exit(1)
 
 from ui.view import *
@@ -83,7 +84,7 @@ if __name__ == "__main__":
     try:
         qss_file = open('./ui/legion.qss').read()
     except IOError:
-        log.info(
+        startupLog.error(
             "The legion.qss file is missing. Your installation seems to be corrupted. " +
             "Try downloading the latest version.")
         exit(0)
@@ -92,14 +93,17 @@ if __name__ == "__main__":
 
     shell = DefaultShell()
 
-    repositoryFactory = RepositoryFactory(log)
-    projectManager = ProjectManager(shell, repositoryFactory, log)
-    nmapExporter = DefaultNmapExporter(shell)
+    dbLog = getDbLogger()
+    appLogger = getAppLogger()
+
+    repositoryFactory = RepositoryFactory(dbLog)
+    projectManager = ProjectManager(shell, repositoryFactory, appLogger)
+    nmapExporter = DefaultNmapExporter(shell, appLogger)
     toolCoordinator = ToolCoordinator(shell, nmapExporter)
     # Model prep (logic, db and models)
     logic = Logic(shell, projectManager, toolCoordinator)
 
-    log.info("Creating temporary project at application start...")
+    startupLog.info("Creating temporary project at application start...")
     logic.createNewTemporaryProject()
 
     viewState = ViewState()
@@ -118,6 +122,7 @@ if __name__ == "__main__":
     # Show main window
     MainWindow.show()
 
+    startupLog.info("Legion started successfully.")
     try:
         loop.run_forever()
     except KeyboardInterrupt:
