@@ -31,8 +31,7 @@ def build_mock_process(status: str, display: str) -> MagicMock:
 
 
 class ProcessRepositoryTest(unittest.TestCase):
-    @patch('utilities.stenoLogging.get_logger')
-    def setUp(self, get_logger) -> None:
+    def setUp(self) -> None:
         from db.repositories.ProcessRepository import ProcessRepository
         self.mockProcess = MagicMock()
         self.mockDbSession = MagicMock()

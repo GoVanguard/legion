@@ -16,11 +16,12 @@ Copyright (c) 2020 GoVanguard
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
 from app.auxiliary import Filters
+from db.SqliteDbAdapter import Database
 from db.filters import applyFilters
 
 
 class ServiceRepository:
-    def __init__(self, db_adapter):
+    def __init__(self, db_adapter: Database):
         self.db_adapter = db_adapter
 
     def getServiceNames(self, filters: Filters):

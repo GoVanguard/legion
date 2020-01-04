@@ -24,6 +24,7 @@ from PyQt5 import QtCore, QtWidgets
 from app.auxiliary import *                                             # for timestamps
 from app.shell.Shell import Shell
 
+log = getAppLogger()
 
 # used to validate user input on focusOut - more specifically only called to validate tool name in host/port/terminal
 # commands tabs

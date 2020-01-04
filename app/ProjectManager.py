@@ -26,7 +26,7 @@ from app.auxiliary import Wordlist
 from app.shell.Shell import Shell
 from app.tools.nmap.NmapPaths import getNmapRunningFolder
 from db.RepositoryFactory import RepositoryFactory
-from db.database import Database
+from db.SqliteDbAdapter import Database
 
 
 class ProjectManager:

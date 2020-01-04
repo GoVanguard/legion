@@ -35,8 +35,7 @@ def expectedGetHostsAndPortsQuery(with_filter: str = "") -> str:
 
 
 class HostRepositoryTest(unittest.TestCase):
-    @patch('utilities.stenoLogging.get_logger')
-    def setUp(self, get_logger) -> None:
+    def setUp(self) -> None:
         from db.repositories.HostRepository import HostRepository
         self.mockDbAdapter = MagicMock()
         self.mockDbSession = MagicMock()
