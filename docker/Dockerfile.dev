@@ -8,7 +8,7 @@ RUN     apt-get update && apt-get install -y \
 	nmap \
 	hydra \ 
 	git
-RUN 	git clone https://github.com/GoVanguard/legion.git -branch development
+RUN 	git clone https://github.com/GoVanguard/legion.git -b development
 RUN	cd legion && chmod +x ./startLegion.sh && chmod +x ./deps/* -R && chmod +x ./scripts/* -R && mkdir /legion/tmp
 RUN	cd legion && pip3 install -r requirements.txt --upgrade
 RUN	pip3 install service_identity --upgrade
