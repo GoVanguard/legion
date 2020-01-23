@@ -1,3 +1,12 @@
 #!/bin/bash
-releaseTag=`git branch | grep "*" | awk '{print $2}'`
-docker build -t legion:${releaseTag} . --no-cache
+
+testBranch=`git branch | grep "development" | grep "*"`
+
+if [[ -z $testBranch ]]
+then
+    echo "Master Branch"
+    docker build -t legion . --no-cache
+else
+    echo "Development Branch"
+    docker build -f Dockerfile.dev -t legion -t development . --no-cache
+fi
