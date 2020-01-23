@@ -1,2 +1,3 @@
 #!/bin/bash
-docker build -t legion . --no-cache
+releaseTag=`git branch | grep "*" | awk '{print $2}'`
+docker build -t legion:${releaseTag} . --no-cache
