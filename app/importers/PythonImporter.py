@@ -18,8 +18,8 @@ Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 from PyQt5 import QtCore
 
 from db.entities.host import hostObj
-from scripts.python import pyShodan
-from time import time
+from scripts.python import pyShodan, macvendors
+from ui.ancillaryDialog import time
 
 
 class PythonImporter(QtCore.QThread):
@@ -32,7 +32,7 @@ class PythonImporter(QtCore.QThread):
         QtCore.QThread.__init__(self, parent=None)
         self.output = ''
         self.hostIp = ''
-        self.pythonScriptDispatch = {'pyShodan': pyShodan.PyShodanScript()}
+        self.pythonScriptDispatch = {'pyShodan': pyShodan.PyShodanScript(), 'macvendors': macvendors.macvendorsScript()}
         self.pythonScriptObj = None
 
     def tsLog(self, msg):
@@ -50,12 +50,11 @@ class PythonImporter(QtCore.QThread):
     def setOutput(self, output):
         self.output = output
 
-    # it is necessary to get the qprocess because we need to send it back to the scheduler when we're done importing
-    def run(self):
+    def run(self): # it is necessary to get the qprocess because we need to send it back to the scheduler when we're done importing
         try:
             session = self.db.session()
             startTime = time()
-            self.db.dbsemaphore.acquire()  # ensure that while this thread is running, no one else can write to the DB
+            self.db.dbsemaphore.acquire() # ensure that while this thread is running, no one else can write to the DB
             #self.setPythonScript(self.pythonScript)
             db_host = session.query(hostObj).filter_by(ip = self.hostIp).first()
             self.pythonScriptObj.setDbHost(db_host)
