@@ -21,6 +21,7 @@ class macvendorsScript():
             if type(result) == type(str()):
                 if result:
                     self.dbHost.vendor = result
+                    print('The vendor is: ' + result)
                     self.session.add(self.dbHost)
 
 if __name__ == "__main__":
