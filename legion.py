@@ -19,6 +19,7 @@ from app.shell.DefaultShell import DefaultShell
 from app.tools.nmap.DefaultNmapExporter import DefaultNmapExporter
 from db.RepositoryFactory import RepositoryFactory
 from ui.eventfilter import MyEventFilter
+from ui.ViewState import ViewState
 from utilities.stenoLogging import *
 
 log = get_logger('legion', path="./log/legion-startup.log")
