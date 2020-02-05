@@ -19,7 +19,7 @@ Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 applicationInfo = {
     "name": "LEGION",
     "version": "0.3.6",
-    "build": '1580901813',
+    "build": '1580902879',
     "author": "GoVanguard",
     "copyright": "2020",
     "links": ["http://github.com/GoVanguard/legion/issues", "https://GoVanguard.com/legion"],
