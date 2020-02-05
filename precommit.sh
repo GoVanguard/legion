@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Update last update in controller
-sed -i -r "s/self.update = '.*?'/self.update = \'`date '+%m\/%d\/%Y'\'`/g" ./controller/controller.py
-sed -i -r "s/self.build = '.*?'/self.build = \'`date '+%s'\'`/g" ./controller/controller.py
+sed -i -r "s/self.update = '.*?'/self.update = \'`date '+%m\/%d\/%Y'\'`/g" ./app/ApplicationInfo.py
+sed -i -r "s/self.build = '.*?'/self.build = \'`date '+%s'\'`/g" ./app/ApplicationInfo.py
 
 # Clear logs
 
