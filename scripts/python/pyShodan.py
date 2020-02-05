@@ -26,9 +26,6 @@ class PyShodanScript():
                     self.dbHost.isp = pyShodanResults.get('isp', 'unknown')
                     self.dbHost.city = pyShodanResults.get('city', 'unknown')
                     self.dbHost.countryCode = pyShodanResults.get('country_code', 'unknown')
-                    #print("ISP is: " + pyShodanResults.get('isp', 'unknown'))
-                    print("COUNTRY CODE IS: " + str(pyShodanResults.get('country_code', 'unknown')))
-                    print("CITY IS: " + str(pyShodanResults.get('city', 'unknown')))
                     self.session.add(self.dbHost)
 
 if __name__ == "__main__":
