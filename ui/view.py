@@ -178,7 +178,7 @@ class View(QtCore.QObject):
     def initTables(self):  # this function prepares the default settings for each table
         # hosts table (left)
         headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime",
-                   "Lastboot", "Distance", "CheckedHost", "State", "Count", "Closed"]
+                   "Lastboot", "Distance", "CheckedHost", "Country Code", "State", "City", "Latitude", "Longitude", "Count", "Closed"]
         setTableProperties(self.ui.HostsTableView, len(headers), [0, 2, 4, 5, 6, 7, 8, 9, 10 , 11, 12, 13, 14, 15, 16,
                                                                   17, 18, 19, 20, 21, 22, 23, 24])
         self.ui.HostsTableView.horizontalHeader().resizeSection(1, 30)
@@ -1025,7 +1025,7 @@ class View(QtCore.QObject):
 
     def updateHostsTableView(self): 
         headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime",
-                   "Lastboot", "Distance", "CheckedHost", "State", "Count", "Closed"]
+                   "Lastboot", "Distance", "CheckedHost", "Country Code", "State", "City", "Latitude", "Longitude", "Count", "Closed"]
         self.HostsTableModel = HostsTableModel(self.controller.getHostsFromDB(self.viewState.filters), headers)
         self.ui.HostsTableView.setModel(self.HostsTableModel)
 
@@ -1174,7 +1174,8 @@ class View(QtCore.QObject):
                 self.hostInfoWidget.updateFields(status=host.status, openPorts=counterOpen, closedPorts=counterClosed,
                                                  filteredPorts=counterFiltered, ipv4=host.ipv4, ipv6=host.ipv6,
                                                  macaddr=host.macaddr, osMatch=host.osMatch, osAccuracy=host.osAccuracy,
-                                                 vendor=host.vendor, asn=host.asn, isp=host.isp)
+                                                 vendor=host.vendor, asn=host.asn, isp=host.isp, countryCode=host.countryCode,
+                                                 city=host.city, latitude=host.latitude, longitude=host.longitude)
 
     def updateScriptsView(self, hostIP):
         headers = ["Id", "Script", "Port", "Protocol"]
