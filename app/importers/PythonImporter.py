@@ -1,6 +1,6 @@
 """
-LEGION (https://govanguard.io)
-Copyright (c) 2018 GoVanguard
+LEGION (https://govanguard.com)
+Copyright (c) 2020 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -19,7 +19,7 @@ from PyQt5 import QtCore
 
 from db.entities.host import hostObj
 from scripts.python import pyShodan, macvendors
-from ui.ancillaryDialog import time
+from time import time
 
 
 class PythonImporter(QtCore.QThread):
