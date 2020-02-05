@@ -29,14 +29,14 @@ class DefaultNmapExporterTest(unittest.TestCase):
 
     @patch("subprocess.Popen")
     def test_exportOutputToHtml_WhenProvidedFileNameAndOutputFolder_ExportsOutputSuccessfully(self, processOpen):
-        exportCommand = f"xsltproc -o some-file.html some-file.xml"
+        exportCommand = f"xsltproc -o some-file.html nmap.xsl some-file.xml"
         self.nmapExporter.exportOutputToHtml("some-file", "some-folder/")
         processOpen.assert_called_once_with(exportCommand, shell=True)
         self.mockShell.move.assert_called_once_with("some-file.html", "some-folder/")
 
     @patch("subprocess.Popen")
     def test_exportOutputToHtml_WhenExportFailsDueToProcessError_DoesNotMoveAnyFilesToOutputFolder(self, processOpen):
-        exportCommand = f"xsltproc -o some-bad-file.html some-bad-file.xml"
+        exportCommand = f"xsltproc -o some-bad-file.html nmap.xsl some-bad-file.xml"
         processOpen.side_effect = Exception("something went wrong")
         self.nmapExporter.exportOutputToHtml("some-bad-file", "some-folder/")
         processOpen.assert_called_once_with(exportCommand, shell=True)
