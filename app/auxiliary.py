@@ -20,37 +20,12 @@ import os, sys, socket, locale, webbrowser, \
     re  # for webrequests, screenshot timeouts, timestamps, browser stuff and regex
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import *  # for QProcess
-from PyQt5.QtWidgets import *
-import subprocess  # for screenshots with cutycapt
-import string  # for input validation
 from six import u as unicode
-import asyncio, aioredis, aiohttp
-from datetime import datetime
-import hashlib, json
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from app.http.isHttps import isHttps
+from app.logging.legionLog import log
+from app.timing import timing
 from utilities.stenoLogging import *
-from functools import wraps
-from time import time
-import io
-
-log = get_logger('legion', path="./log/legion.log", console=False)
-log.setLevel(logging.INFO)
-
-
-def timing(f):
-    @wraps(f)
-    def wrap(*args, **kw):
-        ts = time()
-        result = f(*args, **kw)
-        te = time()
-        tr = te - ts
-        log.debug('Function:%r args:[%r, %r] took: %2.4f sec' % (f.__name__, args, kw, tr))
-        return result
-
-    return wrap
-
 
 # bubble sort algorithm that sorts an array (in place) based on the values in another array
 # the values in the array must be comparable and in the corresponding positions
@@ -74,19 +49,6 @@ def IP2Int(ip):
     o = list(map(int, ip.split('.')))
     res = (16777216 * o[0]) + (65536 * o[1]) + (256 * o[2]) + o[3]
     return res
-
-
-def getTimestamp(human=False, local=False):
-    t = time()
-    if human:
-        if local:
-            timestamp = datetime.datetime.fromtimestamp(t).strftime("%d %b %Y %H:%M:%S.%f").decode(
-                locale.getlocale()[1])
-        else:
-            timestamp = datetime.fromtimestamp(t).strftime("%d %b %Y %H:%M:%S.%f")
-    else:
-        timestamp = datetime.fromtimestamp(t).strftime('%Y%m%d%H%M%S%f')
-    return timestamp
 
 
 # used by the settings dialog when a user cancels and the GUI needs to be reset
@@ -142,17 +104,6 @@ def checkHydraResults(output):
     return False, [], []
 
 
-@timing
-def exportNmapToHTML(filename):
-    try:
-        command = 'xsltproc -o ' + str(filename) + '.html ' + str(filename) + '.xml'
-        p = subprocess.Popen(command, shell=True)
-        p.wait()
-
-    except:
-        log.info('Could not convert nmap XML to HTML. Try: apt-get install xsltproc')
-
-
 # this class is used for example to store found usernames/passwords
 class Wordlist():
     def __init__(self, filename):  # needs full path
@@ -197,7 +148,8 @@ class MyQProcess(QProcess):
         output = str(self.readAllStandardOutput())
         self.display.appendPlainText(unicode(output).strip())
 
-        if self.name == 'hydra':  # check if any usernames/passwords were found (if so emit a signal so that the gui can tell the user about it)
+        # check if any usernames/passwords were found (if so emit a signal so that the gui can tell the user about it)
+        if self.name == 'hydra':
             found, userlist, passlist = checkHydraResults(output)
             if found:  # send the brutewidget object along with lists of found usernames/passwords
                 self.sigHydra.emit(self.display.parentWidget(), userlist, passlist)
@@ -238,8 +190,9 @@ class BrowserOpener(QtCore.QThread):
                 else:
                     webbrowser.open_new_tab('http://' + url)
                 if i == 0:
-                    self.sleep(
-                        3)  # fixes bug in Kali. have to sleep on first url so the next ones don't open a new browser instead of adding a new tab
+                    # fixes bug in Kali. have to sleep on first url so the next ones don't open a new browser
+                    # instead of adding a new tab
+                    self.sleep(3)
                 else:
                     self.sleep(1)  # fixes bug when several calls to urllib occur too fast (interrupted system call)
 

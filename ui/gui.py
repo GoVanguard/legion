@@ -1,22 +1,27 @@
 #!/usr/bin/env python
-
-'''
+"""
 LEGION (https://govanguard.com)
 Copyright (c) 2018 GoVanguard
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+    You should have received a copy of the GNU General Public License along with this program.
+    If not, see <http://www.gnu.org/licenses/>.
+"""
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtGui import QColor
+
+from app.logging.legionLog import log
 from ui.dialogs import *                                                # for the screenshots (image viewer)
 from ui.ancillaryDialog import *
 from utilities.qtLogging import *
-import logging
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -49,11 +54,13 @@ class Ui_MainWindow(object):
     
         # size policies
         self.sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        self.sizePolicy.setHorizontalStretch(0)                         # this specifies that the widget will keep its width when the window is resized
+        # this specifies that the widget will keep its width when the window is resized
+        self.sizePolicy.setHorizontalStretch(0)
         self.sizePolicy.setVerticalStretch(0)
         
         self.sizePolicy2 = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        self.sizePolicy2.setHorizontalStretch(1)                        # this specifies that the widget will expand its width when the window is resized
+        # this specifies that the widget will expand its width when the window is resized
+        self.sizePolicy2.setHorizontalStretch(1)
         self.sizePolicy2.setVerticalStretch(0)      
         
         self.setupLeftPanel()
@@ -91,7 +98,8 @@ class Ui_MainWindow(object):
 
         self.FilterAdvancedButton = QtWidgets.QToolButton()
         self.advancedIcon = QtGui.QIcon()
-        self.advancedIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/advanced.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.advancedIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/advanced.png")),
+                                    QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.FilterAdvancedButton.setIconSize(QtCore.QSize(19, 19))
         self.FilterAdvancedButton.setIcon(self.advancedIcon)
         self.FilterAdvancedButton.setToolTip('Choose advanced filters')
@@ -108,8 +116,9 @@ class Ui_MainWindow(object):
         self.HostsTableView = QtWidgets.QTableView(self.HostsTab)
         self.HostsTableView.setObjectName(_fromUtf8("HostsTableView"))
         self.vlayout.addWidget(self.HostsTableView)
-        
-        self.addHostsOverlay = QtWidgets.QTextEdit(self.HostsTab)           # the overlay widget that appears over the hosttableview        
+
+        # the overlay widget that appears over the hosttableview
+        self.addHostsOverlay = QtWidgets.QTextEdit(self.HostsTab)
         self.addHostsOverlay.setObjectName(_fromUtf8("addHostsOverlay"))
         self.addHostsOverlay.setText('Click here to add host(s) to scope')
         self.addHostsOverlay.setReadOnly(True)
@@ -170,7 +179,8 @@ class Ui_MainWindow(object):
         self.splitter_3 = QtWidgets.QSplitter()
         self.splitter_3.setOrientation(QtCore.Qt.Horizontal)
         self.splitter_3.setObjectName(_fromUtf8("splitter_3"))
-        self.splitter_3.setSizePolicy(self.sizePolicy2)                 # this makes the tools tab stay the same width when resizing the window
+        # this makes the tools tab stay the same width when resizing the window
+        self.splitter_3.setSizePolicy(self.sizePolicy2)
         
         ###
         
@@ -371,20 +381,34 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "LEGION", None))
-        self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.HostsTab), QtWidgets.QApplication.translate("MainWindow", "Hosts", None))
-        self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.ServicesLeftTab), QtWidgets.QApplication.translate("MainWindow", "Services", None))
-        #self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.CvesLeftTab), QtWidgets.QApplication.translate("MainWindow", "CVEs", None))
-        self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.ToolsTab), QtWidgets.QApplication.translate("MainWindow", "Tools", None))
-        self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.ServicesRightTab), QtWidgets.QApplication.translate("MainWindow", "Services", None))
-        self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.CvesRightTab), QtWidgets.QApplication.translate("MainWindow", "CVEs", None))
-        self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.ScriptsTab), QtWidgets.QApplication.translate("MainWindow", "Scripts", None))
-        self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.InformationTab), QtWidgets.QApplication.translate("MainWindow", "Information", None))
-        self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.NotesTab), QtWidgets.QApplication.translate("MainWindow", "Notes", None))
-        self.MainTabWidget.setTabText(self.MainTabWidget.indexOf(self.ScanTab), QtWidgets.QApplication.translate("MainWindow", "Scan", None))
-        self.MainTabWidget.setTabText(self.MainTabWidget.indexOf(self.BruteTab), QtWidgets.QApplication.translate("MainWindow", "Brute", None))
-        self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.ProcessTab), QtWidgets.QApplication.translate("MainWindow", "Processes", None))
-        self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.LogTab), QtWidgets.QApplication.translate("MainWindow", "Log", None))
-        # self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.PythonTab), QtWidgets.QApplication.translate("MainWindow", "Python", None)) - Disabled until future release
+        self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.HostsTab),
+                                       QtWidgets.QApplication.translate("MainWindow", "Hosts", None))
+        self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.ServicesLeftTab),
+                                       QtWidgets.QApplication.translate("MainWindow", "Services", None))
+        #self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.CvesLeftTab),
+        # QtWidgets.QApplication.translate("MainWindow", "CVEs", None))
+        self.HostsTabWidget.setTabText(self.HostsTabWidget.indexOf(self.ToolsTab),
+                                       QtWidgets.QApplication.translate("MainWindow", "Tools", None))
+        self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.ServicesRightTab),
+                                          QtWidgets.QApplication.translate("MainWindow", "Services", None))
+        self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.CvesRightTab),
+                                          QtWidgets.QApplication.translate("MainWindow", "CVEs", None))
+        self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.ScriptsTab),
+                                          QtWidgets.QApplication.translate("MainWindow", "Scripts", None))
+        self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.InformationTab),
+                                          QtWidgets.QApplication.translate("MainWindow", "Information", None))
+        self.ServicesTabWidget.setTabText(self.ServicesTabWidget.indexOf(self.NotesTab),
+                                          QtWidgets.QApplication.translate("MainWindow", "Notes", None))
+        self.MainTabWidget.setTabText(self.MainTabWidget.indexOf(self.ScanTab),
+                                      QtWidgets.QApplication.translate("MainWindow", "Scan", None))
+        self.MainTabWidget.setTabText(self.MainTabWidget.indexOf(self.BruteTab),
+                                      QtWidgets.QApplication.translate("MainWindow", "Brute", None))
+        self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.ProcessTab),
+                                        QtWidgets.QApplication.translate("MainWindow", "Processes", None))
+        self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.LogTab),
+                                        QtWidgets.QApplication.translate("MainWindow", "Log", None))
+        # self.BottomTabWidget.setTabText(self.BottomTabWidget.indexOf(self.PythonTab),
+        # QtWidgets.QApplication.translate("MainWindow", "Python", None)) - Disabled until future release
         self.menuFile.setTitle(QtWidgets.QApplication.translate("MainWindow", "File", None))
         #self.menuSettings.setTitle(QtWidgets.QApplication.translate("MainWindow", "Settings", None))
         self.menuHelp.setTitle(QtWidgets.QApplication.translate("MainWindow", "Help", None))
@@ -392,13 +416,15 @@ class Ui_MainWindow(object):
         self.actionExit.setToolTip(QtWidgets.QApplication.translate("MainWindow", "Exit the application", None))
         self.actionExit.setShortcut(QtWidgets.QApplication.translate("MainWindow", "Ctrl+Q", None))
         self.actionOpen.setText(QtWidgets.QApplication.translate("MainWindow", "Open", None))
-        self.actionOpen.setToolTip(QtWidgets.QApplication.translate("MainWindow", "Open an existing project file", None))
+        self.actionOpen.setToolTip(QtWidgets.QApplication.translate("MainWindow",
+                                                                    "Open an existing project file", None))
         self.actionOpen.setShortcut(QtWidgets.QApplication.translate("MainWindow", "Ctrl+O", None))
         self.actionSave.setText(QtWidgets.QApplication.translate("MainWindow", "Save", None))
         self.actionSave.setToolTip(QtWidgets.QApplication.translate("MainWindow", "Save the current project", None))
         self.actionSave.setShortcut(QtWidgets.QApplication.translate("MainWindow", "Ctrl+S", None))
         self.actionImportNmap.setText(QtWidgets.QApplication.translate("MainWindow", "Import nmap", None))
-        self.actionImportNmap.setToolTip(QtWidgets.QApplication.translate("MainWindow", "Import an nmap xml file", None))
+        self.actionImportNmap.setToolTip(QtWidgets.QApplication.translate("MainWindow",
+                                                                          "Import an nmap xml file", None))
         self.actionImportNmap.setShortcut(QtWidgets.QApplication.translate("MainWindow", "Ctrl+I", None))
         self.actionSaveAs.setText(QtWidgets.QApplication.translate("MainWindow", "Save As", None))
         self.actionNew.setText(QtWidgets.QApplication.translate("MainWindow", "New", None))
