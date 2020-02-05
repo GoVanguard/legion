@@ -1174,7 +1174,7 @@ class View(QtCore.QObject):
                 self.hostInfoWidget.updateFields(status=host.status, openPorts=counterOpen, closedPorts=counterClosed,
                                                  filteredPorts=counterFiltered, ipv4=host.ipv4, ipv6=host.ipv6,
                                                  macaddr=host.macaddr, osMatch=host.osMatch, osAccuracy=host.osAccuracy,
-                                                 asn=host.asn, isp=host.isp)
+                                                 vendor=host.vendor, asn=host.asn, isp=host.isp)
 
     def updateScriptsView(self, hostIP):
         headers = ["Id", "Script", "Port", "Protocol"]
