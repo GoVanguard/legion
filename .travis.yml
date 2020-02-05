@@ -9,15 +9,18 @@ sudo: true
 python:
   - "3.6"
 
+cache: pip
+
 install:
   - cp ./requirements.txt ./deps/
   - bash ./deps/installPythonLibs.sh
 
 script:
-  - python ./test.py
+  - flake8
   - python -m unittest
 
 after_success:
+  - (test $TRAVIS_PULL_REQUEST != "false") && exit 0
   - (test $TRAVIS_BRANCH != "master" && test $TRAVIS_BRANCH != "development") && exit 0
   - cd ./docker/
   - docker login -u $DOCKER_USER -p $DOCKER_PASS

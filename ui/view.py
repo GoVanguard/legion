@@ -1063,7 +1063,7 @@ class View(QtCore.QObject):
                 else:
                     counterFiltered = 65535 - counterOpen - counterClosed
 
-                self.hostInfoWidget.updateFields(status=host.status, openPorts=counterOpen, closedPorts=counterClosed, filteredPorts=counterFiltered, ipv4=host.ipv4, ipv6=host.ipv6, macaddr=host.macaddr, osMatch=host.osMatch, osAccuracy=host.osAccuracy, asn=host.asn, isp=host.isp)
+                self.hostInfoWidget.updateFields(status=host.status, openPorts=counterOpen, closedPorts=counterClosed, filteredPorts=counterFiltered, ipv4=host.ipv4, ipv6=host.ipv6, macaddr=host.macaddr, osMatch=host.osMatch, osAccuracy=host.osAccuracy, vendor=host.vendor, asn=host.asn, isp=host.isp)
 
     def updateScriptsView(self, hostIP):
         headers = ["Id", "Script", "Port", "Protocol"]

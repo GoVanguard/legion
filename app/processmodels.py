@@ -1,18 +1,25 @@
 #!/usr/bin/env python
 
-'''
+"""
 LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+    You should have received a copy of the GNU General Public License along with this program.
+    If not, see <http://www.gnu.org/licenses/>.
+"""
 
 import re
 from PyQt5 import QtWidgets, QtGui, QtCore
+
+from app.ModelHelpers import resolveHeaders, itemInteractive
 from app.auxiliary import *                                                 # for bubble sort
 
 class ProcessesTableModel(QtCore.QAbstractTableModel):
@@ -38,21 +45,18 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
         return 0
 
     def headerData(self, section, orientation, role):
-        if role == QtCore.Qt.DisplayRole:
-            
-            if orientation == QtCore.Qt.Horizontal:
-                
-                if section < len(self.__headers):
-                    return self.__headers[section]
-                else:
-                    return "not implemented"
+        return resolveHeaders(role, orientation, section, self.__headers)
 
-    def data(self, index, role):                                        # this method takes care of how the information is displayed
-        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:                               # how to display each cell      
+    # this method takes care of how the information is displayed
+    def data(self, index, role):
+        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole: # how to display each cell
             value = ''
             row = index.row()
             column = index.column()
-            processColumns = {0:'progress', 1:'display',  2:'elapsed', 3:'estimatedRemaining', 4:'pid', 5:'name', 6:'tabTitle', 7:'hostIp', 8:'port', 9:'protocol', 10:'command', 11:'startTime', 12:'endTime', 13:'outputfile', 14:'output', 15:'status', 16:'closed'}
+            processColumns = {0: 'progress', 1: 'display', 2: 'elapsed', 3: 'estimatedRemaining',
+                              4: 'pid', 5: 'name', 6: 'tabTitle', 7: 'hostIp', 8: 'port', 9: 'protocol', 10: 'command',
+                              11: 'startTime', 12: 'endTime', 13: 'outputfile', 14: 'output', 15: 'status',
+                              16: 'closed'}
             try:
                 if column == 0:
                     value = ''
@@ -68,7 +72,8 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
                         pid = int(self.__processes[row]['pid'])
                         elapsed = round(self.__controller.controller.processMeasurements.get(pid, 0), 2)
                         estimatedRemaining = int(self.__processes[row]['estimatedRemaining']) - float(elapsed)
-                    value = "{0:.2f}{1}".format(float(estimatedRemaining), "s") if estimatedRemaining >= 0 else 'Unknown'
+                    value = "{0:.2f}{1}"\
+                        .format(float(estimatedRemaining), "s") if estimatedRemaining >= 0 else 'Unknown'
                 elif column == 6:
                     if not self.__processes[row]['tabTitle'] == '':
                         value = self.__processes[row]['tabTitle']
@@ -87,7 +92,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
                     except:
                         value = "Missing data c #{0} - {1}".format(int(column), processColumns.get(int(column)))
                         pass
-            except Exception as e:
+            except Exception:
                 value = "Missing data c #{0} - {1}".format(int(column), processColumns.get(int(column)))
                 pass
             return value            
@@ -114,7 +119,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
                 for i in range(len(self.__processes)):
                     array.append(self.__processes[i][field])
         
-            sortArrayWithArray(array, self.__processes)                     # sort the services based on the values in the array
+            sortArrayWithArray(array, self.__processes)  # sort the services based on the values in the array
 
             if order == Qt.AscendingOrder:                                  # reverse if needed
                 self.__processes.reverse()
@@ -125,14 +130,15 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
             self.__controller.processesTableViewSortColumn = field
 
         ## Extra?
-        #self.__controller.updateProcessesIcon()                         # to make sure the progress GIF is displayed in the right place
+        #self.__controller.updateProcessesIcon()  # to make sure the progress GIF is displayed in the right place
             self.layoutChanged.emit()
         except:
             log.error("Failed to sort")
             pass
 
-    def flags(self, index):                                             # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+    # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
+    def flags(self, index):
+        return itemInteractive()
 
     def setDataList(self, processes):
         self.__processes = processes

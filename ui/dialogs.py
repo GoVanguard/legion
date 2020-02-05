@@ -284,14 +284,8 @@ class BruteWidget(QtWidgets.QWidget):
         self.display = QtWidgets.QPlainTextEdit()
         self.display.setReadOnly(True)
         if self.settings.general_tool_output_black_background == 'True':
-            #self.display.setStyleSheet("background: rgb(0,0,0)")       # black background
-            #self.display.setTextColor(QtGui.QColor('white'))           # white font
-            p = self.display.palette()
-            p.setColor(QtGui.QPalette.Base, Qt.black)                   # black background
-            p.setColor(QtGui.QPalette.Text, Qt.white)                   # white font
-            self.display.setPalette(p)
-            self.display.setStyleSheet("QMenu { color:black;}") #font-size:18px; width: 150px; color:red; left: 20px;}"); # set the menu font color: black
-        
+            self.__drawPalette()
+
         self.vlayout = QtWidgets.QVBoxLayout()
         self.vlayout.addLayout(self.setupLayoutHlayout())
         self.vlayout.addLayout(self.setupLayoutHlayout4())
@@ -300,6 +294,13 @@ class BruteWidget(QtWidgets.QWidget):
         self.vlayout.addLayout(self.setupLayoutHlayout3())
         self.vlayout.addWidget(self.display)
         self.setLayout(self.vlayout)
+
+    def __drawPalette(self):
+        p = self.display.palette()
+        p.setColor(QtGui.QPalette.Base, Qt.black)  # black background
+        p.setColor(QtGui.QPalette.Text, Qt.white)  # white font
+        self.display.setPalette(p)
+        self.display.setStyleSheet("QMenu { color:black;}")
 
     # TODO: need to check all the methods that need an additional input field and add them here
 #   def showMoreOptions(self, text):
@@ -398,13 +399,8 @@ class BruteWidget(QtWidgets.QWidget):
         self.display = QtWidgets.QPlainTextEdit()
         self.display.setReadOnly(True)
         if self.settings.general_tool_output_black_background == 'True':
-            #self.display.setStyleSheet("background: rgb(0,0,0)")       # black background
-            #self.display.setTextColor(QtGui.QColor('white'))           # white font
-            p = self.display.palette()
-            p.setColor(QtGui.QPalette.Base, Qt.black)                   # black background
-            p.setColor(QtGui.QPalette.Text, Qt.white)                   # white font
-            self.display.setPalette(p)
-            self.display.setStyleSheet("QMenu { color:black;}") #font-size:18px; width: 150px; color:red; left: 20px;}"); # set the menu font color: black          
+            self.__drawPalette()
+
         self.vlayout.addWidget(self.display)
 
 # dialog displayed when the user clicks on the advanced filters button      
@@ -578,6 +574,14 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.MacLayout.addWidget(self.MacText)
         self.MacLayout.addStretch()
 
+        self.VendorLabel = QtWidgets.QLabel()
+        self.VendorText = QtWidgets.QLabel()
+        self.VendorLayout = QtWidgets.QHBoxLayout()
+        self.VendorLayout.addSpacing(20)
+        self.VendorLayout.addWidget(self.VendorLabel)
+        self.VendorLayout.addWidget(self.VendorText)
+        self.VendorLayout.addStretch()
+
         self.AsnLabel = QtWidgets.QLabel()
         self.AsnText = QtWidgets.QLabel()
         self.AsnLayout = QtWidgets.QHBoxLayout()
@@ -633,6 +637,7 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.IP4Label.setText('IPv4:')
         self.IP6Label.setText('IPv6:')
         self.MacLabel.setText('MAC:')
+        self.VendorLabel.setText('Vendor:')
         self.AsnLabel.setText('ASN:')
         self.IspLabel.setText('ISP:')
         self.OSLabel.setText('Operating System')
@@ -655,6 +660,7 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.vlayout_2.addLayout(self.IP4Layout)
         self.vlayout_2.addLayout(self.IP6Layout)
         self.vlayout_2.addLayout(self.MacLayout)
+        self.vlayout_2.addLayout(self.VendorLayout)
         self.vlayout_2.addLayout(self.AsnLayout)
         self.vlayout_2.addLayout(self.IspLayout)
         self.vlayout_2.addLayout(self.dummyLayout)
@@ -686,6 +692,7 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.IP4Text.setText(kwargs.get('ipv4') or 'unknown')
         self.IP6Text.setText(kwargs.get('ipv6') or 'unknown')
         self.MacText.setText(kwargs.get('macaddr') or 'unknown')
+        self.VendorText.setText(kwargs.get('vendor') or 'unknown')
         self.AsnText.setText(kwargs.get('asn') or 'unknown')
         self.IspText.setText(kwargs.get('isp') or 'unknown')
         self.OSNameText.setText(kwargs.get('osMatch') or 'unknown')

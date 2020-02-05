@@ -17,8 +17,8 @@ import subprocess
 
 from PyQt5 import QtCore
 
-from app.auxiliary import getTimestamp
 from app.http.isHttps import isHttps
+from app.timing import getTimestamp
 
 
 class Screenshooter(QtCore.QThread):
@@ -74,8 +74,9 @@ class Screenshooter(QtCore.QThread):
 
     def save(self, url, ip, port, outputfile):
         self.tsLog('Saving screenshot as: ' + str(outputfile))
-        command = 'xvfb-run --server-args="-screen 0:0, 1024x768x24" /usr/bin/cutycapt --url="{url}/" --max-wait=5000 --out="{outputfolder}/{outputfile}"'.format(
-            url=url, outputfolder=self.outputfolder, outputfile=outputfile)
+        command = 'xvfb-run --server-args="-screen 0:0, 1024x768x24" /usr/bin/cutycapt --url="{url}/"' + \
+                  ' --max-wait=5000 --out="{outputfolder}/{outputfile}"' \
+                      .format(url=url, outputfolder=self.outputfolder, outputfile=outputfile)
         p = subprocess.Popen(command, shell=True)
         p.wait()  # wait for command to finish
         self.done.emit(ip, port, outputfile)  # send a signal to add the 'process' to the DB

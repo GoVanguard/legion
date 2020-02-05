@@ -5,10 +5,7 @@ __author__ =  'ketchup'
 __version__=  '0.1'
 __modified_by = 'ketchup'
 
-import sys
-import xml.dom.minidom
 import parsers.CVE as CVE
-from db.database import *
 from pyExploitDb import PyExploitDb
 
 class Script:
@@ -82,7 +79,8 @@ class Script:
                 if exploitResults:
                     resultCveDict['exploitId'] = exploitResults['edbid']
                     resultCveDict['exploit'] = exploitResults['exploit']
-                    resultCveDict['exploitUrl'] = "https://www.exploit-db.com/exploits/{0}".format(resultCveDict['exploitId'])
+                    resultCveDict['exploitUrl'] = "https://www.exploit-db.com/exploits/{0}".\
+                        format(resultCveDict['exploitId'])
                 resultCvesProcessed.append(resultCveDict)
             resultCpeDetails['cves'] = resultCvesProcessed
             resultsDict[resultCpeData[3]] = resultCpeDetails
@@ -123,7 +121,10 @@ class Script:
             print("------------------------VULNERS")
             cveResults = self.getCves()
             for cveEntry in cveResults:
-                t_cve = cve(name = cveEntry.name, url = cveEntry.url, source = cveEntry.source, severity = cveEntry.severity, product = cveEntry.product, version = cveEntry.version, hostId = host.id, exploitId = cveEntry.exploitId, exploit = cveEntry.exploit, exploitUrl = cveEntry.exploitUrl)
+                t_cve = cve(name=cveEntry.name, url=cveEntry.url, source=cveEntry.source,
+                            severity=cveEntry.severity, product=cveEntry.product, version=cveEntry.version,
+                            hostId=host.id, exploitId=cveEntry.exploitId, exploit=cveEntry.exploit,
+                            exploitUrl=cveEntry.exploitUrl)
                 results.append(t_cve)
             return results
         elif 'shodan-api' in scriptId:
@@ -133,12 +134,3 @@ class Script:
         else:
             print("-----------------------*{0}".format(scriptId))
             return results
-
-if __name__ == '__main__':
-
-    dom = xml.dom.minidom.parse('a-full.xml')
-
-    for scriptNode in dom.getElementsByTagName('script'):
-        script = Script(scriptNode)
-        log.info(script.scriptId)
-        log.info(script.output)

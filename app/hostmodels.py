@@ -1,21 +1,30 @@
 #!/usr/bin/env python
 
-'''
+"""
 LEGION (https://govanguard.io)
 Copyright (c) 2018 GoVanguard
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+    You should have received a copy of the GNU General Public License along with this program.
+    If not, see <http://www.gnu.org/licenses/>.
+
+"""
 
 import re
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import pyqtSignal, QObject
+
+from app.ModelHelpers import resolveHeaders, itemSelectable
 from app.auxiliary import *                                                 # for bubble sort
+
 
 class HostsTableModel(QtCore.QAbstractTableModel):
     
@@ -36,18 +45,13 @@ class HostsTableModel(QtCore.QAbstractTableModel):
         return 0
         
     def headerData(self, section, orientation, role):
-        if role == QtCore.Qt.DisplayRole:           
-            if orientation == QtCore.Qt.Horizontal:             
-                if section < len(self.__headers):
-                    return self.__headers[section]
-                else:
-                    return "not implemented in view model"
+        return resolveHeaders(role, orientation, section, self.__headers)
 
-    def data(self, index, role):                                        # this method takes care of how the information is displayed
-        if role == QtCore.Qt.DecorationRole:                            # to show the operating system icon instead of text                 
+    def data(self, index, role):                # this method takes care of how the information is displayed
+        if role == QtCore.Qt.DecorationRole:    # to show the operating system icon instead of text
             if index.column() == 1:                                     # if trying to display the operating system
                 os_string = self.__hosts[index.row()]['osMatch']               
-                if os_string == '':                                     # if there is no OS information, use the question mark icon
+                if os_string == '':             # if there is no OS information, use the question mark icon
                     return QtGui.QIcon("./images/question-icon.png")
                     
                 elif re.search('[lL]inux', os_string, re.I):
@@ -68,7 +72,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
                 elif re.search('[vV]m[wW]are', os_string, re.I):
                     return QtGui.QIcon("./images/vmware-big.jpg")
                 
-                else:                                                   # if it's an unknown OS also use the question mark icon
+                else:  # if it's an unknown OS also use the question mark icon
                     return QtGui.QIcon("./images/question-icon.png")
 
         if role == QtCore.Qt.DisplayRole:                               # how to display each cell
@@ -120,10 +124,12 @@ class HostsTableModel(QtCore.QAbstractTableModel):
                 checkedFont.setItalic(True)
                 return checkedFont
 
-    def flags(self, index):                                             # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable     # add QtCore.Qt.ItemIsEditable to edit item
+    # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
+    def flags(self, index):
+        return itemSelectable()
 
-    def sort(self, Ncol, order):                                        # sort function called when the user clicks on a header
+    # sort function called when the user clicks on a header
+    def sort(self, Ncol, order):
         
         self.layoutAboutToBeChanged.emit()
         array = []

@@ -3,8 +3,6 @@
 __author__ =  'SECFORCE'
 __version__=  '0.1'
 
-import sys
-import xml.dom.minidom
 import parsers.Service as Service
 import parsers.Script as Script
 

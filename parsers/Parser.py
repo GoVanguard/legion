@@ -1,19 +1,16 @@
 #!/usr/bin/python
 
 '''this module used to parse nmap xml report'''
+from app.logging.legionLog import log
+
 __author__ =  'yunshu(wustyunshu@hotmail.com)'
 __version__=  '0.2'
 __modified_by = 'ketchup'
 __modified_by = 'SECFORCE'
 
-import sys
-import pprint
-import logging
 import parsers.Session as Session
 import parsers.Host as Host
-import parsers.Script as Script
 import xml.dom.minidom
-from six import u as unicode
 
 class Parser:
 
@@ -27,9 +24,8 @@ class Parser:
             for hostNode in self.__dom.getElementsByTagName('host'):
                 __host =  Host.Host(hostNode)
                 self.__hosts[__host.ip] = __host
-        except Exception as ex:
+        except Exception:
             log.info("Parser error! Invalid nmap file!")
-            #logging.error(ex)
             raise
 
     def getSession( self ):
@@ -99,51 +95,3 @@ class Parser:
                     __tmp_ips.append( __host.ip )
 
         return __tmp_ips
-
-if __name__ == '__main__':
-
-    parser = Parser( 'a-full.xml' )
-
-    log.info('\nscan session:')
-    session = parser.getSession()
-    log.info("\tstart time:\t" + session.startTime)
-    log.info("\tstop time:\t" + session.finish_time)
-    log.info("\tnmap version:\t" + session.nmapVersion)
-    log.info("\tnmap args:\t" + session.scanArgs)
-    log.info("\ttotal hosts:\t" + session.totalHosts)
-    log.info("\tup hosts:\t" + session.upHosts)
-    log.info("\tdown hosts:\t" + session.downHosts)
-
-    for h in parser.getAllHosts():
-
-        log.info('host ' +h.ip + ' is ' + h.status)
-
-        for port in h.getPorts( 'tcp', 'open' ):
-            print(port)
-            log.info("\t---------------------------------------------------")
-            log.info("\tservice of tcp port " + port + ":")
-            s = h.getService( 'tcp', port )
-
-            if s == None:
-                log.info("\t\tno service")
-
-            else:
-                log.info("\t\t" + s.name)
-                log.info("\t\t" + s.product)
-                log.info("\t\t" + s.version)
-                log.info("\t\t" + s.extrainfo)
-                log.info("\t\t" + s.fingerprint)
-
-            log.info("\tscript output:")
-            sc = port.getScripts()
-            
-            if sc == None:
-                log.info("\t\tno scripts")
-            
-            else:
-                for scr in sc:
-                    log.info("Script ID: " + scr.scriptId)
-                    log.info("Output: ")
-                    log.info(scr.output)
-
-            log.info("\t---------------------------------------------------")
