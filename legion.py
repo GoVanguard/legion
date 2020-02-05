@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 LEGION (https://govanguard.com)
-Copyright (c) 2018 GoVanguard
+Copyright (c) 2020 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -19,6 +19,7 @@ from app.shell.DefaultShell import DefaultShell
 from app.tools.nmap.DefaultNmapExporter import DefaultNmapExporter
 from db.RepositoryFactory import RepositoryFactory
 from ui.eventfilter import MyEventFilter
+from ui.ViewState import ViewState
 from utilities.stenoLogging import *
 
 log = get_logger('legion', path="./log/legion-startup.log")
