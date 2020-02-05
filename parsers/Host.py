@@ -1,16 +1,14 @@
 #!/usr/bin/python
+from app.logging.legionLog import log
 
 __author__ =  'yunshu(wustyunshu@hotmail.com)'
 __version__=  '0.2'
 __modified_by = 'ketchup'
 
-import sys
-import pprint
 import parsers.Service as Service
 import parsers.Script as Script
 import parsers.OS as OS
 import parsers.Port as Port
-import xml.dom.minidom
 
 class Host:
     ipv4 = ''
@@ -78,7 +76,8 @@ class Host:
         open_ports = []
 
         for portNode in self.hostNode.getElementsByTagName('port'):
-            if portNode.getAttribute('protocol') == protocol and portNode.getElementsByTagName('state')[0].getAttribute('state') == state:
+            if portNode.getAttribute('protocol') == protocol and portNode.getElementsByTagName('state')[0]\
+                    .getAttribute('state') == state:
                 open_ports.append( portNode.getAttribute('portid') )
 
         return open_ports
@@ -108,43 +107,9 @@ class Host:
         '''return a Service object'''
 
         for portNode in self.hostNode.getElementsByTagName('port'):
-            if portNode.getAttribute('protocol') == protocol and portNode.getAttribute('portid') == port and len(portNode.getElementsByTagName('service')) > 0:
+            if portNode.getAttribute('protocol') == protocol and portNode.getAttribute('portid') == port and \
+                    len(portNode.getElementsByTagName('service')) > 0:
                 service_node = portNode.getElementsByTagName('service')[0]
                 service = Service.Service( service_node )
                 return service
         return None
-
-if __name__ == '__main__':
-
-    dom = xml.dom.minidom.parse('/tmp/test_pwn01.xml')
-    hostNodes = dom.getElementsByTagName('host')
-
-    if len(hostNodes) == 0:
-        sys.exit( )
-
-    hostNode = dom.getElementsByTagName('host')[0]
-
-    h = Host( hostNode )
-    log.info('host status: ' + h.status)
-    log.info('host ip: ' + h.ip)
-
-    for port in h.getPorts( 'tcp', 'open' ):
-        log.info(port + " is open")
-
-    log.info("script output:")
-    for scr in h.getScripts():
-        log.info("script id:" + scr.scriptId)
-        log.info("Output:")
-        log.info(scr.output)
-
-    log.info("service of tcp port 80:")
-    s = h.getService( 'tcp', '80' )
-    if s == None:
-        log.info("\tno service")
-
-    else:
-        log.info("\t" + s.name)
-        log.info("\t" + s.product)
-        log.info("\t" + s.version)
-        log.info("\t" + s.extrainfo)
-        log.info("\t" + s.fingerprint)

@@ -18,7 +18,7 @@ Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 from PyQt5 import QtCore
 
 from db.entities.host import hostObj
-from scripts.python import pyShodan
+from scripts.python import pyShodan, macvendors
 from ui.ancillaryDialog import time
 
 
@@ -32,7 +32,7 @@ class PythonImporter(QtCore.QThread):
         QtCore.QThread.__init__(self, parent=None)
         self.output = ''
         self.hostIp = ''
-        self.pythonScriptDispatch = {'pyShodan': pyShodan.PyShodanScript()}
+        self.pythonScriptDispatch = {'pyShodan': pyShodan.PyShodanScript(), 'macvendors': macvendors.macvendorsScript()}
         self.pythonScriptObj = None
 
     def tsLog(self, msg):

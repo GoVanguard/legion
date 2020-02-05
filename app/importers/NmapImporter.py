@@ -29,7 +29,7 @@ from db.entities.port import portObj
 from db.entities.service import serviceObj
 from db.repositories.HostRepository import HostRepository
 from parsers.Parser import Parser
-from ui.ancillaryDialog import time
+from time import time
 
 
 class NmapImporter(QtCore.QThread):
@@ -149,11 +149,15 @@ class NmapImporter(QtCore.QThread):
                     s = p.getService()
 
                     if not (s is None):  # check if service already exists to avoid adding duplicates
-                        # print("            Found service {service} for port {port}".format(service=str(s.name),port=str(p.portId)))
-                        # db_service = session.query(serviceObj).filter_by(name=s.name).filter_by(product=s.product).filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).filter_by(fingerprint=s.fingerprint).first()
+                        # print("            Found service {service} for port {port}".format(service=str(s.name),
+                        # port=str(p.portId)))
+                        # db_service = session.query(serviceObj).filter_by(name=s.name).filter_by(product=s.product).
+                        # filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).
+                        # filter_by(fingerprint=s.fingerprint).first()
                         db_service = session.query(serviceObj).filter_by(name=s.name).first()
                         if not db_service:
-                            # print("Did not find service *********** name={0} prod={1} ver={2} extra={3} fing={4}".format(s.name, s.product, s.version, s.extrainfo, s.fingerprint))
+                            # print("Did not find service *********** name={0} prod={1} ver={2} extra={3} fing={4}".
+                            # format(s.name, s.product, s.version, s.extrainfo, s.fingerprint))
                             db_service = serviceObj(s.name, s.product, s.version, s.extrainfo, s.fingerprint)
                             session.add(db_service)
                     # else:
@@ -249,14 +253,15 @@ class NmapImporter(QtCore.QThread):
 
                     db_os.osAccuracy = os.accuracy  # update the accuracy
 
-                    if not os.name == '':  # get the most accurate OS match/accuracy to store it in the host table for easier access
+                    # get the most accurate OS match/accuracy to store it in the host table for easier access
+                    if not os.name == '':
                         if os.accuracy > tmp_accuracy:
                             tmp_name = os.name
                             tmp_accuracy = os.accuracy
 
                 if os_nodes:  # if there was operating system info to parse
-
-                    if not tmp_name == '' and not tmp_accuracy == '0':  # update the current host with the most accurate OS match
+                    # update the current host with the most accurate OS match
+                    if not tmp_name == '' and not tmp_accuracy == '0':
                         db_host.osMatch = tmp_name
                         db_host.osAccuracy = tmp_accuracy
 
@@ -279,7 +284,9 @@ class NmapImporter(QtCore.QThread):
                 for p in h.all_ports():
                     s = p.getService()
                     if not (s is None):
-                        # db_service = session.query(serviceObj).filter_by(name=s.name).filter_by(product=s.product).filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).filter_by(fingerprint=s.fingerprint).first()
+                        # db_service = session.query(serviceObj).filter_by(name=s.name).filter_by(product=s.product).
+                        # filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).
+                        # filter_by(fingerprint=s.fingerprint).first()
                         db_service = session.query(serviceObj).filter_by(name=s.name).first()
                     else:
                         db_service = None
@@ -293,12 +300,13 @@ class NmapImporter(QtCore.QThread):
                             db_port.state = p.state
                             session.add(db_port)
 
-                        if not (
-                                db_service is None) and db_port.serviceId != db_service.id:  # if there is some new service information, update it
+                        # if there is some new service information, update it
+                        if not (db_service is None) and db_port.serviceId != db_service.id:
                             db_port.serviceId = db_service.id
                             session.add(db_port)
 
-                    for scr in p.getScripts():  # store the script results (note that existing script outputs are also kept)
+                    # store the script results (note that existing script outputs are also kept)
+                    for scr in p.getScripts():
                         db_script = session.query(l1ScriptObj).filter_by(scriptId=scr.scriptId).filter_by(
                             portId=db_port.id).first()
 
