@@ -14,7 +14,7 @@ pyfiglet
 colorama
 termcolor
 win_inet_pton
-pyExploitDb>=0.2.0
+pyExploitDb>=0.2.1
 pyShodan
 GitPython
 pandas
