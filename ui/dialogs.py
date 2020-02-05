@@ -1,16 +1,19 @@
 #!/usr/bin/env python
+"""
+LEGION (https://govanguard.com)
+Copyright (c) 2020 GoVanguard
 
-'''
-LEGION (https://govanguard.io)
-Copyright (c) 2018 GoVanguard
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
-
+    You should have received a copy of the GNU General Public License along with this program.
+    If not, see <http://www.gnu.org/licenses/>.
+"""
 import os
 from PyQt5.QtGui import *                                               # for filters dialog
 from PyQt5.QtWidgets import *
@@ -47,7 +50,8 @@ class BruteWidget(QtWidgets.QWidget):
         self.checkAddMoreOptions.stateChanged.connect(self.showMoreOptions)     
         
     def setupLayoutHlayout(self):
-        hydraServiceConversion = {'login':'rlogin', 'ms-sql-s':'mssql', 'ms-wbt-server':'rdp', 'netbios-ssn':'smb', 'netbios-ns':'smb', 'microsoft-ds':'smb', 'postgresql':'postgres', 'vmware-auth':'vmauthd"'}
+        hydraServiceConversion = {'login':'rlogin', 'ms-sql-s':'mssql', 'ms-wbt-server':'rdp', 'netbios-ssn':'smb', \
+            'netbios-ns':'smb', 'microsoft-ds':'smb', 'postgresql':'postgres', 'vmware-auth':'vmauthd"'}
         # sometimes nmap service name is different from hydra service name
         if self.service is None:
             self.service = ''
@@ -85,7 +89,7 @@ class BruteWidget(QtWidgets.QWidget):
                 self.serviceComboBox.setCurrentIndex(i)
                 break
 
-#       self.labelPath = QtWidgets.QLineEdit()                              # this is the extra input field to insert the path to brute force
+#       self.labelPath = QtWidgets.QLineEdit()  # this is the extra input field to insert the path to brute force
 #       self.labelPath.setFixedWidth(800)
 #       self.labelPath.setText('/')
 
@@ -144,7 +148,9 @@ class BruteWidget(QtWidgets.QWidget):
         self.foundUsersRadio.toggle()
 
         self.warningLabel = QtWidgets.QLabel()
-        self.warningLabel.setText('*Note: when using form-based services from the Service menu, select the "Additional Options" checkbox and add the proper arguments for the webpage form. See Hydra documentation for extra help when targeting HTTP/HTTPS forms.')
+        self.warningLabel.setText('*Note: when using form-based services from the Service menu, select the \
+            "Additional Options" checkbox and add the proper arguments for the webpage form. See Hydra \
+            documentation for extra help when targeting HTTP/HTTPS forms.')
         self.warningLabel.setWordWrap(True)
         self.warningLabel.setAlignment(Qt.AlignRight)
         self.warningLabel.setStyleSheet('QLabel { color: red }')
@@ -271,7 +277,7 @@ class BruteWidget(QtWidgets.QWidget):
 
     def setupLayout(self):
         ###
-        self.labelPath = QtWidgets.QLineEdit()                              # this is the extra input field to insert the path to brute force
+        self.labelPath = QtWidgets.QLineEdit() # this is the extra input field to insert the path to brute force
         self.labelPath.setFixedWidth(800)
         self.labelPath.setText('-m "/login/login.html:username=^USER^&password=^PASS^&Login=Login:failed"')
         ###
@@ -332,7 +338,8 @@ class BruteWidget(QtWidgets.QWidget):
         self.port = self.portTextinput.text()
         self.service = str(self.serviceComboBox.currentText())
         self.command = "hydra " + str(self.ip) + " -s " + self.port + " -o "
-        self.outputfile = runningfolder + "/hydra/" + getTimestamp() + "-" + str(self.ip) + "-" + self.port + "-" + self.service + ".txt"
+        self.outputfile = runningfolder + "/hydra/" + getTimestamp() + "-" + str(self.ip) + "-" + self.port + "-" + \
+            self.service + ".txt"
         self.command += "\"" + self.outputfile + "\""
 
         if 'form' not in str(self.service):
@@ -377,9 +384,9 @@ class BruteWidget(QtWidgets.QWidget):
             
         self.command += " " + self.service
 
-#       if self.labelPath.isVisible():                                  # append the additional field's content, if it was visible
+#       if self.labelPath.isVisible(): # append the additional field's content, if it was visible
         if self.checkAddMoreOptions.isChecked():
-            self.command += " "+str(self.labelPath.text())              # TODO: sanitise this?
+            self.command += " "+str(self.labelPath.text()) # TODO: sanitise this?
 
         #command = "echo "+escaped_password+" > /tmp/hydra-sub.txt"
         #os.system(unicode(command))
@@ -394,7 +401,7 @@ class BruteWidget(QtWidgets.QWidget):
         else:
             self.runButton.setText('Run')
 
-    def resetDisplay(self):                                             # used to be able to display the tool output in both the Brute tab and the tool display panel
+    def resetDisplay(self):
         self.display.setParent(None)
         self.display = QtWidgets.QPlainTextEdit()
         self.display.setReadOnly(True)
@@ -470,8 +477,9 @@ class FiltersDialog(QtWidgets.QDialog):
         self.setLayout(layout)
         
     def getFilters(self):
-        #return [self.hostsUp.isChecked(), self.hostsDown.isChecked(), self.hostsChecked.isChecked(), self.portsOpen.isChecked(), self.portsFiltered.isChecked(), self.portsClosed.isChecked(), self.portsTcp.isChecked(), self.portsUdp.isChecked(), str(self.hostKeywordText.text()).split()]
-        return [self.hostsUp.isChecked(), self.hostsDown.isChecked(), self.hostsChecked.isChecked(), self.portsOpen.isChecked(), self.portsFiltered.isChecked(), self.portsClosed.isChecked(), self.portsTcp.isChecked(), self.portsUdp.isChecked(), unicode(self.hostKeywordText.text()).split()]
+        return [self.hostsUp.isChecked(), self.hostsDown.isChecked(), self.hostsChecked.isChecked(), \
+            self.portsOpen.isChecked(), self.portsFiltered.isChecked(), self.portsClosed.isChecked(), \
+            self.portsTcp.isChecked(), self.portsUdp.isChecked(), unicode(self.hostKeywordText.text()).split()]
 
     def setCurrentFilters(self, filters):
         if not self.hostsUp.isChecked() == filters[0]:
