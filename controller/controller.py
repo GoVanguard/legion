@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-LEGION (https://govanguard.io)
+LEGION (https://govanguard.com)
 Copyright (c) 2018 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -39,7 +39,7 @@ class Controller:
         self.build = '1565621036'
         self.author = 'GoVanguard'
         self.copyright = '2019'
-        self.links = ['http://github.com/GoVanguard/legion/issues', 'https://GoVanguard.io/legion']
+        self.links = ['http://github.com/GoVanguard/legion/issues', 'https://GoVanguard.com/legion']
         self.emails = []
 
         self.update = '08/12/2019'
