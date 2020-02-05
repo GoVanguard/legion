@@ -284,14 +284,8 @@ class BruteWidget(QtWidgets.QWidget):
         self.display = QtWidgets.QPlainTextEdit()
         self.display.setReadOnly(True)
         if self.settings.general_tool_output_black_background == 'True':
-            #self.display.setStyleSheet("background: rgb(0,0,0)")       # black background
-            #self.display.setTextColor(QtGui.QColor('white'))           # white font
-            p = self.display.palette()
-            p.setColor(QtGui.QPalette.Base, Qt.black)                   # black background
-            p.setColor(QtGui.QPalette.Text, Qt.white)                   # white font
-            self.display.setPalette(p)
-            self.display.setStyleSheet("QMenu { color:black;}") #font-size:18px; width: 150px; color:red; left: 20px;}"); # set the menu font color: black
-        
+            self.__drawPalette()
+
         self.vlayout = QtWidgets.QVBoxLayout()
         self.vlayout.addLayout(self.setupLayoutHlayout())
         self.vlayout.addLayout(self.setupLayoutHlayout4())
@@ -300,6 +294,13 @@ class BruteWidget(QtWidgets.QWidget):
         self.vlayout.addLayout(self.setupLayoutHlayout3())
         self.vlayout.addWidget(self.display)
         self.setLayout(self.vlayout)
+
+    def __drawPalette(self):
+        p = self.display.palette()
+        p.setColor(QtGui.QPalette.Base, Qt.black)  # black background
+        p.setColor(QtGui.QPalette.Text, Qt.white)  # white font
+        self.display.setPalette(p)
+        self.display.setStyleSheet("QMenu { color:black;}")
 
     # TODO: need to check all the methods that need an additional input field and add them here
 #   def showMoreOptions(self, text):
@@ -398,13 +399,8 @@ class BruteWidget(QtWidgets.QWidget):
         self.display = QtWidgets.QPlainTextEdit()
         self.display.setReadOnly(True)
         if self.settings.general_tool_output_black_background == 'True':
-            #self.display.setStyleSheet("background: rgb(0,0,0)")       # black background
-            #self.display.setTextColor(QtGui.QColor('white'))           # white font
-            p = self.display.palette()
-            p.setColor(QtGui.QPalette.Base, Qt.black)                   # black background
-            p.setColor(QtGui.QPalette.Text, Qt.white)                   # white font
-            self.display.setPalette(p)
-            self.display.setStyleSheet("QMenu { color:black;}") #font-size:18px; width: 150px; color:red; left: 20px;}"); # set the menu font color: black          
+            self.__drawPalette()
+
         self.vlayout.addWidget(self.display)
 
 # dialog displayed when the user clicks on the advanced filters button      
