@@ -50,7 +50,7 @@ class PythonImporter(QtCore.QThread):
     def setOutput(self, output):
         self.output = output
 
-    def run(self): # it is necessary to get the qprocess because we need to send it back to the scheduler when we're done importing
+    def run(self): # it is necessary to get the qprocess to send it back to the scheduler when we're done
         try:
             session = self.db.session()
             startTime = time()
