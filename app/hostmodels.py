@@ -21,7 +21,10 @@ import re
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import pyqtSignal, QObject
+
+from app.ModelHelpers import resolveHeaders, itemSelectable
 from app.auxiliary import *                                                 # for bubble sort
+
 
 class HostsTableModel(QtCore.QAbstractTableModel):
     
@@ -42,12 +45,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
         return 0
         
     def headerData(self, section, orientation, role):
-        if role == QtCore.Qt.DisplayRole:           
-            if orientation == QtCore.Qt.Horizontal:             
-                if section < len(self.__headers):
-                    return self.__headers[section]
-                else:
-                    return "not implemented in view model"
+        return resolveHeaders(role, orientation, section, self.__headers)
 
     def data(self, index, role):                # this method takes care of how the information is displayed
         if role == QtCore.Qt.DecorationRole:    # to show the operating system icon instead of text
@@ -128,7 +126,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
 
     # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
     def flags(self, index):
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable     # add QtCore.Qt.ItemIsEditable to edit item
+        return itemSelectable()
 
     # sort function called when the user clicks on a header
     def sort(self, Ncol, order):

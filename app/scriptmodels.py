@@ -19,6 +19,8 @@ Copyright (c) 2018 GoVanguard
 
 import re
 from PyQt5 import QtWidgets, QtGui, QtCore
+
+from app.ModelHelpers import resolveHeaders, itemSelectable
 from app.auxiliary import *                                                 # for bubble sort
 
 class ScriptsTableModel(QtCore.QAbstractTableModel):
@@ -44,12 +46,7 @@ class ScriptsTableModel(QtCore.QAbstractTableModel):
         return 0
 
     def headerData(self, section, orientation, role):
-        if role == QtCore.Qt.DisplayRole:            
-            if orientation == QtCore.Qt.Horizontal:                
-                if section < len(self.__headers):
-                    return self.__headers[section]
-                else:
-                    return "not implemented"
+        return resolveHeaders(role, orientation, section, self.__headers)
                 
     def data(self, index, role):   # this method takes care of how the information is displayed
 
@@ -93,7 +90,7 @@ class ScriptsTableModel(QtCore.QAbstractTableModel):
 
     # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
     def flags(self, index):
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+        return itemSelectable()
 
     ### getter functions ###
 
