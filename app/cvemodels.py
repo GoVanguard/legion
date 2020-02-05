@@ -17,16 +17,30 @@ Copyright (c) 2018 GoVanguard
 """
 
 import re
+from typing import Dict
+
 from PyQt5 import QtWidgets, QtGui, QtCore
+
+from app.ModelHelpers import resolveHeaders, itemInteractive
 from app.auxiliary import *                                                 # for bubble sort
 
 class CvesTableModel(QtCore.QAbstractTableModel):
-    
     def __init__(self, controller, cves = [[]], headers = [], parent = None):
         QtCore.QAbstractTableModel.__init__(self, parent)
         self.__headers = headers
         self.__cves = cves
         self.__controller = controller
+        self.columnMapping = {
+            0: "name",
+            1: "severity",
+            2: "product",
+            3: "version",
+            4: "url",
+            5: "source",
+            6: "exploitId",
+            7: "exploit",
+            8: "exploitUrl"
+        }
         
     def setCves(self, cves):
         self.__cves = cves
@@ -43,70 +57,20 @@ class CvesTableModel(QtCore.QAbstractTableModel):
         return 0
 
     def headerData(self, section, orientation, role):
-        if role == QtCore.Qt.DisplayRole:            
-            if orientation == QtCore.Qt.Horizontal:                
-                if section < len(self.__headers):
-                    return self.__headers[section]
-                else:
-                    return "not implemented"
+        return resolveHeaders(role, orientation, section, self.__headers)
                 
     def data(self, index, role):  # this method takes care of how the information is displayed
-
         if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:  # how to display each cell
-            value = ''
             row = index.row()
             column = index.column()
-            if column == 0:
-                value = self.__cves[row]['name']
-            elif column == 1:
-                value = self.__cves[row]['severity']
-            elif column == 2:
-                value = self.__cves[row]['product']
-            elif column == 3:
-                value = self.__cves[row]['version']
-            elif column == 4:
-                value = self.__cves[row]['url']
-            elif column == 5:
-                value = self.__cves[row]['source']
-            elif column == 6:
-                value = self.__cves[row]['exploitId']
-            elif column == 7:
-                value = self.__cves[row]['exploit']
-            elif column == 8:
-                value = self.__cves[row]['exploitUrl']
-            return value
+            return self.__cves[row][self.columnMapping[column]]
 
     def sort(self, Ncol, order):
         self.layoutAboutToBeChanged.emit()
-        array=[]
-        
-        if Ncol == 0:            
-            for i in range(len(self.__cves)):
-                array.append(self.__cves[i]['name'])
-        elif Ncol == 1:
-            for i in range(len(self.__cves)):
-                array.append(self.__cves[i]['severity'])
-        elif Ncol == 2:
-            for i in range(len(self.__cves)):
-                array.append(self.__cves[i]['product'])
-        elif Ncol == 3:
-            for i in range(len(self.__cves)):
-                array.append(self.__cves[i]['version'])
-        elif Ncol == 4:
-            for i in range(len(self.__cves)):
-                array.append(self.__cves[i]['url'])
-        elif Ncol == 5:
-            for i in range(len(self.__cves)):
-                array.append(self.__cves[i]['source'])
-        elif Ncol == 6:
-            for i in range(len(self.__cves)):
-                array.append(self.__cves[i]['exploitId'])
-        elif Ncol == 7:
-            for i in range(len(self.__cves)):
-                array.append(self.__cves[i]['exploit'])
-        elif Ncol == 8:
-            for i in range(len(self.__cves)):
-                array.append(self.__cves[i]['exploitUrl'])
+
+        array = []
+        for i in range(len(self.__cves)):
+            array.append(self.__cves[i][self.columnMapping[Ncol]])
 
         sortArrayWithArray(array, self.__cves)  # sort the services based on the values in the array
 
@@ -117,7 +81,7 @@ class CvesTableModel(QtCore.QAbstractTableModel):
 
     # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
     def flags(self, index):
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+        return itemInteractive()
 
     ### getter functions ###
 
