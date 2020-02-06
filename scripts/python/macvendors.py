@@ -18,8 +18,10 @@ class macvendorsScript():
         if self.dbHost:
             r = requests.get(url)
             result = str(r.text)
-            if type(result) == type(str()):
+            if type(result) == str:
                 if result:
+                    if type(result) != str or "error" in result:
+                        result = "unknown"
                     self.dbHost.vendor = result
                     print('The vendor is: ' + result)
                     self.session.add(self.dbHost)
