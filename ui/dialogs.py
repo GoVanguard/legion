@@ -556,6 +556,7 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.FilteredPortsLayout.addWidget(self.FilteredPortsText)
         self.FilteredPortsLayout.addStretch()   
         ###################
+        self.LocationLabel = QtWidgets.QLabel()
         self.AddressLabel = QtWidgets.QLabel()
         
         self.IP4Label = QtWidgets.QLabel()
@@ -672,6 +673,8 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.OpenPortsLabel.setText('Open Ports:')
         self.ClosedPortsLabel.setText('Closed Ports:')
         self.FilteredPortsLabel.setText('Filtered Ports:')
+        self.LocationLabel.setText('Location')
+        self.LocationLabel.setFont(font)
         self.AddressLabel.setText('Addresses')
         self.AddressLabel.setFont(font)
         self.IP4Label.setText('IPv4:')
@@ -692,6 +695,8 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.vlayout_1 = QtWidgets.QVBoxLayout()
         self.vlayout_2 = QtWidgets.QVBoxLayout()
         self.vlayout_3 = QtWidgets.QVBoxLayout()
+        self.vlayout_4 = QtWidgets.QVBoxLayout()
+        self.vlayout_5 = QtWidgets.QVBoxLayout()
         self.hlayout_1 = QtWidgets.QHBoxLayout()
         
         self.vlayout_1.addWidget(self.HostStatusLabel)
@@ -716,16 +721,17 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.vlayout_3.addWidget(self.OSLabel)
         self.vlayout_3.addLayout(self.OSNameLayout)
         self.vlayout_3.addLayout(self.OSAccuracyLayout)
-        self.vlayout_3.addLayout(self.CountryLayout)
-        self.vlayout_3.addLayout(self.CityLayout)
-        self.vlayout_3.addLayout(self.LatitudeLayout)
-        self.vlayout_3.addLayout(self.LongitudeLayout)
         self.vlayout_3.addStretch()
         
-        self.vlayout_4 = QtWidgets.QVBoxLayout()
         self.vlayout_4.addLayout(self.hlayout_1)
         self.vlayout_4.addSpacing(10)
         self.vlayout_4.addLayout(self.vlayout_3)
+
+        self.vlayout_5.addWidget(self.LocationLabel)
+        self.vlayout_5.addLayout(self.CountryLayout)
+        self.vlayout_5.addLayout(self.CityLayout)
+        self.vlayout_5.addLayout(self.LatitudeLayout)
+        self.vlayout_5.addLayout(self.LongitudeLayout)
         
         self.hlayout_4 = QtWidgets.QHBoxLayout(self.informationTab)
         self.hlayout_4.addLayout(self.vlayout_4)
