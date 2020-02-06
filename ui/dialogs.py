@@ -717,7 +717,9 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.hlayout_1.addLayout(self.vlayout_1)
         self.hlayout_1.addSpacing(20)
         self.hlayout_1.addLayout(self.vlayout_2)
-        
+        self.hlayout_1.addSpacing(20)
+        self.hlayout_1.addLayout(self.vlayout_5)
+
         self.vlayout_3.addWidget(self.OSLabel)
         self.vlayout_3.addLayout(self.OSNameLayout)
         self.vlayout_3.addLayout(self.OSAccuracyLayout)
