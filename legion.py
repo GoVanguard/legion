@@ -20,6 +20,7 @@ from app.tools.nmap.DefaultNmapExporter import DefaultNmapExporter
 from db.RepositoryFactory import RepositoryFactory
 from ui.eventfilter import MyEventFilter
 from ui.ViewState import ViewState
+from ui.gui import *
 from utilities.stenoLogging import *
 
 log = get_logger('legion', path="./log/legion-startup.log")
@@ -67,7 +68,7 @@ from controller.controller import *
 
 # Main application declaration and loop
 if __name__ == "__main__":
-    cprint(figlet_format('LEGION'), 'yellow', 'on_red', attrs=['bold'])
+    cprint(figlet_format('LEGION', font='isometric4'), 'yellow', 'on_red', attrs=['bold'])
 
     app = QApplication(sys.argv)
     loop = quamash.QEventLoop(app)
