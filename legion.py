@@ -67,7 +67,7 @@ from controller.controller import *
 
 # Main application declaration and loop
 if __name__ == "__main__":
-    cprint(figlet_format('LEGION', font='starwars'), 'yellow', 'on_red', attrs=['bold'])
+    cprint(figlet_format('LEGION'), 'yellow', 'on_red', attrs=['bold'])
 
     app = QApplication(sys.argv)
     loop = quamash.QEventLoop(app)
