@@ -18,8 +18,10 @@ import sys
 
 import xml
 
-from app.auxiliary import log
+from app.logging.legionLog import getAppLogger
 from parsers.Host import Host
+
+log = getAppLogger()
 
 if __name__ == '__main__':
 

@@ -26,7 +26,7 @@ class ProjectManagerTest(unittest.TestCase):
     @patch('utilities.stenoLogging.get_logger')
     @patch('db.repositories.HostRepository')
     @patch('app.auxiliary.Wordlist')
-    @patch('db.database.Database')
+    @patch('db.SqliteDbAdapter.Database')
     def setUp(self, getLogger, hostRepository, wordlist, database) -> None:
         from app.ProjectManager import ProjectManager
         self.mockShell = MagicMock()

@@ -22,8 +22,7 @@ from tests.db.helpers.db_helpers import mockExecuteFetchAll, mockFirstByReturnVa
 
 
 class ServiceRepositoryTest(unittest.TestCase):
-    @patch('utilities.stenoLogging.get_logger')
-    def setUp(self, get_logger) -> None:
+    def setUp(self) -> None:
         from db.repositories.ServiceRepository import ServiceRepository
         self.mockDbAdapter = MagicMock()
         self.repository = ServiceRepository(self.mockDbAdapter)

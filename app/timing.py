@@ -19,7 +19,7 @@ from datetime import datetime
 from functools import wraps
 from time import time
 
-from app.logging.legionLog import log
+from app.logging.legionLog import getAppLogger
 
 timestampFormats = {
     "HUMAN_FORMAT": "%d %b %Y %H:%M:%S.%f",
@@ -28,6 +28,8 @@ timestampFormats = {
 
 
 def timing(f):
+    log = getAppLogger()
+
     @wraps(f)
     def wrap(*args, **kw):
         ts = time()

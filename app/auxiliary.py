@@ -23,9 +23,10 @@ from PyQt5.QtCore import *  # for QProcess
 from six import u as unicode
 
 from app.http.isHttps import isHttps
-from app.logging.legionLog import log
+from app.logging.legionLog import getAppLogger
 from app.timing import timing
-from utilities.stenoLogging import *
+
+log = getAppLogger()
 
 # bubble sort algorithm that sorts an array (in place) based on the values in another array
 # the values in the array must be comparable and in the corresponding positions

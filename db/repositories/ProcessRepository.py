@@ -20,7 +20,7 @@ from typing import Union
 from six import u as unicode
 
 from app.timing import getTimestamp
-from db.database import Database
+from db.SqliteDbAdapter import Database
 from db.entities.process import process
 from db.entities.processOutput import process_output
 

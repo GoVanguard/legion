@@ -20,12 +20,11 @@ from unittest.mock import MagicMock, patch
 
 
 class DefaultNmapExporterTest(unittest.TestCase):
-    @patch("app.logging.legionLog.log")
-    def setUp(self, legionLog) -> None:
+    def setUp(self) -> None:
         from app.tools.nmap.DefaultNmapExporter import DefaultNmapExporter
+        self.log = MagicMock()
         self.mockShell = MagicMock()
-        self.log = legionLog
-        self.nmapExporter = DefaultNmapExporter(self.mockShell)
+        self.nmapExporter = DefaultNmapExporter(self.mockShell, self.log)
 
     @patch("subprocess.Popen")
     def test_exportOutputToHtml_WhenProvidedFileNameAndOutputFolder_ExportsOutputSuccessfully(self, processOpen):
