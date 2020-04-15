@@ -491,14 +491,9 @@ class View(QtCore.QObject):
                                                       "Ok")
                 return
 
-            self.importProgressWidget.reset('Importing nmap..') 
-            self.importProgressWidget.setProgress(5)
-            self.importProgressWidget.show()
             self.controller.nmapImporter.setFilename(str(filename))
             self.controller.nmapImporter.start()
             self.controller.copyNmapXMLToOutputFolder(str(filename))
-            self.importProgressWidget.show()
-            
         else:
             log.info('No file chosen..')
 
