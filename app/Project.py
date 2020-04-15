@@ -19,7 +19,7 @@ from typing import NamedTuple
 
 from app.auxiliary import Wordlist
 from db.RepositoryContainer import RepositoryContainer
-from db.database import Database
+from db.SqliteDbAdapter import Database
 
 projectTypes = ["legion", "sparta"]
 

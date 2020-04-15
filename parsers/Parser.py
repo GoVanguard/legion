@@ -1,16 +1,20 @@
 #!/usr/bin/python
 
 '''this module used to parse nmap xml report'''
-from app.logging.legionLog import log
 
 __author__ =  'yunshu(wustyunshu@hotmail.com)'
 __version__=  '0.2'
+
+from app.logging.legionLog import getAppLogger
+
 __modified_by = 'ketchup'
 __modified_by = 'SECFORCE'
 
 import parsers.Session as Session
 import parsers.Host as Host
 import xml.dom.minidom
+
+log = getAppLogger()
 
 class Parser:
 

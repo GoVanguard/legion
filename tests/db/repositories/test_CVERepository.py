@@ -22,8 +22,7 @@ from tests.db.helpers.db_helpers import mockExecuteFetchAll
 
 
 class CVERepositoryTest(unittest.TestCase):
-    @patch('utilities.stenoLogging.get_logger')
-    def setUp(self, get_logger) -> None:
+    def setUp(self) -> None:
         self.mock_db_adapter = MagicMock()
 
     def test_getCVEsByHostIP_WhenProvidedAHostIp_ReturnsCVEs(self):
