@@ -48,7 +48,11 @@ class Controller:
         self.view.startConnections()
 
         self.loadSettings()  # creation of context menu actions from settings file and set up of various settings
-        self.initNmapImporter()
+        updateProgressObservable = UpdateProgressObservable()
+        updateProgressObserver = QtUpdateProgressObserver(self.view.importProgressWidget)
+        updateProgressObservable.attach(updateProgressObserver)
+
+        self.initNmapImporter(updateProgressObservable)
         self.initPythonImporter()
         self.initScreenshooter()
         self.initBrowserOpener()
@@ -71,11 +75,7 @@ class Controller:
         self.updateOutputFolder()                                       # tell screenshooter where the output folder is
         self.view.start(title)
 
-    def initNmapImporter(self):
-        updateProgressObservable = UpdateProgressObservable()
-        updateProgressObserver = QtUpdateProgressObserver(ProgressWidget('Importing nmap..'))
-        updateProgressObservable.attach(updateProgressObserver)
-
+    def initNmapImporter(self, updateProgressObservable: UpdateProgressObservable):
         self.nmapImporter = NmapImporter(updateProgressObservable,
                                          self.logic.activeProject.repositoryContainer.hostRepository)
         self.nmapImporter.done.connect(self.importFinished)
@@ -417,7 +417,7 @@ class Controller:
                     outputfile = self.logic.activeProject.properties.runningFolder + "/" + \
                                  re.sub("[^0-9a-zA-Z]", "", str(tool)) + \
                                  "/" + getTimestamp() + '-' + tool + "-" + ip[0] + "-" + ip[1]
-                                        
+
                     command = str(self.settings.portActions[srvc_num][2])
                     command = command.replace('[IP]', ip[0]).replace('[PORT]', ip[1]).replace('[OUTPUT]', outputfile)
 
