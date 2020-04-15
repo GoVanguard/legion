@@ -72,6 +72,7 @@ class NmapImporter(QtCore.QThread):
             except:
                 self.tsLog('Giving up on import due to previous errors.')
                 self.tsLog("Unexpected error: {0}".format(sys.exc_info()[0]))
+                self.updateProgressObservable.finished()
                 self.done.emit()
                 return
 
@@ -320,8 +321,8 @@ class NmapImporter(QtCore.QThread):
             session.commit()
             self.db.dbsemaphore.release()  # we are done with the DB
             self.tsLog(f"Finished in {str(time() - startTime)} seconds.")
-            self.done.emit()
             self.updateProgressObservable.finished()
+            self.done.emit()
 
             # call the scheduler (if there is no terminal output it means we imported nmap)
             self.schedule.emit(parser, self.output == '')
@@ -330,5 +331,6 @@ class NmapImporter(QtCore.QThread):
             self.tsLog('Something went wrong when parsing the nmap file..')
             self.tsLog("Unexpected error: {0}".format(sys.exc_info()[0]))
             self.tsLog(e)
-            raise
+            self.updateProgressObservable.finished()
             self.done.emit()
+            raise
