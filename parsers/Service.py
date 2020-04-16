@@ -6,11 +6,11 @@ __modified_by = 'ketchup'
 
 
 class Service:
-    extrainfo = ''
-    name = ''
-    product = ''
-    fingerprint = ''
-    version = ''
+    extrainfo: str = ''
+    name: str = ''
+    product: str = ''
+    fingerprint: str = ''
+    version: str = ''
 
     def __init__(self, ServiceNode):
         self.extrainfo = ServiceNode.getAttribute('extrainfo')
