@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="nmap.xsl" type="text/xsl"?>
+<nmaprun scanner="nmap" args="nmap -oX output.xml -&#45;stylesheet nmap.xsl -vv -p1-1024 -sT 192.168.1.1"
+         start="1586997299" startstr="Wed Apr 15 20:34:59 2020" version="7.80" xmloutputversion="1.04">
+    <scaninfo type="connect" protocol="tcp" numservices="1024" services="1-1024"/>
+    <verbose level="2"/>
+    <debugging level="0"/>
+    <taskbegin task="Ping Scan" time="1586997299"/>
+    <taskend task="Ping Scan" time="1586997299" extrainfo="1 total hosts"/>
+    <taskbegin task="Connect Scan" time="1586997299"/>
+    <taskend task="Connect Scan" time="1586997299" extrainfo="1024 total ports"/>
+    <host starttime="1586997299" endtime="1586997299">
+        <status state="up" reason="syn-ack" reason_ttl="0"/>
+        <address addr="192.168.1.1" addrtype="ipv4"/>
+        <hostnames>
+            <hostname name="coolhost" type="PTR"/>
+        </hostnames>
+        <osclass name="macos" osfamily="darwin" type="x64" osgen="5" vendor="apple" accuracy="98%"/>
+        <ports>
+            <extraports state="closed" count="1019">
+                <extrareasons reason="conn-refused" count="1019"/>
+            </extraports>
+            <port protocol="tcp" portid="53">
+                <state state="open" reason="syn-ack" reason_ttl="0"/>
+                <service extrainfo="exinfo" name="domain" servicefp="p1" product="table" conf="3" version="0.0"/>
+            </port>
+            <port protocol="tcp" portid="80">
+                <state state="open" reason="syn-ack" reason_ttl="0"/>
+                <service extrainfo="exinfo" name="http" servicefp="p2" product="table" conf="3" version="0.0"/>
+            </port>
+            <port protocol="tcp" portid="139">
+                <state state="open" reason="syn-ack" reason_ttl="0"/>
+                <service extrainfo="exinfo" name="netbios-ssn" servicefp="p3" product="table" conf="3" version="0.0"/>
+            </port>
+            <port protocol="tcp" portid="443">
+                <state state="open" reason="syn-ack" reason_ttl="0"/>
+                <service extrainfo="exinfo" name="https" product="table" servicefp="p4" conf="3" version="1.0"/>
+            </port>
+            <port protocol="tcp" portid="445">
+                <state state="open" reason="syn-ack" reason_ttl="0"/>
+                <service extrainfo="exinfo" name="msft" product="table" conf="3" servicefp="p5" version="0.0"/>
+            </port>
+        </ports>
+        <times srtt="2060" rttvar="281" to="100000"/>
+    </host>
+    <runstats>
+        <finished time="1586997299" timestr="Wed Apr 15 20:34:59 2020" elapsed="0.21"
+                  summary="Only a test."
+                  exit="success"/>
+        <hosts up="1" down="0" total="1"/>
+    </runstats>
+</nmaprun>
