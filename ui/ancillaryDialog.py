@@ -87,7 +87,7 @@ class ImageViewer(QtWidgets.QWidget):
                 return
 
             self.imageLabel.setPixmap(QtGui.QPixmap.fromImage(image))
-            self.scaleFactor = 1.0                
+            self.scaleFactor = 1.0
             self.fitToWindow()
 
     def zoomIn(self):
