@@ -62,7 +62,7 @@ class AppSettings():
         sortArrayWithArray(sortArray, hostactions)  # sort by label so that it appears nicely in the context menu
         return hostactions
 
-    # this function fetches all the host actions from the settings file 
+    # this function fetches all the host actions from the settings file
     def getPortActions(self):
         self.actions.beginGroup('PortActions')
         portactions = []
@@ -75,7 +75,7 @@ class AppSettings():
         sortArrayWithArray(sortArray, portactions)  # sort by label so that it appears nicely in the context menu
         return portactions
 
-    # this function fetches all the port actions from the settings file 
+    # this function fetches all the port actions from the settings file
     def getPortTerminalActions(self):
         self.actions.beginGroup('PortTerminalActions')
         portactions = []
@@ -88,7 +88,7 @@ class AppSettings():
         sortArrayWithArray(sortArray, portactions)  # sort by label so that it appears nicely in the context menu
         return portactions
 
-    # this function fetches all the port actions that will be run as terminal commands from the settings file   
+    # this function fetches all the port actions that will be run as terminal commands from the settings file
     def getSchedulerSettings(self):
         settings = []
         self.actions.beginGroup('SchedulerSettings')
