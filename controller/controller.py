@@ -751,7 +751,7 @@ class Controller:
             command = "nmap "
             if not discovery:                                           # is it with/without host discovery?
                 command += "-Pn "
-            command += "-T4 -sC "
+            command += "-T4 -sV "
             if not stage == 1 and not stage == 3:
                 command += "-n "                                        # only do DNS resolution on first stage
             if os.geteuid() == 0:                                       # if we are root we can run SYN + UDP scans
