@@ -117,7 +117,7 @@ class Wordlist():
     def setFilename(self, filename):
         self.filename = filename
 
-    # adds a word to the wordlist (without duplicates)  
+    # adds a word to the wordlist (without duplicates)
     def add(self, word):
         with open(self.filename, 'a') as f:
             if not word + '\n' in self.wordlist:
