@@ -95,7 +95,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
             except Exception:
                 value = "Missing data c #{0} - {1}".format(int(column), processColumns.get(int(column)))
                 pass
-            return value            
+            return value
 
     def sort(self, Ncol, order):
         self.layoutAboutToBeChanged.emit()
@@ -154,7 +154,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
     def getProcessPidForId(self, dbId):
         for i in range(len(self.__processes)):
             if str(self.__processes[i]['id']) == str(dbId):
-                return self.__processes[i]['pid']   
+                return self.__processes[i]['pid']
 
     def getProcessStatusForRow(self, row):
         return self.__processes[row]['status']
@@ -195,4 +195,4 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
         return self.__processes[row]['protocol']
         
     def getOutputfileForRow(self, row):
-        return self.__processes[row]['outputfile']      
+        return self.__processes[row]['outputfile']

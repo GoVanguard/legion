@@ -569,7 +569,7 @@ class Controller:
     def getHostsForTool(self, toolName, closed='False'):
         return self.logic.activeProject.repositoryContainer.processRepository.getHostsByToolName(toolName, closed)
 
-    #################### BOTTOM PANEL INTERFACE UPDATE FUNCTIONS ####################       
+    #################### BOTTOM PANEL INTERFACE UPDATE FUNCTIONS ####################
 
     def getProcessesFromDB(self, filters, showProcesses='noNmap', sort='desc', ncol='id'):
         return self.logic.activeProject.repositoryContainer.processRepository.getProcesses(filters, showProcesses, sort,
@@ -592,7 +592,7 @@ class Controller:
                     next_proc.display.clear()
                     self.processes.append(next_proc)
                     self.fastProcessesRunning += 1
-                    # Add Timeout 
+                    # Add Timeout
                     next_proc.waitForFinished(10)
                     next_proc.start(next_proc.command)
                     self.logic.activeProject.repositoryContainer.processRepository.storeProcessRunningStatus(
