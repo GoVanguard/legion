@@ -1219,8 +1219,8 @@ class View(QtCore.QObject):
     def updateScriptsOutputView(self, scriptId):
         self.ui.ScriptsOutputTextEdit.clear()
         lines = self.controller.getScriptOutputFromDB(scriptId)
-        for l in lines:
-            self.ui.ScriptsOutputTextEdit.insertPlainText(l.output.rstrip())
+        for line in lines:
+            self.ui.ScriptsOutputTextEdit.insertPlainText(line.output.rstrip())
 
     # TODO: check if this hack can be improved because we are calling setDirty more than we need
     def updateNotesView(self, hostid):
