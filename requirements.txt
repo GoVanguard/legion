@@ -10,11 +10,11 @@ PyQt5==5.11.3
 sanic>=0.8.3
 sanic_swagger
 requests>=2.20.1
-pyfiglet
+pyfiglet==0.8post1
 colorama
 termcolor
 win_inet_pton
-pyExploitDb>=0.2.1
+pyExploitDb
 pyShodan
 GitPython
 pandas
