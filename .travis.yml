@@ -7,7 +7,7 @@ language: python
 sudo: true
 
 python:
-  - "3.6"
+  - 3.6.9
 
 cache: pip
 
