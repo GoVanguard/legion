@@ -131,7 +131,7 @@ class ServicesTableModel(QtCore.QAbstractTableModel):
                 array.append(self.__services[i]['name'])
             
         elif Ncol == 9:                                                 # if sorting by version
-            for i in range(len(self.__services)):           
+            for i in range(len(self.__services)):
                 value = ''
                 if not self.__services[i]['product'] == None and not self.__services[i]['product'] == '':
                     value = str(self.__services[i]['product'])
@@ -147,7 +147,7 @@ class ServicesTableModel(QtCore.QAbstractTableModel):
         sortArrayWithArray(array, self.__services)
         
         if order == Qt.AscendingOrder:                                  # reverse if needed
-            self.__services.reverse()   
+            self.__services.reverse()
             
         self.layoutChanged.emit()                           # update the UI (built-in signal)
 
@@ -163,7 +163,7 @@ class ServicesTableModel(QtCore.QAbstractTableModel):
         return self.__services[row]['ip']
         
     def getProtocolForRow(self, row):
-        return self.__services[row]['protocol']     
+        return self.__services[row]['protocol']
 
     ####################################################################
 
@@ -214,7 +214,7 @@ class ServiceNamesTableModel(QtCore.QAbstractTableModel):
         sortArrayWithArray(array, self.__serviceNames)
 
         if order == Qt.AscendingOrder:                                  # reverse if needed
-            self.__serviceNames.reverse()   
+            self.__serviceNames.reverse()
             
         self.layoutChanged.emit()                            # update the UI (built-in signal)
 

@@ -23,7 +23,7 @@ class PyShodanScript():
                     self.dbHost.latitude = pyShodanResults.get('latitude', 'unknown')
                     self.dbHost.longitude = pyShodanResults.get('longitude', 'unknown')
                     self.dbHost.asn = pyShodanResults.get('asn', 'unknown')
-                    self.dbHost.ips = pyShodanResults.get('isp', 'unknown')
+                    self.dbHost.isp = pyShodanResults.get('isp', 'unknown')
                     self.dbHost.city = pyShodanResults.get('city', 'unknown')
                     self.dbHost.countryCode = pyShodanResults.get('country_code', 'unknown')
                     self.session.add(self.dbHost)

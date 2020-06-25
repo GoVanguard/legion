@@ -15,10 +15,10 @@ Copyright (c) 2020 GoVanguard
 
 """
 from app.auxiliary import log
-from parsers.Parser import Parser
+from parsers.Parser import parseNmapReport
 
 if __name__ == '__main__':
-    parser = Parser('a-full.xml')
+    parser = parseNmapReport('a-full.xml')
 
     log.info('\nscan session:')
     session = parser.getSession()

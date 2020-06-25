@@ -86,7 +86,7 @@ class Script:
             resultsDict[resultCpeData[3]] = resultCpeDetails
             count = count + 1
 
-        return resultsDict 
+        return resultsDict
 
     def getCves(self):
         cveOutput = self.output

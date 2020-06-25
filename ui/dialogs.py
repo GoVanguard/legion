@@ -19,6 +19,7 @@ from PyQt5.QtGui import *                                               # for fi
 from PyQt5.QtWidgets import *
 from PyQt5 import QtWidgets, QtGui
 from app.auxiliary import *                                             # for timestamps
+from app.timing import getTimestamp
 from six import u as unicode
 from app.timing import getTimestamp
 
@@ -48,10 +49,10 @@ class BruteWidget(QtWidgets.QWidget):
         self.passwordsTextinput.textEdited.connect(self.singlePassRadio.toggle)
         self.userlistTextinput.textEdited.connect(self.userListRadio.toggle)
         self.passlistTextinput.textEdited.connect(self.passListRadio.toggle)
-        self.checkAddMoreOptions.stateChanged.connect(self.showMoreOptions)     
+        self.checkAddMoreOptions.stateChanged.connect(self.showMoreOptions)
         
     def setupLayoutHlayout(self):
-        hydraServiceConversion = {'login':'rlogin', 'ms-sql-s':'mssql', 'ms-wbt-server':'rdp', 'netbios-ssn':'smb', \
+        hydraServiceConversion = {'login':'rlogin', 'ms-sql-s':'mssql', 'ms-wbt-server':'rdp', 'netbios-ssn':'smb',
             'netbios-ns':'smb', 'microsoft-ds':'smb', 'postgresql':'postgres', 'vmware-auth':'vmauthd"'}
         # sometimes nmap service name is different from hydra service name
         if self.service is None:
@@ -81,7 +82,7 @@ class BruteWidget(QtWidgets.QWidget):
         self.label3.setAlignment(Qt.AlignVCenter)
         self.serviceComboBox = QtWidgets.QComboBox()
         self.serviceComboBox.insertItems(0, self.settings.brute_services.split(","))
-        self.serviceComboBox.setStyleSheet("QComboBox { combobox-popup: 0; }");
+        self.serviceComboBox.setStyleSheet("QComboBox { combobox-popup: 0; }")
         self.serviceComboBox.currentIndexChanged.connect(self.checkSelectedService)
         
         # autoselect service from combo box
@@ -108,7 +109,7 @@ class BruteWidget(QtWidgets.QWidget):
         self.hlayout.addWidget(self.label1)
         self.hlayout.addWidget(self.ipTextinput)
         self.hlayout.addWidget(self.label2)
-        self.hlayout.addWidget(self.portTextinput)  
+        self.hlayout.addWidget(self.portTextinput)
         self.hlayout.addWidget(self.label3)
         self.hlayout.addWidget(self.serviceComboBox)
         self.hlayout.addWidget(self.runButton)
@@ -140,7 +141,7 @@ class BruteWidget(QtWidgets.QWidget):
         self.foundUsersRadio = QtWidgets.QRadioButton()
         self.label9 = QtWidgets.QLabel()
         self.label9.setText('Found usernames')
-        self.label9.setFixedWidth(117)      
+        self.label9.setFixedWidth(117)
         
         self.userGroup = QtWidgets.QButtonGroup()
         self.userGroup.addButton(self.singleUserRadio)
@@ -179,7 +180,7 @@ class BruteWidget(QtWidgets.QWidget):
         #else: This clause would produce an interesting logic error and crash
             #self.warningLabel.hide()
 
-    def setupLayoutHlayout3(self):        
+    def setupLayoutHlayout3(self):
         #add usernames wordlist
         self.singlePassRadio = QtWidgets.QRadioButton()
         self.label6 = QtWidgets.QLabel()
@@ -200,7 +201,7 @@ class BruteWidget(QtWidgets.QWidget):
         self.foundPasswordsRadio = QtWidgets.QRadioButton()
         self.label10 = QtWidgets.QLabel()
         self.label10.setText('Found passwords')
-        self.label10.setFixedWidth(115) 
+        self.label10.setFixedWidth(115)
         
         self.passGroup = QtWidgets.QButtonGroup()
         self.passGroup.addButton(self.singlePassRadio)
@@ -218,8 +219,8 @@ class BruteWidget(QtWidgets.QWidget):
         self.threadsComboBox.insertItems(0, self.threadOptions)
         self.threadsComboBox.setMinimumContentsLength(3)
         self.threadsComboBox.setMaxVisibleItems(3)
-        self.threadsComboBox.setStyleSheet("QComboBox { combobox-popup: 0; }");
-        self.threadsComboBox.setCurrentIndex(15)    
+        self.threadsComboBox.setStyleSheet("QComboBox { combobox-popup: 0; }")
+        self.threadsComboBox.setCurrentIndex(15)
     
         self.hlayout3 = QtWidgets.QHBoxLayout()
         self.hlayout3.addWidget(self.singlePassRadio)
@@ -260,7 +261,7 @@ class BruteWidget(QtWidgets.QWidget):
         self.checkExitOnValid.toggle()
         #add 'exit after first valid combination is found'
         self.checkVerbose = QtWidgets.QCheckBox()
-        self.checkVerbose.setText('Verbose')        
+        self.checkVerbose.setText('Verbose')
 
         self.checkAddMoreOptions = QtWidgets.QCheckBox()
         self.checkAddMoreOptions.setText('Additional Options')
@@ -311,7 +312,7 @@ class BruteWidget(QtWidgets.QWidget):
 
     # TODO: need to check all the methods that need an additional input field and add them here
 #   def showMoreOptions(self, text):
-#       if str(text) == "http-head":        
+#       if str(text) == "http-head":
 #           self.labelPath.show()
 #       else:
 #           self.labelPath.hide()
@@ -346,7 +347,7 @@ class BruteWidget(QtWidgets.QWidget):
         if 'form' not in str(self.service):
             self.warningLabel.hide()
         
-        if not self.service in self.settings.brute_no_username_services.split(","):
+        if self.service not in self.settings.brute_no_username_services.split(","):
             if self.singleUserRadio.isChecked():
                 self.command += " -l " + self.usersTextinput.text()
             elif self.foundUsersRadio.isChecked():
@@ -354,7 +355,7 @@ class BruteWidget(QtWidgets.QWidget):
             else:
                 self.command += " -L \"" + self.userlistTextinput.text()+"\""
                 
-        if not self.service in self.settings.brute_no_password_services.split(","):
+        if self.service not in self.settings.brute_no_password_services.split(","):
             if self.singlePassRadio.isChecked():
                 escaped_password = self.passwordsTextinput.text().replace('"', '\"\"\"')
                 self.command += " -p \"" + escaped_password + "\""
@@ -411,7 +412,7 @@ class BruteWidget(QtWidgets.QWidget):
 
         self.vlayout.addWidget(self.display)
 
-# dialog displayed when the user clicks on the advanced filters button      
+# dialog displayed when the user clicks on the advanced filters button
 class FiltersDialog(QtWidgets.QDialog):
     def __init__(self, parent=None):
         QtWidgets.QDialog.__init__(self, parent)
@@ -424,7 +425,7 @@ class FiltersDialog(QtWidgets.QDialog):
         self.setWindowTitle('Filters')
         self.setFixedSize(640, 200)
         
-        hostsBox = QGroupBox("Host Filters")        
+        hostsBox = QGroupBox("Host Filters")
         self.hostsUp = QCheckBox("Show up hosts")
         self.hostsUp.toggle()
         self.hostsDown = QCheckBox("Show down hosts")
@@ -472,14 +473,14 @@ class FiltersDialog(QtWidgets.QDialog):
         buttonLayout.addWidget(self.cancelButton)
         buttonLayout.addWidget(self.applyButton)
             
-        layout = QVBoxLayout()      
+        layout = QVBoxLayout()
         layout.addLayout(hlayout)
-        layout.addLayout(buttonLayout)  
+        layout.addLayout(buttonLayout)
         self.setLayout(layout)
         
     def getFilters(self):
-        return [self.hostsUp.isChecked(), self.hostsDown.isChecked(), self.hostsChecked.isChecked(), \
-            self.portsOpen.isChecked(), self.portsFiltered.isChecked(), self.portsClosed.isChecked(), \
+        return [self.hostsUp.isChecked(), self.hostsDown.isChecked(), self.hostsChecked.isChecked(),
+            self.portsOpen.isChecked(), self.portsFiltered.isChecked(), self.portsClosed.isChecked(),
             self.portsTcp.isChecked(), self.portsUdp.isChecked(), unicode(self.hostKeywordText.text()).split()]
 
     def setCurrentFilters(self, filters):
@@ -547,7 +548,7 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.ClosedPortsLayout.addSpacing(20)
         self.ClosedPortsLayout.addWidget(self.ClosedPortsLabel)
         self.ClosedPortsLayout.addWidget(self.ClosedPortsText)
-        self.ClosedPortsLayout.addStretch() 
+        self.ClosedPortsLayout.addStretch()
         
         self.FilteredPortsLabel = QtWidgets.QLabel()
         self.FilteredPortsText = QtWidgets.QLabel()
@@ -555,8 +556,9 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.FilteredPortsLayout.addSpacing(20)
         self.FilteredPortsLayout.addWidget(self.FilteredPortsLabel)
         self.FilteredPortsLayout.addWidget(self.FilteredPortsText)
-        self.FilteredPortsLayout.addStretch()   
+        self.FilteredPortsLayout.addStretch()
         ###################
+        self.LocationLabel = QtWidgets.QLabel()
         self.AddressLabel = QtWidgets.QLabel()
         
         self.IP4Label = QtWidgets.QLabel()
@@ -614,7 +616,7 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.dummyLayout.addWidget(self.dummyLabel)
         self.dummyLayout.addWidget(self.dummyText)
         self.dummyLayout.addStretch()
-        #########       
+        #########
         self.OSLabel = QtWidgets.QLabel()
         
         self.OSNameLabel = QtWidgets.QLabel()
@@ -632,6 +634,38 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.OSAccuracyLayout.addWidget(self.OSAccuracyLabel)
         self.OSAccuracyLayout.addWidget(self.OSAccuracyText)
         self.OSAccuracyLayout.addStretch()
+
+        self.CountryLabel = QtWidgets.QLabel()
+        self.CountryText = QtWidgets.QLabel()
+        self.CountryLayout = QtWidgets.QHBoxLayout()
+        self.CountryLayout.addSpacing(20)
+        self.CountryLayout.addWidget(self.CountryLabel)
+        self.CountryLayout.addWidget(self.CountryText)
+        self.CountryLayout.addStretch()
+
+        self.CityLabel = QtWidgets.QLabel()
+        self.CityText = QtWidgets.QLabel()
+        self.CityLayout = QtWidgets.QHBoxLayout()
+        self.CityLayout.addSpacing(20)
+        self.CityLayout.addWidget(self.CityLabel)
+        self.CityLayout.addWidget(self.CityText)
+        self.CityLayout.addStretch()
+
+        self.LatitudeLabel = QtWidgets.QLabel()
+        self.LatitudeText = QtWidgets.QLabel()
+        self.LatitudeLayout = QtWidgets.QHBoxLayout()
+        self.LatitudeLayout.addSpacing(20)
+        self.LatitudeLayout.addWidget(self.LatitudeLabel)
+        self.LatitudeLayout.addWidget(self.LatitudeText)
+        self.LatitudeLayout.addStretch()
+
+        self.LongitudeLabel = QtWidgets.QLabel()
+        self.LongitudeText = QtWidgets.QLabel()
+        self.LongitudeLayout = QtWidgets.QHBoxLayout()
+        self.LongitudeLayout.addSpacing(20)
+        self.LongitudeLayout.addWidget(self.LongitudeLabel)
+        self.LongitudeLayout.addWidget(self.LongitudeText)
+        self.LongitudeLayout.addStretch()
         
         font = QtGui.QFont('Calibri', 12)        # in each different section
         font.setBold(True)
@@ -641,6 +675,8 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.OpenPortsLabel.setText('Open Ports:')
         self.ClosedPortsLabel.setText('Closed Ports:')
         self.FilteredPortsLabel.setText('Filtered Ports:')
+        self.LocationLabel.setText('Location')
+        self.LocationLabel.setFont(font)
         self.AddressLabel.setText('Addresses')
         self.AddressLabel.setFont(font)
         self.IP4Label.setText('IPv4:')
@@ -653,10 +689,16 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.OSLabel.setFont(font)
         self.OSNameLabel.setText('Name:')
         self.OSAccuracyLabel.setText('Accuracy:')
+        self.CountryLabel.setText('Country Code:')
+        self.CityLabel.setText('City:')
+        self.LatitudeLabel.setText('Latitude:')
+        self.LongitudeLabel.setText('Longitude:')
         #########
         self.vlayout_1 = QtWidgets.QVBoxLayout()
         self.vlayout_2 = QtWidgets.QVBoxLayout()
         self.vlayout_3 = QtWidgets.QVBoxLayout()
+        self.vlayout_4 = QtWidgets.QVBoxLayout()
+        self.vlayout_5 = QtWidgets.QVBoxLayout()
         self.hlayout_1 = QtWidgets.QHBoxLayout()
         
         self.vlayout_1.addWidget(self.HostStatusLabel)
@@ -677,16 +719,23 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.hlayout_1.addLayout(self.vlayout_1)
         self.hlayout_1.addSpacing(20)
         self.hlayout_1.addLayout(self.vlayout_2)
-        
+        self.hlayout_1.addSpacing(20)
+        self.hlayout_1.addLayout(self.vlayout_5)
+
         self.vlayout_3.addWidget(self.OSLabel)
         self.vlayout_3.addLayout(self.OSNameLayout)
         self.vlayout_3.addLayout(self.OSAccuracyLayout)
         self.vlayout_3.addStretch()
         
-        self.vlayout_4 = QtWidgets.QVBoxLayout()
         self.vlayout_4.addLayout(self.hlayout_1)
         self.vlayout_4.addSpacing(10)
         self.vlayout_4.addLayout(self.vlayout_3)
+
+        self.vlayout_5.addWidget(self.LocationLabel)
+        self.vlayout_5.addLayout(self.CountryLayout)
+        self.vlayout_5.addLayout(self.CityLayout)
+        self.vlayout_5.addLayout(self.LatitudeLayout)
+        self.vlayout_5.addLayout(self.LongitudeLayout)
         
         self.hlayout_4 = QtWidgets.QHBoxLayout(self.informationTab)
         self.hlayout_4.addLayout(self.vlayout_4)
@@ -706,3 +755,7 @@ class HostInformationWidget(QtWidgets.QWidget):
         self.IspText.setText(kwargs.get('isp') or 'unknown')
         self.OSNameText.setText(kwargs.get('osMatch') or 'unknown')
         self.OSAccuracyText.setText(kwargs.get('osAccuracy') or 'unknown')
+        self.CountryText.setText(kwargs.get('countryCode') or 'unknown')
+        self.CityText.setText(kwargs.get('city') or 'unknown')
+        self.LatitudeText.setText(kwargs.get('latitude') or 'unknown')
+        self.LongitudeText.setText(kwargs.get('longitude') or 'unknown')

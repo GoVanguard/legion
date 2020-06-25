@@ -16,8 +16,8 @@ Copyright (c) 2020 GoVanguard
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
 import subprocess
+from logging import Logger
 
-from app.logging.legionLog import log
 from app.shell.Shell import Shell
 from app.timing import timing
 from app.tools.nmap.NmapExporter import NmapExporter
@@ -25,7 +25,8 @@ import os
 
 
 class DefaultNmapExporter(NmapExporter):
-    def __init__(self, shell: Shell):
+    def __init__(self, shell: Shell, logger: Logger):
+        self.logger = logger
         self.shell = shell
 
     @timing
@@ -36,5 +37,5 @@ class DefaultNmapExporter(NmapExporter):
             p.wait()
             self.shell.move(f"{fileName}.html", outputFolder)
         except:
-            log.error("nmap output export to html attempted, but failed.")
-            log.error('Could not convert nmap XML to HTML. Try: apt-get install xsltproc')
+            self.logger.error("nmap output export to html attempted, but failed.")
+            self.logger.error('Could not convert nmap XML to HTML. Try: apt-get install xsltproc')
