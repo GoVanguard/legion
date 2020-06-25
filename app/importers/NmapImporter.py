@@ -20,6 +20,7 @@ import sys
 from PyQt5 import QtCore
 
 from app.actions.updateProgress import AbstractUpdateProgressObservable
+from app.logging.legionLog import getAppLogger
 from db.entities.host import hostObj
 from db.entities.l1script import l1ScriptObj
 from db.entities.nmapSession import nmapSessionObj
@@ -28,9 +29,10 @@ from db.entities.os import osObj
 from db.entities.port import portObj
 from db.entities.service import serviceObj
 from db.repositories.HostRepository import HostRepository
-from parsers.Parser import Parser
+from parsers.Parser import parseNmapReport, MalformedXmlDocumentException
 from time import time
 
+appLog = getAppLogger()
 
 class NmapImporter(QtCore.QThread):
     tick = QtCore.pyqtSignal(int, name="changed")  # New style signal
@@ -68,21 +70,23 @@ class NmapImporter(QtCore.QThread):
             startTime = time()
 
             try:
-                parser = Parser(self.filename)
-            except:
+                nmapReport = parseNmapReport(self.filename)
+            except MalformedXmlDocumentException as e:
                 self.tsLog('Giving up on import due to previous errors.')
-                self.tsLog("Unexpected error: {0}".format(sys.exc_info()[0]))
+                appLog.error(f"nmap xml report is likely malformed: {e}")
+                self.updateProgressObservable.finished()
                 self.done.emit()
                 return
 
+            self.tsLog('nmap xml report read successfully!')
             self.db.dbsemaphore.acquire()  # ensure that while this thread is running, no one else can write to the DB
-            s = parser.getSession()  # nmap session info
+            s = nmapReport.getSession()  # nmap session info
             if s:
                 n = nmapSessionObj(self.filename, s.startTime, s.finish_time, s.nmapVersion, s.scanArgs, s.totalHosts,
                                    s.upHosts, s.downHosts)
                 session.add(n)
 
-            allHosts = parser.getAllHosts()
+            allHosts = nmapReport.getAllHosts()
             hostCount = len(allHosts)
             if hostCount == 0:  # to fix a division by zero if we ran nmap on one host
                 hostCount = 1
@@ -320,15 +324,16 @@ class NmapImporter(QtCore.QThread):
             session.commit()
             self.db.dbsemaphore.release()  # we are done with the DB
             self.tsLog(f"Finished in {str(time() - startTime)} seconds.")
-            self.done.emit()
             self.updateProgressObservable.finished()
+            self.done.emit()
 
             # call the scheduler (if there is no terminal output it means we imported nmap)
-            self.schedule.emit(parser, self.output == '')
+            self.schedule.emit(nmapReport, self.output == '')
 
         except Exception as e:
             self.tsLog('Something went wrong when parsing the nmap file..')
             self.tsLog("Unexpected error: {0}".format(sys.exc_info()[0]))
             self.tsLog(e)
-            raise
+            self.updateProgressObservable.finished()
             self.done.emit()
+            raise

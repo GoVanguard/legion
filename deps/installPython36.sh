@@ -15,11 +15,15 @@ else
         echo "Python 3.7 found!"
     elif [[ ${PYTHON3BIN} == *"3.6"* ]]; then
         echo "Python 3.6 found!"
+    elif [[ ${PYTHON3BIN} == *"3.8"* ]]; then
+        echo "Python 3.8 found!"
     fi
     if [[ ${PIP3BIN} == *"3.7"* ]]; then
         echo "Pip 3.7 found!"
     elif [[ ${PIP3BIN} == *"3.6"* ]]; then
         echo "Pip 3.6 found!"
+    elif [[ ${PIP3BIN} == *"3.8"* ]]; then
+        echo "Pip 3.8 found!"
     fi
         
     echo "Python3: ${PYTHON3BIN}"
@@ -34,7 +38,7 @@ then
     echo "Installing python3.6 from source..."
     sudo ./deps/buildPython36.sh
 else
-    echo "Python 3.6 or 3.7 found!"
+    echo "Python 3.6 or newer found!"
     echo "Python3: ${PYTHON3BIN}"
     echo "PIP3: ${PIP3BIN}"
     exit 0
@@ -44,12 +48,12 @@ source ./deps/detectPython.sh
 
 if [[ ${PYTHON3BIN} == "Missing" ]] | [[ ${PIP3BIN} == "Missing" ]] | [[ -z "${PYTHON3BIN}" ]] | [[ -z "${PIP3BIN}" ]]
 then
-    echo "Everything went wrong trying to get python 3.6 or 3.7 setup. Please do this manually."
+    echo "Everything went wrong trying to get python 3.6 or newer setup. Please do this manually."
     echo "Python3: ${PYTHON3BIN}"
     echo "PIP3: ${PIP3BIN}"
     exit 1
 else
-    echo "Python 3.6 or 3.7 found!"
+    echo "Python 3.6 or newer found!"
     echo "Python3: ${PYTHON3BIN}"
     echo "PIP3: ${PIP3BIN}"
     exit 0

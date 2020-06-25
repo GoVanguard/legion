@@ -16,7 +16,7 @@ Copyright (c) 2020 GoVanguard
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
 from db.RepositoryContainer import RepositoryContainer
-from db.database import Database
+from db.SqliteDbAdapter import Database
 from db.repositories.CVERepository import CVERepository
 from db.repositories.HostRepository import HostRepository
 from db.repositories.NoteRepository import NoteRepository

@@ -23,9 +23,10 @@ from PyQt5.QtCore import *  # for QProcess
 from six import u as unicode
 
 from app.http.isHttps import isHttps
-from app.logging.legionLog import log
+from app.logging.legionLog import getAppLogger
 from app.timing import timing
-from utilities.stenoLogging import *
+
+log = getAppLogger()
 
 # bubble sort algorithm that sorts an array (in place) based on the values in another array
 # the values in the array must be comparable and in the corresponding positions
@@ -116,7 +117,7 @@ class Wordlist():
     def setFilename(self, filename):
         self.filename = filename
 
-    # adds a word to the wordlist (without duplicates)  
+    # adds a word to the wordlist (without duplicates)
     def add(self, word):
         with open(self.filename, 'a') as f:
             if not word + '\n' in self.wordlist:

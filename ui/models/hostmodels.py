@@ -50,7 +50,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
     def data(self, index, role):                # this method takes care of how the information is displayed
         if role == QtCore.Qt.DecorationRole:    # to show the operating system icon instead of text
             if index.column() == 1:                                     # if trying to display the operating system
-                os_string = self.__hosts[index.row()]['osMatch']               
+                os_string = self.__hosts[index.row()]['osMatch']
                 if os_string == '':             # if there is no OS information, use the question mark icon
                     return QtGui.QIcon("./images/question-icon.png")
                     
@@ -118,7 +118,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
             
         if role == QtCore.Qt.FontRole:
             # if a host is checked strike it out and make it italic
-            if index.column() == 3 and self.__hosts[index.row()]['checked'] == 'True':  
+            if index.column() == 3 and self.__hosts[index.row()]['checked'] == 'True':
                 checkedFont=QFont()
                 checkedFont.setStrikeOut(True)
                 checkedFont.setItalic(True)

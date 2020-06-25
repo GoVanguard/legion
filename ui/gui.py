@@ -18,7 +18,6 @@ Copyright (c) 2020 GoVanguard
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtGui import QColor
 
-from app.logging.legionLog import log
 from ui.dialogs import *                                                # for the screenshots (image viewer)
 from ui.ancillaryDialog import *
 from utilities.qtLogging import *
@@ -61,7 +60,7 @@ class Ui_MainWindow(object):
         self.sizePolicy2 = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         # this specifies that the widget will expand its width when the window is resized
         self.sizePolicy2.setHorizontalStretch(1)
-        self.sizePolicy2.setVerticalStretch(0)      
+        self.sizePolicy2.setVerticalStretch(0)
         
         self.setupLeftPanel()
         self.setupRightPanel()
@@ -74,7 +73,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.setupMenuBar(MainWindow)
-        self.retranslateUi(MainWindow)      
+        self.retranslateUi(MainWindow)
         self.setDefaultIndexes()
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -154,7 +153,7 @@ class Ui_MainWindow(object):
         self.ToolsTableView = QtWidgets.QTableView(self.ToolsTab)
         self.ToolsTableView.setObjectName(_fromUtf8("ToolsTableView"))
         self.horizontalLayout_3.addWidget(self.ToolsTableView)
-        self.HostsTabWidget.addTab(self.ToolsTab, _fromUtf8(""))        
+        self.HostsTabWidget.addTab(self.ToolsTab, _fromUtf8(""))
 
         # Disabled for now
         #self.CvesLeftTab = QtWidgets.QWidget()
@@ -171,7 +170,7 @@ class Ui_MainWindow(object):
         self.ServicesTabWidget.setEnabled(True)
         self.sizePolicy2.setHeightForWidth(self.ServicesTabWidget.sizePolicy().hasHeightForWidth())
         self.ServicesTabWidget.setSizePolicy(self.sizePolicy2)
-        self.ServicesTabWidget.setObjectName(_fromUtf8("ServicesTabWidget"))        
+        self.ServicesTabWidget.setObjectName(_fromUtf8("ServicesTabWidget"))
         self.splitter.addWidget(self.ServicesTabWidget)
 
         ###
@@ -185,7 +184,7 @@ class Ui_MainWindow(object):
         ###
         
         self.ToolHostsWidget = QtWidgets.QWidget()
-        self.ToolHostsWidget.setObjectName(_fromUtf8("ToolHostsTab"))       
+        self.ToolHostsWidget.setObjectName(_fromUtf8("ToolHostsTab"))
         self.ToolHostsLayout = QtWidgets.QVBoxLayout(self.ToolHostsWidget)
         self.ToolHostsLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.ToolHostsTableView = QtWidgets.QTableView(self.ToolHostsWidget)
@@ -242,18 +241,18 @@ class Ui_MainWindow(object):
         self.splitter_4.setObjectName(_fromUtf8("splitter_4"))
         
         self.ScriptsTableView = QtWidgets.QTableView()
-        self.ScriptsTableView.setObjectName(_fromUtf8("ScriptsTableView"))      
+        self.ScriptsTableView.setObjectName(_fromUtf8("ScriptsTableView"))
         self.splitter_4.addWidget(self.ScriptsTableView)
         
         self.ScriptsOutputTextEdit = QtWidgets.QPlainTextEdit()
         self.ScriptsOutputTextEdit.setObjectName(_fromUtf8("ScriptsOutputTextEdit"))
-        self.ScriptsOutputTextEdit.setReadOnly(True)        
-        self.splitter_4.addWidget(self.ScriptsOutputTextEdit)       
-        self.horizontalLayout_6.addWidget(self.splitter_4)  
+        self.ScriptsOutputTextEdit.setReadOnly(True)
+        self.splitter_4.addWidget(self.ScriptsOutputTextEdit)
+        self.horizontalLayout_6.addWidget(self.splitter_4)
         self.ServicesTabWidget.addTab(self.ScriptsTab, _fromUtf8(""))
         
         self.InformationTab = QtWidgets.QWidget()
-        self.InformationTab.setObjectName(_fromUtf8("InformationTab"))          
+        self.InformationTab.setObjectName(_fromUtf8("InformationTab"))
         self.ServicesTabWidget.addTab(self.InformationTab, _fromUtf8(""))
         
         self.NotesTab = QtWidgets.QWidget()
@@ -263,14 +262,14 @@ class Ui_MainWindow(object):
         self.NotesTextEdit = QtWidgets.QPlainTextEdit(self.NotesTab)
         self.NotesTextEdit.setObjectName(_fromUtf8("NotesTextEdit"))
         self.horizontalLayout_4.addWidget(self.NotesTextEdit)
-        self.ServicesTabWidget.addTab(self.NotesTab, _fromUtf8(""))     
+        self.ServicesTabWidget.addTab(self.NotesTab, _fromUtf8(""))
 
     def setupMainTabs(self):
         self.gridLayout_2.addWidget(self.splitter, 0, 0, 1, 1)
         self.gridLayout_3 = QtWidgets.QGridLayout()
-        self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))  
+        self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
         self.gridLayout_2.addLayout(self.gridLayout_3, 0, 0, 1, 1)
-        self.MainTabWidget.addTab(self.ScanTab, _fromUtf8(""))  
+        self.MainTabWidget.addTab(self.ScanTab, _fromUtf8(""))
         
         self.BruteTab = QtWidgets.QWidget()
         self.BruteTab.setObjectName(_fromUtf8("BruteTab"))
@@ -279,7 +278,7 @@ class Ui_MainWindow(object):
         self.BruteTabWidget = QtWidgets.QTabWidget(self.BruteTab)
         self.BruteTabWidget.setObjectName(_fromUtf8("BruteTabWidget"))
         self.horizontalLayout_7.addWidget(self.BruteTabWidget)
-        self.MainTabWidget.addTab(self.BruteTab, _fromUtf8(""))     
+        self.MainTabWidget.addTab(self.BruteTab, _fromUtf8(""))
 
     def setupBottomPanel(self):
         self.BottomTabWidget = QtWidgets.QTabWidget(self.splitter_2)
@@ -365,7 +364,7 @@ class Ui_MainWindow(object):
         self.actionHelp = QtWidgets.QAction(MainWindow)
         self.actionHelp.setObjectName(_fromUtf8("getHelp"))
         self.menuHelp.addAction(self.actionHelp)
-        self.menubar.addAction(self.menuHelp.menuAction())      
+        self.menubar.addAction(self.menuHelp.menuAction())
 
         self.actionConfig = QtWidgets.QAction(MainWindow)
         self.actionConfig.setObjectName(_fromUtf8("config"))
@@ -377,7 +376,7 @@ class Ui_MainWindow(object):
         self.HostsTabWidget.setCurrentIndex(1)
         self.ServicesTabWidget.setCurrentIndex(1)
         self.BruteTabWidget.setCurrentIndex(1)
-        self.BottomTabWidget.setCurrentIndex(0)     
+        self.BottomTabWidget.setCurrentIndex(0)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "LEGION", None))
@@ -445,4 +444,3 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-

@@ -53,7 +53,7 @@ class AddHostsDialog(QtWidgets.QDialog):
 
         self.hlayout = QtWidgets.QHBoxLayout()
         self.hlayout.addWidget(self.lblHost)
-        self.hlayout.addWidget(self.txtHostList)        
+        self.hlayout.addWidget(self.txtHostList)
         
         self.lblHostExample = QtWidgets.QLabel(self)
         self.lblHostExample.setText('Ex: 192.168.1.0/24; 10.10.10.10-20; 1.2.3.4; bing.com')
