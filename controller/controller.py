@@ -481,7 +481,8 @@ class Controller:
                 for ip in targets:
                     command = str(self.settings.portTerminalActions[srvc_num][2])
                     command = command.replace('[IP]', ip[0]).replace('[PORT]', ip[1])
-                    subprocess.Popen(terminal+" -e 'bash -c \""+command+"; exec bash\"'", shell=True)
+                    #subprocess.Popen(terminal+" -e 'bash -c \""+command+"; exec bash\"'", shell=True)
+                    subprocess.Popen("bash -c \"" + command + "; exec bash\"", shell=True)
                 return
 
         self.handleServiceNameAction(targets, actions, action, restoring)
