@@ -118,7 +118,7 @@ class NmapImporter(QtCore.QThread):
 
             session.commit()
 
-            for h in allHosts:  # create all OS, service and port objects that need to be created
+            for h in allHosts:  # create all OS, service and port objects that need to be created - does not take into account different service versions?
                 self.tsLog("Processing h {ip}".format(ip=h.ip))
 
                 db_host = self.hostRepository.getHostInformation(h.ip)
