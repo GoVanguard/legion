@@ -21,7 +21,6 @@ from PyQt5 import QtWidgets, QtGui
 from app.auxiliary import *                                             # for timestamps
 from app.timing import getTimestamp
 from six import u as unicode
-from app.timing import getTimestamp
 
 class BruteWidget(QtWidgets.QWidget):
     
