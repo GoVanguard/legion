@@ -304,7 +304,7 @@ class NmapImporter(QtCore.QThread):
                             db_port.state = p.state
                             session.add(db_port)
 
-                        # if there is some new service information, update it
+                        # if there is some new service information, update it -- might be causing issue 164
                         if not (db_service is None) and db_port.serviceId != db_service.id:
                             db_port.serviceId = db_service.id
                             session.add(db_port)
