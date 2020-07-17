@@ -18,29 +18,29 @@ If you are interested in contributing to Legion, join our [Legion Keybase Team](
 ### FEATURES
 
 * Automatic recon and scanning with NMAP, whataweb, nikto, Vulners, Hydra, SMBenum, dirbuster, sslyzer, webslayer 
-and more (with almost 100 auto-scheduled scripts)
+and more (with almost 100 auto-scheduled scripts).
 * Easy to use graphical interface with rich context menus and panels that allow pentesters to quickly find and 
-exploit attack vectors on hosts
-* Modular functionality allows users to easily customize Legion and automatically call their own scripts/tools
-* Highly customizable stage scanning for ninja-like IPS evasion
-* Automatic detection of CPEs (Common Platform Enumeration) and CVEs (Common Vulnerabilities and Exposures)
-* Ties CVEs to Exploits as detailed in Exploit-Database
-* Realtime autosaving of project results and tasks
+exploit attack vectors on hosts.
+* Modular functionality allows users to easily customize Legion and automatically call their own scripts/tools.
+* Highly customizable stage scanning for ninja-like IPS evasion.
+* Automatic detection of CPEs (Common Platform Enumeration) and CVEs (Common Vulnerabilities and Exposures).
+* Ties CVEs to Exploits as detailed in Exploit-Database.
+* Realtime autosaving of project results and tasks.
 
 ### NOTABLE CHANGES FROM SPARTA
 
-* Refactored from Python 2.7 to Python 3.6 and the elimination of deprecated and unmaintained libraries
+* Refactored from Python 2.7 to Python 3.6 and the elimination of deprecated and unmaintained libraries.
 * Upgraded to PyQT5, increased responsiveness, less buggy, more intuitive GUI that includes features like:
    * Task completion estimates
    * 1-Click scan lists of ips, hostnames and CIDR subnets
    * Ability to purge results, rescan hosts and delete hosts
    * Granular NMAP scanning options
-* Support for hostname resolution and scanning of vhosts/sni hosts
-* Revise process queuing and execution routines for increased app reliability and performance
-* Simplification of installation with dependency resolution and installation routines
+* Support for hostname resolution and scanning of vhosts/sni hosts.
+* Revise process queuing and execution routines for increased app reliability and performance.
+* Simplification of installation with dependency resolution and installation routines.
 * Realtime project autosaving so in the event some goes wrong, you will not lose any progress!
-* Docker container deployment option
-* Supported by a highly active development team
+* Docker container deployment option.
+* Supported by a highly active development team.
 
 ### GIF DEMO 
 ![](https://govanguard.com/wp-content/uploads/2019/02/LegionDemo.gif)
@@ -55,14 +55,14 @@ NOTE: Docker versions of Legion are *unlikely* to work when run as root or under
 ### Supported Distributions
 #### Docker runIt script
 
-runIt supports Ubuntu 18, Fedora 30, Parrot and Kali at this time. It is possible to run the docker image on any 
+RunIt supports Ubuntu 18, Fedora 30, Parrot and Kali at this time. It is possible to run the docker image on any 
 Linux distribution, however, different distributions have different hoops to jump through to get a docker app to 
-be able to connect to the X server. Everyone is welcome to try and figure those hoops out and create a PR for runIt. 
+be able to connect to the X server. Everyone is welcome to try to figure those hoops out and create a PR for runIt. 
 
 #### Traditional Install
 
 We can only promise correct operation on Ubuntu 18 using the traditional installation at this time. While it should 
-work on ParrotOS, Kali and others, until we have Legion packaged and placed into the repos for each of these distros 
+work on ParrotOS, Kali and others, until we have Legion packaged and placed into the repos for each of these distros, 
 it's musical chairs with regards to platform updates changing and breaking dependencies.
 
 ### DOCKER METHOD
@@ -70,11 +70,11 @@ it's musical chairs with regards to platform updates changing and breaking depen
 
 Linux with Local X11:
 
- - Assumes Docker and X11 are installed and setup (including running docker commands as a non-root user)
+ - Assumes Docker and X11 are installed and setup (including running docker commands as a non-root user).
  - It is critical to follow all the instructions for running as a non-root user. Skipping any of them will result in 
- complications getting docker to communicate with the X server
+ complications getting docker to communicate with the X server.
  - See detailed instructions to setup docker [here](#docker-setup) and enable running containers as non-root users 
- and granting docker group ssh rights [here](#docker-setup-non-root)
+ and granting docker group ssh rights [here](#docker-setup-non-root).
 
  - Within Terminal:
    ```
@@ -85,7 +85,7 @@ Linux with Local X11:
    ```
 
 Linux with Remote X11:
- - Assumes Docker and X11 are installed and setup
+ - Assumes Docker and X11 are installed and setup.
  - Replace X.X.X.X with the IP of the remote running X11.
  - Within Terminal:
    ```
@@ -96,9 +96,9 @@ Linux with Remote X11:
    ```
 
 Windows under WSL using Xming and Docker Desktop:
- - Assumes Xming is installed in Windows
+ - Assumes Xming is installed in Windows.
  - Assumes Docker Desktop is installed in Windows, Docker Desktop is running in Linux containers mode and 
- Docker Desktop is connected to WSL
+ Docker Desktop is connected to WSL.
  - See detailed instructions [here](#docker-setup-wsl)
  - Replace X.X.X.X with the IP with which Xming has registered itself.
    - Right click Xming in system tray -> View log and see IP next to "XdmcpRegisterConnection: newAddress"
@@ -191,7 +191,7 @@ Setup Hyper-V, Docker Desktop, Xming and WSL:
 
 ### TRADITIONAL METHOD
  - Please use the docker image where possible! It's becoming very difficult to support all the various platforms 
- and their own quirks
+ and their own quirks.
  - Assumes Ubuntu, Kali or Parrot Linux is being used with Python 3.6 installed.
  - Within Terminal:
    ```
