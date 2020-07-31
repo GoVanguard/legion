@@ -291,7 +291,8 @@ class NmapImporter(QtCore.QThread):
                             .filter_by(name=s.name).filter_by(product=s.product) \
                             .filter_by(version=s.version).filter_by(extrainfo=s.extrainfo) \
                             .filter_by(fingerprint=s.fingerprint).first()
-                        #db_service = session.query(serviceObj).filter_by(hostId=db_host.id).filter_by(name=s.name).first()
+                        #db_service = session.query(serviceObj).filter_by(hostId=db_host.id) \
+                        #    .filter_by(name=s.name).first()
                     else:
                         db_service = None
                         # fetch the port
