@@ -23,7 +23,7 @@ after_success:
   - (test $TRAVIS_PULL_REQUEST != "false") && exit 0
   - (test $TRAVIS_BRANCH != "master" && test $TRAVIS_BRANCH != "development") && exit 0
   - cd ./docker/
-  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - echo "$$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
   - export REPO=gvit/legion
   - docker build -f Dockerfile -t $REPO:$COMMIT . --no-cache
   - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
