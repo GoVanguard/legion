@@ -118,7 +118,8 @@ class NmapImporter(QtCore.QThread):
 
             session.commit()
 
-            for h in allHosts:  # create all OS, service and port objects that need to be created - does not take into account different service versions?
+            for h in allHosts:  # create all OS, service and port objects that need to be created
+                                ## does not take into account different service versions?
                 self.tsLog("Processing h {ip}".format(ip=h.ip))
 
                 db_host = self.hostRepository.getHostInformation(h.ip)
@@ -158,7 +159,8 @@ class NmapImporter(QtCore.QThread):
                         # db_service = session.query(serviceObj).filter_by(name=s.name).filter_by(product=s.product).
                         # filter_by(version=s.version).filter_by(extrainfo=s.extrainfo).
                         # filter_by(fingerprint=s.fingerprint).first()
-                        db_service = session.query(serviceObj).filter_by(name=s.name).first()
+                        db_service = session.query(serviceObj).filter_by(name=s.name).filter_by(product=s.product) \
+                            .first()
                         if not db_service:
                             # print("Did not find service *********** name={0} prod={1} ver={2} extra={3} fing={4}".
                             # format(s.name, s.product, s.version, s.extrainfo, s.fingerprint))
