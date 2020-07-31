@@ -1,6 +1,9 @@
 LEGION 0.3.7
 
-* Bug fixes
+* Bug fixes for several edge cases
+* Screenshot fixes
+* Service version data overwrite bug fixed
+* Stale service version data bug fixed
 * Refactor of docker base image
 
 LEGION 0.3.6
