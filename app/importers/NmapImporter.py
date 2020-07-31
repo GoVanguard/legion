@@ -153,15 +153,16 @@ class NmapImporter(QtCore.QThread):
                     s = p.getService()
 
                     if not (s is None):  # check if service already exists to avoid adding duplicates
-                        print("Processing service result *********** name={0} prod={1} ver={2} extra={3} fing={4}" \
+                        print("Processing service result *********** name={0} prod={1} ver={2} extra={3} fing={4}"
                             .format(s.name, s.product, s.version, s.extrainfo, s.fingerprint))
                         db_service = session.query(serviceObj).filter_by(hostId=db_host.id) \
                             .filter_by(name=s.name).filter_by(product=s.product).filter_by(version=s.version) \
                             .filter_by(extrainfo=s.extrainfo).filter_by(fingerprint=s.fingerprint).first()
                         if not db_service:
-                            print("Did not find service *********** name={0} prod={1} ver={2} extra={3} fing={4}" \
+                            print("Did not find service *********** name={0} prod={1} ver={2} extra={3} fing={4}"
                                 .format(s.name, s.product, s.version, s.extrainfo, s.fingerprint))
-                            db_service = serviceObj(s.name, db_host.id, s.product, s.version, s.extrainfo, s.fingerprint)
+                            db_service = serviceObj(s.name, db_host.id, s.product, s.version, s.extrainfo,
+                                s.fingerprint)
                             session.add(db_service)
                     else:  # else, there is no service info to parse
                         db_service = None
@@ -250,8 +251,8 @@ class NmapImporter(QtCore.QThread):
                 os_nodes = h.getOs()
                 for os in os_nodes:
                     db_os = session.query(osObj).filter_by(hostId=db_host.id).filter_by(name=os.name) \
-                        .filter_by(family=os.family).filter_by(generation=os.generation).filter_by(osType=os.osType) \
-                        .filter_by(vendor=os.vendor).first()
+                        .filter_by(family=os.family).filter_by(generation=os.generation) \
+                        .filter_by(osType=os.osType).filter_by(vendor=os.vendor).first()
 
                     db_os.osAccuracy = os.accuracy  # update the accuracy
 
@@ -286,15 +287,16 @@ class NmapImporter(QtCore.QThread):
                 for p in h.all_ports():
                     s = p.getService()
                     if not (s is None):
-                        db_service = session.query(serviceObj).filter_by(hostId=db_host.id).filter_by(name=s.name). \
-                            filter_by(product=s.product).filter_by(version=s.version).filter_by(extrainfo=s.extrainfo). \
-                            filter_by(fingerprint=s.fingerprint).first()
+                        db_service = session.query(serviceObj).filter_by(hostId=db_host.id) \
+                            .filter_by(name=s.name).filter_by(product=s.product) \
+                            .filter_by(version=s.version).filter_by(extrainfo=s.extrainfo) \
+                            .filter_by(fingerprint=s.fingerprint).first()
                         #db_service = session.query(serviceObj).filter_by(hostId=db_host.id).filter_by(name=s.name).first()
                     else:
                         db_service = None
                         # fetch the port
-                    db_port = session.query(portObj).filter_by(hostId=db_host.id).filter_by(portId=p.portId).filter_by(
-                        protocol=p.protocol).first()
+                    db_port = session.query(portObj).filter_by(hostId=db_host.id).filter_by(portId=p.portId) \
+                        .filter_by(protocol=p.protocol).first()
                     if db_port:
                         # print("************************ Found {0}".format(db_port))
 
@@ -309,8 +311,8 @@ class NmapImporter(QtCore.QThread):
 
                     # store the script results (note that existing script outputs are also kept)
                     for scr in p.getScripts():
-                        db_script = session.query(l1ScriptObj).filter_by(scriptId=scr.scriptId).filter_by(
-                            portId=db_port.id).first()
+                        db_script = session.query(l1ScriptObj).filter_by(scriptId=scr.scriptId) \
+                            .filter_by(portId=db_port.id).first()
 
                         if not scr.output == '' and scr.output is not None:
                             db_script.output = scr.output
