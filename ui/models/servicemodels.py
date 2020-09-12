@@ -181,7 +181,7 @@ class ServiceNamesTableModel(QtCore.QAbstractTableModel):
         return len(self.__serviceNames)
 
     def columnCount(self, parent):
-        if not len(self.__serviceNames) is 0:
+        if len(self.__serviceNames) > 0:
             return len(self.__serviceNames[0])
         return 0
         
