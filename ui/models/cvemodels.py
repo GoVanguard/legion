@@ -52,7 +52,7 @@ class CvesTableModel(QtCore.QAbstractTableModel):
         return len(self.__cves)
 
     def columnCount(self, parent):
-        if not len(self.__cves) is 0:
+        if len(self.__cves) > 0:
             return len(self.__cves[0])
         return 0
 

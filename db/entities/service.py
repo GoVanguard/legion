@@ -15,7 +15,7 @@ Copyright (c) 2020 GoVanguard
 
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
-from sqlalchemy import String, Column, Integer
+from sqlalchemy import String, Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
 from db.database import Base
@@ -32,13 +32,15 @@ class serviceObj(Base):
     version = Column(String)
     extrainfo = Column(String)
     fingerprint = Column(String)
+    hostId = Column(String, ForeignKey('hostObj.id'))
     port = relationship(portObj)
     cves = relationship(cve)
     application = relationship(appObj)
 
-    def __init__(self, name='', product='', version='', extrainfo='', fingerprint=''):
+    def __init__(self, name, host, product='', version='', extrainfo='', fingerprint=''):
         self.name = name
         self.product = product
         self.version = version
         self.extrainfo = extrainfo
         self.fingerprint = fingerprint
+        self.hostId = host
