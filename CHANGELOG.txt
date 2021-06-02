@@ -1,3 +1,8 @@
+LEGION 0.3.8
+
+* Bug fixes
+* Preperation to move to postgresql backend
+
 LEGION 0.3.7
 
 * Bug fixes for several edge cases
