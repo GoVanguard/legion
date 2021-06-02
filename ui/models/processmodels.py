@@ -40,7 +40,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
         return len(self.__processes)
 
     def columnCount(self, parent):
-        if not len(self.__processes) is 0:
+        if len(self.__processes) > 0:
             return len(self.__processes[0])
         return 0
 

@@ -265,13 +265,13 @@ class Filters():
 # TODO: should probably be moved to a new file called test_validation.py
 
 def validateNmapInput(text):  # validate nmap input entered in Add Hosts dialog
-    if re.search('[^a-zA-Z0-9\.\/\-\s]', text) is not None:
+    if re.search('[^a-zA-Z0-9\.\/\-\s]', text) != None:
         return False
     return True
 
 
 def validateCommandFormat(text):  # used by settings dialog to validate commands
-    if text is not '' and text is not ' ':
+    if text != '' and text != ' ':
         return True
     return False
 
@@ -283,18 +283,18 @@ def validateNumeric(text):  # only allows numbers
 
 
 def validateString(text):  # only allows alphanumeric characters, '_' and '-'
-    if text is not '' and re.search("[^A-Za-z0-9_-]+", text) is None:
+    if text != '' and re.search("[^A-Za-z0-9_-]+", text) == None:
         return True
     return False
 
 
 def validateStringWithSpace(text):  # only allows alphanumeric characters, '_', '-' and space
-    if text is not '' and re.search("[^A-Za-z0-9_() -]+", text) is None:
+    if text != '' and re.search("[^A-Za-z0-9_() -]+", text) == None:
         return True
     return False
 
 
 def validateNmapPorts(text):  # only allows alphanumeric characters and the following: ./-'"*,:[any kind of space]
-    if re.search('[^a-zA-Z0-9\.\/\-\'\"\*\,\:\s]', text) is not None:
+    if re.search('[^a-zA-Z0-9\.\/\-\'\"\*\,\:\s]', text) != None:
         return False
     return True
