@@ -41,7 +41,7 @@ class ScriptsTableModel(QtCore.QAbstractTableModel):
         return len(self.__scripts)
 
     def columnCount(self, parent):
-        if not len(self.__scripts) is 0:
+        if len(self.__scripts) > 0:
             return len(self.__scripts[0])
         return 0
 
