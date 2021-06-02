@@ -126,3 +126,4 @@ docker/cleanupUntagged.sh
 docker/cleanupExited.sh
 
 log/*.log
+fixname.sh

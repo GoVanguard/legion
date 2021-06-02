@@ -18,13 +18,13 @@ Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 
 applicationInfo = {
     "name": "LEGION",
-    "version": "0.3.7",
-    "build": '1596220187',
+    "version": "0.3.8",
+    "build": '1622657874',
     "author": "GoVanguard",
-    "copyright": "2020",
+    "copyright": "2021",
     "links": ["http://github.com/GoVanguard/legion/issues", "https://GoVanguard.com/legion"],
     "emails": [],
-    "update": '07/31/2020',
+    "update": '06/02/2021',
     "license": "GPL v3",
     "desc": "Legion is a fork of SECFORCE's Sparta, Legion is an open source, easy-to-use, \n" +
             "super-extensible and semi-automated network penetration testing tool that aids in " +
