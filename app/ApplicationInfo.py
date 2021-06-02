@@ -18,10 +18,10 @@ Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 
 applicationInfo = {
     "name": "LEGION",
-    "version": "0.3.7",
-    "build": '1622656779',
+    "version": "0.3.8",
+    "build": '1622657874',
     "author": "GoVanguard",
-    "copyright": "2020",
+    "copyright": "2021",
     "links": ["http://github.com/GoVanguard/legion/issues", "https://GoVanguard.com/legion"],
     "emails": [],
     "update": '06/02/2021',
