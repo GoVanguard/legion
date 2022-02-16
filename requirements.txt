@@ -20,4 +20,5 @@ pyShodan
 GitPython
 pandas
 flake8>=3.7.8
+service-identity==21.1.0
 websockets>=9.1 # not directly required, pinned by Snyk to avoid a vulnerability
