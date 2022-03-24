@@ -3,9 +3,6 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/GoVanguard/legion/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/GoVanguard/legion?targetFile=requirements.txt)
 [![Maintainability](https://api.codeclimate.com/v1/badges/4e33e52aab8f49cdcd02/maintainability)](https://codeclimate.com/github/GoVanguard/legion/maintainability)
 ![Linter](https://img.shields.io/badge/linter-flake8-brightgreen)
-[![Analytics](https://ga-beacon-gvit.appspot.com/UA-126307374-3/legion/readme)](https://github.com/GoVanguard/legion)
-
-
 
 ## ABOUT
 Legion, a fork of SECFORCE's Sparta, is an open source, easy-to-use, super-extensible and semi-automated network 
