@@ -1,12 +1,11 @@
 ![alt tag](https://github.com/GoVanguard/legion/blob/master/images/LegionBanner.png)
-<div align="center">
 
+<div align="center">
 <a href="">[![Build Status](https://travis-ci.com/GoVanguard/legion.svg?branch=master)](https://travis-ci.com/GoVanguard/legion)</a>
 <a href="">[![Known Vulnerabilities](https://snyk.io/test/github/GoVanguard/legion/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/GoVanguard/legion?targetFile=requirements.txt)</a>
 <a href="">[![Maintainability](https://api.codeclimate.com/v1/badges/4e33e52aab8f49cdcd02/maintainability)](https://codeclimate.com/github/GoVanguard/legion/maintainability)</a>
 <a href="">![Linter](https://img.shields.io/badge/linter-flake8-brightgreen)</a>
 <a href="">[![Analytics](https://ga-beacon-gvit.appspot.com/UA-126307374-3/legion/readme)](https://github.com/GoVanguard/legion)</a>
-
 </div>
 
 ## ✨ About
