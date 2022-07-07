@@ -74,7 +74,8 @@ class Screenshooter(QtCore.QThread):
 
     def save(self, url, ip, port, outputfile):
         self.tsLog('Saving screenshot as: ' + str(outputfile))
-        command = ('xvfb-run --server-args="-screen 0:0, 1024x768x24" /usr/bin/cutycapt --url="{url}/"'
+        # Added --insecure flag to ignore SSL/TLS errors
+        command = ('xvfb-run --server-args="-screen 0:0, 1024x768x24" /usr/bin/cutycapt --insecure --url="{url}/"'
                    ' --max-wait=5000 --out="{outputfolder}/{outputfile}"') \
                   .format(url=url, outputfolder=self.outputfolder, outputfile=outputfile)
         p = subprocess.Popen(command, shell=True)
