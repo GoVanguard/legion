@@ -1,13 +1,5 @@
 ![alt tag](https://github.com/GoVanguard/legion/blob/master/images/LegionBanner.png)
 
-<div align="center">
-<a href="">[![Build Status](https://travis-ci.com/GoVanguard/legion.svg?branch=master)](https://travis-ci.com/GoVanguard/legion)</a>
-<a href="">[![Known Vulnerabilities](https://snyk.io/test/github/GoVanguard/legion/badge.svg?targetFile=requirements.txt)](https://snyk.io/test/github/GoVanguard/legion?targetFile=requirements.txt)</a>
-<a href="">[![Maintainability](https://api.codeclimate.com/v1/badges/4e33e52aab8f49cdcd02/maintainability)](https://codeclimate.com/github/GoVanguard/legion/maintainability)</a>
-<a href="">![Linter](https://img.shields.io/badge/linter-flake8-brightgreen)</a>
-<a href="">[![Analytics](https://ga-beacon-gvit.appspot.com/UA-126307374-3/legion/readme)](https://github.com/GoVanguard/legion)</a>
-</div>
-
 ## ✨ About
 
 Legion, a fork of SECFORCE's Sparta, is an open source, easy-to-use, super-extensible, and semi-automated network
@@ -26,6 +18,7 @@ our [Legion Keybase Team](https://keybase.io/team/govanguard.dev.legion).
 * Easy to use graphical interface with rich context menus and panels that allow pentesters to quickly find and exploit
   attack vectors on hosts.
 * Modular functionality allows users to easily customize Legion and automatically call their own scripts/tools.
+* Multiple custom scan configurations ideal for testing different environments of various size and complexity. 
 * Highly customizable stage scanning for ninja-like IPS evasion.
 * Automatic detection of CPEs (Common Platform Enumeration) and CVEs (Common Vulnerabilities and Exposures).
 * Ties CVEs to Exploits as detailed in Exploit-Database.
@@ -257,6 +250,17 @@ To run all test cases, execute the following in root directory:
 
 ```shell
 python -m unittest
+```
+
+### Modifying Configuration
+
+The configuration of selected ports and associated terminal actions can be easily modified by editing the legion.conf file. 
+> [StagedNmapSettings] defines what ports will be scanned in sequential order as well as any NSE scripts that will be called. 
+> 
+> [SchedulerSettings] defines what actions will occur automatically based upon port scan results.
+
+```shell
+sudoedit /root/.local/share/legion/legion.conf
 ```
 
 ## ⚖️ License
