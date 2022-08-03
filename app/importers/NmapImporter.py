@@ -114,7 +114,7 @@ class NmapImporter(QtCore.QThread):
 
                 createProgress = createProgress + ((100.0 / hostCount) / 5)
                 totalprogress = totalprogress + createProgress
-                self.updateProgressObservable.updateProgress(int(totalprogress))
+                self.updateProgressObservable.updateProgress(totalprogress)
 
             session.commit()
 
@@ -142,7 +142,7 @@ class NmapImporter(QtCore.QThread):
 
                     createOsNodesProgress = createOsNodesProgress + ((100.0 / hostCount) / 5)
                     totalprogress = totalprogress + createOsNodesProgress
-                    self.updateProgressObservable.updateProgress(int(totalprogress))
+                    self.updateProgressObservable.updateProgress(totalprogress)
 
                 session.commit()
 
