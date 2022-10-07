@@ -12,6 +12,7 @@ If you are interested in contributing to Legion, join
 our [Legion Keybase Team](https://keybase.io/team/govanguard.dev.legion).
 
 ## Fix NMAP 7.92 Sefgaults under Kali
+
 Install NMAP 7.93 using the following:
 ```shell
 sudo apt install snapd -y
