@@ -1,4 +1,4 @@
-LEGION 0.3.8
+LEGION 0.3.9
 
 * Start time message box ensuring run as root
 * Start time message box to help users resolve NMAP v7.92 segfaults
@@ -9,6 +9,11 @@ LEGION 0.3.8
 * Don't open with top of window off screen
 * Stage module revisions (nothing hard coded anymore, adds option to specify any NSE script for any stage)
 * Ensure pyExploiutDb is updated at all times
+
+LEGION 0.3.8
+
+* Bug fixes
+* Preparation to move to postgresql backend
 
 LEGION 0.3.7
 
