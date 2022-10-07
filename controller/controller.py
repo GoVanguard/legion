@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 LEGION (https://govanguard.com)
-Copyright (c) 2020 GoVanguard
+Copyright (c) 2022 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -252,7 +252,8 @@ class Controller:
         elif scanMode == 'Hard':
             outputfile = getNmapRunningFolder(runningFolder) + "/" + getTimestamp() + '-nmap-custom'
             nmapOptionsString = ' '.join(nmapOptions)
-            nmapOptionsString = nmapOptionsString + " -T" + str(nmapSpeed)
+            if 'randomize' not in nmapOptionsString:
+                nmapOptionsString = nmapOptionsString + " -T" + str(nmapSpeed)
             command = "nmap " + nmapOptionsString + " " + targetHosts + " -oA " + outputfile
             self.runCommand('nmap', 'nmap (custom ' + nmapOptionsString + ')', targetHosts, '', '', command,
                             getTimestamp(True), outputfile,
@@ -483,7 +484,7 @@ class Controller:
                     command = command.replace('[IP]', ip[0]).replace('[PORT]', ip[1])
                     if "[term]" in command:
                         command = command.replace("[term]", "")
-                        subprocess.Popen(terminal+" -e 'bash -c \""+command+"; exec bash\"'", shell=True)
+                        subprocess.Popen(terminal + " -e './scripts/exec-in-shell " + command + "'", shell=True)
                     else:
                         subprocess.Popen("bash -c \"" + command + "; exec bash\"", shell=True)
                 return
@@ -742,33 +743,40 @@ class Controller:
             textbox = self.view.createNewTabForHost(str(targetHosts), 'nmap (stage ' + str(stage) + ')', True)
             outputfile = getNmapRunningFolder(runningFolder) + "/" + getTimestamp() + '-nmapstage' + str(stage)
 
-            if stage == 1:                                              # webservers/proxies
-                ports = self.settings.tools_nmap_stage1_ports
-            elif stage == 2:                                            # juicy stuff that we could enumerate + db
-                ports = self.settings.tools_nmap_stage2_ports
-            elif stage == 4:                                            # bruteforceable protocols + portmapper + nfs
-                ports = self.settings.tools_nmap_stage4_ports
-            elif stage == 5:                                            # first 30000 ports except ones above
-                ports = self.settings.tools_nmap_stage5_ports
-            else:                                                       # last 35535 ports
-                ports = self.settings.tools_nmap_stage6_ports
+            if stage == 1:
+                stageData = self.settings.tools_nmap_stage1_ports
+            elif stage == 2:
+                stageData = self.settings.tools_nmap_stage2_ports
+            elif stage == 3:
+                stageData = self.settings.tools_nmap_stage3_ports
+            elif stage == 4:
+                stageData = self.settings.tools_nmap_stage4_ports
+            elif stage == 5:
+                stageData = self.settings.tools_nmap_stage5_ports
+            elif stage == 6:
+                stageData = self.settings.tools_nmap_stage6_ports
+            stageDataSplit = str(stageData).split('|')
+            stageOp = stageDataSplit[0]
+            stageOpValues = stageDataSplit[1]
+
             command = "nmap "
             if not discovery:                                           # is it with/without host discovery?
                 command += "-Pn "
             command += "-T4 -sV "
-            if not stage == 1 and not stage == 3:
-                command += "-n "                                        # only do DNS resolution on first stage
-            if os.geteuid() == 0:                                       # if we are root we can run SYN + UDP scans
-                command += "-sSU "
-                if stage == 2:
-                    command += '-O '  # only check for OS once to save time and only if we are root otherwise it fail
-            else:
-                command += '-sT '
 
-            if stage != 3:
-                command += '-p ' + ports + ' ' + targetHosts + ' -oA ' + outputfile
-            else:
-                command = 'nmap -sV --script=./scripts/nmap/vulners.nse -vvvv ' + targetHosts + ' -oA ' + outputfile
+            #if not stage == 1 and not stage == 3:
+            #    command += "-n "                                        # only do DNS resolution on first stage
+            #if os.geteuid() == 0:                                       # if we are root we can run SYN + UDP scans
+            #    command += "-sSU "
+            #    if stage == 2:
+            #        command += '-O '  # only check for OS once to save time and only if we are root otherwise it fail
+            #else:
+            #    command += '-sT '
+            
+            if stageOp == 'PORTS':
+                command += '-p ' + stageOpValues + ' ' + targetHosts + ' -oA ' + outputfile
+            elif stageOp == 'NSE':
+                command = 'nmap -sV --script=' + stageOpValues + ' -vvvv ' + targetHosts + ' -oA ' + outputfile
 
             self.runCommand('nmap', 'nmap (stage ' + str(stage) + ')', str(targetHosts), '', '', command,
                             getTimestamp(True), outputfile, textbox, discovery=discovery, stage=stage, stop=stop)
@@ -781,6 +789,7 @@ class Controller:
         self.view.displayAddHostsOverlay(False)
 
     def screenshotFinished(self, ip, port, filename):
+        log.info("---------------Screenshoot done. Args %s, %s, %s" % (str(ip), str(port), str(filename)))
         outputFolder = self.logic.activeProject.properties.outputFolder
         dbId = self.logic.activeProject.repositoryContainer.processRepository.storeScreenshot(str(ip), str(port),
                                                                                               str(filename))
@@ -875,12 +884,12 @@ class Controller:
                     if p.state == 'open':
                         s = p.getService()
                         if not (s is None):
-                            self.runToolsFor(s.name, h.ip, p.portId, p.protocol)
+                            self.runToolsFor(s.name, h.hostname, h.ip, p.portId, p.protocol)
 
             log.info('-----------------------------------------------')
         log.info('Scheduler ended!')
 
-    def runToolsFor(self, service, ip, port, protocol='tcp'):
+    def runToolsFor(self, service, hostname, ip, port, protocol='tcp'):
         log.info('Running tools for: ' + service + ' on ' + ip + ':' + port)
 
         if service.endswith("?"):  # when nmap is not sure it will append a ?, so we need to remove it
@@ -889,8 +898,12 @@ class Controller:
         for tool in self.settings.automatedAttacks:
             if service in tool[1].split(",") and protocol==tool[2]:
                 if tool[0] == "screenshooter":
-                    url = ip+':'+port
-                    self.screenshooter.addToQueue(url)
+                    if hostname:
+                        url = hostname+':'+port
+                    else:
+                        url = ip+':'+port
+                    log.info("Screenshooter of URL: %s" % str(url))
+                    self.screenshooter.addToQueue(ip, port, url)
                     self.screenshooter.start()
 
                 else:

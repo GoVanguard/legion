@@ -2,7 +2,7 @@
 
 """
 LEGION (https://govanguard.com)
-Copyright (c) 2020 GoVanguard
+Copyright (c) 2022 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -159,9 +159,9 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.rdoScanOptTcpConnect = QtWidgets.QRadioButton(self)
         self.rdoScanOptTcpConnect.setText('TCP')
         self.rdoScanOptTcpConnect.setToolTip('TCP connect() scanning [-sT]')
-        self.rdoScanOptSynStealth = QtWidgets.QRadioButton(self)
-        self.rdoScanOptSynStealth.setText('Stealth SYN')
-        self.rdoScanOptSynStealth.setToolTip('SYN scanning (also known as half-open, or stealth scanning) [-sS]')
+        self.rdoScanOptObfuscated = QtWidgets.QRadioButton(self)
+        self.rdoScanOptObfuscated.setText('Obfuscated')
+        self.rdoScanOptObfuscated.setToolTip('Obfuscated scanning for avoiding Firewall and WAF detection [--data-length 5 --max-retries 2 --randomize-hosts]')
         self.rdoScanOptFin = QtWidgets.QRadioButton(self)
         self.rdoScanOptFin.setText('FIN')
         self.rdoScanOptFin.setToolTip('FIN scanning sends a packet with only the FIN flag set [-sF]')
@@ -184,6 +184,7 @@ class AddHostsDialog(QtWidgets.QDialog):
         # Fragmentation option
         self.chkScanOptFragmentation = QtWidgets.QCheckBox(self)
         self.chkScanOptFragmentation.setText('Fragment')
+        self.chkScanOptFragmentation.setToolTip('Enable packet fragmentation [-f]')
         self.chkScanOptFragmentation.toggle()
 
         # Port scan options
@@ -191,7 +192,7 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.grpScanOptWidgets = QtWidgets.QHBoxLayout()
         self.grpScanOpt.setTitle('Port Scan Options')
         self.grpScanOptWidgets.addWidget(self.rdoScanOptTcpConnect)
-        self.grpScanOptWidgets.addWidget(self.rdoScanOptSynStealth)
+        self.grpScanOptWidgets.addWidget(self.rdoScanOptObfuscated)
         self.grpScanOptWidgets.addWidget(self.rdoScanOptFin)
         self.grpScanOptWidgets.addWidget(self.rdoScanOptNull)
         self.grpScanOptWidgets.addWidget(self.rdoScanOptXmas)
@@ -199,14 +200,14 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.grpScanOptWidgets.addWidget(self.rdoScanOptPingUdp)
         self.grpScanOptWidgets.addWidget(self.chkScanOptFragmentation)
         self.grpScanOpt.setLayout(self.grpScanOptWidgets)
-        self.rdoScanOptSynStealth.toggle()
+        self.rdoScanOptObfuscated.toggle()
         self.grpScanOpt.setEnabled(False)
 
         self.spacer4 = QSpacerItem(5,5)
 
         self.rdoScanOptPingDisable = QtWidgets.QRadioButton(self)
         self.rdoScanOptPingDisable.setText('Disable')
-        self.rdoScanOptPingDisable.setToolTip('Disable Ping entirely [-P0 | -Pn]')
+        self.rdoScanOptPingDisable.setToolTip('Disable Ping entirely [-Pn]')
         self.rdoScanOptPingDefault = QtWidgets.QRadioButton(self)
         self.rdoScanOptPingDefault.setText('Default')
         self.rdoScanOptPingDefault.setToolTip('ICMP Echo Request and TCP ping, with ACK packets [-PB]')
@@ -237,7 +238,7 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.grpScanOptPingWidgets.addWidget(self.rdoScanOptPingTimeStamp)
         self.grpScanOptPingWidgets.addWidget(self.rdoScanOptPingNetmask)
         self.grpScanOptPing.setLayout(self.grpScanOptPingWidgets)
-        self.rdoScanOptPingSyn.toggle()
+        self.rdoScanOptPingDisable.toggle()
         self.grpScanOptPing.setEnabled(False)
 
         self.spacer6 = QSpacerItem(5,5)
@@ -249,7 +250,7 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.lblCustomOpt = QtWidgets.QLabel(self)
         self.lblCustomOpt.setText('Additional arguments')
         self.txtCustomOptList = QtWidgets.QLineEdit(self)
-        self.txtCustomOptList.setText("-sV -O")
+        self.txtCustomOptList.setText("") #"-sV -O")
         self.scanOptCustomGroupWidgets.addWidget(self.lblCustomOpt)
         self.scanOptCustomGroupWidgets.addWidget(self.txtCustomOptList)
         self.scanOptCustomGroup.setLayout(self.scanOptCustomGroupWidgets)

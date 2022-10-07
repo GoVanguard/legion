@@ -1,6 +1,6 @@
 """
 LEGION (https://govanguard.com)
-Copyright (c) 2020 GoVanguard
+Copyright (c) 2022 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -28,6 +28,8 @@ from app.tools.nmap.NmapPaths import getNmapRunningFolder
 from db.RepositoryFactory import RepositoryFactory
 from db.SqliteDbAdapter import Database
 
+local_temp_dir = os.path.expanduser("~/.local/share/legion/tmp/")
+
 
 class ProjectManager:
     def __init__(self, shell: Shell, repositoryFactory: RepositoryFactory, logger):
@@ -41,10 +43,10 @@ class ProjectManager:
 
         # to store tool output of finished processes
         outputFolder = self.shell.create_temporary_directory(prefix="legion-", suffix="-tool-output",
-                                                             directory="./tmp/")
+                                                             directory=local_temp_dir)
 
         # to store tool output of running processes
-        runningFolder = self.shell.create_temporary_directory(prefix="legion-", suffix="-running", directory="./tmp/")
+        runningFolder = self.shell.create_temporary_directory(prefix="legion-", suffix="-running", directory=local_temp_dir)
 
         self.shell.create_directory_recursively(f"{outputFolder}/screenshots")  # to store screenshots
         self.shell.create_directory_recursively(getNmapRunningFolder(runningFolder))  # to store nmap output
@@ -67,7 +69,7 @@ class ProjectManager:
         workingDirectory = f"{ntpath.dirname(projectName)}/"
         outputFolder, _ = self.__determineOutputFolder(projectName, projectType)
         runningFolder = self.shell.create_temporary_directory(suffix="-running", prefix=projectType + '-',
-                                                              directory="./tmp/")
+                                                              directory=local_temp_dir)
         (usernameWordList, passwordWordList) = self.__createUsernameAndPasswordWordLists(outputFolder)
         projectProperties = ProjectProperties(
             projectName=projectName, workingDirectory=workingDirectory, projectType=projectType, isTemporary=False,
@@ -122,7 +124,7 @@ class ProjectManager:
         if projectName:
             return Database(projectName)
 
-        databaseFile = self.shell.create_named_temporary_file(suffix=".legion", prefix="legion-", directory="./tmp/",
+        databaseFile = self.shell.create_named_temporary_file(suffix=".legion", prefix="legion-", directory=local_temp_dir,
                                                               delete_on_close=False)  # to store the db file
         return Database(databaseFile.name)
 

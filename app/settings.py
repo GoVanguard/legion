@@ -2,7 +2,7 @@
 
 """
 LEGION (https://govanguard.com)
-Copyright (c) 2020 GoVanguard
+Copyright (c) 2022 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -17,6 +17,8 @@ Copyright (c) 2020 GoVanguard
 
 """
 
+import shutil
+
 from app.auxiliary import *  # for timestamp
 
 
@@ -28,12 +30,12 @@ log = getAppLogger()
 class AppSettings():
     def __init__(self):
         # check if settings file exists and creates it if it doesn't
-        if not os.path.exists('./legion.conf'):
-            log.info('Legion config is missing. Please reclone.')
-            os.exit(1)
-        else:
-            log.info('Loading settings file..')
-            self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
+        if not os.path.exists(os.path.expanduser('~/.local/share/legion/legion.conf')):
+            if not os.path.isdir(os.path.expanduser("~/.local/share/legion")):
+                os.makedirs(os.path.expanduser("~/.local/share/legion"))
+            shutil.copy('./legion.conf', os.path.expanduser('~/.local/share/legion/legion.conf'))
+        log.info('Loading settings file..')
+        self.actions = QtCore.QSettings(os.path.expanduser('~/.local/share/legion/legion.conf'), QtCore.QSettings.NativeFormat)
 
     def getGeneralSettings(self):
         return self.getSettingsByGroup("GeneralSettings")
@@ -111,11 +113,11 @@ class AppSettings():
         # Backup and save
         if saveBackup:
             log.info('Backing up old settings and saving new settings...')
-            os.rename('./legion.conf', './backup/' + getTimestamp() + '-legion.conf')
+            os.rename(os.path.expanduser('~/.local/share/legion/legion.conf'), os.path.expanduser("~/.local/share/legion/backup/") + getTimestamp() + '-legion.conf')
         else:
             log.info('Saving config...')
 
-        self.actions = QtCore.QSettings('./legion.conf', QtCore.QSettings.NativeFormat)
+        self.actions = QtCore.QSettings(os.path.expanduser('~/.local/share/legion/legion.conf'), QtCore.QSettings.NativeFormat)
 
         self.actions.beginGroup('GeneralSettings')
         self.actions.setValue('default-terminal', newSettings.general_default_terminal)
@@ -226,7 +228,7 @@ class Settings():
         self.tools_path_nmap = "/sbin/nmap"
         self.tools_path_hydra = "/usr/bin/hydra"
         self.tools_path_cutycapt = "/usr/bin/cutycapt"
-        self.tools_path_texteditor = "/usr/bin/leafpad"
+        self.tools_path_texteditor = "/usr/bin/xdg-open"
         self.tools_pyshodan_api_key = "SNYEkE0gdwNu9BRURVDjWPXePCquXqht"
 
         # GUI settings

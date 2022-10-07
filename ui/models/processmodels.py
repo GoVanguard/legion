@@ -2,7 +2,7 @@
 
 """
 LEGION (https://govanguard.com)
-Copyright (c) 2020 GoVanguard
+Copyright (c) 2022 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -40,7 +40,7 @@ class ProcessesTableModel(QtCore.QAbstractTableModel):
         return len(self.__processes)
 
     def columnCount(self, parent):
-        if len(self.__processes) > 0:
+        if len(self.__processes) != 0:
             return len(self.__processes[0])
         return 0
 

@@ -138,7 +138,7 @@ def extractParams(f, args, kwargs, matchParam):
             pIndex = argspec.args.index(matchParam)
             if len(args) > pIndex:
                 return args[pIndex]
-            if argspec.defaults is not None:
+            if argspec.defaults != None:
                 dIndex = pIndex - len(argspec.args) + len(argspec.defaults)
                 if 0 <= defaults_index < len(argspec.defaults):
                     return argspec.defaults[dIndex]
@@ -179,9 +179,9 @@ def logEventDecorator(evt, evtSev='info', evtSevIssue='critical', logger=None, o
             timeEnd = time.time()
             execTime = timeEnd - timeStart
             evtSevObj = evtSevDict[evtSev]
-            if objIdAttr is not None:
+            if objIdAttr != None:
                 evtObjIds = getattr(value, objIdAttr)
-            elif objIdParam is not None:
+            elif objIdParam != None:
                 evtObjIds = extractParams(f, args, kwargs, objIdParam)
             else:
                 evtObjIds = None

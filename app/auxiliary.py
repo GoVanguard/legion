@@ -2,7 +2,7 @@
 
 """
 LEGION (https://govanguard.com)
-Copyright (c) 2020 GoVanguard
+Copyright (c) 2022 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -54,11 +54,11 @@ def IP2Int(ip):
 
 # used by the settings dialog when a user cancels and the GUI needs to be reset
 def clearLayout(layout):
-    if layout is not None:
+    if layout != None:
         while layout.count():
             item = layout.takeAt(0)
             widget = item.widget()
-            if widget is not None:
+            if widget != None:
                 widget.deleteLater()
             else:
                 clearLayout(item.layout())

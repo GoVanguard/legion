@@ -1,6 +1,6 @@
 """
 LEGION (https://govanguard.com)
-Copyright (c) 2020 GoVanguard
+Copyright (c) 2022 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -114,7 +114,7 @@ class NmapImporter(QtCore.QThread):
 
                 createProgress = createProgress + ((100.0 / hostCount) / 5)
                 totalprogress = totalprogress + createProgress
-                self.updateProgressObservable.updateProgress(totalprogress)
+                self.updateProgressObservable.updateProgress(int(totalprogress))
 
             session.commit()
 
@@ -142,7 +142,7 @@ class NmapImporter(QtCore.QThread):
 
                     createOsNodesProgress = createOsNodesProgress + ((100.0 / hostCount) / 5)
                     totalprogress = totalprogress + createOsNodesProgress
-                    self.updateProgressObservable.updateProgress(totalprogress)
+                    self.updateProgressObservable.updateProgress(int(totalprogress))
 
                 session.commit()
 
@@ -315,7 +315,7 @@ class NmapImporter(QtCore.QThread):
                         db_script = session.query(l1ScriptObj).filter_by(scriptId=scr.scriptId) \
                             .filter_by(portId=db_port.id).first()
 
-                        if not scr.output == '' and scr.output is not None:
+                        if not scr.output == '' and scr.output != None:
                             db_script.output = scr.output
 
                         session.add(db_script)

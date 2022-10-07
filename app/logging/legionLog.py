@@ -1,6 +1,6 @@
 """
 LEGION (https://govanguard.com)
-Copyright (c) 2020 GoVanguard
+Copyright (c) 2022 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -15,6 +15,7 @@ Copyright (c) 2020 GoVanguard
 
 Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 """
+import os
 import logging
 from logging import Logger
 
@@ -22,24 +23,32 @@ cachedAppLogger = None
 cachedStartupLogger = None
 cachedDbLogger = None
 
+cache_path = os.path.expanduser("~/.cache/legion/log")
+log_path = os.path.join(cache_path, 'legion.log')
+if not os.path.isfile(log_path):
+    if not os.path.isdir(cache_path):
+        os.makedirs(cache_path)
 
 def getStartupLogger() -> Logger:
     global cachedStartupLogger
-    logger = getOrCreateCachedLogger("legion-startup", "./log/legion-startup.log", True, cachedStartupLogger)
+    logger = getOrCreateCachedLogger("legion-startup",
+            os.path.expanduser("~/.cache/legion/log/legion-startup.log"), True, cachedStartupLogger)
     cachedStartupLogger = logger
     return logger
 
 
 def getAppLogger() -> Logger:
     global cachedAppLogger
-    logger = getOrCreateCachedLogger("legion", "./log/legion.log", True, cachedAppLogger)
+    logger = getOrCreateCachedLogger("legion",
+            os.path.expanduser("~/.cache/legion/log/legion.log"), True, cachedAppLogger)
     cachedAppLogger = logger
     return logger
 
 
 def getDbLogger() -> Logger:
     global cachedDbLogger
-    logger = getOrCreateCachedLogger("legion-db", "./log/legion-db.log", False, cachedDbLogger)
+    logger = getOrCreateCachedLogger("legion-db",
+            os.path.expanduser("~/.cache/legion/log/legion-db.log"), False, cachedDbLogger)
     cachedDbLogger = logger
     return logger
 
