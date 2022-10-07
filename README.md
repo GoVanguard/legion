@@ -13,7 +13,8 @@ our [Legion Keybase Team](https://keybase.io/team/govanguard.dev.legion).
 
 ## Fix NMAP 7.92 Sefgaults under Kali
 Install NMAP 7.93 using the following:
-```sudo apt install snapd -y
+```shell
+sudo apt install snapd -y
 sudo systemctl enable --now snapd.apparmor
 sudo systemctl start snapd
 sudo snap install nmap
@@ -28,7 +29,8 @@ Update the apparmor profile:
 `vi /var/lib/snapd/apparmor/profiles/snap.nmap.nmap`
 
 Goto line 300, create new line and add in:
-```owner @{HOME}/.local/share/legion/tmp/** rw,
+```
+owner @{HOME}/.local/share/legion/tmp/** rw,
 /etc/ssl/kali.cnf r,
 ```
 
