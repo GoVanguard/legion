@@ -37,6 +37,6 @@ convert $OUTFOLDER/x11screenshot-$IP.xwd $OUTFOLDER/x11screenshot-$IP.jpg
 
 if [ -f "$OUTFOLDER/x11screenshot-$IP.jpg" ]
 then
-    echo "eog $OUTFOLDER/x11screenshot-$IP.jpg"
-    eog $OUTFOLDER/x11screenshot-$IP.jpg
+    echo "xdg-open $OUTFOLDER/x11screenshot-$IP.jpg"
+    xdg-open $OUTFOLDER/x11screenshot-$IP.jpg
 fi

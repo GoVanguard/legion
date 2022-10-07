@@ -1,6 +1,6 @@
 """
 LEGION (https://govanguard.com)
-Copyright (c) 2020 GoVanguard
+Copyright (c) 2022 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -32,7 +32,7 @@ class DefaultNmapExporter(NmapExporter):
     @timing
     def exportOutputToHtml(self, fileName: str, outputFolder: str) -> None:
         try:
-            command = f"xsltproc -o {fileName}.html nmap.xsl {fileName}.xml"
+            command = f"xsltproc -o {fileName}.html /usr/share/nmap/nmap.xsl {fileName}.xml"
             p = subprocess.Popen(command, shell=True)
             p.wait()
             self.shell.move(f"{fileName}.html", outputFolder)

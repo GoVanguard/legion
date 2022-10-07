@@ -1,6 +1,6 @@
 """
 LEGION (https://govanguard.com)
-Copyright (c) 2020 GoVanguard
+Copyright (c) 2022 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -27,15 +27,15 @@ class Screenshooter(QtCore.QThread):
 
     def __init__(self, timeout):
         QtCore.QThread.__init__(self, parent=None)
-        self.urls = []
+        self.queue = []
         self.processing = False
         self.timeout = timeout  # screenshooter timeout (ms)
 
     def tsLog(self, msg):
         self.log.emit(str(msg))
 
-    def addToQueue(self, url):
-        self.urls.append(url)
+    def addToQueue(self, ip, port, url):
+        self.queue.append([ip, port, url])
 
     # this function should be called when the project is saved/saved as as the tool-output folder changes
     def updateOutputFolder(self, screenshotsFolder):
@@ -48,12 +48,16 @@ class Screenshooter(QtCore.QThread):
 
         self.processing = True
 
-        for i in range(0, len(self.urls)):
+        for i in range(0, len(self.queue)):
             try:
-                url = self.urls.pop(0)
+                queueItem = self.queue.pop(0)
+                ip = queueItem[0]
+                port = queueItem[1]
+                url = queueItem[2]
+                self.tsLog("------> %s" % str(url))
                 outputfile = getTimestamp() + '-screenshot-' + url.replace(':', '-') + '.png'
-                ip = url.split(':')[0]
-                port = url.split(':')[1]
+                #ip = url.split(':')[0]
+                #port = url.split(':')[1]
 
                 if isHttps(ip, port):
                     self.save("https://" + url, ip, port, outputfile)
@@ -67,16 +71,15 @@ class Screenshooter(QtCore.QThread):
 
         self.processing = False
 
-        if not len(self.urls) == 0:  # if meanwhile urls were added to the queue, start over unless we are in pause mode
+        if not len(self.queue) == 0:  # if meanwhile queue were added to the queue, start over unless we are in pause mode
             self.run()
 
         self.tsLog('Finished.')
 
     def save(self, url, ip, port, outputfile):
         self.tsLog('Saving screenshot as: ' + str(outputfile))
-        # Added --insecure flag to ignore SSL/TLS errors
-        command = ('xvfb-run --server-args="-screen 0:0, 1024x768x24" /usr/bin/cutycapt --insecure --url="{url}/"'
-                   ' --max-wait=5000 --out="{outputfolder}/{outputfile}"') \
+        command = ('xvfb-run --server-args="-screen 0:0, 1024x768x24" /usr/bin/cutycapt --url="{url}/"'
+                   ' --insecure --print-backgrounds=on --out="{outputfolder}/{outputfile}"') \
                   .format(url=url, outputfolder=self.outputfolder, outputfile=outputfile)
         p = subprocess.Popen(command, shell=True)
         p.wait()  # wait for command to finish

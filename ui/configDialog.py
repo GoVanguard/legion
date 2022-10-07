@@ -2,7 +2,7 @@
 
 """
 LEGION (https://govanguard.com)
-Copyright (c) 2020 GoVanguard
+Copyright (c) 2022 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -30,7 +30,7 @@ class Config(QtWidgets.QPlainTextEdit):
         super(Config, self).__init__(parent)
         self.setMinimumHeight(550)
         self.setStyleSheet(qss)
-        self.setPlainText(open('legion.conf','r').read())
+        self.setPlainText(open(os.path.expanduser('~/.local/share/legion/legion.conf'),'r').read())
         self.setReadOnly(False)
 
     def getText(self):
@@ -86,7 +86,7 @@ class ConfigDialog(QtWidgets.QDialog):
         self.setLayout(self.Main)
 
     def save(self):
-        fileObj = open('legion.conf','w')
+        fileObj = open(os.path.expanduser('~/.local/share/legion/legion.conf'),'w')
         fileObj.write(self.configObj.getText())
         fileObj.close()
         self.controller.loadSettings()

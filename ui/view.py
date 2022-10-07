@@ -2,7 +2,7 @@
 
 """
 LEGION (https://govanguard.com)
-Copyright (c) 2020 GoVanguard
+Copyright (c) 2022 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -438,7 +438,7 @@ class View(QtCore.QObject):
             hostList = hostListStr.split(';')
             hostList = [hostEntry for hostEntry in hostList if len(hostEntry) > 0]
 
-            hostAddOptionControls = [self.adddialog.rdoScanOptTcpConnect, self.adddialog.rdoScanOptSynStealth,
+            hostAddOptionControls = [self.adddialog.rdoScanOptTcpConnect, self.adddialog.rdoScanOptObfuscated,
                                      self.adddialog.rdoScanOptFin, self.adddialog.rdoScanOptNull,
                                      self.adddialog.rdoScanOptXmas, self.adddialog.rdoScanOptPingTcp,
                                      self.adddialog.rdoScanOptPingUdp, self.adddialog.rdoScanOptPingDisable,

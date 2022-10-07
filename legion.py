@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 LEGION (https://govanguard.com)
-Copyright (c) 2020 GoVanguard
+Copyright (c) 2022 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -14,6 +14,8 @@ Copyright (c) 2020 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.
     If not, see <http://www.gnu.org/licenses/>.
 """
+import shutil
+
 from app.ProjectManager import ProjectManager
 from app.logging.legionLog import getStartupLogger, getDbLogger
 from app.shell.DefaultShell import DefaultShell
@@ -64,6 +66,24 @@ except ImportError as e:
     startupLog.error(e)
     exit(1)
 
+import os
+
+if not os.path.isdir(os.path.expanduser("~/.local/share/legion/tmp")):
+    os.makedirs(os.path.expanduser("~/.local/share/legion/tmp"))
+
+if not os.path.isdir(os.path.expanduser("~/.local/share/legion/backup")):
+    os.makedirs(os.path.expanduser("~/.local/share/legion/backup"))
+
+if not os.path.exists(os.path.expanduser('~/.local/share/legion/legion.conf')):
+    shutil.copy('./legion.conf', os.path.expanduser('~/.local/share/legion/legion.conf'))
+
+# Check Nmap version is not 7.92- it segfaults under zsh constantly
+import subprocess
+checkNmapVersion = subprocess.check_output(['nmap', '-version'])
+
+# Quite upgrade of pyExploitDb
+upgradeExploitDb = os.system('pip install pyExploitDb --upgrade > /dev/null 2>&1')
+
 from ui.view import *
 from controller.controller import *
 
@@ -88,6 +108,23 @@ if __name__ == "__main__":
             "The legion.qss file is missing. Your installation seems to be corrupted. " +
             "Try downloading the latest version.")
         exit(0)
+
+    if os.geteuid()!=0:
+        startupLog.error("Legion must run as root for raw socket access. Please start legion using sudo.")
+        notice=QMessageBox()
+        notice.setIcon(QMessageBox.Critical)
+        notice.setText("Legion must run as root for raw socket access. Please start legion using sudo.")
+        notice.exec_()
+        exit(1)
+
+    if '7.92' in checkNmapVersion.decode():
+        startupLog.error("Cannot continue. NMAP version is 7.92, which has problems segfaulting under zsh.")
+        startupLog.error("Please follow the instructions at https://github.com/GoVanguard/legion/ to resolve.")
+        notice=QMessageBox()
+        notice.setIcon(QMessageBox.Critical)
+        notice.setText("Cannot continue. The installed NMAP version is 7.92, which has segfaults under zsh.\nPlease follow the instructions at https://github.com/GoVanguard/legion/ to resolve.")
+        notice.exec_()
+        exit(1)
 
     MainWindow.setStyleSheet(qss_file)
 
@@ -117,10 +154,10 @@ if __name__ == "__main__":
     # Center the application in screen
     x = app.desktop().screenGeometry().center().x()
     y = app.desktop().screenGeometry().center().y()
-    MainWindow.move(x - MainWindow.geometry().width() / 2, y - MainWindow.geometry().height() / 2)
+    MainWindow.move(int(x - MainWindow.geometry().width() / 2), int(y - MainWindow.geometry().height() / 2 + 125))
 
     # Show main window
-    MainWindow.show()
+    MainWindow.showMaximized()
 
     startupLog.info("Legion started successfully.")
     try:

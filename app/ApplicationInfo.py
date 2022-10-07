@@ -1,6 +1,6 @@
 """
 LEGION (https://govanguard.com)
-Copyright (c) 2020 GoVanguard
+Copyright (c) 2022 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -19,12 +19,12 @@ Author(s): Dmitriy Dubson (d.dubson@gmail.com)
 applicationInfo = {
     "name": "LEGION",
     "version": "0.3.8",
-    "build": '1622657874',
+    "build": '1665098899',
     "author": "GoVanguard",
-    "copyright": "2021",
+    "copyright": "2022",
     "links": ["http://github.com/GoVanguard/legion/issues", "https://GoVanguard.com/legion"],
     "emails": [],
-    "update": '06/02/2021',
+    "update": '10/06/2022',
     "license": "GPL v3",
     "desc": "Legion is a fork of SECFORCE's Sparta, Legion is an open source, easy-to-use, \n" +
             "super-extensible and semi-automated network penetration testing tool that aids in " +
