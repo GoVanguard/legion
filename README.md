@@ -18,7 +18,8 @@ sudo systemctl enable --now snapd.apparmor
 sudo systemctl start snapd
 sudo snap install nmap
 sudo mv /usr/bin/nmap /usr/bin/nmap-7.92
-sudo ln -s /snap/bin/nmap /usr/bin/nmap```
+sudo ln -s /snap/bin/nmap /usr/bin/nmap
+```
 
 Then verify the version is 7.93 with:
 `nmap -v`
@@ -28,7 +29,8 @@ Update the apparmor profile:
 
 Goto line 300, create new line and add in:
 ```owner @{HOME}/.local/share/legion/tmp/** rw,
-/etc/ssl/kali.cnf r,```
+/etc/ssl/kali.cnf r,
+```
 
 Reboot
 
