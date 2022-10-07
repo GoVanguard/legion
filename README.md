@@ -11,6 +11,31 @@ at [https://GoVanguard.com/legion](https://govanguard.com/legion).
 If you are interested in contributing to Legion, join
 our [Legion Keybase Team](https://keybase.io/team/govanguard.dev.legion).
 
+## Fix NMAP 7.92 Sefgaults under Kali
+Install NMAP 7.93 using the following:
+```shell
+sudo apt install snapd -y
+sudo systemctl enable --now snapd.apparmor
+sudo systemctl start snapd
+sudo snap install nmap
+sudo mv /usr/bin/nmap /usr/bin/nmap-7.92
+sudo ln -s /snap/bin/nmap /usr/bin/nmap
+```
+
+Then verify the version is 7.93 with:
+`nmap -v`
+
+Update the apparmor profile:
+`vi /var/lib/snapd/apparmor/profiles/snap.nmap.nmap`
+
+Goto line 300, create new line and add in:
+```
+owner @{HOME}/.local/share/legion/tmp/** rw,
+/etc/ssl/kali.cnf r,
+```
+
+Reboot
+
 ## 🍿 Features
 
 * Automatic recon and scanning with NMAP, whataweb, nikto, Vulners, Hydra, SMBenum, dirbuster, sslyzer, webslayer and
