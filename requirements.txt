@@ -21,3 +21,4 @@ GitPython
 pandas
 flake8>=3.7.8
 websockets>=9.1 # not directly required, pinned by Snyk to avoid a vulnerability
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
