@@ -4,12 +4,6 @@
 
 Legion, a fork of SECFORCE's Sparta, is an open source, easy-to-use, super-extensible, and semi-automated network
 penetration testing framework that aids in discovery, reconnaissance, and exploitation of information systems.
-[Legion](https://govanguard.com/legion) is developed and maintained by [GoVanguard](https://govanguard.com). More
-information about Legion, including the [roadmap](https://govanguard.com/legion), can be found on its project page
-at [https://GoVanguard.com/legion](https://govanguard.com/legion).
-
-If you are interested in contributing to Legion, join
-our [Legion Keybase Team](https://keybase.io/team/govanguard.dev.legion).
 
 ## Fix NMAP 7.92 Sefgaults under Kali
 
@@ -64,10 +58,6 @@ Reboot
 * Realtime project auto-saving so in the event some goes wrong, you will not lose any progress!
 * Docker container deployment option.
 * Supported by a highly active development team.
-
-### Demo (GIF)
-
-![](https://govanguard.com/wp-content/uploads/2019/02/LegionDemo.gif)
 
 ## 🌉 Supported Distributions
 
