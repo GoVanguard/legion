@@ -5,7 +5,7 @@
 Legion, a fork of SECFORCE's Sparta, is an open source, easy-to-use, super-extensible, and semi-automated network
 penetration testing framework that aids in discovery, reconnaissance, and exploitation of information systems.
 
-## Fix NMAP 7.92 Sefgaults under Kali
+## Fix NMAP 7.92 Segfaults under Kali
 
 Install NMAP 7.93 using the following:
 ```shell
