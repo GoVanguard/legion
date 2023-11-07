@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -25,6 +25,7 @@ from app.actions.updateProgress.UpdateProgressObservable import UpdateProgressOb
 from app.importers.NmapImporter import NmapImporter
 from app.importers.PythonImporter import PythonImporter
 from app.tools.nmap.NmapPaths import getNmapRunningFolder
+from app.auxiliary import unixPath2Win, winPath2Unix, getPid, formatCommandQProcess
 from ui.observers.QtUpdateProgressObserver import QtUpdateProgressObserver
 
 try:
@@ -227,6 +228,7 @@ class Controller:
         self.view.updateProcessesTableView()                            # clear process table
         self.logic.projectManager.closeProject(self.logic.activeProject)
 
+
     @timing
     def addHosts(self, targetHosts, runHostDiscovery, runStagedNmap, nmapSpeed, scanMode, nmapOptions = []):
         if targetHosts == '':
@@ -239,18 +241,21 @@ class Controller:
                 self.runStagedNmap(targetHosts, runHostDiscovery)
             elif runHostDiscovery:
                 outputfile = getNmapRunningFolder(runningFolder) + "/" + getTimestamp() + '-host-discover'
+                outputfile = unixPath2Win(outputfile)
                 command = f"nmap -n -sV -O --version-light -T{str(nmapSpeed)} {targetHosts} -oA {outputfile}"
                 log.info("Running {command}".format(command=command))
                 self.runCommand('nmap', 'nmap (discovery)', targetHosts, '', '', command, getTimestamp(True),
                                 outputfile, self.view.createNewTabForHost(str(targetHosts), 'nmap (discovery)', True))
             else:
                 outputfile = getNmapRunningFolder(runningFolder) + "/" + getTimestamp() + '-nmap-list'
+                outputfile = unixPath2Win(outputfile)
                 command = "nmap -n -sL -T" + str(nmapSpeed) + " " + targetHosts + " -oA " + outputfile
                 self.runCommand('nmap', 'nmap (list)', targetHosts, '', '', command, getTimestamp(True),
                                 outputfile,
                                 self.view.createNewTabForHost(str(targetHosts), 'nmap (list)', True))
         elif scanMode == 'Hard':
             outputfile = getNmapRunningFolder(runningFolder) + "/" + getTimestamp() + '-nmap-custom'
+            outputfile = unixPath2Win(outputfile)
             nmapOptionsString = ' '.join(nmapOptions)
             if 'randomize' not in nmapOptionsString:
                 nmapOptionsString = nmapOptionsString + " -T" + str(nmapSpeed)
@@ -385,7 +390,7 @@ class Controller:
 
         # if the user pressed SHIFT+Right-click show full menu
         modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if modifiers == QtCore.Qt.ShiftModifier:
+        if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
             shiftPressed = True
         else:
             shiftPressed = False
@@ -440,7 +445,7 @@ class Controller:
         menu = QMenu()
 
         modifiers = QtWidgets.QApplication.keyboardModifiers()  # if the user pressed SHIFT+Right-click show full menu
-        if modifiers == QtCore.Qt.ShiftModifier:
+        if modifiers == QtCore.Qt.KeyboardModifier.ShiftModifier:
             serviceName='*'
 
         terminalActions = []  # custom terminal actions from settings file
@@ -583,9 +588,9 @@ class Controller:
     #################### PROCESSES ####################
 
     def checkProcessQueue(self):
-        log.debug('# MAX PROCESSES: ' + str(self.settings.general_max_fast_processes))
-        log.debug('# Fast processes running: ' + str(self.fastProcessesRunning))
-        log.debug('# Fast processes queued: ' + str(self.fastProcessQueue.qsize()))
+        log.info('# MAX PROCESSES: ' + str(self.settings.general_max_fast_processes))
+        log.info('# Fast processes running: ' + str(self.fastProcessesRunning))
+        log.info('# Fast processes queued: ' + str(self.fastProcessQueue.qsize()))
 
         if not self.fastProcessQueue.empty():
             self.processTableUiUpdateTimer.start(1000)
@@ -593,15 +598,16 @@ class Controller:
                 next_proc = self.fastProcessQueue.get()
                 if not self.logic.activeProject.repositoryContainer.processRepository.isCancelledProcess(
                         str(next_proc.id)):
-                    log.debug('Running: ' + str(next_proc.command))
+                    log.info('Running: ' + str(next_proc.command))
                     next_proc.display.clear()
                     self.processes.append(next_proc)
                     self.fastProcessesRunning += 1
                     # Add Timeout
                     next_proc.waitForFinished(10)
-                    next_proc.start(next_proc.command)
+                    formattedCommand = formatCommandQProcess(next_proc.command)
+                    next_proc.start(formattedCommand[0], formattedCommand[1])
                     self.logic.activeProject.repositoryContainer.processRepository.storeProcessRunningStatus(
-                        next_proc.id, next_proc.pid())
+                        next_proc.id, getPid(next_proc))
                 elif not self.fastProcessQueue.empty():
                     log.debug('> next process was canceled, checking queue again..')
                     self.checkProcessQueue()
@@ -630,7 +636,7 @@ class Controller:
         log.info('Killing running processes!')
         for p in self.processes:
             p.finished.disconnect()                 # experimental
-            self.killProcess(int(p.pid()), p.id)
+            self.killProcess(int(getPid(p)), p.id)
 
     # this function creates a new process, runs the command and takes care of displaying the ouput. returns the PID
     # the last 3 parameters are only used when the command is a staged nmap
@@ -645,7 +651,7 @@ class Controller:
 
         def handleProcUpdate(*vargs):
             procTime = timer.elapsed() / 1000
-            self.processMeasurements[qProcess.pid()] = procTime
+            self.processMeasurements[getPid(qProcess)] = procTime
 
         name = args[0]
         tabTitle = args[1]
@@ -656,7 +662,7 @@ class Controller:
         startTime = args[6]
         outputfile = args[7]
         textbox = args[8]
-        timer = QtCore.QTime()
+        timer = QElapsedTimer()
         updateElapsed = QTimer()
 
         self.logic.createFolderForTool(name)
@@ -669,7 +675,7 @@ class Controller:
         textbox.setProperty('dbId', str(processRepository.storeProcess(qProcess)))
         updateElapsed.start(1000)
         self.processTimers[qProcess.id] = updateElapsed
-        self.processMeasurements[qProcess.pid()] = 0
+        self.processMeasurements[getPid(qProcess)] = 0
 
         log.info('Queuing: ' + str(command))
         self.fastProcessQueue.put(qProcess)
@@ -681,13 +687,16 @@ class Controller:
         # while the process is running, when there's output to read, display it in the GUI
         self.updateUITimer.start(900)
 
-        qProcess.setProcessChannelMode(QtCore.QProcess.MergedChannels)
+        qProcess.setProcessChannelMode(QtCore.QProcess.ProcessChannelMode.MergedChannels)
         qProcess.readyReadStandardOutput.connect(lambda: qProcess.display.appendPlainText(
             str(qProcess.readAllStandardOutput().data().decode('ISO-8859-1'))))
 
+        qProcess.readyReadStandardError.connect(lambda: qProcess.display.appendPlainText(
+            str(qProcess.readAllStandardError().data().decode('ISO-8859-1'))))
+
         qProcess.sigHydra.connect(self.handleHydraFindings)
         qProcess.finished.connect(lambda: self.processFinished(qProcess))
-        qProcess.error.connect(lambda: self.processCrashed(qProcess))
+        qProcess.errorOccurred.connect(lambda: self.processCrashed(qProcess))
         log.info("runCommand called for stage {0}".format(str(stage)))
 
         if stage > 0 and stage < 6:  # if this is a staged nmap, launch the next stage
@@ -697,7 +706,7 @@ class Controller:
                 lambda: self.runStagedNmap(str(hostIp), discovery=discovery, stage=nextStage,
                                            stop=processRepository.isKilledProcess(str(qProcess.id))))
 
-        return qProcess.pid()  # return the pid so that we can kill the process if needed
+        return getPid(qProcess)  # return the pid so that we can kill the process if needed
 
     def runPython(self):
         textbox = self.view.createNewConsole("python")
@@ -725,7 +734,7 @@ class Controller:
         self.updateUITimer.stop()   # update the processes table
         self.updateUITimer.start(900)
 
-        qProcess.setProcessChannelMode(QtCore.QProcess.MergedChannels)
+        qProcess.setProcessChannelMode(QtCore.QProcess.ProcessChannelMode.MergedChannels)
         qProcess.readyReadStandardOutput.connect(lambda: qProcess.display.appendPlainText(
             str(qProcess.readAllStandardOutput().data().decode('ISO-8859-1'))))
 
@@ -733,7 +742,7 @@ class Controller:
         qProcess.finished.connect(lambda: self.processFinished(qProcess))
         qProcess.error.connect(lambda: self.processCrashed(qProcess))
 
-        return qProcess.pid()
+        return getPid(qProcess)
 
     # recursive function used to run nmap in different stages for quick results
     def runStagedNmap(self, targetHosts, discovery = True, stage = 1, stop = False):
@@ -742,6 +751,7 @@ class Controller:
         if not stop:
             textbox = self.view.createNewTabForHost(str(targetHosts), 'nmap (stage ' + str(stage) + ')', True)
             outputfile = getNmapRunningFolder(runningFolder) + "/" + getTimestamp() + '-nmapstage' + str(stage)
+            outputfile = unixPath2Win(outputfile)
 
             if stage == 1:
                 stageData = self.settings.tools_nmap_stage1_ports
@@ -810,6 +820,8 @@ class Controller:
         self.view.findFinishedServiceTab(str(processRepository.getPIDByProcessId(str(proc.id))))
         log.info('Process {qProcessId} Output: {qProcessOutput}'.format(qProcessId=str(proc.id),
                                                                         qProcessOutput=qProcessOutput))
+        log.info('Process {qProcessId} Crash Output: {qProcessOutput}'.format(qProcessId=str(proc.id),
+                                                                        qProcessOutput=proc.errorString()))
 
     # this function handles everything after a process ends
     # def processFinished(self, qProcess, crashed=False):
@@ -820,12 +832,15 @@ class Controller:
                     str(qProcess.id)):  # if process was not killed
                 if not qProcess.outputfile == '':
                     # move tool output from runningfolder to output folder if there was an output file
+                    outputfile = winPath2Unix(qProcess.outputfile)
                     self.logic.toolCoordinator.saveToolOutput(self.logic.activeProject.properties.outputFolder,
-                                                          qProcess.outputfile)
-                    print(qProcess.command)
+                                                          outputfile)
                     if 'nmap' in qProcess.command: # if the process was nmap, use the parser to store it
                         if qProcess.exitCode() == 0:                    # if the process finished successfully
-                            newoutputfile = qProcess.outputfile.replace(
+                            log.info("qProcess.outputfile {0}".format(str(outputfile)))
+                            log.info("self.logic.activeProject.properties.runningFolder {0}".format(str(self.logic.activeProject.properties.runningFolder)))
+                            log.info("self.logic.activeProject.properties.outputFolder {0}".format(str(self.logic.activeProject.properties.outputFolder)))
+                            newoutputfile = outputfile.replace(
                                 self.logic.activeProject.properties.runningFolder,
                                 self.logic.activeProject.properties.outputFolder)
                             self.nmapImporter.setFilename(str(newoutputfile) + '.xml')
@@ -839,11 +854,11 @@ class Controller:
                             self.pythonImporter.setHostIp(str(qProcess.hostIp))
                             self.pythonImporter.setPythonScript(pythonScript)
                             self.pythonImporter.start()
-                exitCode = qProcess.exitCode()
-                if exitCode != 0 and exitCode != 255:
-                    log.info("Process {qProcessId} exited with code {qProcessExitCode}"
-                             .format(qProcessId=qProcess.id, qProcessExitCode=qProcess.exitCode()))
-                    self.processCrashed(qProcess)
+                #exitCode = qProcess.exitCode()
+                #if exitCode != 0 and exitCode != 255:
+                #    log.info("Process {qProcessId} exited with code {qProcessExitCode}"
+                #             .format(qProcessId=qProcess.id, qProcessExitCode=qProcess.exitCode()))
+                #    self.processCrashed(qProcess)
 
                 log.info("Process {qProcessId} is done!".format(qProcessId=qProcess.id))
 
@@ -910,13 +925,13 @@ class Controller:
                     for a in self.settings.portActions:
                         if tool[0] == a[1]:
                             tabTitle = a[1] + " (" + port + "/" + protocol + ")"
+                            # Cheese
                             outputfile = self.logic.activeProject.properties.runningFolder + "/" + \
                                          re.sub("[^0-9a-zA-Z]", "", str(tool[0])) + \
                                          "/" + getTimestamp() + '-' + a[1] + "-" + ip + "-" + port
                             command = str(a[2])
                             command = command.replace('[IP]', ip).replace('[PORT]', port)\
-                                .replace('[OUTPUT]',
-                                                                                                  outputfile)
+                                .replace('[OUTPUT]', outputfile)
                             log.debug("Running tool command " + str(command))
 
                             tab = self.view.ui.HostsTabWidget.tabText(self.view.ui.HostsTabWidget.currentIndex())

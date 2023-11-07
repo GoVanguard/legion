@@ -1,5 +1,5 @@
 """
-LEGION (https://govanguard.com)
+LEGION (https://gotham-security.com)
 Copyright (c) 2019 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
@@ -13,11 +13,11 @@ Copyright (c) 2019 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.
     If not, see <http://www.gnu.org/licenses/>.
 
-Author(s): Dmitriy Dubson (d.dubson@gmail.com)
+Author(s): Shane Scott (sscott@gotham-security.com), Dmitriy Dubson (d.dubson@gmail.com)
 """
 import unittest
 
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from app.ModelHelpers import resolveHeaders, itemInteractive, itemSelectable
 
@@ -26,24 +26,24 @@ class ModelHelpersTest(unittest.TestCase):
     def test_resolveHeaders_WhenRoleIsDisplayAndOrientationIsHzAndSectionIsWithinBound_ReturnsHeaders(self):
         expectedHeaders = ["header1", "header2", "header3"]
         headers = [[], expectedHeaders, []]
-        actualHeaders = resolveHeaders(QtCore.Qt.DisplayRole, QtCore.Qt.Horizontal, 1, headers)
+        actualHeaders = resolveHeaders(QtCore.Qt.ItemDataRole.DisplayRole, QtCore.Qt.Orientation.Horizontal, 1, headers)
         self.assertEqual(expectedHeaders, actualHeaders)
 
     def test_resolveHeaders_WhenRoleIsNotDisplay_ReturnsNone(self):
-        self.assertIsNone(resolveHeaders(QtCore.Qt.BackgroundRole, QtCore.Qt.Horizontal, 1, []))
+        self.assertIsNone(resolveHeaders(QtCore.Qt.ItemDataRole.BackgroundRole, QtCore.Qt.Orientation.Horizontal, 1, []))
 
     def test_resolveHeaders_WhenRoleIsDisplayAndOrientationIsNotHz_ReturnsNone(self):
-        self.assertIsNone(resolveHeaders(QtCore.Qt.DisplayRole, QtCore.Qt.Vertical, 1, []))
+        self.assertIsNone(resolveHeaders(QtCore.Qt.ItemDataRole.DisplayRole, QtCore.Qt.Orientation.Vertical, 1, []))
 
     def test_resolveHeaders_WhenRoleIsDisplayAndOrientationIsHzAndSectionIsOutOfBound_ReturnsStringMessage(self):
         expectedMessage = "not implemented in view model"
-        actualMessage = resolveHeaders(QtCore.Qt.DisplayRole, QtCore.Qt.Horizontal, 100, [])
+        actualMessage = resolveHeaders(QtCore.Qt.ItemDataRole.DisplayRole, QtCore.Qt.Orientation.Horizontal, 100, [])
         self.assertEqual(expectedMessage, actualMessage)
 
     def test_itemInteractive_ReturnsItemFlagForEnabledSelectableEditableItem(self):
-        expectedFlags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+        expectedFlags = QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEditable
         self.assertEqual(expectedFlags, itemInteractive())
 
     def test_itemSelectable_ReturnItemFlagForEnabledSelectableItem(self):
-        expectedFlags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+        expectedFlags = QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable
         self.assertEqual(expectedFlags, itemSelectable())

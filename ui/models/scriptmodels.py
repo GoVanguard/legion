@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -18,7 +18,7 @@ Copyright (c) 2022 GoVanguard
 """
 
 import re
-from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt6 import QtWidgets, QtGui, QtCore
 
 from app.ModelHelpers import resolveHeaders, itemSelectable
 from app.auxiliary import *                                                 # for bubble sort
@@ -50,7 +50,7 @@ class ScriptsTableModel(QtCore.QAbstractTableModel):
                 
     def data(self, index, role):   # this method takes care of how the information is displayed
 
-        if role == QtCore.Qt.DisplayRole:                               # how to display each cell
+        if role == QtCore.Qt.ItemDataRole.DisplayRole:                               # how to display each cell
             value = ''
             row = index.row()
             column = index.column()
@@ -83,7 +83,7 @@ class ScriptsTableModel(QtCore.QAbstractTableModel):
 
         sortArrayWithArray(array, self.__scripts)  # sort the services based on the values in the array
 
-        if order == Qt.AscendingOrder:                                  # reverse if needed
+        if order == Qt.SortOrder.AscendingOrder:                                  # reverse if needed
             self.__scripts.reverse()
             
         self.layoutChanged.emit()

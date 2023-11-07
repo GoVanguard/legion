@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -18,9 +18,9 @@ Copyright (c) 2022 GoVanguard
 """
 
 import os
-from PyQt5.QtGui import *                                               # for filters dialog
-from PyQt5.QtWidgets import *
-from PyQt5 import QtCore, QtWidgets
+from PyQt6.QtGui import *                                               # for filters dialog
+from PyQt6.QtWidgets import *
+from PyQt6 import QtCore, QtWidgets
 from app.auxiliary import *                                             # for timestamps
 from app.shell.Shell import Shell
 
@@ -31,7 +31,7 @@ log = getAppLogger()
 class Validate(QtCore.QObject):
     def eventFilter(self, widget, event):
         # this horrible line is to avoid making the 'AddSettingsDialog' class visible from here
-        if event.type() == QtCore.QEvent.FocusOut:
+        if event.type() == QtCore.QEvent.Type.FocusOut:
             widget.parent().parent().parent().parent().parent().parent().validateToolName()
             return False
         else:
@@ -52,8 +52,8 @@ class SettingsTabBarWidget(QtWidgets.QTabBar):
             self.initStyleOption(option, index)
             tabRect = self.tabRect(index)
             tabRect.moveLeft(10)
-            painter.drawControl(QtWidgets.QStyle.CE_TabBarTabShape, option)
-            painter.drawText(tabRect, QtCore.Qt.AlignVCenter | QtCore.Qt.TextDontClip, self.tabText(index))
+            painter.drawControl(QtWidgets.QStyle.ControlElement.CE_TabBarTabShape, option)
+            painter.drawText(tabRect, QtCore.Qt.AlignmentFlag.AlignVCenter | QtCore.Qt.TextFlag.TextDontClip, self.tabText(index))
         painter.end()
 
     def tabSizeHint(self,index):
@@ -683,13 +683,13 @@ class AddSettingsDialog(QtWidgets.QDialog):  # dialog shown when the user select
                 if not validateString(str(tmplineEdit.text())) or not self.validateUniqueToolName(
                         tmpWidget, row, str(tmplineEdit.text())):
                     tmplineEdit.setStyleSheet("border: 1px solid red;")
-                    tmpWidget.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+                    tmpWidget.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.NoSelection)
                     self.validationPassed = False
                     log.info('the validation is: ' + str(self.validationPassed))
                     return self.validationPassed
                 else:
                     tmplineEdit.setStyleSheet("border: 1px solid grey;")
-                    tmpWidget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+                    tmpWidget.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
                     self.validationPassed = True
                     log.info('the validation is: ' + str(self.validationPassed))
                     if tmpWidget.item(row,0).text() != str(actions[row][1]):
@@ -953,7 +953,7 @@ class AddSettingsDialog(QtWidgets.QDialog):  # dialog shown when the user select
         self.flayout = QtWidgets.QVBoxLayout()
         self.settingsTabWidget = QtWidgets.QTabWidget()
         self.settingsTabWidget.setTabBar(SettingsTabBarWidget(width=200,height=25))
-        self.settingsTabWidget.setTabPosition(QtWidgets.QTabWidget.West)    # put the tab titles on the left
+        self.settingsTabWidget.setTabPosition(QtWidgets.QTabWidget.TabPosition.West)    # put the tab titles on the left
         
         # left tab menu items
         self.GeneralSettingsTab = QtWidgets.QWidget()
@@ -1188,10 +1188,10 @@ class AddSettingsDialog(QtWidgets.QDialog):  # dialog shown when the user select
 
     def setupHostCommandsTab(self):
         self.toolForHostsTableWidget = QtWidgets.QTableWidget(self.HostActionsWidget)
-        self.toolForHostsTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.toolForHostsTableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.toolForHostsTableWidget.setFixedWidth(180)
         self.toolForHostsTableWidget.setShowGrid(False)                 # to make the cells of the table read only
-        self.toolForHostsTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.toolForHostsTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
 
         self.toolForHostsTableWidget.setColumnCount(1)
         self.toolForHostsTableWidget.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem())
@@ -1271,10 +1271,10 @@ class AddSettingsDialog(QtWidgets.QDialog):  # dialog shown when the user select
         self.label11.setText('Tools')
 
         self.toolForServiceTableWidget = QtWidgets.QTableWidget(self.PortActionsWidget)
-        self.toolForServiceTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.toolForServiceTableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.toolForServiceTableWidget.setFixedWidth(180)
         self.toolForServiceTableWidget.setShowGrid(False)
-        self.toolForServiceTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.toolForServiceTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
                                                                         # table headers
         self.toolForServiceTableWidget.setColumnCount(1)
         self.toolForServiceTableWidget.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem())
@@ -1327,7 +1327,7 @@ class AddSettingsDialog(QtWidgets.QDialog):  # dialog shown when the user select
         self.horLayout2.addWidget(self.portCommandText)
         
         self.servicesAllTableWidget = QtWidgets.QTableWidget()
-        self.servicesAllTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.servicesAllTableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.servicesAllTableWidget.setMaximumSize(150, 300)
         self.servicesAllTableWidget.setColumnCount(1)
         self.servicesAllTableWidget.horizontalHeader().resizeSection(0,150)
@@ -1338,7 +1338,7 @@ class AddSettingsDialog(QtWidgets.QDialog):  # dialog shown when the user select
         self.servicesAllTableWidget.verticalHeader().setVisible(False)
 
         self.servicesActiveTableWidget = QtWidgets.QTableWidget()
-        self.servicesActiveTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.servicesActiveTableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.servicesActiveTableWidget.setMaximumSize(150, 300)
         self.servicesActiveTableWidget.setColumnCount(1)
         self.servicesActiveTableWidget.horizontalHeader().resizeSection(0,150)
@@ -1391,11 +1391,11 @@ class AddSettingsDialog(QtWidgets.QDialog):  # dialog shown when the user select
         self.actionTerminalLabel.setText('Tools')
         
         self.toolForTerminalTableWidget = QtWidgets.QTableWidget(self.portTerminalActionsWidget)
-        self.toolForTerminalTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.toolForTerminalTableWidget.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.toolForTerminalTableWidget.setFixedWidth(180)
         self.toolForTerminalTableWidget.setShowGrid(False)
         # to make the cells of the table read only
-        self.toolForTerminalTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.toolForTerminalTableWidget.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
                                                                         # table headers
         self.toolForTerminalTableWidget.setColumnCount(1)
         self.toolForTerminalTableWidget.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem())
@@ -1446,7 +1446,7 @@ class AddSettingsDialog(QtWidgets.QDialog):  # dialog shown when the user select
         self.horLayout4.addWidget(self.terminalCommandText)
         
         self.terminalServicesAllTable = QtWidgets.QTableWidget()
-        self.terminalServicesAllTable.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.terminalServicesAllTable.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.terminalServicesAllTable.setMaximumSize(150, 300)
         self.terminalServicesAllTable.setColumnCount(1)
         self.terminalServicesAllTable.horizontalHeader().resizeSection(0,150)
@@ -1457,7 +1457,7 @@ class AddSettingsDialog(QtWidgets.QDialog):  # dialog shown when the user select
         self.terminalServicesAllTable.verticalHeader().setVisible(False)
         
         self.terminalServicesActiveTable = QtWidgets.QTableWidget()
-        self.terminalServicesActiveTable.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.terminalServicesActiveTable.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.terminalServicesActiveTable.setMaximumSize(150, 300)
         self.terminalServicesActiveTable.setColumnCount(1)
         self.terminalServicesActiveTable.horizontalHeader().resizeSection(0,150)
@@ -1620,7 +1620,7 @@ class AddSettingsDialog(QtWidgets.QDialog):  # dialog shown when the user select
     def wordlistDialog(self, title='Choose username path'):
         if title == 'Choose username path':
             path = QtWidgets.QFileDialog\
-                .getExistingDirectory(self, title, '/',  QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
+                .getExistingDirectory(self, title, '/',  QFileDialog.Option.ShowDirsOnly | QFileDialog.Option.DontResolveSymlinks)
             self.userlistPath.setText(str(path))
         else:
             path = QtWidgets.QFileDialog.getExistingDirectory(self, title, '/')

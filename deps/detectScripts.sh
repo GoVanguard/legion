@@ -3,68 +3,26 @@
 echo "Checking for additional Sparta scripts..."
 curPath=`pwd`
 
-if [ -a scripts/smbenum.sh ]
-  then
-    echo "smbenum.sh is already installed"
-else
-  wget -v -P scripts/ https://raw.githubusercontent.com/GoVanguard/sparta-scripts/master/smbenum.sh
-fi
+scripts=("smbenum.sh" "snmpbrute.py" "ms08-067_check.py" "rdp-sec-check.pl", "ndr.py", "installDeps.sh", "snmpcheck.rb", "smtp-user-enum.pl")
 
-if [ -a scripts/snmpbrute.py ]
-  then
-    echo "snmpbrute.py is already installed"
-else
-  wget -v -P scripts/ https://raw.githubusercontent.com/GoVanguard/sparta-scripts/master/snmpbrute.py
-fi
+for script in "${scripts[@]}"; do
+  if [ -a "scripts/$script" ]; then
+    echo "$script is already installed"
+  else
+    wget -v -P scripts/ "https://raw.githubusercontent.com/GoVanguard/sparta-scripts/master/$script"
+  fi
+done
 
-if [ -a scripts/ms08-067_check.py ]
-  then
-    echo "ms08-067_check.py is already installed"
-else
-  wget -v -P scripts/ https://raw.githubusercontent.com/GoVanguard/sparta-scripts/master/ms08-067_check.py
-fi
+declare -A externalRepos
+externalRepos["CloudFail"]="https://github.com/m0rtem/CloudFail.git"
 
-if [ -a scripts/rdp-sec-check.pl ]
-  then
-    echo "rdp-sec-check.pl is already installed"
-else
-  wget -v -P scripts/ https://raw.githubusercontent.com/GoVanguard/sparta-scripts/master/rdp-sec-check.pl
-fi
-
-if [ -a scripts/ndr.py ]
-  then
-    echo "ndr.py is already installed"
-else
-  wget -v -P scripts/ https://raw.githubusercontent.com/GoVanguard/sparta-scripts/master/ndr.py  
-fi
-
-if [ -a scripts/installDeps.sh ]
-  then
-    echo "installDeps.sh is already installed"
-else
-  wget -v -P scripts/ https://raw.githubusercontent.com/GoVanguard/sparta-scripts/master/installDeps.sh
-fi
-
-if [ -a scripts/snmpcheck.rb ]
-  then
-    echo "snmpcheck.rb is already installed"
-else
-  wget -v -P scripts/ https://raw.githubusercontent.com/GoVanguard/sparta-scripts/master/snmpcheck.rb
-fi
-
-if [ -a scripts/smtp-user-enum.pl ]
-  then
-    echo "smtp-user-enum.pl is already installed"
-else
-  wget -v -P scripts/ https://raw.githubusercontent.com/GoVanguard/sparta-scripts/master/smtp-user-enum.pl
-fi
-
-if [ -a scripts/CloudFail/cloudfail.py ]
-  then
-    echo "Cloudfail has been found"
-else
-  git clone https://github.com/m0rtem/CloudFail.git scripts/CloudFail
-fi
+for externalRepo in "${!externalRepos[@]}"; do
+  if [ -d "scripts/$externalRepos" ]; then
+    echo "$externalRepo is already installed"
+  else
+    git clone "${externalRepos[$externalRepo]}" scripts/$externalRepo
+  fi
+done
 
 if [ ! -f ".initialized" ]
   then

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -19,7 +19,7 @@ Copyright (c) 2022 GoVanguard
 import re
 from typing import Dict
 
-from PyQt5 import QtWidgets, QtGui, QtCore
+from PyQt6 import QtWidgets, QtGui, QtCore
 
 from app.ModelHelpers import resolveHeaders, itemInteractive
 from app.auxiliary import *                                                 # for bubble sort
@@ -60,7 +60,7 @@ class CvesTableModel(QtCore.QAbstractTableModel):
         return resolveHeaders(role, orientation, section, self.__headers)
                 
     def data(self, index, role):  # this method takes care of how the information is displayed
-        if role == QtCore.Qt.DisplayRole or role == QtCore.Qt.EditRole:  # how to display each cell
+        if role == QtCore.Qt.ItemDataRole.DisplayRole or role == QtCore.Qt.ItemDataRole.EditRole:  # how to display each cell
             row = index.row()
             column = index.column()
             return self.__cves[row][self.columnMapping[column]]
@@ -74,7 +74,7 @@ class CvesTableModel(QtCore.QAbstractTableModel):
 
         sortArrayWithArray(array, self.__cves)  # sort the services based on the values in the array
 
-        if order == Qt.AscendingOrder:                                  # reverse if needed
+        if order == Qt.SortOrder.AscendingOrder:                                  # reverse if needed
             self.__cves.reverse()
             
         self.layoutChanged.emit()

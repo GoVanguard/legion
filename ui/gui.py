@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -15,8 +15,8 @@ Copyright (c) 2022 GoVanguard
     If not, see <http://www.gnu.org/licenses/>.
 """
 
-from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtGui import QColor
+from PyQt6 import QtWidgets, QtGui, QtCore
+from PyQt6.QtGui import QColor
 
 from ui.dialogs import *                                                # for the screenshots (image viewer)
 from ui.ancillaryDialog import *
@@ -30,15 +30,13 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-
-        MainWindow.resize(1200, 900)
         
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))    # do not change this name
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.splitter_2 = QtWidgets.QSplitter(self.centralwidget)
-        self.splitter_2.setOrientation(QtCore.Qt.Vertical)
+        self.splitter_2.setOrientation(QtCore.Qt.Orientation.Vertical)
         self.splitter_2.setObjectName(_fromUtf8("splitter_2"))
 
         self.MainTabWidget = QtWidgets.QTabWidget(self.splitter_2)
@@ -48,16 +46,16 @@ class Ui_MainWindow(object):
         self.gridLayout_2 = QtWidgets.QGridLayout(self.ScanTab)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         self.splitter = QtWidgets.QSplitter(self.ScanTab)
-        self.splitter.setOrientation(QtCore.Qt.Horizontal)
+        self.splitter.setOrientation(QtCore.Qt.Orientation.Horizontal)
         self.splitter.setObjectName(_fromUtf8("splitter"))
     
         # size policies
-        self.sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         # this specifies that the widget will keep its width when the window is resized
         self.sizePolicy.setHorizontalStretch(0)
         self.sizePolicy.setVerticalStretch(0)
         
-        self.sizePolicy2 = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.sizePolicy2 = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         # this specifies that the widget will expand its width when the window is resized
         self.sizePolicy2.setHorizontalStretch(1)
         self.sizePolicy2.setVerticalStretch(0)
@@ -76,6 +74,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.setDefaultIndexes()
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        MainWindow.setWindowState(QtCore.Qt.WindowState.WindowMaximized)
 
     def setupLeftPanel(self):
         self.HostsTabWidget = QtWidgets.QTabWidget(self.splitter)
@@ -90,7 +89,7 @@ class Ui_MainWindow(object):
 
         self.FilterApplyButton = QtWidgets.QToolButton()
         self.searchIcon = QtGui.QIcon()
-        self.searchIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/search.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.searchIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/search.png")), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.FilterApplyButton.setIconSize(QtCore.QSize(19, 19))
         self.FilterApplyButton.setIcon(self.searchIcon)
         self.FilterApplyButton.setToolTip('Apply filters to view')
@@ -98,14 +97,14 @@ class Ui_MainWindow(object):
         self.FilterAdvancedButton = QtWidgets.QToolButton()
         self.advancedIcon = QtGui.QIcon()
         self.advancedIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/advanced.png")),
-                                    QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                                    QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.FilterAdvancedButton.setIconSize(QtCore.QSize(19, 19))
         self.FilterAdvancedButton.setIcon(self.advancedIcon)
         self.FilterAdvancedButton.setToolTip('Choose advanced filters')
 
         self.AddHostButton = QtWidgets.QToolButton()
         self.addIcon = QtGui.QIcon()
-        self.addIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/add.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.addIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/add.png")), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.AddHostButton.setIconSize(QtCore.QSize(19, 19))
         self.AddHostButton.setIcon(self.addIcon)
         self.AddHostButton.setToolTip('Add host')
@@ -121,11 +120,11 @@ class Ui_MainWindow(object):
         self.addHostsOverlay.setObjectName(_fromUtf8("addHostsOverlay"))
         self.addHostsOverlay.setText('Click here to add host(s) to scope')
         self.addHostsOverlay.setReadOnly(True)
-        self.addHostsOverlay.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
+        self.addHostsOverlay.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.NoContextMenu)
 
         ###
         self.addHostsOverlay.setFont(QtGui.QFont('Calibri', 12))
-        self.addHostsOverlay.setAlignment(Qt.AlignHCenter|Qt.AlignVCenter)
+        self.addHostsOverlay.setAlignment(Qt.AlignmentFlag.AlignHCenter|Qt.AlignmentFlag.AlignVCenter)
         ###
         
         self.vlayout.addWidget(self.addHostsOverlay)
@@ -176,7 +175,7 @@ class Ui_MainWindow(object):
         ###
 
         self.splitter_3 = QtWidgets.QSplitter()
-        self.splitter_3.setOrientation(QtCore.Qt.Horizontal)
+        self.splitter_3.setOrientation(QtCore.Qt.Orientation.Horizontal)
         self.splitter_3.setObjectName(_fromUtf8("splitter_3"))
         # this makes the tools tab stay the same width when resizing the window
         self.splitter_3.setSizePolicy(self.sizePolicy2)
@@ -206,7 +205,7 @@ class Ui_MainWindow(object):
         self.ScreenshotWidget = ImageViewer()
         self.ScreenshotWidget.setObjectName('Screenshot')
         self.ScreenshotWidget.scrollArea.setSizePolicy(self.sizePolicy2)
-        self.ScreenshotWidget.scrollArea.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.ScreenshotWidget.scrollArea.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.splitter_3.addWidget(self.ScreenshotWidget.scrollArea)
 
         self.splitter.addWidget(self.splitter_3)
@@ -237,7 +236,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_6.setObjectName(_fromUtf8("horizontalLayout_6"))
                 
         self.splitter_4 = QtWidgets.QSplitter(self.ScriptsTab)
-        self.splitter_4.setOrientation(QtCore.Qt.Horizontal)
+        self.splitter_4.setOrientation(QtCore.Qt.Orientation.Horizontal)
         self.splitter_4.setObjectName(_fromUtf8("splitter_4"))
         
         self.ScriptsTableView = QtWidgets.QTableView()
@@ -332,19 +331,19 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         MainWindow.setStatusBar(self.statusbar)
-        self.actionExit = QtWidgets.QAction(MainWindow)
+        self.actionExit = QtGui.QAction(MainWindow)
         self.actionExit.setObjectName(_fromUtf8("actionExit"))
-        self.actionOpen = QtWidgets.QAction(MainWindow)
+        self.actionOpen = QtGui.QAction(MainWindow)
         self.actionOpen.setObjectName(_fromUtf8("actionOpen"))
-        self.actionSave = QtWidgets.QAction(MainWindow)
+        self.actionSave = QtGui.QAction(MainWindow)
         self.actionSave.setObjectName(_fromUtf8("actionSave"))
-        self.actionImportNmap = QtWidgets.QAction(MainWindow)
+        self.actionImportNmap = QtGui.QAction(MainWindow)
         self.actionImportNmap.setObjectName(_fromUtf8("actionImportNmap"))
-        self.actionSaveAs = QtWidgets.QAction(MainWindow)
+        self.actionSaveAs = QtGui.QAction(MainWindow)
         self.actionSaveAs.setObjectName(_fromUtf8("actionSaveAs"))
-        self.actionNew = QtWidgets.QAction(MainWindow)
+        self.actionNew = QtGui.QAction(MainWindow)
         self.actionNew.setObjectName(_fromUtf8("actionNew"))
-        self.actionAddHosts = QtWidgets.QAction(MainWindow)
+        self.actionAddHosts = QtGui.QAction(MainWindow)
         self.actionAddHosts.setObjectName(_fromUtf8("actionAddHosts"))
         self.menuFile.addAction(self.actionNew)
         self.menuFile.addAction(self.actionOpen)
@@ -357,16 +356,16 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionExit)
         self.menubar.addAction(self.menuFile.menuAction())
         #self.menubar.addAction(self.menuSettings.menuAction())
-        #self.actionSettings = QtWidgets.QAction(MainWindow)
+        #self.actionSettings = QtGui.QAction(MainWindow)
         #self.actionSettings.setObjectName(_fromUtf8("getSettingsMenu"))
         #self.menuSettings.addAction(self.actionSettings)
 
-        self.actionHelp = QtWidgets.QAction(MainWindow)
+        self.actionHelp = QtGui.QAction(MainWindow)
         self.actionHelp.setObjectName(_fromUtf8("getHelp"))
         self.menuHelp.addAction(self.actionHelp)
         self.menubar.addAction(self.menuHelp.menuAction())
 
-        self.actionConfig = QtWidgets.QAction(MainWindow)
+        self.actionConfig = QtGui.QAction(MainWindow)
         self.actionConfig.setObjectName(_fromUtf8("config"))
         self.menuHelp.addAction(self.actionConfig)
         self.menubar.addAction(self.menuHelp.menuAction())
@@ -435,12 +434,3 @@ class Ui_MainWindow(object):
         self.actionHelp.setShortcut(QtWidgets.QApplication.translate("MainWindow", "F1", None))
         self.actionConfig.setText(QtWidgets.QApplication.translate("MainWindow", "Config", None))
         self.actionConfig.setShortcut(QtWidgets.QApplication.translate("MainWindow", "F2", None))
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -18,9 +18,9 @@ Copyright (c) 2022 GoVanguard
 """
 
 import re
-from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt6 import QtWidgets, QtGui, QtCore
+from PyQt6.QtGui import QFont
+from PyQt6.QtCore import pyqtSignal, QObject
 
 from app.ModelHelpers import resolveHeaders, itemSelectable
 from app.auxiliary import *                                                 # for bubble sort
@@ -48,7 +48,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
         return resolveHeaders(role, orientation, section, self.__headers)
 
     def data(self, index, role):                # this method takes care of how the information is displayed
-        if role == QtCore.Qt.DecorationRole:    # to show the operating system icon instead of text
+        if role == QtCore.Qt.ItemDataRole.DecorationRole:    # to show the operating system icon instead of text
             if index.column() == 1:                                     # if trying to display the operating system
                 os_string = self.__hosts[index.row()]['osMatch']
                 if os_string == '':             # if there is no OS information, use the question mark icon
@@ -75,7 +75,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
                 else:  # if it's an unknown OS also use the question mark icon
                     return QtGui.QIcon("./images/question-icon.png")
 
-        if role == QtCore.Qt.DisplayRole:                               # how to display each cell
+        if role == QtCore.Qt.ItemDataRole.DisplayRole:                               # how to display each cell
             value = ''
             row = index.row()
             column = index.column()
@@ -116,7 +116,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
                 value = 'Not set in view model'
             return value
             
-        if role == QtCore.Qt.FontRole:
+        if role == QtCore.Qt.ItemDataRole.FontRole:
             # if a host is checked strike it out and make it italic
             if index.column() == 3 and self.__hosts[index.row()]['checked'] == 'True':
                 checkedFont=QFont()
@@ -168,7 +168,7 @@ class HostsTableModel(QtCore.QAbstractTableModel):
 
         sortArrayWithArray(array, self.__hosts)                         # sort the array of OS
 
-        if order == Qt.AscendingOrder:                                  # reverse if needed
+        if order == Qt.SortOrder.AscendingOrder:                                  # reverse if needed
             self.__hosts.reverse()
 
         self.layoutChanged.emit()                            # update the UI (built-in signal)

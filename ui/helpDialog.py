@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -18,9 +18,9 @@ Copyright (c) 2022 GoVanguard
 """
 
 import os
-from PyQt5.QtGui import *                                               # for filters dialog
-from PyQt5.QtWidgets import *
-from PyQt5 import QtWidgets, QtGui
+from PyQt6.QtGui import *                                               # for filters dialog
+from PyQt6.QtWidgets import *
+from PyQt6 import QtWidgets, QtGui
 from app.auxiliary import *                                             # for timestamps
 from six import u as unicode
 from ui.ancillaryDialog import flipState
@@ -36,7 +36,7 @@ class License(QtWidgets.QPlainTextEdit):
 
     def center(self):
         frameGm = self.frameGeometry()
-        centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
+        centerPoint = QtGui.QGuiApplication.primaryScreen().availableGeometry().center() 
         frameGm.moveCenter(centerPoint)
         self.move(frameGm.topLeft())
 
@@ -74,7 +74,7 @@ class HelpDialog(QtWidgets.QDialog):
 
     def center(self):
         frameGm = self.frameGeometry()
-        centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
+        centerPoint = QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
         frameGm.moveCenter(centerPoint)
         self.move(frameGm.topLeft())
 
@@ -137,7 +137,7 @@ class HelpDialog(QtWidgets.QDialog):
         self.tabwid.addTab(self.TabChangelog,'ChangeLog')
         self.form.addRow(self.tabwid)
         self.form2.addWidget(QtWidgets.QLabel('<br>'))
-        self.form2.addWidget(self.cmdClose, alignment = Qt.AlignCenter)
+        self.form2.addWidget(self.cmdClose, alignment = Qt.AlignmentFlag.AlignCenter)
         self.form.addRow(self.form2)
         self.Main.addLayout(self.form)
         self.setLayout(self.Main)

@@ -1,6 +1,6 @@
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -13,7 +13,7 @@ Copyright (c) 2022 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.
     If not, see <http://www.gnu.org/licenses/>.
 
-Author(s): Dmitriy Dubson (d.dubson@gmail.com)
+Author(s): Shane Scott (sscott@gotham-security.com), Dmitriy Dubson (d.dubson@gmail.com)
 """
 import ntpath
 import os
@@ -22,13 +22,13 @@ from typing import Tuple
 
 from app.Project import Project, ProjectProperties
 from app.tools.ToolCoordinator import fileExists
-from app.auxiliary import Wordlist
+from app.auxiliary import Wordlist, getTempFolder
 from app.shell.Shell import Shell
 from app.tools.nmap.NmapPaths import getNmapRunningFolder
 from db.RepositoryFactory import RepositoryFactory
 from db.SqliteDbAdapter import Database
 
-local_temp_dir = os.path.expanduser("~/.local/share/legion/tmp/")
+tempDirectory = getTempFolder()
 
 
 class ProjectManager:
@@ -43,10 +43,10 @@ class ProjectManager:
 
         # to store tool output of finished processes
         outputFolder = self.shell.create_temporary_directory(prefix="legion-", suffix="-tool-output",
-                                                             directory=local_temp_dir)
+                                                             directory=tempDirectory)
 
         # to store tool output of running processes
-        runningFolder = self.shell.create_temporary_directory(prefix="legion-", suffix="-running", directory=local_temp_dir)
+        runningFolder = self.shell.create_temporary_directory(prefix="legion-", suffix="-running", directory=tempDirectory)
 
         self.shell.create_directory_recursively(f"{outputFolder}/screenshots")  # to store screenshots
         self.shell.create_directory_recursively(getNmapRunningFolder(runningFolder))  # to store nmap output
@@ -69,7 +69,7 @@ class ProjectManager:
         workingDirectory = f"{ntpath.dirname(projectName)}/"
         outputFolder, _ = self.__determineOutputFolder(projectName, projectType)
         runningFolder = self.shell.create_temporary_directory(suffix="-running", prefix=projectType + '-',
-                                                              directory=local_temp_dir)
+                                                              directory=tempDirectory)
         (usernameWordList, passwordWordList) = self.__createUsernameAndPasswordWordLists(outputFolder)
         projectProperties = ProjectProperties(
             projectName=projectName, workingDirectory=workingDirectory, projectType=projectType, isTemporary=False,
@@ -124,7 +124,7 @@ class ProjectManager:
         if projectName:
             return Database(projectName)
 
-        databaseFile = self.shell.create_named_temporary_file(suffix=".legion", prefix="legion-", directory=local_temp_dir,
+        databaseFile = self.shell.create_named_temporary_file(suffix=".legion", prefix="legion-", directory=tempDirectory,
                                                               delete_on_close=False)  # to store the db file
         return Database(databaseFile.name)
 

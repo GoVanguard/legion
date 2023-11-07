@@ -1,5 +1,5 @@
 """
-LEGION (https://govanguard.com)
+LEGION (https://gotham-security.com)
 Copyright (c) 2019 GoVanguard
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
@@ -13,13 +13,13 @@ Copyright (c) 2019 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.
     If not, see <http://www.gnu.org/licenses/>.
 
-Author(s): Dmitriy Dubson (d.dubson@gmail.com)
+Author(s): Shane Scott (sscott@gotham-security.com), Dmitriy Dubson (d.dubson@gmail.com)
 """
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 
 def resolveHeaders(role, orientation, section, headers):
-    if role == QtCore.Qt.DisplayRole and orientation == QtCore.Qt.Horizontal:
+    if role == QtCore.Qt.ItemDataRole.DisplayRole and orientation == QtCore.Qt.Orientation.Horizontal:
         if section < len(headers):
             return headers[section]
         else:
@@ -27,8 +27,8 @@ def resolveHeaders(role, orientation, section, headers):
 
 
 def itemInteractive() -> QtCore.Qt.ItemFlag:
-    return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+    return QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEditable
 
 
 def itemSelectable() -> QtCore.Qt.ItemFlag:
-    return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+    return QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable

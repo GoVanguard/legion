@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -18,9 +18,9 @@ Copyright (c) 2022 GoVanguard
 """
 
 import os
-from PyQt5.QtGui import *                                               # for filters dialog
-from PyQt5.QtWidgets import *
-from PyQt5 import QtWidgets, QtGui
+from PyQt6.QtGui import *                                               # for filters dialog
+from PyQt6.QtWidgets import *
+from PyQt6 import QtWidgets, QtGui
 from app.auxiliary import *                                             # for timestamps
 from six import u as unicode
 
@@ -71,12 +71,12 @@ class ImageViewer(QtWidgets.QWidget):
         self.scaleFactor = 0.0
 
         self.imageLabel = QtWidgets.QLabel()
-        self.imageLabel.setBackgroundRole(QtGui.QPalette.Base)
-        self.imageLabel.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        self.imageLabel.setBackgroundRole(QtGui.QPalette.ColorRole.Base)
+        self.imageLabel.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Ignored)
         self.imageLabel.setScaledContents(True)
 
         self.scrollArea = QtWidgets.QScrollArea()
-        self.scrollArea.setBackgroundRole(QtGui.QPalette.Dark)
+        self.scrollArea.setBackgroundRole(QtGui.QPalette.ColorRole.Dark)
         self.scrollArea.setWidget(self.imageLabel)
 
     def open(self, fileName):
@@ -121,11 +121,11 @@ class ImagePlayer(QtWidgets.QWidget):
         QtWidgets.QWidget.__init__(self, parent)
         self.movie = QtGui.QMovie(filename)
         self.movie_screen = QtWidgets.QLabel()
-        self.movie_screen.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.movie_screen.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         main_layout = QtWidgets.QVBoxLayout()
         main_layout.addWidget(self.movie_screen)
         self.setLayout(main_layout)
-        self.movie.setCacheMode(QtGui.QMovie.CacheAll)
+        self.movie.setCacheMode(QtGui.QMovie.CacheMode.CacheAll)
         self.movie.setSpeed(100)
         self.movie_screen.setMovie(self.movie)
         self.movie.start()

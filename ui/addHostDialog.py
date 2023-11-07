@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -18,9 +18,9 @@ Copyright (c) 2022 GoVanguard
 """
 
 import os
-from PyQt5.QtGui import *                                               # for filters dialog
-from PyQt5.QtWidgets import *
-from PyQt5 import QtWidgets, QtGui
+from PyQt6.QtGui import *                                               # for filters dialog
+from PyQt6.QtWidgets import *
+from PyQt6 import QtWidgets, QtGui
 from app.auxiliary import *                                             # for timestamps
 from six import u as unicode
 from ui.ancillaryDialog import flipState
@@ -39,8 +39,8 @@ class AddHostsDialog(QtWidgets.QDialog):
     def setupLayout(self):
         self.setModal(True)
         self.setWindowTitle('Add host(s) to scan seperated by semicolons')
-        flags = Qt.Window | Qt.WindowSystemMenuHint | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint | \
-                Qt.WindowCloseButtonHint
+        flags = Qt.WindowType.Window | Qt.WindowType.WindowSystemMenuHint | Qt.WindowType.WindowMinimizeButtonHint | Qt.WindowType.WindowMaximizeButtonHint | \
+                Qt.WindowType.WindowCloseButtonHint
         self.setWindowFlags(flags)
 
         self.resize(700, 700)
@@ -59,7 +59,7 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.lblHostExample.setText('Ex: 192.168.1.0/24; 10.10.10.10-20; 1.2.3.4; bing.com')
         self.font = QtGui.QFont('Calibri', 10)
         self.lblHostExample.setFont(self.font)
-        self.lblHostExample.setAlignment(Qt.AlignRight)
+        self.lblHostExample.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.spacer = QSpacerItem(15,15)
 
         self.validationLabel = QtWidgets.QLabel(self)
@@ -136,7 +136,7 @@ class AddHostsDialog(QtWidgets.QDialog):
                                             '--min-rtt-timeout 50ms --initial-rtt-timeout 250ms --max-retries 2 ' +
                                             '--host-timeout 15m --script-timeout 10m with a 5ms delay between ' +
                                             'operations [-T5]')
-        self.sldScanTimingSlider = QtWidgets.QSlider(Qt.Horizontal)
+        self.sldScanTimingSlider = QtWidgets.QSlider(Qt.Orientation.Horizontal)
         self.sldScanTimingSlider.setRange(0, 5)
         self.sldScanTimingSlider.setSingleStep(1)
         self.sldScanTimingSlider.setValue(4)
@@ -259,15 +259,15 @@ class AddHostsDialog(QtWidgets.QDialog):
         self.cmdAddButton = QPushButton('Submit', self)
         self.cmdAddButton.setMaximumSize(160, 70)
         self.addIcon = QtGui.QIcon()
-        self.addIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/add.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.addIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/add.png")), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         self.cmdAddButton.setIconSize(QtCore.QSize(19, 19))
         self.cmdAddButton.setIcon(self.addIcon)
 
         self.cmdCancelButton = QPushButton('Cancel', self)
         self.cmdCancelButton.setMaximumSize(110, 30)
         self.cancelIcon = QtGui.QIcon()
-        self.cancelIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/minus-black.png")), QtGui.QIcon.Normal,
-                                  QtGui.QIcon.Off)
+        self.cancelIcon.addPixmap(QtGui.QPixmap(_fromUtf8("./images/minus-black.png")), QtGui.QIcon.Mode.Normal,
+                                  QtGui.QIcon.State.Off)
         self.cmdCancelButton.setIconSize(QtCore.QSize(19, 19))
         self.cmdCancelButton.setIcon(self.cancelIcon)
 

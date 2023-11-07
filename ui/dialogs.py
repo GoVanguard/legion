@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -15,9 +15,9 @@ Copyright (c) 2022 GoVanguard
     If not, see <http://www.gnu.org/licenses/>.
 """
 import os
-from PyQt5.QtGui import *                                               # for filters dialog
-from PyQt5.QtWidgets import *
-from PyQt5 import QtWidgets, QtGui
+from PyQt6.QtGui import *                                               # for filters dialog
+from PyQt6.QtWidgets import *
+from PyQt6 import QtWidgets, QtGui
 from app.auxiliary import *                                             # for timestamps
 from app.timing import getTimestamp
 from six import u as unicode
@@ -61,24 +61,24 @@ class BruteWidget(QtWidgets.QWidget):
 
         self.label1 = QtWidgets.QLabel()
         self.label1.setText('IP')
-        self.label1.setAlignment(Qt.AlignLeft)
-        self.label1.setAlignment(Qt.AlignVCenter)
+        self.label1.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.label1.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         self.ipTextinput = QtWidgets.QLineEdit()
         self.ipTextinput.setText(str(self.ip))
         self.ipTextinput.setFixedWidth(125)
         
         self.label2 = QtWidgets.QLabel()
         self.label2.setText('Port')
-        self.label2.setAlignment(Qt.AlignLeft)
-        self.label2.setAlignment(Qt.AlignVCenter)
+        self.label2.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.label2.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         self.portTextinput = QtWidgets.QLineEdit()
         self.portTextinput.setText(str(self.port))
         self.portTextinput.setFixedWidth(60)
         
         self.label3 = QtWidgets.QLabel()
         self.label3.setText('Service')
-        self.label3.setAlignment(Qt.AlignLeft)
-        self.label3.setAlignment(Qt.AlignVCenter)
+        self.label3.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.label3.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         self.serviceComboBox = QtWidgets.QComboBox()
         self.serviceComboBox.insertItems(0, self.settings.brute_services.split(","))
         self.serviceComboBox.setStyleSheet("QComboBox { combobox-popup: 0; }")
@@ -153,7 +153,7 @@ class BruteWidget(QtWidgets.QWidget):
             "Additional Options" checkbox and add the proper arguments for the webpage form. See Hydra \
             documentation for extra help when targeting HTTP/HTTPS forms.')
         self.warningLabel.setWordWrap(True)
-        self.warningLabel.setAlignment(Qt.AlignRight)
+        self.warningLabel.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.warningLabel.setStyleSheet('QLabel { color: red }')
 
         self.hlayout2 = QtWidgets.QHBoxLayout()
@@ -304,8 +304,8 @@ class BruteWidget(QtWidgets.QWidget):
 
     def __drawPalette(self):
         p = self.display.palette()
-        p.setColor(QtGui.QPalette.Base, Qt.black)  # black background
-        p.setColor(QtGui.QPalette.Text, Qt.white)  # white font
+        p.setColor(QtGui.QPalette.ColorRole.Base, Qt.GlobalColor.black)  # black background
+        p.setColor(QtGui.QPalette.ColorRole.Text, Qt.GlobalColor.white)  # white font
         self.display.setPalette(p)
         self.display.setStyleSheet("QMenu { color:black;}")
 

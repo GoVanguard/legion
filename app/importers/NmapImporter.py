@@ -1,6 +1,6 @@
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -13,11 +13,11 @@ Copyright (c) 2022 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.
     If not, see <http://www.gnu.org/licenses/>.
 
-Author(s): Dmitriy Dubson (d.dubson@gmail.com)
+Author(s): Shane Scott (sscott@gotham-security.com), Dmitriy Dubson (d.dubson@gmail.com)
 """
 import sys
 
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from app.actions.updateProgress import AbstractUpdateProgressObservable
 from app.logging.legionLog import getAppLogger
@@ -73,7 +73,7 @@ class NmapImporter(QtCore.QThread):
                 nmapReport = parseNmapReport(self.filename)
             except MalformedXmlDocumentException as e:
                 self.tsLog('Giving up on import due to previous errors.')
-                appLog.error(f"nmap xml report is likely malformed: {e}")
+                appLog.error(f"NMAP xml report is likely malformed: {e}")
                 self.updateProgressObservable.finished()
                 self.done.emit()
                 return
