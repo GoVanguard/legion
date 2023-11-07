@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -39,15 +39,16 @@ except ImportError as e:
     exit(1)
 
 try:
-    from PyQt5 import QtWidgets, QtGui, QtCore
+    from PyQt6 import QtWidgets, QtGui, QtCore
+    from PyQt6.QtCore import QCoreApplication
 except ImportError as e:
-    startupLog.error("Import failed. PyQt5 library not found. If on Ubuntu or similar try: "
+    startupLog.error("Import failed. PyQt6 library not found. If on Ubuntu or similar try: "
                      "apt-get install python3-pyqt5")
     startupLog.error(e)
     exit(1)
 
 try:
-    import quamash
+    import qasync
     import asyncio
 except ImportError as e:
     startupLog.error("Import failed. Quamash or asyncio not found.")
@@ -68,8 +69,8 @@ except ImportError as e:
 
 import os
 
-if not os.path.isdir(os.path.expanduser("~/.local/share/legion/tmp")):
-    os.makedirs(os.path.expanduser("~/.local/share/legion/tmp"))
+#if not os.path.isdir(os.path.expanduser("~/.local/share/legion/tmp")):
+#    os.makedirs(os.path.expanduser("~/.local/share/legion/tmp"))
 
 if not os.path.isdir(os.path.expanduser("~/.local/share/legion/backup")):
     os.makedirs(os.path.expanduser("~/.local/share/legion/backup"))
@@ -92,41 +93,44 @@ if __name__ == "__main__":
     cprint(figlet_format('LEGION'), 'yellow', 'on_red', attrs=['bold'])
 
     app = QApplication(sys.argv)
-    loop = quamash.QEventLoop(app)
+    loop = qasync.QEventLoop(app)
     asyncio.set_event_loop(loop)
 
     MainWindow = QtWidgets.QMainWindow()
+    Screen = QGuiApplication.primaryScreen()
     app.setWindowIcon(QIcon('./images/icons/Legion-N_128x128.svg'))
 
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
 
-    try:
-        qss_file = open('./ui/legion.qss').read()
-    except IOError:
-        startupLog.error(
-            "The legion.qss file is missing. Your installation seems to be corrupted. " +
-            "Try downloading the latest version.")
-        exit(0)
+    # Possibly unneeded
+    #try:
+    #    qss_file = open('./ui/legion.qss').read()
+    #except IOError:
+    #    startupLog.error(
+    #        "The legion.qss file is missing. Your installation seems to be corrupted. " +
+    #        "Try downloading the latest version.")
+    #    exit(0)
 
     if os.geteuid()!=0:
         startupLog.error("Legion must run as root for raw socket access. Please start legion using sudo.")
         notice=QMessageBox()
-        notice.setIcon(QMessageBox.Critical)
+        notice.setIcon(QMessageBox.Icon.Critical)
         notice.setText("Legion must run as root for raw socket access. Please start legion using sudo.")
-        notice.exec_()
+        notice.exec()
         exit(1)
 
     if '7.92' in checkNmapVersion.decode():
         startupLog.error("Cannot continue. NMAP version is 7.92, which has problems segfaulting under zsh.")
         startupLog.error("Please follow the instructions at https://github.com/GoVanguard/legion/ to resolve.")
         notice=QMessageBox()
-        notice.setIcon(QMessageBox.Critical)
+        notice.setIcon(QMessageBox.Icon.Critical)
         notice.setText("Cannot continue. The installed NMAP version is 7.92, which has segfaults under zsh.\nPlease follow the instructions at https://github.com/GoVanguard/legion/ to resolve.")
         notice.exec_()
         exit(1)
 
-    MainWindow.setStyleSheet(qss_file)
+    # Possibly unneeded
+    #MainWindow.setStyleSheet(qss_file)
 
     shell = DefaultShell()
 
@@ -137,6 +141,7 @@ if __name__ == "__main__":
     projectManager = ProjectManager(shell, repositoryFactory, appLogger)
     nmapExporter = DefaultNmapExporter(shell, appLogger)
     toolCoordinator = ToolCoordinator(shell, nmapExporter)
+
     # Model prep (logic, db and models)
     logic = Logic(shell, projectManager, toolCoordinator)
 
@@ -144,27 +149,29 @@ if __name__ == "__main__":
     logic.createNewTemporaryProject()
 
     viewState = ViewState()
-    view = View(viewState, ui, MainWindow, shell)  # View prep (gui)
+    view = View(viewState, ui, MainWindow, shell, app, loop)  # View prep (gui)
     controller = Controller(view, logic)  # Controller prep (communication between model and view)
-    view.qss = qss_file
+
+    # Possibly unneeded
+    #view.qss = qss_file
 
     myFilter = MyEventFilter(view, MainWindow)  # to capture events
     app.installEventFilter(myFilter)
 
     # Center the application in screen
-    x = app.desktop().screenGeometry().center().x()
-    y = app.desktop().screenGeometry().center().y()
-    MainWindow.move(int(x - MainWindow.geometry().width() / 2), int(y - MainWindow.geometry().height() / 2 + 125))
+    screenCenter = Screen.availableGeometry().center()
+    MainWindow.move(screenCenter - MainWindow.rect().center())
 
     # Show main window
-    MainWindow.showMaximized()
+    #MainWindow.showMaximized()
 
     startupLog.info("Legion started successfully.")
     try:
-        loop.run_forever()
+        sys.exit(loop.run_forever())
     except KeyboardInterrupt:
         pass
 
-    app.deleteLater()
-    loop.close()
-    sys.exit()
+    #app.deleteLater()
+    #app.quit()
+    #loop.close()
+    #sys.exit()

@@ -1,6 +1,6 @@
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -15,7 +15,7 @@ Copyright (c) 2022 GoVanguard
 """
 import subprocess
 
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from app.http.isHttps import isHttps
 from app.timing import getTimestamp

@@ -101,7 +101,7 @@ LEGION 0.2.1
 
 LEGION 0.2.0
 
-* Port to PyQt5
+* Port to PyQt6
 * Handle process output encoding issues
 * Added dependancy installer
 

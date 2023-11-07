@@ -27,4 +27,4 @@ rm -Rf ./scripts/CloudFail/
 # Removed backups
 rm -Rf ./backup/*.conf
 
-find . -type f -exec sed -i 's/Copyright (c) 2020 GoVanguard/Copyright (c) 2022 GoVanguard/' {} \;
+find . -type f -exec sed -i 's/Copyright (c) 2023 Gotham Security/Copyright (c) 2023 Gotham Security/' {} \;

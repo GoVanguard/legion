@@ -13,10 +13,10 @@ Copyright (c) 2019 GoVanguard
     You should have received a copy of the GNU General Public License along with this program.
     If not, see <http://www.gnu.org/licenses/>.
 
-Author(s): Dmitriy Dubson (d.dubson@gmail.com)
+Author(s): Shane Scott (sscott@gotham-security.com), Dmitriy Dubson (d.dubson@gmail.com)
 """
 
-from PyQt5.QtCore import QSemaphore
+from PyQt6.QtCore import QSemaphore
 import time
 from random import randint
 

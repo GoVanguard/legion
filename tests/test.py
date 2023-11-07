@@ -6,10 +6,10 @@ except ImportError:
     exit(1)
 
 try:
-    from PyQt5 import QtWidgets, QtGui, QtCore
-    print("PyQt5 library OK.")
+    from PyQt6 import QtWidgets, QtGui, QtCore
+    print("PyQt6 library OK.")
 except ImportError:
-    print("Import failed. PyQt5 library not found.")
+    print("Import failed. PyQt6 library not found.")
     exit(1)
 
 try:

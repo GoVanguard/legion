@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -17,8 +17,8 @@ Copyright (c) 2022 GoVanguard
 
 """
 
-from PyQt5 import QtWidgets, QtGui, QtCore
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt6 import QtWidgets, QtGui, QtCore
+from PyQt6.QtCore import pyqtSignal, QObject
 
 from app.ModelHelpers import resolveHeaders, itemInteractive
 from app.auxiliary import *                                                 # for bubble sort
@@ -46,7 +46,7 @@ class ServicesTableModel(QtCore.QAbstractTableModel):
 
     # this method takes care of how the information is displayed
     def data(self, index, role):
-        if role == QtCore.Qt.DecorationRole:                            # to show the open/closed/filtered icons
+        if role == QtCore.Qt.ItemDataRole.DecorationRole:                            # to show the open/closed/filtered icons
             if index.column() == 0 or index.column() == 2:
                 tmp_state = self.__services[index.row()]['state']
 
@@ -57,7 +57,7 @@ class ServicesTableModel(QtCore.QAbstractTableModel):
                 stateIcon = "./images/{stateIconName}.gif".format(stateIconName=stateIconName)
                 return QtGui.QIcon(stateIcon)
 
-        if role == QtCore.Qt.DisplayRole:                               # how to display each cell
+        if role == QtCore.Qt.ItemDataRole.DisplayRole:                               # how to display each cell
             value = ''
             row = index.row()
             column = index.column()
@@ -146,7 +146,7 @@ class ServicesTableModel(QtCore.QAbstractTableModel):
         # sort the services based on the values in the array
         sortArrayWithArray(array, self.__services)
         
-        if order == Qt.AscendingOrder:                                  # reverse if needed
+        if order == Qt.SortOrder.AscendingOrder:                                  # reverse if needed
             self.__services.reverse()
             
         self.layoutChanged.emit()                           # update the UI (built-in signal)
@@ -190,7 +190,7 @@ class ServiceNamesTableModel(QtCore.QAbstractTableModel):
 
     def data(self, index, role):   # This method takes care of how the information is displayed
 
-        if role == QtCore.Qt.DisplayRole:                               # how to display each cell
+        if role == QtCore.Qt.ItemDataRole.DisplayRole:                               # how to display each cell
             row = index.row()
             column = index.column()
             if column == 0:
@@ -198,7 +198,7 @@ class ServiceNamesTableModel(QtCore.QAbstractTableModel):
 
     # method that allows views to know how to treat each item, eg: if it should be enabled, editable, selectable etc
     def flags(self, index):
-        return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable
+        return QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEditable
 
     # sort function called when the user clicks on a header
     def sort(self, Ncol, order):
@@ -213,7 +213,7 @@ class ServiceNamesTableModel(QtCore.QAbstractTableModel):
         # sort the services based on the values in the array
         sortArrayWithArray(array, self.__serviceNames)
 
-        if order == Qt.AscendingOrder:                                  # reverse if needed
+        if order == Qt.SortOrder.AscendingOrder:                                  # reverse if needed
             self.__serviceNames.reverse()
             
         self.layoutChanged.emit()                            # update the UI (built-in signal)

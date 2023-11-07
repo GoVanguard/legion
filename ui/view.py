@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -35,15 +35,19 @@ from ui.models.processmodels import *
 from app.auxiliary import *
 from six import u as unicode
 import pandas as pd
+from PyQt6.QtWidgets import QAbstractItemView
+from PyQt6.QtCore import Qt
 
 # this class handles everything gui-related
 class View(QtCore.QObject):
     tick = QtCore.pyqtSignal(int, name="changed")                       # signal used to update the progress bar
     
-    def __init__(self, viewState: ViewState, ui, ui_mainwindow, shell: Shell):
+    def __init__(self, viewState: ViewState, ui, ui_mainwindow, shell: Shell, app, loop):
         QtCore.QObject.__init__(self)
         self.ui = ui
         self.ui_mainwindow = ui_mainwindow  # TODO: retrieve window dimensions/location from settings
+        self.app = app
+        self.loop = loop
 
         self.bottomWindowSize = 100
         self.leftPanelSize = 300
@@ -76,12 +80,12 @@ class View(QtCore.QObject):
                                      qss = self.qss, parent = self.ui.centralwidget)
         self.configDialog = ConfigDialog(controller = self.controller, qss = self.qss, parent = self.ui.centralwidget)
 
-        self.ui.HostsTableView.setSelectionMode(3)
-        self.ui.ServiceNamesTableView.setSelectionMode(1)
-        self.ui.CvesTableView.setSelectionMode(1)
-        self.ui.ToolsTableView.setSelectionMode(1)
-        self.ui.ScriptsTableView.setSelectionMode(1)
-        self.ui.ToolHostsTableView.setSelectionMode(1)
+        self.ui.HostsTableView.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
+        self.ui.ServiceNamesTableView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.ui.CvesTableView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.ui.ToolsTableView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.ui.ScriptsTableView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.ui.ToolHostsTableView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
 
     # initialisations (globals, etc)
     def start(self, title='*untitled'):
@@ -110,11 +114,11 @@ class View(QtCore.QObject):
 
         self.ui.ServicesTabWidget.setTabsClosable(True)  # hide the close button (cross) from the fixed tabs
 
-        self.ui.ServicesTabWidget.tabBar().setTabButton(0, QTabBar.RightSide, None)
-        self.ui.ServicesTabWidget.tabBar().setTabButton(1, QTabBar.RightSide, None)
-        self.ui.ServicesTabWidget.tabBar().setTabButton(2, QTabBar.RightSide, None)
-        self.ui.ServicesTabWidget.tabBar().setTabButton(3, QTabBar.RightSide, None)
-        self.ui.ServicesTabWidget.tabBar().setTabButton(4, QTabBar.RightSide, None)
+        self.ui.ServicesTabWidget.tabBar().setTabButton(0, QTabBar.ButtonPosition.RightSide, None)
+        self.ui.ServicesTabWidget.tabBar().setTabButton(1, QTabBar.ButtonPosition.RightSide, None)
+        self.ui.ServicesTabWidget.tabBar().setTabButton(2, QTabBar.ButtonPosition.RightSide, None)
+        self.ui.ServicesTabWidget.tabBar().setTabButton(3, QTabBar.ButtonPosition.RightSide, None)
+        self.ui.ServicesTabWidget.tabBar().setTabButton(4, QTabBar.ButtonPosition.RightSide, None)
 
         self.resetBruteTabs()  # clear brute tabs (if any) and create default brute tab
         self.displayToolPanel(False)
@@ -224,8 +228,8 @@ class View(QtCore.QObject):
 
     def yesNoDialog(self, message, title):
         dialog = QtWidgets.QMessageBox.question(self.ui.centralwidget, title, message,
-                                                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-                                                QtWidgets.QMessageBox.No)
+                                                QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No,
+                                                QtWidgets.QMessageBox.StandardButton.No)
         return dialog
         
     def setDirty(self, status=True):   # this function is called for example when the user edits notes
@@ -261,7 +265,7 @@ class View(QtCore.QObject):
                       "Are you sure you want to continue?"
             reply = self.yesNoDialog(message, 'Confirm')
                     
-            if not reply == QtWidgets.QMessageBox.Yes:
+            if not reply == QtWidgets.QMessageBox.StandardButton.Yes:
                 return False
             self.controller.killRunningProcesses()
         
@@ -281,12 +285,12 @@ class View(QtCore.QObject):
     def confirmExit(self):
         message = "Are you sure to exit the program?"
         reply = self.yesNoDialog(message, 'Confirm')
-        return (reply == QtWidgets.QMessageBox.Yes)
+        return (reply == QtWidgets.QMessageBox.StandardButton.Yes)
 
     def killProcessConfirmation(self):
         message = "Are you sure you want to kill the selected processes?"
         reply = self.yesNoDialog(message, 'Confirm')
-        if reply == QtWidgets.QMessageBox.Yes:
+        if reply == QtWidgets.QMessageBox.StandardButton.Yes:
             return True
         return False
 
@@ -353,7 +357,7 @@ class View(QtCore.QObject):
 
         filename = QtWidgets.QFileDialog.getSaveFileName(self.ui.centralwidget, 'Save project as',
                                                          self.controller.getCWD(), filter='Legion session (*.legion)',
-                                                         options=QtWidgets.QFileDialog.DontConfirmOverwrite)[0]
+                                                         options=QtWidgets.QFileDialog.Option.DontConfirmOverwrite)[0]
             
         while not filename =='':
             if not os.access(ntpath.dirname(str(filename)), os.R_OK) or not os.access(
@@ -372,15 +376,15 @@ class View(QtCore.QObject):
                 reply = msgBox.question(self.ui.centralwidget, 'Confirm',
                                         "A file named \""+ntpath.basename(str(filename))+"\" already exists.  " +
                                         "Do you want to replace it?",
-                                        QtWidgets.QMessageBox.Abort | QtWidgets.QMessageBox.Save)
+                                        QtWidgets.QMessageBox.StandardButton.Abort | QtWidgets.QMessageBox.StandardButton.Save)
             
-                if reply == QtWidgets.QMessageBox.Save:
+                if reply == QtWidgets.QMessageBox.StandardButton.Save:
                     self.controller.saveProjectAs(filename, 1)          # replace
                     break
 
             filename = QtWidgets.QFileDialog.getSaveFileName(self.ui.centralwidget, 'Save project as', '.',
                                                              filter='Legion session (*.legion)',
-                                                             options=QtWidgets.QFileDialog.DontConfirmOverwrite)[0]
+                                                             options=QtWidgets.QFileDialog.Option.DontConfirmOverwrite)[0]
 
         if not filename == '':
             self.setDirty(False)
@@ -394,13 +398,13 @@ class View(QtCore.QObject):
     def saveOrDiscard(self):
         reply = QtWidgets.QMessageBox.question(
             self.ui.centralwidget, 'Confirm', "The project has been modified. Do you want to save your changes?",
-            QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel,
-            QtWidgets.QMessageBox.Save)
+            QtWidgets.QMessageBox.StandardButton.Save | QtWidgets.QMessageBox.StandardButton.Discard | QtWidgets.QMessageBox.StandardButton.Cancel,
+            QtWidgets.QMessageBox.StandardButton.Save)
         
-        if reply == QtWidgets.QMessageBox.Save:
+        if reply == QtWidgets.QMessageBox.StandardButton.Save:
             self.saveProject()
             return True
-        elif reply == QtWidgets.QMessageBox.Discard:
+        elif reply == QtWidgets.QMessageBox.StandardButton.Discard:
             return True
         else:
             return False                                                # the user cancelled
@@ -415,7 +419,7 @@ class View(QtCore.QObject):
         
     def connectAddHostsDialog(self):
         self.adddialog.cmdAddButton.setDefault(True)
-        self.adddialog.txtHostList.setFocus(True)
+        self.adddialog.txtHostList.setFocus(Qt.FocusReason.OtherFocusReason)
         self.adddialog.validationLabel.hide()
         self.adddialog.spacer.changeSize(15, 15)
         self.adddialog.show()
@@ -527,7 +531,11 @@ class View(QtCore.QObject):
         if self.dealWithCurrentProject(True):   # the parameter indicates that we are exiting the application
             self.closeProject()
             log.info('Exiting application..')
-            sys.exit(0)
+            #self.loop.quit()
+            #self.app.quit()
+            from PyQt6.QtCore import QCoreApplication
+            QCoreApplication.quit()
+            #sys.exit(0)
 
     ### TABLE ACTIONS ###
 
@@ -722,11 +730,11 @@ class View(QtCore.QObject):
                 self.ui.ServicesTabWidget.insertTab(2,self.ui.InformationTab,("Information"))
                 self.ui.ServicesTabWidget.insertTab(3,self.ui.CvesRightTab,("CVEs"))
                 self.ui.ServicesTabWidget.insertTab(4,self.ui.NotesTab,("Notes"))
-                self.ui.ServicesTabWidget.tabBar().setTabButton(0, QTabBar.RightSide, None)
-                self.ui.ServicesTabWidget.tabBar().setTabButton(1, QTabBar.RightSide, None)
-                self.ui.ServicesTabWidget.tabBar().setTabButton(2, QTabBar.RightSide, None)
-                self.ui.ServicesTabWidget.tabBar().setTabButton(3, QTabBar.RightSide, None)
-                self.ui.ServicesTabWidget.tabBar().setTabButton(4, QTabBar.RightSide, None)
+                self.ui.ServicesTabWidget.tabBar().setTabButton(0, QTabBar.ButtonPosition.RightSide, None)
+                self.ui.ServicesTabWidget.tabBar().setTabButton(1, QTabBar.ButtonPosition.RightSide, None)
+                self.ui.ServicesTabWidget.tabBar().setTabButton(2, QTabBar.ButtonPosition.RightSide, None)
+                self.ui.ServicesTabWidget.tabBar().setTabButton(3, QTabBar.ButtonPosition.RightSide, None)
+                self.ui.ServicesTabWidget.tabBar().setTabButton(4, QTabBar.ButtonPosition.RightSide, None)
 
                 self.restoreToolTabWidget()
                 ###
@@ -802,7 +810,7 @@ class View(QtCore.QObject):
             menu.aboutToShow.connect(self.setVisible)
             menu.aboutToHide.connect(self.setInvisible)
             hostid = self.HostsTableModel.getHostIdForRow(row)
-            action = menu.exec_(self.ui.HostsTableView.viewport().mapToGlobal(pos))
+            action = menu.exec(self.ui.HostsTableView.viewport().mapToGlobal(pos))
 
             if action:
                 self.controller.handleHostAction(self.viewState.ip_clicked, hostid, actions, action)
@@ -823,7 +831,7 @@ class View(QtCore.QObject):
             menu, actions, shiftPressed = self.controller.getContextMenuForServiceName(self.viewState.service_clicked)
             menu.aboutToShow.connect(self.setVisible)
             menu.aboutToHide.connect(self.setInvisible)
-            action = menu.exec_(self.ui.ServiceNamesTableView.viewport().mapToGlobal(pos))
+            action = menu.exec(self.ui.ServiceNamesTableView.viewport().mapToGlobal(pos))
 
             if action:
                 # because we will need to populate the right-side panel in order to select those rows
@@ -896,7 +904,7 @@ class View(QtCore.QObject):
                                         self.ToolHostsTableModel.getPortForRow(row.row()))[0]])
                     restore = True
 
-                action = menu.exec_(self.ui.ToolHostsTableView.viewport().mapToGlobal(pos))
+                action = menu.exec(self.ui.ToolHostsTableView.viewport().mapToGlobal(pos))
      
                 if action:
                     self.controller.handlePortAction(targets, actions, terminalActions, action, restore)
@@ -908,7 +916,7 @@ class View(QtCore.QObject):
                 menu.aboutToHide.connect(self.setInvisible)
                 hostid = self.HostsTableModel.getHostIdForRow(self.HostsTableModel.getRowForIp(ip))
 
-                action = menu.exec_(self.ui.ToolHostsTableView.viewport().mapToGlobal(pos))
+                action = menu.exec(self.ui.ToolHostsTableView.viewport().mapToGlobal(pos))
 
                 if action:
                     self.controller.handleHostAction(self.viewState.ip_clicked, hostid, actions, action)
@@ -955,7 +963,7 @@ class View(QtCore.QObject):
                                     self.PortsByServiceTableModel.getServiceNameForRow(row.row())])
                     restore = True
 
-            action = menu.exec_(self.ui.ServicesTableView.viewport().mapToGlobal(pos))
+            action = menu.exec(self.ui.ServicesTableView.viewport().mapToGlobal(pos))
 
             if action:
                 self.controller.handlePortAction(targets, actions, terminalActions, action, restore)
@@ -978,7 +986,7 @@ class View(QtCore.QObject):
                 selectedProcesses.append([int(pid), self.ProcessesTableModel.getProcessStatusForRow(row.row()),
                                           self.ProcessesTableModel.getProcessIdForRow(row.row())])
 
-            action = menu.exec_(self.ui.ProcessesTableView.viewport().mapToGlobal(pos))
+            action = menu.exec(self.ui.ProcessesTableView.viewport().mapToGlobal(pos))
 
             if action:
                 self.controller.handleProcessAction(selectedProcesses, action)
@@ -999,7 +1007,7 @@ class View(QtCore.QObject):
         menu.aboutToShow.connect(self.setVisible)
         menu.aboutToHide.connect(self.setInvisible)
         
-        action = menu.exec_(self.ui.ScreenshotWidget.scrollArea.viewport().mapToGlobal(pos))
+        action = menu.exec(self.ui.ScreenshotWidget.scrollArea.viewport().mapToGlobal(pos))
 
         if action == zoomInAction:
             self.ui.ScreenshotWidget.zoomIn()
@@ -1026,7 +1034,7 @@ class View(QtCore.QObject):
             self.ui.HostsTableView.setColumnHidden(i, True)
 
         self.ui.HostsTableView.horizontalHeader().resizeSection(1, 30)
-        self.HostsTableModel.sort(3, Qt.DescendingOrder)
+        self.HostsTableModel.sort(3, Qt.SortOrder.DescendingOrder)
 
         ips = []   # ensure that there is always something selected
         for row in range(self.HostsTableModel.rowCount("")):
@@ -1119,7 +1127,7 @@ class View(QtCore.QObject):
         for i in [0,1,5,6,8,10,11]:                                     # hide some columns
             self.ui.ServicesTableView.setColumnHidden(i, True)
         
-        self.ServicesTableModel.sort(2, Qt.DescendingOrder)             # sort by port by default (override default)
+        self.ServicesTableModel.sort(2, Qt.SortOrder.DescendingOrder)             # sort by port by default (override default)
 
     def updatePortsByServiceTableView(self, serviceName):
         headers = ["Host", "Port", "Port", "Protocol", "State", "HostId", "ServiceId", "Name", "Product", "Version",
@@ -1137,7 +1145,7 @@ class View(QtCore.QObject):
         self.ui.ServicesTableView.horizontalHeader().resizeSection(0,165)   # resize IP
         self.ui.ServicesTableView.horizontalHeader().resizeSection(1,65)    # resize port
         self.ui.ServicesTableView.horizontalHeader().resizeSection(3,100)   # resize protocol
-        self.PortsByServiceTableModel.sort(0, Qt.DescendingOrder)           # sort by IP by default (override default)
+        self.PortsByServiceTableModel.sort(0, Qt.SortOrder.DescendingOrder)           # sort by IP by default (override default)
 
     def updateInformationView(self, hostIP):
 
@@ -1314,7 +1322,7 @@ class View(QtCore.QObject):
             self.viewState.filters, showProcesses = True, sort = self.processesTableViewSort,
             ncol = self.processesTableViewSortColumn), headers)
         self.ui.ProcessesTableView.setModel(self.ProcessesTableModel)
-        self.ProcessesTableModel.sort(15, Qt.DescendingOrder)
+        self.ProcessesTableModel.sort(15, Qt.SortOrder.DescendingOrder)
         
     def updateProcessesTableView(self):
         self.ProcessesTableModel.setDataList(
@@ -1402,8 +1410,8 @@ class View(QtCore.QObject):
             tempTextView.setReadOnly(True)
             if self.controller.getSettings().general_tool_output_black_background == 'True':
                 p = tempTextView.palette()
-                p.setColor(QtGui.QPalette.Base, Qt.black)               # black background
-                p.setColor(QtGui.QPalette.Text, Qt.white)               # white font
+                p.setColor(QtGui.QPalette.ColorRole.Base, Qt.GlobalColor.black)               # black background
+                p.setColor(QtGui.QPalette.ColorRole.Text, Qt.GlobalColor.white)               # white font
                 tempTextView.setPalette(p)
                 # font-size:18px; width: 150px; color:red; left: 20px;}"); # set the menu font color: black
                 tempTextView.setStyleSheet("QMenu { color:black;}")
@@ -1439,8 +1447,8 @@ class View(QtCore.QObject):
         tempTextView.setReadOnly(True)
         if self.controller.getSettings().general_tool_output_black_background == 'True':
             p = tempTextView.palette()
-            p.setColor(QtGui.QPalette.Base, Qt.black)               # black background
-            p.setColor(QtGui.QPalette.Text, Qt.white)               # white font
+            p.setColor(QtGui.QPalette.ColorRole.Base, Qt.GlobalColor.black)               # black background
+            p.setColor(QtGui.QPalette.ColorRole.Text, Qt.GlobalColor.white)               # white font
             tempTextView.setPalette(p)
             # font-size:18px; width: 150px; color:red; left: 20px;}"); # set the menu font color: black
             tempTextView.setStyleSheet("QMenu { color:black;}")
@@ -1469,7 +1477,7 @@ class View(QtCore.QObject):
         if str(self.controller.getProcessStatusForDBId(dbId)) == 'Running':
             message = "This process is still running. Are you sure you want to kill it?"
             reply = self.yesNoDialog(message, 'Confirm')
-            if reply == QtWidgets.QMessageBox.Yes:
+            if reply == QtWidgets.QMessageBox.StandardButton.Yes:
                 self.controller.killProcess(pid, dbId)
             else:
                 return
@@ -1478,7 +1486,7 @@ class View(QtCore.QObject):
         if str(self.controller.getProcessStatusForDBId(dbId)) == 'Waiting':
             message = "This process is waiting to start. Are you sure you want to cancel it?"
             reply = self.yesNoDialog(message, 'Confirm')
-            if reply == QtWidgets.QMessageBox.Yes:
+            if reply == QtWidgets.QMessageBox.StandardButton.Yes:
                 self.controller.cancelProcess(dbId)
             else:
                 return
@@ -1582,7 +1590,7 @@ class View(QtCore.QObject):
             if self.ProcessesTableModel.getProcessStatusForPid(self.ui.BruteTabWidget.currentWidget().pid)=="Running":
                 message = "This process is still running. Are you sure you want to kill it?"
                 reply = self.yesNoDialog(message, 'Confirm')
-                if reply == QtWidgets.QMessageBox.Yes:
+                if reply == QtWidgets.QMessageBox.StandardButton.Yes:
                     self.killBruteProcess(self.ui.BruteTabWidget.currentWidget())
                 else:
                     return
@@ -1616,7 +1624,7 @@ class View(QtCore.QObject):
             if not self.controller.isHostInDB(bWidget.ipTextinput.text()):
                 message = "This host is not in scope. Add it to scope and continue?"
                 reply = self.yesNoDialog(message, 'Confirm')
-                if reply == QtWidgets.QMessageBox.No:
+                if reply == QtWidgets.QMessageBox.StandardButton.No:
                     return
                 else:
                     log.info('Adding host to scope here!!')

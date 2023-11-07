@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -17,16 +17,78 @@ Copyright (c) 2022 GoVanguard
 """
 
 import os, sys, socket, locale, webbrowser, \
-    re  # for webrequests, screenshot timeouts, timestamps, browser stuff and regex
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import *  # for QProcess
+    re, platform  # for webrequests, screenshot timeouts, timestamps, browser stuff and regex
+from PyQt6 import QtCore, QtWidgets
+from PyQt6.QtCore import *  # for QProcess
 from six import u as unicode
 
 from app.http.isHttps import isHttps
 from app.logging.legionLog import getAppLogger
 from app.timing import timing
 
+from PyQt6.QtWidgets import QAbstractItemView
+import subprocess
+
 log = getAppLogger()
+
+# Convert Windows path to Posix
+def winPath2Unix(windowsPath):
+    windowsPath = windowsPath.replace("\\", "/")
+    windowsPath = windowsPath.replace("C:", "/mnt/c")
+    return windowsPath
+
+
+# Convert Posix path to Windows
+def unixPath2Win(posixPath):
+    posixPath = posixPath.replace("/", "\\")
+    posixPath = posixPath.replace("\\mnt\\c", "C:")
+    return posixPath
+
+# Check if running in WSL
+def isWsl():
+    release = str(platform.uname().release).lower()
+    return "microsoft" in release
+
+# Get the AppData Temp directory path if WSL
+def getAppdataTemp():
+    try:
+        username = os.environ["WSL_USER_NAME"]
+    except KeyError:
+        raise Exception("WSL detected but environment variable 'WSL_USER_NAME' is unset.")
+
+    appDataTemp = "C:\\Users\\{0}\\AppData\\Local\\Temp".format(username)
+    appDataTempUnix = winPath2Unix(appDataTemp)
+
+    if os.path.exists(appDataTempUnix):
+        return appDataTemp
+    else:
+        raise Exception("The AppData Temp directory path {0} does not exist.".format(appDataTemp))
+    return path
+
+# Get the temp folder based on os. Create if missing from *nix
+def getTempFolder():
+    if isWsl():
+        tempPathWin = "{0}\\legion\\tmp".format(getAppdataTemp())
+        tempPath = winPath2Unix(tempPathWin)
+        if not os.path.isdir(os.path.expanduser(tempPath)):
+            os.makedirs(tempPath)
+        log.info("WSL is detected. The AppData Temp directory path is {0} ({1})".format(tempPath, tempPathWin))
+    else:
+        tempPath = "~/.local/share/legion/tmp"
+        if not os.path.isdir(os.path.expanduser(tempPath)):
+            os.makedirs(os.path.expanduser(tempPath))
+        log.info("Non-WSL The AppData Temp directory path is {0}".format(tempPath))
+    return tempPath
+
+def getPid(qprocess):
+    pid = qprocess.processId()
+    return pid
+
+def formatCommandQProcess(inputCommand):
+    parts = inputCommand.split()
+    program = parts[0]
+    arguments = parts[1:]
+    return program, arguments
 
 # bubble sort algorithm that sorts an array (in place) based on the values in another array
 # the values in the array must be comparable and in the corresponding positions
@@ -69,7 +131,7 @@ def clearLayout(layout):
 def setTableProperties(table, headersLen, hiddenColumnIndexes=[]):
     table.verticalHeader().setVisible(False)  # hide the row headers
     table.setShowGrid(False)  # hide the table grid
-    table.setSelectionBehavior(QtWidgets.QTableView.SelectRows)  # select entire row instead of single cell
+    table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)  # select entire row instead of single cell
     table.setSortingEnabled(True)  # enable column sorting
     table.horizontalHeader().setStretchLastSection(True)  # header behaviour
     table.horizontalHeader().setSortIndicatorShown(False)  # hide sort arrow from column header
@@ -82,7 +144,7 @@ def setTableProperties(table, headersLen, hiddenColumnIndexes=[]):
     for i in hiddenColumnIndexes:  # hide some columns
         table.setColumnHidden(i, True)
 
-    table.setContextMenuPolicy(Qt.CustomContextMenu)  # create the right-click context menu
+    table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)  # create the right-click context menu
 
 
 def checkHydraResults(output):

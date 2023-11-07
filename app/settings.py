@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 """
-LEGION (https://govanguard.com)
-Copyright (c) 2022 GoVanguard
+LEGION (https://gotham-security.com)
+Copyright (c) 2023 Gotham Security
 
     This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
     License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
@@ -35,7 +35,7 @@ class AppSettings():
                 os.makedirs(os.path.expanduser("~/.local/share/legion"))
             shutil.copy('./legion.conf', os.path.expanduser('~/.local/share/legion/legion.conf'))
         log.info('Loading settings file..')
-        self.actions = QtCore.QSettings(os.path.expanduser('~/.local/share/legion/legion.conf'), QtCore.QSettings.NativeFormat)
+        self.actions = QtCore.QSettings(os.path.expanduser('~/.local/share/legion/legion.conf'), QtCore.QSettings.Format.NativeFormat)
 
     def getGeneralSettings(self):
         return self.getSettingsByGroup("GeneralSettings")
@@ -117,7 +117,7 @@ class AppSettings():
         else:
             log.info('Saving config...')
 
-        self.actions = QtCore.QSettings(os.path.expanduser('~/.local/share/legion/legion.conf'), QtCore.QSettings.NativeFormat)
+        self.actions = QtCore.QSettings(os.path.expanduser('~/.local/share/legion/legion.conf'), QtCore.QSettings.Format.NativeFormat)
 
         self.actions.beginGroup('GeneralSettings')
         self.actions.setValue('default-terminal', newSettings.general_default_terminal)
@@ -229,7 +229,7 @@ class Settings():
         self.tools_path_hydra = "/usr/bin/hydra"
         self.tools_path_cutycapt = "/usr/bin/cutycapt"
         self.tools_path_texteditor = "/usr/bin/xdg-open"
-        self.tools_pyshodan_api_key = "SNYEkE0gdwNu9BRURVDjWPXePCquXqht"
+        self.tools_pyshodan_api_key = ""
 
         # GUI settings
         self.gui_process_tab_column_widths = "125,0,100,150,100,100,100,100,100,100,100,100,100,100,100,100,100"
