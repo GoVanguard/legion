@@ -46,8 +46,8 @@ Reboot
 
 ### Notable changes from Sparta
 
-* Refactored from Python 2.7 to Python 3.6 and the elimination of deprecated and unmaintained libraries.
-* Upgraded to PyQT5, increased responsiveness, less buggy, more intuitive GUI that includes features like:
+* Refactored from Python 2.7 to Python 3.8+ and the elimination of deprecated and unmaintained libraries.
+* Upgraded to PyQT6, increased responsiveness, less buggy, more intuitive GUI that includes features like:
     * Task completion estimates
     * 1-Click scan lists of ips, hostnames and CIDR subnets
     * Ability to purge results, rescan hosts and delete hosts
@@ -65,10 +65,8 @@ Reboot
 
 RunIt script (`docker/runIt.sh`) supports:
 
-- Ubuntu 18
-- Fedora 30
-- ParrotOS
-- Kali Linux
+- Ubuntu 20.04+
+- Kali 2022+
 
 It is possible to run the docker image on any Linux distribution, however, different distributions have different hoops
 to jump through to get a docker app to be able to connect to the X server. Everyone is welcome to try to figure those
