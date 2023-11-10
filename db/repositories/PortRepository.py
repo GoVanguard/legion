@@ -15,6 +15,8 @@ Copyright (c) 2023 Gotham Security
 
 Author(s): Shane Scott (sscott@gotham-security.com), Dmitriy Dubson (d.dubson@gmail.com)
 """
+
+from sqlalchemy import text
 from db.SqliteDbAdapter import Database
 from db.entities.l1script import l1ScriptObj
 from db.entities.port import portObj
@@ -26,21 +28,31 @@ class PortRepository:
         self.dbAdapter = dbAdapter
 
     def getPortsByIPAndProtocol(self, host_ip, protocol):
-        query = ("SELECT ports.portId FROM portObj AS ports INNER JOIN hostObj AS hosts ON hosts.id = ports.hostId "
-                 "WHERE hosts.ip = ? and ports.protocol = ?")
-        return self.dbAdapter.metadata.bind.execute(query, str(host_ip), str(protocol)).first()
+        session = self.dbAdapter.session()
+        query = text("SELECT ports.portId FROM portObj AS ports INNER JOIN hostObj AS hosts ON hosts.id = ports.hostId "
+                     "WHERE hosts.ip = :host_ip and ports.protocol = :protocol")
+        result = session.execute(query, {'host_ip': str(host_ip), 'protocol': str(protocol)}).first()
+        session.close()
+        return result
 
     def getPortStatesByHostId(self, host_id):
-        query = 'SELECT port.state FROM portObj as port WHERE port.hostId = ?'
-        return self.dbAdapter.metadata.bind.execute(query, str(host_id)).fetchall()
+        session = self.dbAdapter.session()
+        query = text('SELECT port.state FROM portObj as port WHERE port.hostId = :host_id')
+        result = session.execute(query, {'host_id': str(host_id)}).fetchall()
+        session.close()
+        return result
 
     def getPortsAndServicesByHostIP(self, host_ip, filters):
+        session = self.dbAdapter.session()
         query = ("SELECT hosts.ip, ports.portId, ports.protocol, ports.state, ports.hostId, ports.serviceId, "
                  "services.name, services.product, services.version, services.extrainfo, services.fingerprint "
                  "FROM portObj AS ports INNER JOIN hostObj AS hosts ON hosts.id = ports.hostId "
-                 "LEFT OUTER JOIN serviceObj AS services ON services.id = ports.serviceId WHERE hosts.ip = ?")
+                 "LEFT OUTER JOIN serviceObj AS services ON services.id = ports.serviceId WHERE hosts.ip = :host_ip")
         query += applyPortFilters(filters)
-        return self.dbAdapter.metadata.bind.execute(query, str(host_ip)).fetchall()
+        query = text(query)
+        result = session.execute(query, {'host_ip': str(host_ip)}).fetchall()
+        session.close()
+        return result
 
     # used to delete all port/script data related to a host - to overwrite portscan info with the latest scan
     def deleteAllPortsAndScriptsByHostId(self, hostID, protocol):
@@ -56,3 +68,4 @@ class PortRepository:
         for p in ports_for_host:
             session.delete(p)
         session.commit()
+        session.close()

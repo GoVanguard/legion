@@ -24,7 +24,6 @@ def applyFilters(filters):
     query_filter += applyPortFilters(filters)
     return query_filter
 
-
 def applyHostsFilters(filters):
     query_filter = ""
     if not filters.down:
@@ -38,7 +37,6 @@ def applyHostsFilters(filters):
                          f" OR hosts.osMatch LIKE '%{sanitise(word)}%'"
                          f" OR hosts.hostname LIKE '%{sanitise(word)}%')")
     return query_filter
-
 
 def applyPortFilters(filters):
     query_filter = ""

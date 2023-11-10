@@ -1,3 +1,15 @@
+LEGION 0.4.0
+
+* Refactored to Python 3.8+
+* Refactored to PyQt 6
+* Database calls migrated to sessions (dramatically improves performance, reliability and huge memory reductions)
+* Refactored Logging
+* General cleanup
+* Screenshot tool revised to use PhantomJs webdriver (other webdrivers coming soon)
+* Simplify startup scripts, dependancy installations scripts, etc
+* Eliminate support for distributions other than Kali 2022 and later or Ubuntu 20.04 or later
+* Improved WSL support (handling of path conversions for calling the Windows NMAP installation from the program)
+
 LEGION 0.3.9
 
 * Start time message box ensuring run as root

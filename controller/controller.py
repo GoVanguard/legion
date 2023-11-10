@@ -80,12 +80,18 @@ class Controller:
         self.nmapImporter = NmapImporter(updateProgressObservable,
                                          self.logic.activeProject.repositoryContainer.hostRepository)
         self.nmapImporter.done.connect(self.importFinished)
+        self.nmapImporter.done.connect(self.view.updateInterface)
+        self.nmapImporter.done.connect(self.view.updateToolsTableView)
+        self.nmapImporter.done.connect(self.view.updateProcessesTableView)
         self.nmapImporter.schedule.connect(self.scheduler)              # run automated attacks
         self.nmapImporter.log.connect(self.view.ui.LogOutputTextView.append)
 
     def initPythonImporter(self):
         self.pythonImporter = PythonImporter()
         self.pythonImporter.done.connect(self.importFinished)
+        self.pythonImporter.done.connect(self.view.updateInterface)
+        self.pythonImporter.done.connect(self.view.updateToolsTableView)
+        self.pythonImporter.done.connect(self.view.updateProcessesTableView)
         self.pythonImporter.schedule.connect(self.scheduler)              # run automated attacks
         self.pythonImporter.log.connect(self.view.ui.LogOutputTextView.append)
 
@@ -104,17 +110,17 @@ class Controller:
     def initTimers(self):
         self.updateUITimer = QTimer()
         self.updateUITimer.setSingleShot(True)
-        self.updateUITimer.timeout.connect(self.view.updateProcessesTableView)
-        self.updateUITimer.timeout.connect(self.view.updateToolsTableView)
+        #self.updateUITimer.timeout.connect(self.view.updateProcessesTableView)
+        #self.updateUITimer.timeout.connect(self.view.updateToolsTableView)
 
         self.updateUI2Timer = QTimer()
         self.updateUI2Timer.setSingleShot(True)
-        self.updateUI2Timer.timeout.connect(self.view.updateInterface)
+        #self.updateUI2Timer.timeout.connect(self.view.updateInterface)
 
         self.processTableUiUpdateTimer = QTimer()
         self.processTableUiUpdateTimer.timeout.connect(self.view.updateProcessesTableView)
         # Update only when queue > 0
-        self.processTableUiUpdateTimer.start(1000) # Faster than this doesn't make anything smoother
+        self.processTableUiUpdateTimer.start(500) # Faster than this doesn't make anything smoother
 
     # this function fetches all the settings from the conf file. Among other things it populates the actions lists
     # that will be used in the context menus.
@@ -243,7 +249,6 @@ class Controller:
                 outputfile = getNmapRunningFolder(runningFolder) + "/" + getTimestamp() + '-host-discover'
                 outputfile = unixPath2Win(outputfile)
                 command = f"nmap -n -sV -O --version-light -T{str(nmapSpeed)} {targetHosts} -oA {outputfile}"
-                log.info("Running {command}".format(command=command))
                 self.runCommand('nmap', 'nmap (discovery)', targetHosts, '', '', command, getTimestamp(True),
                                 outputfile, self.view.createNewTabForHost(str(targetHosts), 'nmap (discovery)', True))
             else:
@@ -357,6 +362,8 @@ class Controller:
                              re.sub("[^0-9a-zA-Z]", "", str(self.settings.hostActions[i][1])) + "-" + ip
                 command = str(self.settings.hostActions[i][2])
                 command = command.replace('[IP]', ip).replace('[OUTPUT]', outputfile)
+                if 'nmap' in command:
+                    command = "{0} -oA {1}".format(command, unixPath2Win(outputfile))
 
                 # check if same type of nmap scan has already been made and purge results before scanning
                 if 'nmap' in command:
@@ -403,7 +410,7 @@ class Controller:
         if action.text() == 'Take screenshot':
             for ip in targets:
                 url = ip[0] + ':' + ip[1]
-                self.screenshooter.addToQueue(url)
+                self.screenshooter.addToQueue(ip[0], ip[1], url)
             self.screenshooter.start()
             return
 
@@ -426,6 +433,8 @@ class Controller:
 
                     command = str(self.settings.portActions[srvc_num][2])
                     command = command.replace('[IP]', ip[0]).replace('[PORT]', ip[1]).replace('[OUTPUT]', outputfile)
+                    if 'nmap' in command:
+                        command = "{0} -oA {1}".format(command, unixPath2Win(outputfile))
 
                     if 'nmap' in command and ip[2] == 'udp':
                         command = command.replace("-sV", "-sVU")
@@ -588,9 +597,9 @@ class Controller:
     #################### PROCESSES ####################
 
     def checkProcessQueue(self):
-        log.info('# MAX PROCESSES: ' + str(self.settings.general_max_fast_processes))
-        log.info('# Fast processes running: ' + str(self.fastProcessesRunning))
-        log.info('# Fast processes queued: ' + str(self.fastProcessQueue.qsize()))
+        log.debug('Queue maximum concurrent processes: {0}'.format(str(self.settings.general_max_fast_processes)))
+        log.debug('Queue processes running: {0}'.format(str(self.fastProcessesRunning)))
+        log.debug('Queue processes waiting: {0}'.format(str(self.fastProcessQueue.qsize())))
 
         if not self.fastProcessQueue.empty():
             self.processTableUiUpdateTimer.start(1000)
@@ -605,15 +614,16 @@ class Controller:
                     # Add Timeout
                     next_proc.waitForFinished(10)
                     formattedCommand = formatCommandQProcess(next_proc.command)
+                    log.debug('Up next: {0}, {1}'.format(formattedCommand[0], formattedCommand[1]))
                     next_proc.start(formattedCommand[0], formattedCommand[1])
                     self.logic.activeProject.repositoryContainer.processRepository.storeProcessRunningStatus(
                         next_proc.id, getPid(next_proc))
                 elif not self.fastProcessQueue.empty():
-                    log.debug('> next process was canceled, checking queue again..')
+                    log.debug('Process was canceled, checking queue again..')
                     self.checkProcessQueue()
-        #else:
-        #    log.info("Halting process panel update timer as all processes are finished.")
-        #    self.processTableUiUpdateTimer.stop()
+        else:
+            log.info("Halting process panel update timer as all processes are finished.")
+            self.processTableUiUpdateTimer.stop()
 
     def cancelProcess(self, dbId):
         log.info('Canceling process: ' + str(dbId))
@@ -768,32 +778,29 @@ class Controller:
             stageDataSplit = str(stageData).split('|')
             stageOp = stageDataSplit[0]
             stageOpValues = stageDataSplit[1]
+            log.debug("Stage {0} stageOp {1}".format(str(stage), str(stageOp)))
+            log.debug("Stage {0} stageOpValues {1}".format(str(stage), str(stageOpValues)))
 
-            command = "nmap "
-            if not discovery:                                           # is it with/without host discovery?
-                command += "-Pn "
-            command += "-T4 -sV "
+            if stageOp == "" or stageOp == "NOOP" or stageOp == "SKIP":
+                log.debug("Skipping stage {0} as stageOp is {1}".format(str(stage), str(stageOp)))
+                return
 
-            #if not stage == 1 and not stage == 3:
-            #    command += "-n "                                        # only do DNS resolution on first stage
-            #if os.geteuid() == 0:                                       # if we are root we can run SYN + UDP scans
-            #    command += "-sSU "
-            #    if stage == 2:
-            #        command += '-O '  # only check for OS once to save time and only if we are root otherwise it fail
-            #else:
-            #    command += '-sT '
-            
+            if discovery:                                           # is it with/without host discovery?
+                command = "nmap -T4 -sV -sSU -O "
+            else:
+                command = "nmap -Pn -sSU "
+
             if stageOp == 'PORTS':
-                command += '-p ' + stageOpValues + ' ' + targetHosts + ' -oA ' + outputfile
+                command += '-p ' + stageOpValues + ' -vvvv ' + targetHosts + ' -oA ' + outputfile
             elif stageOp == 'NSE':
                 command = 'nmap -sV --script=' + stageOpValues + ' -vvvv ' + targetHosts + ' -oA ' + outputfile
+
+            log.debug("Stage {0} command: {1}".format(str(stage), str(command)))
 
             self.runCommand('nmap', 'nmap (stage ' + str(stage) + ')', str(targetHosts), '', '', command,
                             getTimestamp(True), outputfile, textbox, discovery=discovery, stage=stage, stop=stop)
 
     def importFinished(self):
-        self.updateUI2Timer.stop()
-        self.updateUI2Timer.start(800)
         # if nmap import was the first action, we need to hide the overlay (note: we shouldn't need to do this
         # every time. this can be improved)
         self.view.displayAddHostsOverlay(False)
@@ -808,8 +815,8 @@ class Controller:
         imageviewer.setProperty('dbId', QVariant(str(dbId)))
         # to make sure the screenshot tab appears when it is launched from the host services tab
         self.view.switchTabClick()
-        self.updateUITimer.stop()  # update the processes table
-        self.updateUITimer.start(900)
+        #self.updateUITimer.stop()  # update the processes table
+        #self.updateUITimer.start(900)
 
     def processCrashed(self, proc):
         processRepository = self.logic.activeProject.repositoryContainer.processRepository
@@ -821,7 +828,7 @@ class Controller:
         log.info('Process {qProcessId} Output: {qProcessOutput}'.format(qProcessId=str(proc.id),
                                                                         qProcessOutput=qProcessOutput))
         log.info('Process {qProcessId} Crash Output: {qProcessOutput}'.format(qProcessId=str(proc.id),
-                                                                        qProcessOutput=proc.errorString()))
+                                                                              qProcessOutput=proc.errorString()))
 
     # this function handles everything after a process ends
     # def processFinished(self, qProcess, crashed=False):
@@ -830,6 +837,7 @@ class Controller:
         try:
             if not processRepository.isKilledProcess(
                     str(qProcess.id)):  # if process was not killed
+                log.debug('Process: {0}\nCommand: {1}\noutputfile: {2}'.format(str(qProcess.id), str(qProcess.command), str(qProcess.outputfile)))
                 if not qProcess.outputfile == '':
                     # move tool output from runningfolder to output folder if there was an output file
                     outputfile = winPath2Unix(qProcess.outputfile)
@@ -837,9 +845,11 @@ class Controller:
                                                           outputfile)
                     if 'nmap' in qProcess.command: # if the process was nmap, use the parser to store it
                         if qProcess.exitCode() == 0:                    # if the process finished successfully
-                            log.info("qProcess.outputfile {0}".format(str(outputfile)))
-                            log.info("self.logic.activeProject.properties.runningFolder {0}".format(str(self.logic.activeProject.properties.runningFolder)))
-                            log.info("self.logic.activeProject.properties.outputFolder {0}".format(str(self.logic.activeProject.properties.outputFolder)))
+                            log.debug("qProcess.outputfile {0}".format(str(outputfile)))
+                            log.debug("self.logic.activeProject.properties.runningFolder {0}".format(
+                                str(self.logic.activeProject.properties.runningFolder)))
+                            log.debug("self.logic.activeProject.properties.outputFolder {0}".format(
+                                str(self.logic.activeProject.properties.outputFolder)))
                             newoutputfile = outputfile.replace(
                                 self.logic.activeProject.properties.runningFolder,
                                 self.logic.activeProject.properties.outputFolder)
@@ -854,12 +864,6 @@ class Controller:
                             self.pythonImporter.setHostIp(str(qProcess.hostIp))
                             self.pythonImporter.setPythonScript(pythonScript)
                             self.pythonImporter.start()
-                #exitCode = qProcess.exitCode()
-                #if exitCode != 0 and exitCode != 255:
-                #    log.info("Process {qProcessId} exited with code {qProcessExitCode}"
-                #             .format(qProcessId=qProcess.id, qProcessExitCode=qProcess.exitCode()))
-                #    self.processCrashed(qProcess)
-
                 log.info("Process {qProcessId} is done!".format(qProcessId=qProcess.id))
 
             processRepository.storeProcessOutput(str(qProcess.id), qProcess.display.toPlainText())
@@ -868,7 +872,7 @@ class Controller:
                 self.view.findFinishedBruteTab(str(processRepository.getPIDByProcessId(str(qProcess.id))))
 
             try:
-                self.fastProcessesRunning =- 1
+                self.fastProcessesRunning -= 1
                 self.checkProcessQueue()
                 self.processes.remove(qProcess)
                 self.updateUITimer.stop()
@@ -904,6 +908,13 @@ class Controller:
             log.info('-----------------------------------------------')
         log.info('Scheduler ended!')
 
+    def findDuplicateTab(self, tabWidget, tabName):
+        for i in range(tabWidget.count()):
+            log.debug("Tab text for {0}: {1}".format(str(i), str(tabWidget.tabText(i))))
+            if tabWidget.tabText(i) == tabName:
+                return True
+        return False
+
     def runToolsFor(self, service, hostname, ip, port, protocol='tcp'):
         log.info('Running tools for: ' + service + ' on ' + ip + ':' + port)
 
@@ -932,8 +943,11 @@ class Controller:
                             command = str(a[2])
                             command = command.replace('[IP]', ip).replace('[PORT]', port)\
                                 .replace('[OUTPUT]', outputfile)
-                            log.debug("Running tool command " + str(command))
+                            log.debug("Running tool command: {0}".format(str(command)))
 
+                            if self.findDuplicateTab(self.view.ui.ServicesTabWidget, tabTitle):
+                                log.debug("Duplicate tab name. Tool might have already run.")
+                                break
                             tab = self.view.ui.HostsTabWidget.tabText(self.view.ui.HostsTabWidget.currentIndex())
                             self.runCommand(tool[0], tabTitle, ip, port, protocol, command,
                                             getTimestamp(True),

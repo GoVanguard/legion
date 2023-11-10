@@ -107,6 +107,7 @@ class AppSettings():
         for k in keys:
             settings.update({str(k): str(self.actions.value(k))})
         self.actions.endGroup()
+        log.debug("getSettingsByGroup name:{0}, result:{1}".format(str(name), str(settings)))
         return settings
 
     def backupAndSave(self, newSettings, saveBackup=True):

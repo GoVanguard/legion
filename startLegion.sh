@@ -6,11 +6,11 @@ echo "Strap yourself in, we're starting Legion..."
 chmod a+x -R ./deps/*
 chmod a+x -R ./scripts/*
 
-# Determine and set the Python and Pip paths
-source ./deps/detectPython.sh
-
 # Determine OS, version and if WSL
 source ./deps/detectOs.sh
+
+# Determine and set the Python and Pip paths
+source ./deps/detectPython.sh
 
 # Figure if fist run or recloned and install deps 
 if [ ! -f ".initialized" ] | [ -f ".justcloned" ]
@@ -20,11 +20,29 @@ then
     then
         mkdir tmp
     fi
-    echo "Running ${DEPINSTALLER}..."
-    bash ./deps/${DEPINSTALLER}
+
+    # Setup WSL bits if needed
+    if [ ! -z $ISWSL ]
+    then
+        echo "WSL Setup..."
+        bash ./deps/setupWsl.sh
+    fi
+
+    # Install dependancies from package manager
+    echo "Installing Packages from APT..."
+    ./deps/installDeps.sh
+
+    # Install python dependancies
+    echo "Installing Python Libraries..."
+    ./deps/installPythonLibs.sh
+
+    # Patch Qt
+    echo "Stripping some ABIs from Qt libraries..."
+    ./deps/fixQt.sh
+
     # Determine if additional Sparta scripts are installed
     bash ./deps/detectScripts.sh
-    source ./deps/detectPython.sh
+
     touch .initialized
     rm .justcloned -f
 fi

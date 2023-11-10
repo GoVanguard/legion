@@ -57,7 +57,16 @@ def getOrCreateCachedLogger(logName: str, logPath: str, console: bool, cachedLog
     if cachedLogger:
         return cachedLogger
 
-    from utilities.stenoLogging import get_logger
-    log = get_logger(logName, path=logPath, console=console)
-    log.setLevel(logging.INFO)
+    import logging
+    from rich.logging import RichHandler
+
+    logging.basicConfig(
+        level="NOTSET",
+        format="%(message)s",
+        datefmt="[%X]",
+        handlers=[RichHandler(rich_tracebacks=True)]
+    )
+
+    log = logging.getLogger("rich")
+    log.setLevel(logging.DEBUG)
     return log

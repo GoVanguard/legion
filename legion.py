@@ -16,6 +16,7 @@ Copyright (c) 2023 Gotham Security
 """
 import shutil
 
+from app.ApplicationInfo import getConsoleLogo
 from app.ProjectManager import ProjectManager
 from app.logging.legionLog import getStartupLogger, getDbLogger
 from app.shell.DefaultShell import DefaultShell
@@ -67,16 +68,6 @@ except ImportError as e:
     startupLog.error(e)
     exit(1)
 
-import os
-
-#if not os.path.isdir(os.path.expanduser("~/.local/share/legion/tmp")):
-#    os.makedirs(os.path.expanduser("~/.local/share/legion/tmp"))
-
-if not os.path.isdir(os.path.expanduser("~/.local/share/legion/backup")):
-    os.makedirs(os.path.expanduser("~/.local/share/legion/backup"))
-
-if not os.path.exists(os.path.expanduser('~/.local/share/legion/legion.conf')):
-    shutil.copy('./legion.conf', os.path.expanduser('~/.local/share/legion/legion.conf'))
 
 # Check Nmap version is not 7.92- it segfaults under zsh constantly
 import subprocess
@@ -85,12 +76,24 @@ checkNmapVersion = subprocess.check_output(['nmap', '-version'])
 # Quite upgrade of pyExploitDb
 upgradeExploitDb = os.system('pip install pyExploitDb --upgrade > /dev/null 2>&1')
 
+
+def doPathSetup():
+    import os
+    if not os.path.isdir(os.path.expanduser("~/.local/share/legion/backup")):
+        os.makedirs(os.path.expanduser("~/.local/share/legion/backup"))
+
+    if not os.path.exists(os.path.expanduser('~/.local/share/legion/legion.conf')):
+        shutil.copy('./legion.conf', os.path.expanduser('~/.local/share/legion/legion.conf'))
+
+
 from ui.view import *
 from controller.controller import *
 
 # Main application declaration and loop
 if __name__ == "__main__":
-    cprint(figlet_format('LEGION'), 'yellow', 'on_red', attrs=['bold'])
+    cprint(getConsoleLogo())
+
+    doPathSetup()
 
     app = QApplication(sys.argv)
     loop = qasync.QEventLoop(app)

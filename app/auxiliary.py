@@ -142,7 +142,7 @@ def setTableProperties(table, headersLen, hiddenColumnIndexes=[]):
         table.setColumnHidden(i, False)
 
     for i in hiddenColumnIndexes:  # hide some columns
-        table.setColumnHidden(i, True)
+        table.hideColumn(i)
 
     table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)  # create the right-click context menu
 
