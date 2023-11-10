@@ -1,7 +1,7 @@
 asyncio
 six
 qasync
-SQLAlchemy
+SQLAlchemy==1.4.50
 PyQt6
 requests
 pyfiglet

@@ -16,26 +16,34 @@ Copyright (c) 2023 Gotham Security
 Author(s): Shane Scott (sscott@gotham-security.com), Dmitriy Dubson (d.dubson@gmail.com)
 """
 from app.auxiliary import Filters
+from sqlalchemy import text
 from db.SqliteDbAdapter import Database
 from db.filters import applyFilters
 
 
 class ServiceRepository:
     def __init__(self, db_adapter: Database):
-        self.db_adapter = db_adapter
+        self.dbAdapter = db_adapter
 
     def getServiceNames(self, filters: Filters):
+        session = self.dbAdapter.session()
         query = ("SELECT DISTINCT service.name FROM serviceObj as service "
                  "INNER JOIN portObj as ports "
                  "INNER JOIN hostObj AS hosts "
                  "ON hosts.id = ports.hostId AND service.id=ports.serviceId WHERE 1=1")
         query += applyFilters(filters)
         query += ' ORDER BY service.name ASC'
-        return self.db_adapter.metadata.bind.execute(query).fetchall()
+        query = text(query)
+        result = session.execute(query).fetchall()
+        session.close()
+        return result
 
     def getServiceNamesByHostIPAndPort(self, host_ip, port):
-        query = ("SELECT services.name FROM serviceObj AS services "
-                 "INNER JOIN hostObj AS hosts ON hosts.id = ports.hostId "
-                 "INNER JOIN portObj AS ports ON services.id=ports.serviceId "
-                 "WHERE hosts.ip=? and ports.portId = ?")
-        return self.db_adapter.metadata.bind.execute(query, str(host_ip), str(port)).first()
+        session = self.dbAdapter.session()
+        query = text("SELECT services.name FROM serviceObj AS services "
+                     "INNER JOIN hostObj AS hosts ON hosts.id = ports.hostId "
+                     "INNER JOIN portObj AS ports ON services.id=ports.serviceId "
+                     "WHERE hosts.ip=:host_ip and ports.portId = :port")
+        result = session.execute(query, {'host_ip': str(host_ip), 'port': str(port)}).first()
+        session.close()
+        return result

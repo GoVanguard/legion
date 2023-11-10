@@ -15,6 +15,7 @@ Copyright (c) 2023 Gotham Security
 
 Author(s): Shane Scott (sscott@gotham-security.com), Dmitriy Dubson (d.dubson@gmail.com)
 """
+
 from db.SqliteDbAdapter import Database
 from six import u as unicode
 
@@ -27,9 +28,13 @@ class NoteRepository:
         self.log = log
 
     def getNoteByHostId(self, hostId):
-        return self.dbAdapter.session().query(note).filter_by(hostId=str(hostId)).first()
+        session = self.dbAdapter.session()
+        result = session.query(note).filter_by(hostId=str(hostId)).first()
+        session.close()
+        return result
 
     def storeNotes(self, hostId, notes):
+        session = self.dbAdapter.session()
         if len(notes) == 0:
             notes = unicode("".format(hostId=hostId))
         self.log.debug("Storing notes for {hostId}, Notes {notes}".format(hostId=hostId, notes=notes))
@@ -38,6 +43,6 @@ class NoteRepository:
             t_note.text = unicode(notes)
         else:
             t_note = note(hostId, unicode(notes))
-        session = self.dbAdapter.session()
         session.add(t_note)
-        self.dbAdapter.commit()
+        session.commit()
+        session.close()

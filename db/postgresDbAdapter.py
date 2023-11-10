@@ -71,7 +71,7 @@ class Database:
         self.log.debug("DB lock acquired")
         try:
             session = self.session()
-            rnd = float(randint(1, 99)) / 100.00
+            rnd = float(randint(1, 99)) / 1000.00
             self.log.debug("Waiting {0}s before commit...".format(str(rnd)))
             time.sleep(rnd)
             session.commit()

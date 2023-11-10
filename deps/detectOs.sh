@@ -1,9 +1,8 @@
 #!/bin/bash
 
 unameOutput=`uname -a`
-releaseOutput=`cat /etc/os-release`
-releaseName="?"
-releaseVersion="?"
+releaseVersion=`grep 'VERSION_ID' /etc/os-release | cut -d '"' -f 2`
+releaseName=`grep "^NAME=\"" /etc/os-release | cut -d '"' -f 2`
 wslEnv=""
 
 # Detect WSL and enable XForwaridng to Xming
@@ -13,49 +12,30 @@ then
     wslEnv="WSL"
 fi
 
+echo "Detected ${releaseName} ${releaseVersion} ${wslEnv}"
+
 # Figure Linux Version
-if [[ ${releaseOutput} == *"Ubuntu"* ]]
+if [[ ${releaseName} == *"Ubuntu"* ]]
 then
-    releaseName="Ubuntu"
-    if [[ ${releaseOutput} == *"16."* ]]
+    if [[ ${releaseVersion} != *"20.04"* ]] && [[ ${releaseVersion} != *"20.10"* ]] && [[ ${releaseVersion} != *"21."* ]] && [[ ${releaseVersion} != *"22."* ]] && [[ ${releaseVersion} != *"23."* ]]
     then
-        releaseVersion="16"
-    elif [[ ${releaseOutput} == *"18."* ]]
-    then
-        releaseVersion="18"
+        echo "Unsupported Ubuntu version. Please use Ubuntu 20.04 or later."
+        exit 1
+    else
+        echo "Some tools are not available under Ubuntu. Run under Kali if you're missing something."
     fi
-elif [[ ${releaseOutput} == *"Kali"* ]]
+elif [[ ${releaseName} == *"Kali"* ]]
 then
-    releaseName="Kali"
-    if [[ ${releaseOutput} == *"2019"* ]]
+    if [[ ${releaseVersion} != *"2022"* ]] && [[ ${releaseVersion} != *"2023"* ]]
     then
-        releaseVersion="2019"
-    elif [[ ${releaseOutput} == *"2018"* ]]
-    then
-        releaseVersion="2018"
-    elif [[ ${releaseOutput} == *"2016"* ]]
-    then
-        releaseVersion="2016"
-    fi
-elif [[ ${releaseOutput} == *"Parrot"* ]]
-then
-    releaseName="Parrot"
-    if [[ ${releaseOutput} == *"4.5"* ]]
-    then
-        releaseVersion="4.5"
-    elif [[ ${releaseOutput} == *"4.6"* ]]
-    then
-        releaseVersion="4.6"
+        echo "Unsupported Kali version. Please use Kali 2022 or later."
+        exit 1
     fi
 else
-    releaseName="Unknown"
-    releaseVersion=""
+    echo "Unsupported distrubution, version or both."
+    exit 1
 fi
 
-echo "Detected ${releaseName} ${releaseVersion} ${wslEnv}"
-depInstaller="${releaseName}-${releaseVersion}${wslEnv}.sh"
-
-export DEPINSTALLER=${depInstaller}
 export OS_RELEASE=${releaseName}
 export OS_RELEASE_VERSION=${releaseVersion}
 export ISWSL=${wslEnv}

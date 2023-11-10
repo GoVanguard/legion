@@ -15,6 +15,8 @@ Copyright (c) 2023 Gotham Security
 
 Author(s): Shane Scott (sscott@gotham-security.com), Dmitriy Dubson (d.dubson@gmail.com)
 """
+
+from sqlalchemy import text
 from db.SqliteDbAdapter import Database
 
 
@@ -23,8 +25,11 @@ class CVERepository:
         self.dbAdapter = dbAdapter
 
     def getCVEsByHostIP(self, hostIP):
-        query = ('SELECT cves.name, cves.severity, cves.product, cves.version, cves.url, cves.source, '
-                 'cves.exploitId, cves.exploit, cves.exploitUrl FROM cve AS cves '
-                 'INNER JOIN hostObj AS hosts ON hosts.id = cves.hostId '
-                 'WHERE hosts.ip = ?')
-        return self.dbAdapter.metadata.bind.execute(query, str(hostIP)).fetchall()
+        session = self.dbAdapter.session()
+        query = text('SELECT cves.name, cves.severity, cves.product, cves.version, cves.url, cves.source, '
+                     'cves.exploitId, cves.exploit, cves.exploitUrl FROM cve AS cves '
+                     'INNER JOIN hostObj AS hosts ON hosts.id = cves.hostId '
+                     'WHERE hosts.ip = :hostIP')
+        result = session.execute(query, {'hostIP': str(hostIP)}).fetchall()
+        session.close()
+        return result

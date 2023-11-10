@@ -15,7 +15,9 @@ Copyright (c) 2023 Gotham Security
 
 Author(s): Shane Scott (sscott@gotham-security.com), Dmitriy Dubson (d.dubson@gmail.com)
 """
+
 from app.auxiliary import Filters
+from sqlalchemy import text
 from db.SqliteDbAdapter import Database
 from db.entities.host import hostObj
 from db.filters import applyFilters, applyHostsFilters
@@ -26,34 +28,48 @@ class HostRepository:
         self.dbAdapter = dbAdapter
 
     def exists(self, host: str):
-        query = 'SELECT host.ip FROM hostObj AS host WHERE host.ip == ? OR host.hostname == ?'
-        result = self.dbAdapter.metadata.bind.execute(query, str(host), str(host)).fetchall()
+        session = self.dbAdapter.session()
+        query = text('SELECT host.ip FROM hostObj AS host WHERE host.ip == :host OR host.hostname == :host')
+        result = session.execute(query, {'host': str(host)}).fetchall()
+        session.close()
         return True if result else False
 
     def getHosts(self, filters):
+        session = self.dbAdapter.session()
         query = 'SELECT * FROM hostObj AS hosts WHERE 1=1'
         query += applyHostsFilters(filters)
-        return self.dbAdapter.metadata.bind.execute(query).fetchall()
+        query = text(query)
+        result = session.execute(query).fetchall()
+        session.close()
+        return result
 
     def getHostsAndPortsByServiceName(self, service_name, filters: Filters):
+        session = self.dbAdapter.session()
         query = ("SELECT hosts.ip,ports.portId,ports.protocol,ports.state,ports.hostId,ports.serviceId,"
                  "services.name,services.product,services.version,services.extrainfo,services.fingerprint "
-                 "FROM portObj AS ports " +
-                 "INNER JOIN hostObj AS hosts ON hosts.id = ports.hostId " +
-                 "LEFT OUTER JOIN serviceObj AS services ON services.id=ports.serviceId " +
-                 "WHERE services.name=?")
+                 "FROM portObj AS ports "
+                 "INNER JOIN hostObj AS hosts ON hosts.id = ports.hostId "
+                 "LEFT OUTER JOIN serviceObj AS services ON services.id=ports.serviceId "
+                 "WHERE services.name=:service_name")
         query += applyFilters(filters)
-        return self.dbAdapter.metadata.bind.execute(query, str(service_name)).fetchall()
+        query = text(query)
+        result = session.execute(query, {'service_name': str(service_name)}).fetchall()
+        session.close()
+        return result
 
     def getHostInformation(self, host_ip_address: str):
         session = self.dbAdapter.session()
-        return session.query(hostObj).filter_by(ip=str(host_ip_address)).first()
+        result = session.query(hostObj).filter_by(ip=str(host_ip_address)).first()
+        session.close()
+        return result
 
     def deleteHost(self, hostIP):
         session = self.dbAdapter.session()
-        h = session.query(hostObj).filter_by(ip=str(hostIP)).first()
-        session.delete(h)
-        session.commit()
+        host = session.query(hostObj).filter_by(ip=str(hostIP)).first()
+        if host:
+            session.delete(host)
+            session.commit()
+        session.close()
 
     def toggleHostCheckStatus(self, ipAddress):
         session = self.dbAdapter.session()
@@ -64,4 +80,5 @@ class HostRepository:
             else:
                 host.checked = 'False'
             session.add(host)
-            self.dbAdapter.commit()
+            session.commit()
+        session.close()

@@ -38,6 +38,8 @@ import pandas as pd
 from PyQt6.QtWidgets import QAbstractItemView
 from PyQt6.QtCore import Qt
 
+log = getAppLogger()
+
 # this class handles everything gui-related
 class View(QtCore.QObject):
     tick = QtCore.pyqtSignal(int, name="changed")                       # signal used to update the progress bar
@@ -180,6 +182,18 @@ class View(QtCore.QObject):
         setTableProperties(self.ui.HostsTableView, len(headers), [0, 2, 4, 5, 6, 7, 8, 9, 10 , 11, 12, 13, 14, 15, 16,
                                                                   17, 18, 19, 20, 21, 22, 23, 24])
         self.ui.HostsTableView.horizontalHeader().resizeSection(1, 30)
+        ##
+        self.HostsTableModel = HostsTableModel(self.controller.getHostsFromDB(self.viewState.filters), headers)
+        # Set the model of the HostsTableView to the HostsTableModel
+        self.ui.HostsTableView.setModel(self.HostsTableModel)
+        # Resize the OS column
+        self.ui.HostsTableView.horizontalHeader().resizeSection(1, 30)
+        # Sort the model by the Host column in descending order
+        self.HostsTableModel.sort(3, Qt.SortOrder.DescendingOrder)
+        # Connect the clicked signal of the HostsTableView to the hostTableClick() method
+        self.ui.HostsTableView.clicked.connect(self.hostTableClick)
+
+        ##
 
         # service names table (left)
         headers = ["Name"]
@@ -550,7 +564,6 @@ class View(QtCore.QObject):
         if self.ui.HostsTableView.selectionModel().selectedRows():  # get the IP address of the selected host (if any)
             row = self.ui.HostsTableView.selectionModel().selectedRows()[len(self.ui.HostsTableView.
                                                                              selectionModel().selectedRows())-1].row()
-            print(row)
             ip = self.HostsTableModel.getHostIPForRow(row)
             self.viewState.ip_clicked = ip
             save = self.ui.ServicesTabWidget.currentIndex()
@@ -572,7 +585,6 @@ class View(QtCore.QObject):
         if self.ui.ServiceNamesTableView.selectionModel().selectedRows():
             row = self.ui.ServiceNamesTableView.selectionModel().selectedRows()[len(
                 self.ui.ServiceNamesTableView.selectionModel().selectedRows())-1].row()
-            print(row)
             self.viewState.service_clicked = self.ServiceNamesTableModel.getServiceNameForRow(row)
             self.updatePortsByServiceTableView(self.viewState.service_clicked)
         
@@ -585,7 +597,6 @@ class View(QtCore.QObject):
         if self.ui.ToolsTableView.selectionModel().selectedRows():
             row = self.ui.ToolsTableView.selectionModel().selectedRows()[len(
                 self.ui.ToolsTableView.selectionModel().selectedRows())-1].row()
-            print(row)
             self.viewState.tool_clicked = self.ToolsTableModel.getToolNameForRow(row)
             self.updateToolHostsTableView(self.viewState.tool_clicked)
             # if we clicked on the screenshooter we need to display the screenshot widget
@@ -606,7 +617,6 @@ class View(QtCore.QObject):
         if self.ui.ScriptsTableView.selectionModel().selectedRows():
             row = self.ui.ScriptsTableView.selectionModel().selectedRows()[len(
                 self.ui.ScriptsTableView.selectionModel().selectedRows())-1].row()
-            print(row)
             self.viewState.script_clicked = self.ScriptsTableModel.getScriptDBIdForRow(row)
             self.updateScriptsOutputView(self.viewState.script_clicked)
                 
@@ -620,7 +630,6 @@ class View(QtCore.QObject):
         if self.ui.ToolHostsTableView.selectionModel().selectedRows():
             row = self.ui.ToolHostsTableView.selectionModel().selectedRows()[len(
                 self.ui.ToolHostsTableView.selectionModel().selectedRows())-1].row()
-            print(row)
             self.viewState.tool_host_clicked = self.ToolHostsTableModel.getProcessIdForRow(row)
             ip = self.ToolHostsTableModel.getIpForRow(row)
             
@@ -697,7 +706,6 @@ class View(QtCore.QObject):
 
     def tableDoubleClick(self):
         tab = self.ui.HostsTabWidget.tabText(self.ui.HostsTabWidget.currentIndex())
-        print(tab)
 
         if tab == 'Services':
             row = self.ui.ServicesTableView.selectionModel().selectedRows()[len(
@@ -1021,11 +1029,52 @@ class View(QtCore.QObject):
     #################### LEFT PANEL INTERFACE UPDATE FUNCTIONS ####################
 
     def updateHostsTableView(self):
+        # Update the data source of the model with the hosts from the database
+        self.HostsTableModel.setHosts(self.controller.getHostsFromDB(self.viewState.filters))
+
+        # Set the viewState.lazy_update_hosts to False to indicate that it doesn't need to be updated anymore
+        self.viewState.lazy_update_hosts = False
+
+        ## Resize the OS column of the HostsTableView
+        #self.ui.HostsTableView.horizontalHeader().resizeSection(1, 30)
+
+        # Sort the model by the Host column in descending order
+        self.HostsTableModel.sort(3, Qt.SortOrder.DescendingOrder)
+
+        # Get the list of IPs from the model
+        ips = []   # ensure that there is always something selected
+        for row in range(self.HostsTableModel.rowCount("")):
+            ips.append(self.HostsTableModel.getHostIPForRow(row))
+
+        # Check if the IP we previously clicked is still visible
+        if self.viewState.ip_clicked in ips:
+            # Get the row for the IP we previously clicked
+            row = self.HostsTableModel.getRowForIp(self.viewState.ip_clicked)
+        else:
+            # Select the first row
+            row = 0
+
+        # Check if the row is not None
+        if row is not None:
+            # Select the row in the HostsTableView
+            self.ui.HostsTableView.selectRow(row)
+            # Call the hostTableClick() method
+            self.hostTableClick()
+
+        # Resize the OS column of the HostsTableView 
+        self.ui.HostsTableView.horizontalHeader().resizeSection(1, 30)
+
+        # Hide colmns we don't want
+        for i in [0, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]:
+            self.ui.HostsTableView.hideColumn(i)
+
+    def updateHostsTableViewX(self):
         headers = ["Id", "OS", "Accuracy", "Host", "IPv4", "IPv6", "Mac", "Status", "Hostname", "Vendor", "Uptime",
                    "Lastboot", "Distance", "CheckedHost", "Country Code", "State", "City", "Latitude", "Longitude",
                    "Count", "Closed"]
         self.HostsTableModel = HostsTableModel(self.controller.getHostsFromDB(self.viewState.filters), headers)
         self.ui.HostsTableView.setModel(self.HostsTableModel)
+        #self.HostsTableModel.setHosts(self.controller.getHostsFromDB(self.viewState.filters))
 
         self.viewState.lazy_update_hosts = False  # to indicate that it doesn't need to be updated anymore
 
@@ -1035,6 +1084,9 @@ class View(QtCore.QObject):
 
         self.ui.HostsTableView.horizontalHeader().resizeSection(1, 30)
         self.HostsTableModel.sort(3, Qt.SortOrder.DescendingOrder)
+
+        self.ui.HostsTableView.repaint()
+        self.ui.HostsTableView.update()
 
         ips = []   # ensure that there is always something selected
         for row in range(self.HostsTableModel.rowCount("")):
@@ -1374,18 +1426,18 @@ class View(QtCore.QObject):
     # TODO: when nmap file is imported select last IP clicked (or first row if none)
     def updateInterface(self):
         self.ui_mainwindow.show()
-        
+
         if self.ui.HostsTabWidget.tabText(self.ui.HostsTabWidget.currentIndex()) == 'Hosts':
             self.updateHostsTableView()
             self.viewState.lazy_update_services = True
             self.viewState.lazy_update_tools = True
-            
-        if self.ui.HostsTabWidget.tabText(self.ui.HostsTabWidget.currentIndex()) == 'Services':
+
+        elif self.ui.HostsTabWidget.tabText(self.ui.HostsTabWidget.currentIndex()) == 'Services':
             self.updateServiceNamesTableView()
             self.viewState.lazy_update_hosts = True
             self.viewState.lazy_update_tools = True
-            
-        if self.ui.HostsTabWidget.tabText(self.ui.HostsTabWidget.currentIndex()) == 'Tools':
+
+        elif self.ui.HostsTabWidget.tabText(self.ui.HostsTabWidget.currentIndex()) == 'Tools':
             self.updateToolsTableView()
             self.viewState.lazy_update_hosts = True
             self.viewState.lazy_update_services = True
@@ -1695,10 +1747,10 @@ class View(QtCore.QObject):
 
     def findFinishedServiceTab(self, pid):
         for i in range(0, self.ui.ServicesTabWidget.count()):
-            #if str(self.ui.ServicesTabWidget.widget(i).pid) == pid:
-            #    #self.bruteProcessFinished(self.ui.BruteTabWidget.widget(i))
-            print("Close Tab: {0}".format(str(i)))
-            return
+            if str(self.ui.ServicesTabWidget.widget(i)) == pid:
+                self.bruteProcessFinished(self.ui.BruteTabWidget.widget(i))
+                log.info("Close Tab: {0}".format(str(i)))
+                return
 
     def blinkBruteTab(self, bWidget):
         self.ui.MainTabWidget.tabBar().setTabTextColor(1, QtGui.QColor('red'))

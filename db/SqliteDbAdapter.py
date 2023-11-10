@@ -49,7 +49,7 @@ class Database:
         self.dbsemaphore = QSemaphore(1)  # to control concurrent write access to db
         self.engine = create_engine(
             'sqlite:///{dbFileName}'.format(dbFileName=dbFileName))
-        self.session = scoped_session(sessionmaker())
+        self.session = scoped_session(sessionmaker(bind=self.engine))
         self.session.configure(bind=self.engine, autoflush=False)
         self.metadata = self.base.metadata
         self.metadata.create_all(self.engine)
@@ -62,7 +62,7 @@ class Database:
         self.log.debug("DB lock acquired")
         try:
             session = self.session()
-            rnd = float(randint(1, 99)) / 100.00
+            rnd = float(randint(1, 99)) / 1000.00
             self.log.debug("Waiting {0}s before commit...".format(str(rnd)))
             time.sleep(rnd)
             session.commit()

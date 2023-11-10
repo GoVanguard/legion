@@ -15,14 +15,17 @@ Copyright (c) 2023 Gotham Security
 
 Author(s): Shane Scott (sscott@gotham-security.com), Dmitriy Dubson (d.dubson@gmail.com)
 """
+
 from typing import Union
 
 from six import u as unicode
 
 from app.timing import getTimestamp
+from sqlalchemy import text
 from db.SqliteDbAdapter import Database
 from db.entities.process import process
 from db.entities.processOutput import process_output
+
 
 class ProcessRepository:
     def __init__(self, dbAdapter: Database, log):
@@ -33,47 +36,49 @@ class ProcessRepository:
     # them or when an existing project is opened.
     # to speed up the queries we replace the columns we don't need by zeros (the reason we need all the columns is
     # we are using the same model to display process information everywhere)
+
     def getProcesses(self, filters, showProcesses: Union[str, bool] = 'noNmap', sort: str = 'desc', ncol: str = 'id'):
         # we do not fetch nmap processes because these are not displayed in the host tool tabs / tools
+        session = self.dbAdapter.session()
         if showProcesses == 'noNmap':
-            query = ('SELECT "0", "0", "0", process.name, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0" '
-                     'FROM process AS process WHERE process.closed = "False" AND process.name != "nmap" '
-                     'GROUP BY process.name')
-            result = self.dbAdapter.metadata.bind.execute(query).fetchall()
+            query = text('SELECT "0", "0", "0", process.name, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0" '
+                         'FROM process AS process WHERE process.closed = "False" AND process.name != "nmap" '
+                         'GROUP BY process.name')
+            result = session.execute(query).fetchall()
         elif not showProcesses:
-            query = ('SELECT process.id, process.hostIp, process.tabTitle, process.outputfile, output.output '
-                     'FROM process AS process INNER JOIN process_output AS output ON process.id = output.processId '
-                     'WHERE process.display = ? AND process.closed = "False" order by process.id desc')
-            result = self.dbAdapter.metadata.bind.execute(query, str(showProcesses)).fetchall()
+            query = text('SELECT process.id, process.hostIp, process.tabTitle, process.outputfile, output.output '
+                         'FROM process AS process INNER JOIN process_output AS output ON process.id = output.processId '
+                         'WHERE process.display = :display AND process.closed = "False" order by process.id desc')
+            result = session.execute(query, {'display': str(showProcesses)}).fetchall()
         else:
-            query = ('SELECT * FROM process AS process WHERE process.display=? order by {0} {1}'.format(ncol, sort))
-            result = self.dbAdapter.metadata.bind.execute(query, str(showProcesses)).fetchall()
-
+            query = text('SELECT * FROM process AS process WHERE process.display=:display order by {0} {1}'.format(ncol, sort))
+            result = session.execute(query, {'display': str(showProcesses)}).fetchall()
+        session.close()
         return result
 
     def storeProcess(self, proc):
+        session = self.dbAdapter.session()
         p_output = process_output()
        
-        #p = process(str(proc.pid()), str(proc.name), str(proc.tabTitle),
-        #            str(proc.hostIp), str(proc.port), str(proc.protocol),
-        #            unicode(proc.command), proc.startTime, "", str(proc.outputfile),
-        #            'Waiting', [p_output], 100, 0)
-
-        p = process(str("0"), str(proc.name), str(proc.tabTitle),
+        #p = process(str(proc.processId()), str(proc.name), str(proc.tabTitle),
+        p = process(str(proc.processId()), str(proc.name), str(proc.tabTitle),
                     str(proc.hostIp), str(proc.port), str(proc.protocol),
                     unicode(proc.command), proc.startTime, "", str(proc.outputfile),
                     'Waiting', [p_output], 100, 0)
+
         self.log.info(f"Adding process: {p}")
-        self.dbAdapter.session().add(p)
-        self.dbAdapter.commit()
+        session.add(p)
+        session.commit()
         proc.id = p.id
-        return p.id
+        session.close()
+        return proc.id
 
     def storeProcessOutput(self, process_id: str, output: str):
         session = self.dbAdapter.session()
         proc = session.query(process).filter_by(id=process_id).first()
 
         if not proc:
+            session.close()
             return False
 
         proc_output = session.query(process_output).filter_by(id=process_id).first()
@@ -85,12 +90,14 @@ class ProcessRepository:
         proc.endTime = getTimestamp(True)
 
         if proc.status == "Killed" or proc.status == "Cancelled" or proc.status == "Crashed":
-            self.dbAdapter.commit()
+            #session.commit() # Needed?
+            session.close()
             return True
         else:
             proc.status = 'Finished'
             session.add(proc)
-            self.dbAdapter.commit()
+            session.commit()
+        session.close()
 
     def getStatusByProcessId(self, process_id: str):
         return self.getFieldByProcessId("status", process_id)
@@ -107,20 +114,25 @@ class ProcessRepository:
         return True if status == "Cancelled" else False
 
     def getFieldByProcessId(self, field_name: str, process_id: str):
-        query = f"SELECT process.{field_name} FROM process AS process WHERE process.id=?"
-        p = self.dbAdapter.metadata.bind.execute(query, str(process_id)).fetchall()
-        return p[0][0] if p else -1
+        session = self.dbAdapter.session()
+        query = text("SELECT process.{0} FROM process AS process WHERE process.id=:process_id".format(field_name))
+        p = session.execute(query, {'process_id': str(process_id)}).fetchall()
+        result = p[0][0] if p else -1
+        session.close()
+        return result
 
     def getHostsByToolName(self, toolName: str, closed: str = "False"):
+        session = self.dbAdapter.session()
         if closed == 'FetchAll':
-            query = ('SELECT "0", "0", "0", "0", "0", process.hostIp, process.port, process.protocol, "0", "0", '
-                     'process.outputfile, "0", "0", "0" FROM process AS process WHERE process.name=?')
+            query = text('SELECT "0", "0", "0", "0", "0", process.hostIp, process.port, process.protocol, "0", "0", '
+                         'process.outputfile, "0", "0", "0" FROM process AS process WHERE process.name=:toolName')
         else:
-            query = ('SELECT process.id, "0", "0", "0", "0", "0", "0", process.hostIp, process.port, '
-                     'process.protocol, "0", "0", process.outputfile, "0", "0", "0" FROM process AS process '
-                     'WHERE process.name=? and process.closed="False"')
-
-        return self.dbAdapter.metadata.bind.execute(query, str(toolName)).fetchall()
+            query = text('SELECT process.id, "0", "0", "0", "0", "0", "0", process.hostIp, process.port, '
+                         'process.protocol, "0", "0", process.outputfile, "0", "0", "0" FROM process AS process '
+                         'WHERE process.name=:toolName and process.closed="False"')
+        result = session.execute(query, {'toolName': str(toolName)}).fetchall()
+        session.close()
+        return result
 
     def storeProcessCrashStatus(self, processId: str):
         session = self.dbAdapter.session()
@@ -129,7 +141,8 @@ class ProcessRepository:
             proc.status = 'Crashed'
             proc.endTime = getTimestamp(True)
             session.add(proc)
-            self.dbAdapter.commit()
+            session.commit()
+        session.close()
 
     def storeProcessCancelStatus(self, processId: str):
         session = self.dbAdapter.session()
@@ -138,7 +151,8 @@ class ProcessRepository:
             proc.status = 'Cancelled'
             proc.endTime = getTimestamp(True)
             session.add(proc)
-            self.dbAdapter.commit()
+            session.commit()
+        session.close()
 
     def storeProcessKillStatus(self, processId: str):
         session = self.dbAdapter.session()
@@ -147,7 +161,8 @@ class ProcessRepository:
             proc.status = 'Killed'
             proc.endTime = getTimestamp(True)
             session.add(proc)
-            self.dbAdapter.commit()
+            session.commit()
+        session.close()
 
     def storeProcessRunningStatus(self, processId: str, pid):
         session = self.dbAdapter.session()
@@ -156,7 +171,8 @@ class ProcessRepository:
             proc.status = 'Running'
             proc.pid = str(pid)
             session.add(proc)
-            self.dbAdapter.commit()
+            session.commit()
+        session.close()
 
     def storeProcessRunningElapsedTime(self, processId: str, elapsed):
         session = self.dbAdapter.session()
@@ -164,7 +180,7 @@ class ProcessRepository:
         if proc:
             proc.elapsed = elapsed
             session.add(proc)
-            self.dbAdapter.commit()
+            session.commit()
 
     def storeCloseStatus(self, processId):
         session = self.dbAdapter.session()
@@ -172,22 +188,27 @@ class ProcessRepository:
         if proc:
             proc.closed = 'True'
             session.add(proc)
-            self.dbAdapter.commit()
+            session.commit()
+        session.close()
 
     def storeScreenshot(self, ip: str, port: str, filename: str):
+        session = self.dbAdapter.session()
         p = process(0, "screenshooter", "screenshot (" + str(port) + "/tcp)", str(ip), str(port), "tcp", "",
                     getTimestamp(True), getTimestamp(True), str(filename), "Finished", [process_output()], 2, 0)
-        session = self.dbAdapter.session()
-        session.add(p)
-        session.commit()
-        return p.id
+        if p:
+            session.add(p)
+            session.commit()
+            pD = p.id
+            session.close()
+        return pD
 
     def toggleProcessDisplayStatus(self, resetAll=False):
         session = self.dbAdapter.session()
         proc = session.query(process).filter_by(display='True').all()
         for p in proc:
             session.add(self.toggleProcessStatusField(p, resetAll))
-        self.dbAdapter.commit()
+        session.commit()
+        session.close()
 
     @staticmethod
     def toggleProcessStatusField(p, reset_all):

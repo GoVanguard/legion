@@ -13,13 +13,18 @@ Copyright (c) 2023 Gotham Security
     You should have received a copy of the GNU General Public License along with this program.
     If not, see <http://www.gnu.org/licenses/>.
 """
-import subprocess
 
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+
+from selenium import webdriver
 from PyQt6 import QtCore
 
+from app.logging.legionLog import getAppLogger
 from app.http.isHttps import isHttps
 from app.timing import getTimestamp
 
+logger = getAppLogger()
 
 class Screenshooter(QtCore.QThread):
     done = QtCore.pyqtSignal(str, str, str, name="done")  # signal sent after each individual screenshot is taken
@@ -33,6 +38,7 @@ class Screenshooter(QtCore.QThread):
 
     def tsLog(self, msg):
         self.log.emit(str(msg))
+        logger.info(msg)
 
     def addToQueue(self, ip, port, url):
         self.queue.append([ip, port, url])
@@ -42,7 +48,6 @@ class Screenshooter(QtCore.QThread):
         self.outputfolder = screenshotsFolder
 
     def run(self):
-
         while self.processing == True:
             self.sleep(1)  # effectively a semaphore
 
@@ -65,7 +70,7 @@ class Screenshooter(QtCore.QThread):
                     self.save("http://" + url, ip, port, outputfile)
 
             except Exception as e:
-                self.tsLog('Unable to take the screenshot. Moving on..')
+                self.tsLog('Unable to take the screenshot. Error follows.')
                 self.tsLog(e)
                 continue
 
@@ -74,13 +79,11 @@ class Screenshooter(QtCore.QThread):
         if not len(self.queue) == 0:  # if meanwhile queue were added to the queue, start over unless we are in pause mode
             self.run()
 
-        self.tsLog('Finished.')
-
     def save(self, url, ip, port, outputfile):
         self.tsLog('Saving screenshot as: ' + str(outputfile))
-        command = ('xvfb-run --server-args="-screen 0:0, 1024x768x24" /usr/bin/cutycapt --url="{url}/"'
-                   ' --insecure --print-backgrounds=on --out="{outputfolder}/{outputfile}"') \
-                  .format(url=url, outputfolder=self.outputfolder, outputfile=outputfile)
-        p = subprocess.Popen(command, shell=True)
-        p.wait()  # wait for command to finish
+        driver = webdriver.PhantomJS(executable_path="/usr/bin/phantomjs")
+        driver.set_window_size(1280, 1024)
+        driver.get(url)
+        driver.save_screenshot("{0}/{1}".format(self.outputfolder, outputfile))
+        driver.quit()
         self.done.emit(ip, port, outputfile)  # send a signal to add the 'process' to the DB

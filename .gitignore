@@ -127,3 +127,4 @@ docker/cleanupExited.sh
 
 log/*.log
 fixname.sh
+ghostdriver.log
