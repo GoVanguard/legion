@@ -12,3 +12,5 @@ pyShodan
 GitPython
 pandas
 flake8
+rich
+selenium

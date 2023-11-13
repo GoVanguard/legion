@@ -18,13 +18,13 @@ Author(s): Shane Scott (sscott@gotham-security.com), Dmitriy Dubson (d.dubson@gm
 
 applicationInfo = {
     "name": "LEGION",
-    "version": "0.4.0",
-    "build": '1699577982',
+    "version": "0.4.1",
+    "build": '1699894526',
     "author": "Gotham Security",
     "copyright": "2023",
     "links": ["http://github.com/GoVanguard/legion/issues", "https://gotham-security.com/legion"],
     "emails": [],
-    "update": '11/09/2023',
+    "update": '11/13/2023',
     "license": "GPL v3",
     "desc": "Legion is a fork of SECFORCE's Sparta, Legion is an open source, easy-to-use, \n" +
             "super-extensible and semi-automated network penetration testing tool that aids in " +

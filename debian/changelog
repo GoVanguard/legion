@@ -11,3 +11,10 @@ legion (0.4.0-0) UNRELEASED; urgency=medium
   * Improved WSL support (handling of path conversions for calling the Windows NMAP installation from the program)
 
  -- Shane Scott <sscot@gotham-security.com>  Thur, 09 Nov 2023 19:04:55 -0600
+
+legion (0.4.1-0) UNRELEASED; urgency=medium
+
+  * Add checkXserver.sh to help users troubleshoot connections to X
+  * Fix a few missing dependancies
+
+ -- Shane Scott <sscot@gotham-security.com>  Thur, 13 Nov 2023 10:54:55 -0600

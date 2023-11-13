@@ -50,6 +50,9 @@ fi
 export QT_XCB_NATIVE_PAINTING=0
 export QT_AUTO_SCREEN_SCALE_FACTOR=1.5
 
+# Verify X can be reached
+source /deps/checkXserver.sh
+
 if [[ $1 != 'setup' ]]
 then
     /usr/bin/env python3 legion.py
