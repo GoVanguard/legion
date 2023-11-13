@@ -1,3 +1,8 @@
+LEGION 0.4.1
+
+* Add checkXserver.sh to help users troubleshoot connections to X
+* Fix a few missing dependancies
+
 LEGION 0.4.0
 
 * Refactored to Python 3.8+

@@ -1,5 +1,13 @@
 #!/bin/bash
 
+echo "Checking Apt..."
+# runAptGetUpdate
+apt-get update -m
+
+echo "Installing bcs..."
+export DEBIAN_FRONTEND="noninteractive"
+apt-get -yqqqm --allow-unauthenticated -o DPkg::Options::="--force-overwrite" -o DPkg::Options::="--force-confdef" install bc
+
 # Check if python or python3 is installed
 if command -v python &> /dev/null || command -v python3 &> /dev/null
 then
