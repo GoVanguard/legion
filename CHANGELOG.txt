@@ -1,7 +1,7 @@
 LEGION 0.4.1
 
 * Add checkXserver.sh to help users troubleshoot connections to X
-* Fix a few missing dependancies
+* Fix a few missing dependencies
 
 LEGION 0.4.0
 
