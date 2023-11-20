@@ -37,7 +37,6 @@ def winPath2Unix(windowsPath):
     windowsPath = windowsPath.replace("C:", "/mnt/c")
     return windowsPath
 
-
 # Convert Posix path to Windows
 def unixPath2Win(posixPath):
     posixPath = posixPath.replace("/", "\\")
@@ -49,12 +48,17 @@ def isWsl():
     release = str(platform.uname().release).lower()
     return "microsoft" in release
 
+# Check if running in Kali
+def isKali():
+    release = str(platform.uname().release).lower()
+    return "kali" in release
+
 # Get the AppData Temp directory path if WSL
 def getAppdataTemp():
     try:
         username = os.environ["WSL_USER_NAME"]
     except KeyError:
-        raise Exception("WSL detected but environment variable 'WSL_USER_NAME' is unset.")
+        raise Exception("WSL detected but environment variable 'WSL_USER_NAME' is unset. Please run 'export WSL_USER_NAME=' followed by your username as it appears in c:\\Users\\")
 
     appDataTemp = "C:\\Users\\{0}\\AppData\\Local\\Temp".format(username)
     appDataTempUnix = winPath2Unix(appDataTemp)
@@ -74,9 +78,9 @@ def getTempFolder():
             os.makedirs(tempPath)
         log.info("WSL is detected. The AppData Temp directory path is {0} ({1})".format(tempPath, tempPathWin))
     else:
-        tempPath = "~/.local/share/legion/tmp"
-        if not os.path.isdir(os.path.expanduser(tempPath)):
-            os.makedirs(os.path.expanduser(tempPath))
+        tempPath = os.path.expanduser("~/.local/share/legion/tmp")
+        if not os.path.isdir(tempPath):
+            os.makedirs(tempPath)
         log.info("Non-WSL The AppData Temp directory path is {0}".format(tempPath))
     return tempPath
 

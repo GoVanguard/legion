@@ -1,3 +1,15 @@
+LEGION 0.4.2
+
+* Tweak the screenshooter to use eyewitness as suggested by daniruiz
+* Add a Wsl check before running unixPath2Win
+* Include Revision by daniruiz to tempPath creation routine
+* Revise to monospaced font to improve readability as suggested by daniruiz
+* Revise dependancies to resolve missing PhantomJs import
+* Set log level to Info
+* Eliminate some temporary code, debug lines, and other cleanup
+* Revise screenshooter to use schema://ip:port when url is a single node
+* Fix typo in startLegion.sh
+
 LEGION 0.4.1
 
 * Add checkXserver.sh to help users troubleshoot connections to X

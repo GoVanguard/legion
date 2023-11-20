@@ -153,13 +153,13 @@ class NmapImporter(QtCore.QThread):
                     s = p.getService()
 
                     if not (s is None):  # check if service already exists to avoid adding duplicates
-                        print("Processing service result *********** name={0} prod={1} ver={2} extra={3} fing={4}"
+                        self.tsLog("            Processing service result *********** name={0} prod={1} ver={2} extra={3} fing={4}"
                             .format(s.name, s.product, s.version, s.extrainfo, s.fingerprint))
                         db_service = session.query(serviceObj).filter_by(hostId=db_host.id) \
                             .filter_by(name=s.name).filter_by(product=s.product).filter_by(version=s.version) \
                             .filter_by(extrainfo=s.extrainfo).filter_by(fingerprint=s.fingerprint).first()
                         if not db_service:
-                            print("Did not find service *********** name={0} prod={1} ver={2} extra={3} fing={4}"
+                            self.tsLog("            Did not find service *********** name={0} prod={1} ver={2} extra={3} fing={4}"
                                 .format(s.name, s.product, s.version, s.extrainfo, s.fingerprint))
                             db_service = serviceObj(s.name, db_host.id, s.product, s.version, s.extrainfo,
                                 s.fingerprint)
@@ -171,22 +171,17 @@ class NmapImporter(QtCore.QThread):
                         .filter_by(protocol=p.protocol).first()
 
                     if not db_port:
-                        # print("Did not find port *********** portid={0} proto={1}".format(p.portId, p.protocol))
+                        self.tsLog("            Did not find port *********** portid={0} proto={1}".format(p.portId, p.protocol))
                         if db_service:
                             db_port = portObj(p.portId, p.protocol, p.state, db_host.id, db_service.id)
                         else:
                             db_port = portObj(p.portId, p.protocol, p.state, db_host.id, '')
                         session.add(db_port)
-                    # else:
-                    # print('FOUND port *************** portid={0}'.format(db_port.portId))
                     createPortsProgress = createPortsProgress + ((100.0 / hostCount) / 5)
                     totalprogress = totalprogress + createPortsProgress
                     self.updateProgressObservable.updateProgress(totalprogress)
 
             session.commit()
-
-            # totalprogress += progress
-            # self.tick.emit(int(totalprogress))
 
             for h in allHosts:  # create all script objects that need to be created
                 db_host = self.hostRepository.getHostInformation(h.ip)
@@ -194,11 +189,12 @@ class NmapImporter(QtCore.QThread):
                 for p in h.all_ports():
                     for scr in p.getScripts():
                         self.tsLog("        Processing script obj {scr}".format(scr=str(scr)))
-                        print("        Processing script obj {scr}".format(scr=str(scr)))
                         db_port = session.query(portObj).filter_by(hostId=db_host.id) \
                             .filter_by(portId=p.portId).filter_by(protocol=p.protocol).first()
-                        #db_script = session.query(l1ScriptObj).filter_by(scriptId=scr.scriptId) \
-                        #   .filter_by(portId=db_port.id).first()
+                        # Todo
+                        db_script = session.query(l1ScriptObj).filter_by(scriptId=scr.scriptId) \
+                            .filter_by(portId=db_port.id).first()
+                        # end todo
                         db_script = session.query(l1ScriptObj).filter_by(hostId=db_host.id) \
                            .filter_by(portId=db_port.id).first()
 
@@ -271,14 +267,14 @@ class NmapImporter(QtCore.QThread):
                 session.add(db_host)
 
                 for scr in h.getHostScripts():
-                    print("-----------------------Host SCR: {0}".format(scr.scriptId))
+                    self.tsLog("-----------------------Host SCR: {0}".format(scr.scriptId))
                     db_host = self.hostRepository.getHostInformation(h.ip)
                     scrProcessorResults = scr.scriptSelector(db_host)
                     for scrProcessorResult in scrProcessorResults:
                         session.add(scrProcessorResult)
 
                 for scr in h.getScripts():
-                    print("-----------------------SCR: {0}".format(scr.scriptId))
+                    self.tsLog("-----------------------SCR: {0}".format(scr.scriptId))
                     db_host = self.hostRepository.getHostInformation(h.ip)
                     scrProcessorResults = scr.scriptSelector(db_host)
                     for scrProcessorResult in scrProcessorResults:
@@ -291,25 +287,19 @@ class NmapImporter(QtCore.QThread):
                             .filter_by(name=s.name).filter_by(product=s.product) \
                             .filter_by(version=s.version).filter_by(extrainfo=s.extrainfo) \
                             .filter_by(fingerprint=s.fingerprint).first()
-                        #db_service = session.query(serviceObj).filter_by(hostId=db_host.id) \
-                        #    .filter_by(name=s.name).first()
                     else:
                         db_service = None
                         # fetch the port
                     db_port = session.query(portObj).filter_by(hostId=db_host.id).filter_by(portId=p.portId) \
                         .filter_by(protocol=p.protocol).first()
                     if db_port:
-                        # print("************************ Found {0}".format(db_port))
-
                         if db_port.state != p.state:
                             db_port.state = p.state
                             session.add(db_port)
-
                         # if there is some new service information, update it -- might be causing issue 164
                         if not (db_service is None) and db_port.serviceId != db_service.id:
                             db_port.serviceId = db_service.id
                             session.add(db_port)
-
                     # store the script results (note that existing script outputs are also kept)
                     for scr in p.getScripts():
                         db_script = session.query(l1ScriptObj).filter_by(scriptId=scr.scriptId) \
