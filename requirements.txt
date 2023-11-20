@@ -13,5 +13,5 @@ GitPython
 pandas
 flake8
 rich
-urllib3==1.23
+urllib3==1.26.18
 selenium==3.141.0
