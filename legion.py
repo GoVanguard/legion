@@ -102,18 +102,11 @@ if __name__ == "__main__":
     MainWindow = QtWidgets.QMainWindow()
     Screen = QGuiApplication.primaryScreen()
     app.setWindowIcon(QIcon('./images/icons/Legion-N_128x128.svg'))
+    
+    app.setStyleSheet("* { font-family: \"monospace\"; font-size: 10pt; }")
 
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
-
-    # Possibly unneeded
-    #try:
-    #    qss_file = open('./ui/legion.qss').read()
-    #except IOError:
-    #    startupLog.error(
-    #        "The legion.qss file is missing. Your installation seems to be corrupted. " +
-    #        "Try downloading the latest version.")
-    #    exit(0)
 
     if os.geteuid()!=0:
         startupLog.error("Legion must run as root for raw socket access. Please start legion using sudo.")

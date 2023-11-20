@@ -61,12 +61,12 @@ def getOrCreateCachedLogger(logName: str, logPath: str, console: bool, cachedLog
     from rich.logging import RichHandler
 
     logging.basicConfig(
-        level="NOTSET",
+        level="WARN",
         format="%(message)s",
         datefmt="[%X]",
         handlers=[RichHandler(rich_tracebacks=True)]
     )
 
     log = logging.getLogger("rich")
-    log.setLevel(logging.DEBUG)
+    log.setLevel(logging.INFO)
     return log

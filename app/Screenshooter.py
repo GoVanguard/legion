@@ -14,15 +14,17 @@ Copyright (c) 2023 Gotham Security
     If not, see <http://www.gnu.org/licenses/>.
 """
 
+import os
+
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
-from selenium import webdriver
 from PyQt6 import QtCore
 
 from app.logging.legionLog import getAppLogger
 from app.http.isHttps import isHttps
 from app.timing import getTimestamp
+from app.auxiliary import isKali
 
 logger = getAppLogger()
 
@@ -59,15 +61,8 @@ class Screenshooter(QtCore.QThread):
                 ip = queueItem[0]
                 port = queueItem[1]
                 url = queueItem[2]
-                self.tsLog("------> %s" % str(url))
                 outputfile = getTimestamp() + '-screenshot-' + url.replace(':', '-') + '.png'
-                #ip = url.split(':')[0]
-                #port = url.split(':')[1]
-
-                if isHttps(ip, port):
-                    self.save("https://" + url, ip, port, outputfile)
-                else:
-                    self.save("http://" + url, ip, port, outputfile)
+                self.save(url, ip, port, outputfile)
 
             except Exception as e:
                 self.tsLog('Unable to take the screenshot. Error follows.')
@@ -80,10 +75,37 @@ class Screenshooter(QtCore.QThread):
             self.run()
 
     def save(self, url, ip, port, outputfile):
-        self.tsLog('Saving screenshot as: ' + str(outputfile))
-        driver = webdriver.PhantomJS(executable_path="/usr/bin/phantomjs")
-        driver.set_window_size(1280, 1024)
-        driver.get(url)
-        driver.save_screenshot("{0}/{1}".format(self.outputfolder, outputfile))
-        driver.quit()
+        # Handle single node URI case by pivot to IP
+        if len(str(url).split('.')) == 1:
+            url = '{0}:{1}'.format(str(ip), str(port))
+
+        if isHttps(ip, port):
+            url = 'https://{0}'.format(url)
+        else:
+            url = 'http://{0}'.format(url)
+
+        self.tsLog('Taking Screenshot of: {0}'.format(str(url)))
+
+        # Use eyewitness under Kali. Use webdriver is not Kali. Once eyewitness is more boradly available, the conter case can be eliminated.
+        if isKali():
+            import tempfile
+            import subprocess
+
+            tmpOutputfolder = tempfile.mkdtemp(dir=self.outputfolder)
+            command = ('xvfb-run --server-args="-screen 0:0, 1024x768x24" /usr/bin/eyewitness --single "{url}/"'
+                       ' --no-prompt -d "{outputfolder}"') \
+                      .format(url=url, outputfolder=tmpOutputfolder)
+            p = subprocess.Popen(command, shell=True)
+            p.wait()  # wait for command to finish
+            fileName = os.listdir(tmpOutputfolder + '/screens/')[0]
+            outputfile = tmpOutputfolder.removeprefix(self.outputfolder) + '/screens/' + fileName
+        else:
+            from selenium import webdriver
+
+            driver = webdriver.PhantomJS(executable_path='/usr/bin/phantomjs')
+            driver.set_window_size(1280, 1024)
+            driver.get(url)
+            driver.save_screenshot('{0}/{1}'.format(self.outputfolder, outputfile))
+            driver.quit()
+        self.tsLog('Saving screenshot as: {0}'.format(str(outputfile)))
         self.done.emit(ip, port, outputfile)  # send a signal to add the 'process' to the DB

@@ -3,8 +3,8 @@
 source ./deps/apt.sh
 
 # Install deps
-## Disabled temporrily - Doesn't always detect apt-get update incomplete
  echo "Checking Apt..."
+
 # runAptGetUpdate
 apt-get update -m
 
@@ -18,4 +18,4 @@ apt-get -yqqqm --allow-unauthenticated -o DPkg::Options::="--force-overwrite" -o
 apt-get -yqqqm --allow-unauthenticated -o DPkg::Options::="--force-overwrite" -o DPkg::Options::="--force-confdef" install python3-impacket
 apt-get -yqqqm --allow-unauthenticated -o DPkg::Options::="--force-overwrite" -o DPkg::Options::="--force-confdef" install whatweb
 apt-get -yqqqm --allow-unauthenticated -o DPkg::Options::="--force-overwrite" -o DPkg::Options::="--force-confdef" install medusa
-#apt-get -yqqqm --allow-unauthenticated -o DPkg::Options::="--force-overwrite" -o DPkg::Options::="--force-confdef" install postgresql postgresql-server-dev-all
+apt-get -yqqqm --allow-unauthenticated -o DPkg::Options::="--force-overwrite" -o DPkg::Options::="--force-confdef" install eyewitness

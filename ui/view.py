@@ -528,7 +528,7 @@ class View(QtCore.QObject):
             self.settingsWidget.hide()
 
     def cancelSettings(self):
-        log.info('DEBUG: cancel button pressed')  # LEO: we can use this later to test ESC button once implemented.
+        log.debug('Cancel button pressed')  # LEO: we can use this later to test ESC button once implemented.
         self.settingsWidget.hide()
         self.controller.cancelSettings()
 
@@ -759,6 +759,7 @@ class View(QtCore.QObject):
                     self.updateServiceNamesTableView()
                 self.serviceNamesTableClick()
 
+            # Todo
             #elif selectedTab == 'CVEs':
             #    self.ui.ServicesTabWidget.setCurrentIndex(0)
             #    self.removeToolTabs(0)                                  # remove the tool tabs

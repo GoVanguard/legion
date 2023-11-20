@@ -25,7 +25,7 @@ from app.actions.updateProgress.UpdateProgressObservable import UpdateProgressOb
 from app.importers.NmapImporter import NmapImporter
 from app.importers.PythonImporter import PythonImporter
 from app.tools.nmap.NmapPaths import getNmapRunningFolder
-from app.auxiliary import unixPath2Win, winPath2Unix, getPid, formatCommandQProcess
+from app.auxiliary import unixPath2Win, winPath2Unix, getPid, formatCommandQProcess, isWsl
 from ui.observers.QtUpdateProgressObserver import QtUpdateProgressObserver
 
 try:
@@ -110,11 +110,13 @@ class Controller:
     def initTimers(self):
         self.updateUITimer = QTimer()
         self.updateUITimer.setSingleShot(True)
+        # Moving to deprecate all these general interface update timers
         #self.updateUITimer.timeout.connect(self.view.updateProcessesTableView)
         #self.updateUITimer.timeout.connect(self.view.updateToolsTableView)
 
         self.updateUI2Timer = QTimer()
         self.updateUI2Timer.setSingleShot(True)
+        # Moving to deprecate all these general interface update timers
         #self.updateUI2Timer.timeout.connect(self.view.updateInterface)
 
         self.processTableUiUpdateTimer = QTimer()
@@ -247,20 +249,23 @@ class Controller:
                 self.runStagedNmap(targetHosts, runHostDiscovery)
             elif runHostDiscovery:
                 outputfile = getNmapRunningFolder(runningFolder) + "/" + getTimestamp() + '-host-discover'
-                outputfile = unixPath2Win(outputfile)
+                if isWsl():
+                    outputfile = unixPath2Win(outputfile)
                 command = f"nmap -n -sV -O --version-light -T{str(nmapSpeed)} {targetHosts} -oA {outputfile}"
                 self.runCommand('nmap', 'nmap (discovery)', targetHosts, '', '', command, getTimestamp(True),
                                 outputfile, self.view.createNewTabForHost(str(targetHosts), 'nmap (discovery)', True))
             else:
                 outputfile = getNmapRunningFolder(runningFolder) + "/" + getTimestamp() + '-nmap-list'
-                outputfile = unixPath2Win(outputfile)
+                if isWsl():
+                    outputfile = unixPath2Win(outputfile)
                 command = "nmap -n -sL -T" + str(nmapSpeed) + " " + targetHosts + " -oA " + outputfile
                 self.runCommand('nmap', 'nmap (list)', targetHosts, '', '', command, getTimestamp(True),
                                 outputfile,
                                 self.view.createNewTabForHost(str(targetHosts), 'nmap (list)', True))
         elif scanMode == 'Hard':
             outputfile = getNmapRunningFolder(runningFolder) + "/" + getTimestamp() + '-nmap-custom'
-            outputfile = unixPath2Win(outputfile)
+            if isWsl():
+                outputfile = unixPath2Win(outputfile)
             nmapOptionsString = ' '.join(nmapOptions)
             if 'randomize' not in nmapOptionsString:
                 nmapOptionsString = nmapOptionsString + " -T" + str(nmapSpeed)
@@ -363,7 +368,10 @@ class Controller:
                 command = str(self.settings.hostActions[i][2])
                 command = command.replace('[IP]', ip).replace('[OUTPUT]', outputfile)
                 if 'nmap' in command:
-                    command = "{0} -oA {1}".format(command, unixPath2Win(outputfile))
+                    if isWsl():
+                        command = "{0} -oA {1}".format(command, unixPath2Win(outputfile))
+                    else:
+                        command = "{0} -oA {1}".format(command, outputfile)
 
                 # check if same type of nmap scan has already been made and purge results before scanning
                 if 'nmap' in command:
@@ -434,7 +442,10 @@ class Controller:
                     command = str(self.settings.portActions[srvc_num][2])
                     command = command.replace('[IP]', ip[0]).replace('[PORT]', ip[1]).replace('[OUTPUT]', outputfile)
                     if 'nmap' in command:
-                        command = "{0} -oA {1}".format(command, unixPath2Win(outputfile))
+                        if isWsl():
+                            command = "{0} -oA {1}".format(command, unixPath2Win(outputfile))
+                        else:
+                            command = "{0} -oA {1}".format(command, outputfile)
 
                     if 'nmap' in command and ip[2] == 'udp':
                         command = command.replace("-sV", "-sVU")
@@ -701,8 +712,8 @@ class Controller:
         qProcess.readyReadStandardOutput.connect(lambda: qProcess.display.appendPlainText(
             str(qProcess.readAllStandardOutput().data().decode('ISO-8859-1'))))
 
-        qProcess.readyReadStandardError.connect(lambda: qProcess.display.appendPlainText(
-            str(qProcess.readAllStandardError().data().decode('ISO-8859-1'))))
+        #qProcess.readyReadStandardError.connect(lambda: qProcess.display.appendPlainText(
+        #    str(qProcess.readAllStandardError().data().decode('ISO-8859-1'))))
 
         qProcess.sigHydra.connect(self.handleHydraFindings)
         qProcess.finished.connect(lambda: self.processFinished(qProcess))
@@ -761,7 +772,8 @@ class Controller:
         if not stop:
             textbox = self.view.createNewTabForHost(str(targetHosts), 'nmap (stage ' + str(stage) + ')', True)
             outputfile = getNmapRunningFolder(runningFolder) + "/" + getTimestamp() + '-nmapstage' + str(stage)
-            outputfile = unixPath2Win(outputfile)
+            if isWsl():
+                outputfile = unixPath2Win(outputfile)
 
             if stage == 1:
                 stageData = self.settings.tools_nmap_stage1_ports

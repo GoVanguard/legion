@@ -576,7 +576,7 @@ class AddSettingsDialog(QtWidgets.QDialog):  # dialog shown when the user select
             # LEO: added this just to help when testing. we'll remove it later.
             log.info('>>>> we should never be here. potential bug. 2')
         
-        log.info('DEBUG: current tab is valid: ' + str(validationPassed))
+        log.debug('Current tab is valid: ' + str(validationPassed))
         return validationPassed
 
     #def generalTabValidate(self):
