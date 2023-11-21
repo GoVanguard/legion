@@ -29,6 +29,7 @@ class QtUpdateProgressObserver(AbstractUpdateProgressObserver):
     def onFinished(self) -> None:
         self.progressWidget.hide()
 
-    def onProgressUpdate(self, progress: int) -> None:
+    def onProgressUpdate(self, progress: int, title: str) -> None:
+        self.progressWidget.setText(title)
         self.progressWidget.setProgress(progress)
         self.progressWidget.show()

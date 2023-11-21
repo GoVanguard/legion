@@ -61,14 +61,13 @@ class Parser:
         '''get a Host object by ip address'''
         return self.__hosts.get(ipaddr)
 
-    def getAllHosts(self, status=''):
+    def getAllHosts(self, status=None):
         '''get a list of Host object'''
-        if (status == ''):
+        if status is None:
             return self.__hosts.values()
 
         else:
             __tmp_hosts = []
-
             for __host in self.__hosts.values():
 
                 if __host.status == status:

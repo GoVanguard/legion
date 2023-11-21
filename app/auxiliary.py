@@ -112,9 +112,14 @@ def sortArrayWithArray(array, arrayToSort):
 
 # converts an IP address to an integer (for the sort function)
 def IP2Int(ip):
-    ip = ip.split("/")[0]  # bug fix: remove slash if it's a range
-    o = list(map(int, ip.split('.')))
-    res = (16777216 * o[0]) + (65536 * o[1]) + (256 * o[2]) + o[3]
+    try:
+        res = 0
+        ip = ip.split("/")[0]  # bug fix: remove slash if it's a range
+        o = list(map(int, ip.split('.')))
+        res = (16777216 * o[0]) + (65536 * o[1]) + (256 * o[2]) + o[3]
+    except:
+        log.error("Input IP {0} is not valid. Passing for now.".format(str(ip)))
+        pass
     return res
 
 

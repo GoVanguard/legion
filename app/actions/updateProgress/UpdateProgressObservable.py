@@ -27,6 +27,6 @@ class UpdateProgressObservable(AbstractUpdateProgressObservable):
         for observer in self._observers:
             observer.onStart()
 
-    def updateProgress(self, progress):
+    def updateProgress(self, progress, title):
         for observer in self._observers:
-            observer.onProgressUpdate(progress)
+            observer.onProgressUpdate(progress, title)
