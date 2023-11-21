@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from random import randint, choice, sample
+from random import randint, choice, choices, sample
 import datetime
 
 def generate_nmap_xml(num_hosts=1000, base_subnet="172.16"):
@@ -62,20 +62,49 @@ def generate_nmap_xml(num_hosts=1000, base_subnet="172.16"):
         "afp": {"product": "Netatalk AFP", "version": "3.1.12"}
     }
 
+    # Expanded lists for generating hostnames
+    colors = ["Red", "Blue", "Green", "Yellow", "Purple", "Orange", "Cyan", "Magenta", "Lime", "Pink"]
+    foods = ["Apple", "Burger", "Cake", "Dumpling", "Eclair", "Pizza", "Sushi", "Taco", "Waffle", "Bagel"]
+    cities = ["Tokyo", "Paris", "London", "NewYork", "Sydney", "Berlin", "Rome", "Madrid", "Moscow", "Beijing"]
+    verbs = ["Jumping", "Running", "Flying", "Swimming", "Dancing", "Singing", "Playing", "Walking", "Reading", "Writing"]
+
+    # Unique hostname tracker
+    generated_hostnames = set()
+
+    # Function to create unique random hostnames
+    def generate_hostname():
+        while True:
+            parts = [choice(colors), choice(foods), choice(cities), choice(verbs)]
+            hostname = '.'.join(parts)
+            # Ensure uniqueness by appending a number if needed
+            if hostname not in generated_hostnames:
+                generated_hostnames.add(hostname)
+                return hostname
+            else:
+                hostname += str(randint(0, 9999))
+                if hostname not in generated_hostnames:
+                    generated_hostnames.add(hostname)
+                    return hostname
+
     # Function to create a random IP address within the extended subnet range
     def random_ip(base_subnet, host_number):
         subnet_third_octet = host_number // 254
         host_fourth_octet = host_number % 254 + 1
         return f"{base_subnet}.{subnet_third_octet}.{host_fourth_octet}"
 
-    # Generating hosts with updated IP address method
+    # Generating hosts with updated IP address and hostname method
     for i in range(num_hosts):
         host_os = choice(list(os_services.keys()))
 
         host = ET.Element("host")
         ET.SubElement(host, "status", {"state": "up", "reason": "arp-response", "reason_ttl": "0"})
         ET.SubElement(host, "address", {"addr": random_ip(base_subnet, i), "addrtype": "ipv4"})
-        ET.SubElement(host, "hostnames")
+
+        # Hostnames
+        hostnames = ET.SubElement(host, "hostnames")
+        num_hostnames = randint(1, 3)  # Random number of hostnames per host
+        for _ in range(num_hostnames):
+            ET.SubElement(hostnames, "hostname", {"name": generate_hostname(), "type": "user"})
 
         # Ports
         ports = ET.SubElement(host, "ports")
@@ -135,7 +164,7 @@ def generate_nmap_xml(num_hosts=1000, base_subnet="172.16"):
     xml_str = xml_header + '\n' + ET.tostring(nmaprun, encoding='unicode', method='xml')
     return xml_str
 
-def save_nmap_xml(filename, num_hosts=1000, base_subnet="172.16"):
+def save_nmap_xml(filename, num_hosts=200, base_subnet="172.16"):
     # Generate the XML content
     xml_content = generate_nmap_xml(num_hosts, base_subnet)
 
