@@ -32,3 +32,12 @@ legion (0.4.2-0) UNRELEASED; urgency=medium
   * Fix typo in startLegion.sh
 
  -- Shane Scott <sscot@gotham-security.com>  Mon, 20 Nov 2023 12:50:55 -0600
+
+legion (0.4.3-0) UNRELEASED; urgency=medium
+
+  * Revise NMAP import process
+  * Fix import progress calculations
+  * Doubleckick to copy hostname (Linux only)
+  * Script to generate huge bogus NMAP XML imports for testing.
+
+ -- Shane Scott <sscott@gotham-security.com> Mon, 20 Nov 2023 19:17:00 -0600

@@ -192,6 +192,7 @@ class View(QtCore.QObject):
         self.HostsTableModel.sort(3, Qt.SortOrder.DescendingOrder)
         # Connect the clicked signal of the HostsTableView to the hostTableClick() method
         self.ui.HostsTableView.clicked.connect(self.hostTableClick)
+        self.ui.HostsTableView.doubleClicked.connect(self.hostTableDoubleClick)
 
         ##
 
@@ -580,6 +581,15 @@ class View(QtCore.QObject):
     
     def connectServiceNamesTableClick(self):
         self.ui.ServiceNamesTableView.clicked.connect(self.serviceNamesTableClick)
+
+    def hostTableDoubleClick(self, index):
+        # Get the item from the model using the index
+        model = self.ui.HostsTableView.model()
+        row = index.row()
+        new_index = model.index(row, 3)
+        data = model.data(new_index, QtCore.Qt.ItemDataRole.DisplayRole)
+        if data:
+            self.controller.copyToClipboard(data)
         
     def serviceNamesTableClick(self):
         if self.ui.ServiceNamesTableView.selectionModel().selectedRows():

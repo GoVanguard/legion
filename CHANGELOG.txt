@@ -1,3 +1,10 @@
+LEGION 0.4.3
+
+* Revise NMAP import process
+* Fix import progress calculations
+* Doubleckick to copy hostname (Linux only)
+* Script to generate huge bogus NMAP XML imports for testing.
+
 LEGION 0.4.2
 
 * Tweak the screenshooter to use eyewitness as suggested by daniruiz

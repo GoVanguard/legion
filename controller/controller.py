@@ -236,6 +236,9 @@ class Controller:
         self.view.updateProcessesTableView()                            # clear process table
         self.logic.projectManager.closeProject(self.logic.activeProject)
 
+    def copyToClipboard(self, data):
+        clipboard = QtWidgets.QApplication.clipboard()
+        clipboard.setText(data)  # Assuming item.text() contains the IP or hostname
 
     @timing
     def addHosts(self, targetHosts, runHostDiscovery, runStagedNmap, nmapSpeed, scanMode, nmapOptions = []):
