@@ -19,7 +19,7 @@ Author(s): Shane Scott (sscott@gotham-security.com), Dmitriy Dubson (d.dubson@gm
 applicationInfo = {
     "name": "LEGION",
     "version": "0.4.2",
-    "build": '1700506312',
+    "build": '1700525714',
     "author": "Gotham Security",
     "copyright": "2023",
     "links": ["http://github.com/GoVanguard/legion/issues", "https://gotham-security.com/legion"],

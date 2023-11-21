@@ -85,18 +85,20 @@ class NmapImporter(QtCore.QThread):
                 n = nmapSessionObj(self.filename, s.startTime, s.finish_time, s.nmapVersion, s.scanArgs, s.totalHosts,
                                    s.upHosts, s.downHosts)
                 session.add(n)
+                session.commit()
 
             allHosts = nmapReport.getAllHosts()
             hostCount = len(allHosts)
             if hostCount == 0:  # to fix a division by zero if we ran nmap on one host
                 hostCount = 1
-            totalprogress = 0
-
-            self.updateProgressObservable.updateProgress(totalprogress)
 
             createProgress = 0
             createOsNodesProgress = 0
             createPortsProgress = 0
+            createDbScriptsProgress = 0
+            updateObjectsRunScriptsProgress = 0
+
+            self.updateProgressObservable.updateProgress(int(createProgress), 'Adding hosts...')
 
             for h in allHosts:  # create all the hosts that need to be created
                 db_host = self.hostRepository.getHostInformation(h.ip)
@@ -107,16 +109,17 @@ class NmapImporter(QtCore.QThread):
                                   lastboot=h.lastboot, distance=h.distance, state=h.state, count=h.count)
                     self.tsLog("Adding db_host")
                     session.add(hid)
+                    session.commit()
                     t_note = note(h.ip, 'Added by nmap')
                     session.add(t_note)
+                    session.commit()
                 else:
                     self.tsLog("Found db_host already in db")
 
-                createProgress = createProgress + ((100.0 / hostCount) / 5)
-                totalprogress = totalprogress + createProgress
-                self.updateProgressObservable.updateProgress(int(totalprogress))
+                createProgress = createProgress + (100.0 / hostCount)
+                self.updateProgressObservable.updateProgress(int(createProgress), 'Adding hosts...')
 
-            session.commit()
+            self.updateProgressObservable.updateProgress(int(createOsNodesProgress), 'Creating Service, Port and OS children...')
 
             for h in allHosts:  # create all OS, service and port objects that need to be created
                 self.tsLog("Processing h {ip}".format(ip=h.ip))
@@ -125,7 +128,10 @@ class NmapImporter(QtCore.QThread):
                 if db_host:
                     self.tsLog("Found db_host during os/ports/service processing")
                 else:
-                    self.log("Did not find db_host during os/ports/service processing")
+                    self.tsLog("Did not find db_host during os/ports/service processing")
+                    self.tsLog("A host that should have been found was not. Something is wrong. Save your session and report a bug.")
+                    self.tsLog("Include your nmap file, sanitized if needed.")
+                    continue
 
                 os_nodes = h.getOs()  # parse and store all the OS nodes
                 self.tsLog("    'os_nodes' to process: {os_nodes}".format(os_nodes=str(len(os_nodes))))
@@ -139,14 +145,15 @@ class NmapImporter(QtCore.QThread):
                         t_osObj = osObj(os.name, os.family, os.generation, os.osType, os.vendor, os.accuracy,
                             db_host.id)
                         session.add(t_osObj)
+                        session.commit()
 
-                    createOsNodesProgress = createOsNodesProgress + ((100.0 / hostCount) / 5)
-                    totalprogress = totalprogress + createOsNodesProgress
-                    self.updateProgressObservable.updateProgress(int(totalprogress))
+                createOsNodesProgress = createOsNodesProgress + (100.0 / hostCount)
+                self.updateProgressObservable.updateProgress(int(createOsNodesProgress), 'Creating Service, Port and OS children...')
 
-                session.commit()
+                self.updateProgressObservable.updateProgress(int(createPortsProgress), 'Processing ports...')
 
                 all_ports = h.all_ports()
+                portCount = len(all_ports)
                 self.tsLog("    'ports' to process: {all_ports}".format(all_ports=str(len(all_ports))))
                 for p in all_ports:  # parse the ports
                     self.tsLog("        Processing port obj {port}".format(port=str(p.portId)))
@@ -164,6 +171,7 @@ class NmapImporter(QtCore.QThread):
                             db_service = serviceObj(s.name, db_host.id, s.product, s.version, s.extrainfo,
                                 s.fingerprint)
                             session.add(db_service)
+                            session.commit()
                     else:  # else, there is no service info to parse
                         db_service = None
                         # fetch the port
@@ -177,11 +185,11 @@ class NmapImporter(QtCore.QThread):
                         else:
                             db_port = portObj(p.portId, p.protocol, p.state, db_host.id, '')
                         session.add(db_port)
-                    createPortsProgress = createPortsProgress + ((100.0 / hostCount) / 5)
-                    totalprogress = totalprogress + createPortsProgress
-                    self.updateProgressObservable.updateProgress(totalprogress)
+                        session.commit()
+                createPortsProgress = createPortsProgress + (100.0 / hostCount)
+                self.updateProgressObservable.updateProgress(createPortsProgress, 'Processing ports...')
 
-            session.commit()
+            self.updateProgressObservable.updateProgress(createDbScriptsProgress, 'Creating script objects...')
 
             for h in allHosts:  # create all script objects that need to be created
                 db_host = self.hostRepository.getHostInformation(h.ip)
@@ -202,19 +210,26 @@ class NmapImporter(QtCore.QThread):
                             t_l1ScriptObj = l1ScriptObj(scr.scriptId, scr.output, db_port.id, db_host.id)
                             self.tsLog("        Adding l1ScriptObj obj {script}".format(script=scr.scriptId))
                             session.add(t_l1ScriptObj)
-
+                            session.commit()
                 for hs in h.getHostScripts():
                     db_script = session.query(l1ScriptObj).filter_by(scriptId=hs.scriptId) \
                         .filter_by(hostId=db_host.id).first()
                     if not db_script:
                         t_l1ScriptObj = l1ScriptObj(hs.scriptId, hs.output, None, db_host.id)
                         session.add(t_l1ScriptObj)
+                        session.commit()
 
-            session.commit()
+                createDbScriptsProgress = createDbScriptsProgress + (100.0 / hostCount)
+                self.updateProgressObservable.updateProgress(createDbScriptsProgress, 'Creating script objects...')
+
+            self.updateProgressObservable.updateProgress(updateObjectsRunScriptsProgress, 'Update objects and run scripts...')
 
             for h in allHosts:  # update everything
 
                 db_host = self.hostRepository.getHostInformation(h.ip)
+                if not db_host:
+                    self.tsLog("            A host that should have been found was not. Something is wrong. Save your session and report a bug.")
+                    self.tsLog("            Include your nmap file, sanitized if needed.")
 
                 if db_host.ipv4 == '' and not h.ipv4 == '':
                     db_host.ipv4 = h.ipv4
@@ -240,6 +255,7 @@ class NmapImporter(QtCore.QThread):
                     db_host.count = h.count
 
                 session.add(db_host)
+                session.commit()
 
                 tmp_name = ''
                 tmp_accuracy = '0'  # TODO: check if better to convert to int for comparison
@@ -265,6 +281,7 @@ class NmapImporter(QtCore.QThread):
                         db_host.osAccuracy = tmp_accuracy
 
                 session.add(db_host)
+                session.commit()
 
                 for scr in h.getHostScripts():
                     self.tsLog("-----------------------Host SCR: {0}".format(scr.scriptId))
@@ -272,6 +289,7 @@ class NmapImporter(QtCore.QThread):
                     scrProcessorResults = scr.scriptSelector(db_host)
                     for scrProcessorResult in scrProcessorResults:
                         session.add(scrProcessorResult)
+                        session.commit()
 
                 for scr in h.getScripts():
                     self.tsLog("-----------------------SCR: {0}".format(scr.scriptId))
@@ -279,6 +297,7 @@ class NmapImporter(QtCore.QThread):
                     scrProcessorResults = scr.scriptSelector(db_host)
                     for scrProcessorResult in scrProcessorResults:
                         session.add(scrProcessorResult)
+                        session.commit()
 
                 for p in h.all_ports():
                     s = p.getService()
@@ -296,10 +315,12 @@ class NmapImporter(QtCore.QThread):
                         if db_port.state != p.state:
                             db_port.state = p.state
                             session.add(db_port)
+                            session.commit()
                         # if there is some new service information, update it -- might be causing issue 164
                         if not (db_service is None) and db_port.serviceId != db_service.id:
                             db_port.serviceId = db_service.id
                             session.add(db_port)
+                            session.commit()
                     # store the script results (note that existing script outputs are also kept)
                     for scr in p.getScripts():
                         db_script = session.query(l1ScriptObj).filter_by(scriptId=scr.scriptId) \
@@ -309,8 +330,12 @@ class NmapImporter(QtCore.QThread):
                             db_script.output = scr.output
 
                         session.add(db_script)
+                        session.commit()
 
-            self.updateProgressObservable.updateProgress(100)
+                updateObjectsRunScriptsProgress = updateObjectsRunScriptsProgress + (100.0 / hostCount)
+                self.updateProgressObservable.updateProgress(updateObjectsRunScriptsProgress, 'Update objects and run scripts...')
+
+            self.updateProgressObservable.updateProgress(100, 'Almost done...')
 
             session.commit()
             self.db.dbsemaphore.release()  # we are done with the DB
