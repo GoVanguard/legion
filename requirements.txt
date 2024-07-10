@@ -15,3 +15,4 @@ flake8
 rich
 urllib3==1.23
 selenium==3.141.0
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
