@@ -159,15 +159,15 @@ def setTableProperties(table, headersLen, hiddenColumnIndexes=[]):
 def checkHydraResults(output):
     usernames = []
     passwords = []
-    string = '\[[0-9]+\]\[[a-z-]+\].+'  # when a password is found, the line contains [port#][plugin-name]
+    string = r'\[[0-9]+\]\[[a-z-]+\].+'  # when a password is found, the line contains [port#][plugin-name]
     results = re.findall(string, output, re.I)
     if results:
         for line in results:
-            login = re.search('(login:[\s]*)([^\s]+)', line)
+            login = re.search(r'(login:[\s]*)([^\s]+)', line)
             if login:
                 log.info('Found username: ' + login.group(2))
                 usernames.append(login.group(2))
-            password = re.search('(password:[\s]*)([^\s]+)', line)
+            password = re.search(r'(password:[\s]*)([^\s]+)', line)
             if password:
                 # print 'Found password: ' + password.group(2)
 
@@ -336,7 +336,7 @@ class Filters():
 # TODO: should probably be moved to a new file called test_validation.py
 
 def validateNmapInput(text):  # validate nmap input entered in Add Hosts dialog
-    if re.search('[^a-zA-Z0-9\.\/\-\s]', text) != None:
+    if re.search(r'[^a-zA-Z0-9\.\/\-\s]', text) != None:
         return False
     return True
 
@@ -354,18 +354,18 @@ def validateNumeric(text):  # only allows numbers
 
 
 def validateString(text):  # only allows alphanumeric characters, '_' and '-'
-    if text != '' and re.search("[^A-Za-z0-9_-]+", text) == None:
+    if text != '' and re.search(r"[^A-Za-z0-9_-]+", text) == None:
         return True
     return False
 
 
 def validateStringWithSpace(text):  # only allows alphanumeric characters, '_', '-' and space
-    if text != '' and re.search("[^A-Za-z0-9_() -]+", text) == None:
+    if text != '' and re.search(r"[^A-Za-z0-9_() -]+", text) == None:
         return True
     return False
 
 
 def validateNmapPorts(text):  # only allows alphanumeric characters and the following: ./-'"*,:[any kind of space]
-    if re.search('[^a-zA-Z0-9\.\/\-\'\"\*\,\:\s]', text) != None:
+    if re.search(r'[^a-zA-Z0-9\.\/\-\'\"\*\,\:\s]', text) != None:
         return False
     return True
