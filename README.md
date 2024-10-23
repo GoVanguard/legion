@@ -1,6 +1,6 @@
 ## NOTICE
 
-The Legion repository is moving to https://github.com/hackman238/legion. All future releases, updates, etc will occur from there. Big improvements on the way!
+The Legion repository is moving to https://github.com/hackman238/legion. All future releases, updates, etc will occur from there. Big improvements on the way! This repo under this organiztion will no longer be maintained.
 
 ##
 
