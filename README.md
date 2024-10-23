@@ -1,4 +1,11 @@
+## NOTICE
+
+The Legion repository is moving to https://github.com/hackman238/legion. All future releases, updates, etc will occur from there. Big improvements on the way!
+
+##
+
 ![alt tag](https://github.com/GoVanguard/legion/blob/master/images/LegionBanner.png)
+
 
 ## ✨ About
 
